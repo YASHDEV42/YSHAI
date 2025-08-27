@@ -1,0 +1,29 @@
+sequenceDiagram
+    title User Signup & OAuth Login
+
+    participant User
+    participant Browser
+    participant AuthController
+    participant AuthService
+    participant OAuthProvider
+    participant Database
+    participant JwtService
+
+    User->>Browser: Clicks "Sign in with Google"
+    Browser->>AuthController: GET /auth/google
+    AuthController-->>Browser: Redirect to Google OAuth
+
+    User->>OAuthProvider: Logs in, grants permission
+    OAuthProvider-->>Browser: Redirect to /auth/google/callback?code=...
+
+    Browser->>AuthController: GET /auth/google/callback?code
+    AuthController->>AuthService: handleOAuthCallback(code)
+    AuthService->>OAuthProvider: Exchange code for token
+    OAuthProvider-->>AuthService: Returns user info
+    AuthService->>Database: Find or create user
+    Database-->>AuthService: User entity
+    AuthService->>JwtService: sign(user.id, user.role)
+    JwtService-->>AuthService: JWT + refresh token
+    AuthService->>Browser: Set secure cookies + redirect to /dashboard
+
+    Browser->>User: Loads dashboard

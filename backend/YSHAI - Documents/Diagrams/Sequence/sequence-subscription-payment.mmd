@@ -1,0 +1,28 @@
+sequenceDiagram
+    title Subscription & Payment Flow
+
+    participant User
+    participant Browser
+    participant SubscriptionController
+    participant PaymentService
+    participant PaymentGateway
+    participant Database
+    participant WebhookHandler
+    participant NotificationService
+
+    User->>Browser: Selects "Pro Plan"
+    Browser->>SubscriptionController: POST /subscribe (planId)
+    SubscriptionController->>PaymentService: createPaymentSession(planId, userId)
+    PaymentService->>PaymentGateway: Create checkout (HyperPay/PayTabs)
+    PaymentGateway-->>PaymentService: Return redirect URL
+    PaymentService-->>Browser: 302 Redirect to payment page
+
+    User->>PaymentGateway: Completes payment
+    PaymentGateway->>WebhookHandler: POST /webhooks/payment-completed (signed)
+    WebhookHandler->>PaymentService: handlePaymentConfirmation(payload)
+    PaymentService->>Database: Activate SUBSCRIPTION, set period_ends_at
+    PaymentService->>Database: Create INVOICE
+    PaymentService->>NotificationService: Send "Welcome to Pro Plan"
+    NotificationService-->>User: Email + in-app notification
+
+    PaymentService-->>WebhookHandler: 200 OK

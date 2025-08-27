@@ -1,0 +1,29 @@
+sequenceDiagram
+    title Create Post with AI Generation
+
+    participant User
+    participant Browser
+    participant PostController
+    participant PostService
+    participant AiService
+    participant LLMProvider
+    participant Database
+
+    User->>Browser: Fills post form, clicks "Generate Caption"
+    Browser->>PostController: POST /ai/generate (prompt, dialect, tone)
+    PostController->>AiService: generateArabicText(prompt, dialect, tone)
+    AiService->>LLMProvider: Call OpenAI/Gemini API
+    LLMProvider-->>AiService: Returns Arabic text
+    AiService->>AiService: Runs moderation check
+    AiService-->>PostController: { text, hashtags }
+    PostController-->>Browser: 200 OK + generated caption
+
+    User->>Browser: Edits caption, attaches media, sets schedule
+    Browser->>PostController: POST /posts (dto)
+    PostController->>PostService: createPost(dto)
+    PostService->>Database: Save Post (status: scheduled)
+    Database-->>PostService: Saved Post
+    PostService->>PostService: Enqueue publish job
+    PostService-->>PostController: 201 Created
+    PostController-->>Browser: 201 Created
+    Browser->>User: Shows "Post scheduled!"

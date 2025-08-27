@@ -1,0 +1,29 @@
+sequenceDiagram
+    title Bulk Upload CSV
+
+    participant User
+    participant Browser
+    participant PostController
+    participant CsvService
+    participant ValidationService
+    participant AiService
+    participant Database
+    participant NotificationService
+
+    User->>Browser: Uploads CSV file
+    Browser->>PostController: POST /posts/bulk-upload (file)
+    PostController->>CsvService: parse(file)
+    CsvService->>ValidationService: validate rows (content, date, accounts)
+    ValidationService-->>CsvService: valid + invalid lists
+
+    loop For each valid row
+        CsvService->>AiService: generateArabicText(prompt) if requested
+        AiService-->>CsvService: generated caption
+        CsvService->>Database: Create Post (draft or scheduled)
+    end
+
+    CsvService->>NotificationService: Send summary: "87/100 posts created"
+    NotificationService-->>User: Email with error log for failed rows
+    Database-->>PostController: Bulk result
+    PostController-->>Browser: 202 Accepted + report
+    Browser->>User: Shows upload summary

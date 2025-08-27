@@ -32,6 +32,9 @@ export class User {
   @Property({ nullable: true })
   timezone?: string;
 
+  @Property({ nullable: true })
+  resetToken?: string;
+
   @Property({ onCreate: () => new Date() })
   createdAt!: Date;
 

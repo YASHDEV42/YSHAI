@@ -1,0 +1,41 @@
+graph TD
+    A[AppModule] --> B[AuthModule]
+    A --> C[UserModule]
+    A --> D[PostModule]
+    A --> E[TeamModule]
+    A --> F[AiModule]
+    A --> G[MediaModule]
+    A --> H[SubscriptionModule]
+    A --> I[AnalyticsModule]
+    A --> J[WebhookModule]
+    A --> K[AuditLogModule]
+    A --> L[NotificationModule]
+    A --> M[DatabaseModule]
+    A --> N[ConfigModule]
+    A --> O[SchedulerModule]
+
+    %% Shared Module
+    P[SharedModule] --> Q[MailService]
+    P --> R[Logger]
+    P --> S[Utils]
+    B --> P
+    C --> P
+    H --> P
+    L --> P
+
+    %% Dependencies
+    D --> F %% Post uses AI
+    D --> G %% Post uses Media
+    D --> E %% Post may belong to Team
+    F --> N %% AI uses Config (LLM keys)
+    H --> N %% Subscription uses Config (payment keys)
+    O --> D %% Scheduler publishes posts
+    J --> D %% Webhook updates post status
+    K --> C %% Audit logs user actions
+    L --> C %% Notifications to users
+
+    %% Style
+    classDef module fill:#f0f8ff,stroke:#006d77,stroke-width:2px;
+    classDef core fill:#e3963e,stroke:#006d77,color:white;
+    class A,M,N,O,P core
+    class B,C,D,E,F,G,H,I,J,K,L module

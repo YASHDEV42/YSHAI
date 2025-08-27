@@ -1,0 +1,32 @@
+sequenceDiagram
+    title Publish Scheduled Post (Worker)
+
+    participant Scheduler
+    participant JobService
+    participant PostService
+    participant SocialAPI
+    participant Database
+    participant NotificationService
+
+    Scheduler->>JobService: run() - every minute
+    JobService->>Database: Find jobs where schedule_at <= now AND status=pending
+    Database-->>JobService: List of due jobs
+
+    loop For each job
+        JobService->>PostService: publishPost(job.postId)
+        PostService->>Database: Get Post + Media + Account tokens
+        Database-->>PostService: Post data
+
+        PostService->>SocialAPI: POST /statuses (X) or /media (Instagram)
+        SocialAPI-->>PostService: 200 OK (success) or 429 (rate limit)
+
+        alt Success
+            PostService->>Database: Update job.status = success
+            PostService->>Database: Update post.status = published
+        else Failure (retryable)
+            PostService->>Database: Update job.attempt++, status = failed
+            PostService->>JobService: Requeue with backoff
+        end
+
+        PostService->>NotificationService: Notify user if failed after max retries
+    end

@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>YSHAI - SRS Document</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 20px;
+        background: #fff;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      }
+      h1,
+      h2,
+      h3,
+      h4 {
+        color: #006d77;
+        margin-top: 30px;
+      }
+      h1 {
+        text-align: center;
+        border-bottom: 3px solid #e3963e;
+        padding-bottom: 10px;
+      }
+      h2 {
+        border-bottom: 1px solid #ccc;
+        padding-bottom: 5px;
+      }
+      h3 {
+        color: #006d77;
+        margin-top: 25px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+      }
+      table,
+      th,
+      td {
+        border: 1px solid #aaa;
+      }
+      th,
+      td {
+        padding: 10px;
+        text-align: left;
+      }
+      th {
+        background-color: #f0f8ff;
+      }
+      code {
+        background: #f4f4f4;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: monospace;
+      }
+      .signature-table td {
+        height: 60px;
+      }
+      footer {
+        margin-top: 50px;
+        text-align: center;
+        font-size: 0.9em;
+        color: #666;
+      }
+      .logo {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .teal {
+        color: #006d77;
+      }
+      .gold {
+        color: #e3963e;
+      }
+      section {
+        margin-bottom: 30px;
+      }
+      ul,
+      ol {
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="logo">
+      <h1>
+        <span class="teal">YSHAI</span> – AI Social Media Scheduler
+        (Arabic-first)
+      </h1>
+      <p><strong>Software Requirements Specification (SRS)</strong></p>
+    </div>
+
+    <p><strong>Version:</strong> 2.0</p>
+    <p><strong>Date:</strong> 22nd August 2025</p>
+    <p><strong>Prepared by:</strong> Yahya Shannat</p>
+    <hr />
+
+    <!-- Document Control -->
+    <section id="document-control">
+      <h2>Document Control</h2>
+      <table>
+        <tr>
+          <th>Item</th>
+          <th>Details</th>
+        </tr>
+        <tr>
+          <td>Document Title</td>
+          <td>YSHAI - Software Requirements Specification</td>
+        </tr>
+        <tr>
+          <td>Version</td>
+          <td>2.0</td>
+        </tr>
+        <tr>
+          <td>Status</td>
+          <td>Draft</td>
+        </tr>
+        <tr>
+          <td>Authors</td>
+          <td>Yahya Shannat</td>
+        </tr>
+      </table>
+
+      <h3>Revision History</h3>
+      <table>
+        <tr>
+          <th>Date</th>
+          <th>Version</th>
+          <th>Author</th>
+          <th>Notes</th>
+        </tr>
+        <tr>
+          <td>2025-08-16</td>
+          <td>1.0</td>
+          <td>Yahya Shannat</td>
+          <td>Initial draft (expanded SRS)</td>
+        </tr>
+        <tr>
+          <td>2025-08-21</td>
+          <td>1.1</td>
+          <td>Yahya Shannat</td>
+          <td>Updated formatting and version</td>
+        </tr>
+        <tr>
+          <td>2025-08-22</td>
+          <td>2.0</td>
+          <td>Yahya Shannat</td>
+          <td>Updated: PostgreSQL + MikroORM, removed MongoDB</td>
+        </tr>
+      </table>
+    </section>
+
+    <!-- Table of Contents -->
+    <section id="toc">
+      <h2>Table of Contents</h2>
+      <ol>
+        <li>
+          Introduction
+          <ol>
+            <li>Purpose</li>
+            <li>Scope</li>
+            <li>Definitions & Acronyms</li>
+            <li>References</li>
+          </ol>
+        </li>
+        <li>Overall Description</li>
+        <li>Functional Requirements</li>
+        <li>External Interfaces & APIs</li>
+        <li>Non-Functional Requirements</li>
+        <li>Acceptance Criteria & Test Cases</li>
+        <li>Risks & Mitigations</li>
+        <li>Glossary</li>
+      </ol>
+    </section>
+
+    <!-- Document Conventions -->
+    <section id="doc-conventions">
+      <h2>Document Conventions</h2>
+      <p>
+        This SRS follows IEEE-style conventions: numbered sections, traceable
+        requirement IDs (F#), and tables for definitions. Code and JSON examples
+        are shown in monospace.
+      </p>
+
+      <h3>Intended Audience</h3>
+      <p>
+        This document is intended for developers, designers, QA, and operations
+        staff who will implement and maintain YSHAI.
+      </p>
+
+      <h3>User Documentation & Support</h3>
+      <p>
+        End-user documentation, API references, and onboarding guides will be
+        produced alongside each release and stored in the project wiki.
+      </p>
+    </section>
+
+    <!-- 1. Introduction -->
+    <h2>1. Introduction</h2>
+    <h3>1.1 Purpose</h3>
+    <p>
+      This Software Requirements Specification (SRS) describes YSHAI — an
+      Arabic-first AI-powered social media scheduler and content assistant. The
+      product aims to deliver Buffer-like scheduling and multi-account
+      management with specialized Arabic-language generation, normalization, and
+      UX (RTL) features for creators, small businesses, and agencies in the MENA
+      region.
+    </p>
+
+    <h3>1.2 Scope</h3>
+    <p>
+      YSHAI provides AI-assisted Arabic content generation, cross-platform
+      scheduling (X, Instagram, LinkedIn, TikTok), analytics, team workflows,
+      and payment/subscription management. The initial release focuses on web
+      (responsive) and core integrations; mobile is planned in Phase 2.
+    </p>
+    <p>
+      <strong>Technology stack (initial):</strong> Next.js (frontend), NestJS
+      (TypeScript) (API),
+      <strong>PostgreSQL (via Neon.tech or Railway)</strong>,
+      <strong>MikroORM</strong> (data layer), OpenAI (or compatible LLM), AWS
+      (S3 for media), CI/CD (GitHub Actions), Vercel for static hosting.
+    </p>
+    <p>
+      <strong>Backend direction:</strong> The API will be implemented using
+      NestJS with <strong>MikroORM</strong> as the data access layer. MikroORM
+      provides a robust <strong>Unit of Work pattern</strong>, full TypeScript
+      support, and reliable transaction handling. It enables consistent data
+      operations across scheduling, publishing, and billing workflows. The
+      database is <strong>PostgreSQL</strong> for strong relational integrity,
+      ACID compliance, and efficient analytics. This stack ensures data
+      consistency, auditability, and cost-effective scaling.
+    </p>
+
+    <h3>1.3 Definitions & Acronyms</h3>
+    <table>
+      <tr>
+        <th>Term</th>
+        <th>Definition</th>
+      </tr>
+      <tr>
+        <td>SaaS</td>
+        <td>Software as a Service</td>
+      </tr>
+      <tr>
+        <td>AI / LLM</td>
+        <td>Artificial Intelligence / Large Language Model</td>
+      </tr>
+      <tr>
+        <td>NLP</td>
+        <td>Natural Language Processing (Arabic-specific modules)</td>
+      </tr>
+      <tr>
+        <td>RTL</td>
+        <td>Right-to-Left layout for Arabic scripts</td>
+      </tr>
+      <tr>
+        <td>API</td>
+        <td>Application Programming Interface</td>
+      </tr>
+      <tr>
+        <td>ORM</td>
+        <td>Object-Relational Mapper (e.g., MikroORM)</td>
+      </tr>
+      <tr>
+        <td>PostgreSQL</td>
+        <td>Open-source relational database used for YSHAI</td>
+      </tr>
+      <tr>
+        <td>Unit of Work</td>
+        <td>
+          Pattern ensuring transactional consistency across multiple operations
+        </td>
+      </tr>
+    </table>
+
+    <h3>1.4 References</h3>
+    <ul>
+      <li>Buffer.com – product benchmark</li>
+      <li>OpenAI / LLM provider API docs</li>
+      <li>Saudi NCA & local data regulation guidelines</li>
+      <li>OWASP Top 10</li>
+      <li>
+        <a href="https://mikro-orm.io" target="_blank"
+          >MikroORM Documentation</a
+        >
+      </li>
+      <li>
+        <a href="https://neon.tech" target="_blank"
+          >Neon.tech – Serverless PostgreSQL</a
+        >
+      </li>
+      <li>
+        <a href="https://railway.app" target="_blank"
+          >Railway.app – Full-stack hosting</a
+        >
+      </li>
+    </ul>
+
+    <!-- 2. Overall Description -->
+    <h2>2. Overall Description</h2>
+    <h3>2.1 Product Perspective</h3>
+    <p>
+      YSHAI is a multi-tenant cloud service. The system integrates with social
+      platforms using OAuth, stores media in S3-compatible storage, and
+      communicates with LLM services for content generation. The backend uses
+      <strong>PostgreSQL</strong> for data consistency and
+      <strong>MikroORM</strong> to ensure reliable, transaction-safe operations.
+      Components (scheduler, AI, analytics) are designed to scale independently.
+      This architecture supports auditability, compliance, and real-time
+      collaboration.
+    </p>
+
+    <h3>2.2 Key Users & Personas</h3>
+    <table>
+      <tr>
+        <th>Persona</th>
+        <th>Primary Needs</th>
+      </tr>
+      <tr>
+        <td>Creator</td>
+        <td>Fast Arabic caption generation, single-account scheduling</td>
+      </tr>
+      <tr>
+        <td>SMB Owner</td>
+        <td>Multi-account management, analytics, recurring posts</td>
+      </tr>
+      <tr>
+        <td>Agency</td>
+        <td>Team roles, bulk upload, client account management</td>
+      </tr>
+      <tr>
+        <td>Admin</td>
+        <td>Billing, compliance, audit logs</td>
+      </tr>
+    </table>
+
+    <h3>2.3 Assumptions</h3>
+    <ul>
+      <li>
+        Third-party social APIs provide necessary publish endpoints and
+        webhooks.
+      </li>
+      <li>
+        LLM provider supports Arabic with acceptable quality; fallbacks will be
+        implemented.
+      </li>
+      <li>Users have valid accounts on target social platforms.</li>
+      <li>
+        PostgreSQL will be hosted on a serverless platform (Neon.tech or
+        Railway) with auto-suspend for cost efficiency.
+      </li>
+      <li>
+        MikroORM will be used to enforce transactional integrity during post
+        creation, publishing, and subscription updates.
+      </li>
+    </ul>
+
+    <h3>2.4 Constraints</h3>
+    <ul>
+      <li>Rate limits from social platforms and LLM providers.</li>
+      <li>Compliance with local (KSA) regulations for user data.</li>
+      <li>
+        Initial target scale: 10k active users; design for growth to 100k.
+      </li>
+      <li>
+        MikroORM requires explicit <code>em.flush()</code> to persist changes;
+        developers must follow Unit of Work pattern.
+      </li>
+      <li>
+        PostgreSQL must be configured for UTF8 and Arabic collation support.
+      </li>
+    </ul>
+
+    <!-- 3. Functional Requirements -->
+    <h2>3. Functional Requirements</h2>
+    <p>Each functional requirement has an ID for traceability (F#).</p>
+    <ol>
+      <li id="F1">
+        <strong>F1 – Authentication & Authorization:</strong> Users can
+        register, sign in (email/password, OAuth), reset passwords, and
+        sysadmins can manage roles. Sessions use JWT with refresh tokens.
+      </li>
+      <li id="F2">
+        <strong>F2 – Account Linking:</strong> Users can connect/disconnect
+        social accounts (X, Instagram, LinkedIn, TikTok). Tokens are stored
+        encrypted and can be refreshed/revoked.
+      </li>
+      <li id="F3">
+        <strong>F3 – Arabic AI Content Generation:</strong> Prompt-based
+        generator that produces Arabic captions, suggests hashtags, and proposes
+        image alt text. Options for tone and dialect (Modern Standard Arabic,
+        Gulf Arabic) will be provided.
+      </li>
+      <li id="F4">
+        <strong>F4 – Scheduling & Calendar:</strong> Create scheduled posts with
+        timezones; supports recurring posts, drafts, bulk upload (CSV), and
+        drag-and-drop calendar edits.
+      </li>
+      <li id="F5">
+        <strong>F5 – Publishing Engine:</strong> Reliable background worker that
+        executes scheduled posts, handles retries and failure reporting, and
+        records delivery status.
+      </li>
+      <li id="F6">
+        <strong>F6 – Analytics & Reports:</strong> Collect basic engagement
+        metrics, display trends, and export CSV/PDF reports per account or
+        campaign.
+      </li>
+      <li id="F7">
+        <strong>F7 – Team Collaboration:</strong> Invite members, assign roles
+        (Admin, Editor, Viewer), approval workflow for posts, and change
+        history.
+      </li>
+      <li id="F8">
+        <strong>F8 – Payments & Subscriptions:</strong> Manage plans (Free, Pro,
+        Business), integrate payment gateways (HyperPay, PayTabs), handle
+        billing history and invoices.
+      </li>
+      <li id="F9">
+        <strong>F9 – Localization & RTL UI:</strong> All UI must support Arabic
+        RTL (IBM Plex Sans Arabic); allow user to switch to English. Use
+        appropriate fonts and typographic scale for Arabic.
+      </li>
+      <li id="F10">
+        <strong>F10 – Moderation & Compliance:</strong> Run automated checks on
+        generated content for policy violations and present warnings to users.
+      </li>
+    </ol>
+
+    <h3>3.1 Use Cases</h3>
+    <table>
+      <tr>
+        <th>Use Case</th>
+        <th>Description</th>
+      </tr>
+      <tr>
+        <td>UC1: Create scheduled post</td>
+        <td>
+          User writes or generates Arabic caption, attaches media, selects
+          accounts and time, and saves as scheduled.
+        </td>
+      </tr>
+      <tr>
+        <td>UC2: Bulk upload</td>
+        <td>
+          User uploads CSV with posts and schedule times; system imports,
+          validates, and queues them.
+        </td>
+      </tr>
+      <tr>
+        <td>UC3: Approve post</td>
+        <td>
+          Editor submits a post for approval; Admin approves and it is scheduled
+          to publish.
+        </td>
+      </tr>
+    </table>
+
+    <!-- 4. External Interfaces & APIs -->
+    <h2>4. External Interfaces & APIs</h2>
+    <h3>4.1 User Interface</h3>
+    <p>
+      Responsive web app; primary language Arabic (RTL). Use system fonts and
+      provide accessible contrast. Key screens: Dashboard, Calendar, Composer,
+      Analytics, Settings.
+    </p>
+
+    <h3>4.2 Software Interfaces</h3>
+    <table>
+      <tr>
+        <th>Service</th>
+        <th>Purpose</th>
+      </tr>
+      <tr>
+        <td>LLM Provider (OpenAI or compatible)</td>
+        <td>Generate Arabic text, hashtags, and image prompts</td>
+      </tr>
+      <tr>
+        <td>Social Platform APIs</td>
+        <td>Publish posts, fetch metrics, webhooks for status</td>
+      </tr>
+      <tr>
+        <td>PostgreSQL (Neon/Railway)</td>
+        <td>Primary relational data store (users, posts, audit logs, teams)</td>
+      </tr>
+      <tr>
+        <td>AWS S3</td>
+        <td>Media storage (images, videos)</td>
+      </tr>
+      <tr>
+        <td>Payment Gateways</td>
+        <td>Handle subscription payments and invoicing</td>
+      </tr>
+    </table>
+
+    <!-- 5. Non-Functional Requirements -->
+    <h2>5. Non-Functional Requirements</h2>
+    <table>
+      <tr>
+        <th>Type</th>
+        <th>Requirement</th>
+      </tr>
+      <tr>
+        <td>Performance</td>
+        <td>
+          API median response < 500ms for simple queries; generation calls
+          depend on LLM latency (display spinner). Target 100 requests/sec
+          baseline.
+        </td>
+      </tr>
+      <tr>
+        <td>Availability</td>
+        <td>99.9% uptime for core scheduling and delivery pipelines.</td>
+      </tr>
+      <tr>
+        <td>Security</td>
+        <td>
+          OWASP best practices, JWT + refresh tokens, encrypt tokens at rest,
+          role-based access control, audit logs.
+        </td>
+      </tr>
+      <tr>
+        <td>Scalability</td>
+        <td>
+          Stateless API layer with horizontally scalable workers for scheduling
+          and publishing. PostgreSQL on serverless tier (Neon/Railway).
+        </td>
+      </tr>
+      <tr>
+        <td>Localization</td>
+        <td>
+          Full RTL support; Arabic and English translations for UI strings.
+        </td>
+      </tr>
+      <tr>
+        <td>Data Retention</td>
+        <td>
+          Default retention 2 years for content and logs; configurable for
+          enterprise accounts.
+        </td>
+      </tr>
+      <tr>
+        <td>Cost Efficiency</td>
+        <td>
+          Target < $25/month during MVP phase using Neon.tech or Railway free
+          tiers.
+        </td>
+      </tr>
+    </table>
+
+    <!-- 6. Acceptance Criteria -->
+    <h2>6. Acceptance Criteria & Test Cases</h2>
+    <ul>
+      <li>
+        AC1: A user can connect a social account and schedule a post that
+        successfully publishes at the scheduled time (end-to-end test with
+        sandbox accounts).
+      </li>
+      <li>
+        AC2: Generated Arabic caption respects requested tone and does not
+        contain banned content (moderation test).
+      </li>
+      <li>AC3: RTL UI displays correctly on desktop and mobile breakpoints.</li>
+      <li>
+        AC4: API endpoints return documented status codes and validate inputs
+        (unit tests).
+      </li>
+      <li>
+        AC5: Database transactions ensure data consistency during post creation
+        and publishing (integration test).
+      </li>
+    </ul>
+
+    <!-- 7. Risks & Mitigations -->
+    <h2>7. Risks & Mitigations</h2>
+    <ul>
+      <li>
+        Risk: LLM produces low-quality Arabic. Mitigation: implement prompt
+        engineering, options for dialect, human-in-the-loop editing.
+      </li>
+      <li>
+        Risk: Social APIs change or restrict publishing. Mitigation: abstract
+        integration layer and fallback flows (manual reminder).
+      </li>
+      <li>
+        Risk: Data residency/compliance concerns. Mitigation: host in regional
+        AWS and provide enterprise SLAs.
+      </li>
+      <li>
+        Risk: Team unfamiliar with Unit of Work pattern (MikroORM). Mitigation:
+        provide training and code templates.
+      </li>
+    </ul>
+
+    <!-- 8. Glossary -->
+    <h2>8. Glossary</h2>
+    <ul>
+      <li>
+        <strong>RTL</strong> — Right-to-left script layout used by Arabic UI.
+      </li>
+      <li>
+        <strong>LLM</strong> — Large Language Model (AI service used for
+        generation).
+      </li>
+      <li>
+        <strong>Composer</strong> — The UI used to create and schedule posts.
+      </li>
+      <li>
+        <strong>MikroORM</strong> — TypeScript ORM with Unit of Work, used in
+        YSHAI for data consistency.
+      </li>
+      <li>
+        <strong>PostgreSQL</strong> — Open-source relational database chosen for
+        YSHAI’s backend.
+      </li>
+      <li>
+        <strong>Unit of Work</strong> — Design pattern that ensures all changes
+        in a business operation are saved atomically.
+      </li>
+    </ul>
+
+    <!-- Approval Section -->
+    <h2>Approval</h2>
+    <table class="signature-table">
+      <tr>
+        <th>Role</th>
+        <th>Name</th>
+        <th>Signature</th>
+        <th>Date</th>
+      </tr>
+      <tr>
+        <td>Project Manager</td>
+        <td>Yahya Shannat</td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>Lead Developer</td>
+        <td>Yahya Shannat</td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>UX Designer</td>
+        <td>Yahya Shannat</td>
+        <td></td>
+        <td></td>
+      </tr>
+    </table>
+
+    <footer>© 2025 YSHAI - All Rights Reserved</footer>
+  </body>
+</html>

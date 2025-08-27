@@ -1,0 +1,31 @@
+sequenceDiagram
+    title Team Post Approval Workflow
+
+    participant Editor
+    participant Browser
+    participant PostController
+    participant PostService
+    participant NotificationService
+    participant Admin
+    participant Database
+
+    Editor->>Browser: Creates post, clicks "Submit for Approval"
+    Browser->>PostController: POST /posts (status: pending_approval)
+    PostController->>PostService: createPost(dto)
+    PostService->>Database: Save Post (pending_approval)
+    PostService->>NotificationService: Send "Post awaiting approval" to team admins
+    NotificationService-->>Admin: Email / in-app notification
+
+    Admin->>Browser: Logs in, sees pending post
+    Browser->>PostController: GET /posts?status=pending_approval
+    PostController-->>Browser: List of posts
+
+    Admin->>Browser: Clicks "Approve"
+    Browser->>PostController: PATCH /posts/:id/approve
+    PostController->>PostService: approvePost(id, approvedById)
+    PostService->>Database: Update post.status = scheduled
+    PostService->>PostService: Enqueue publish job
+    PostService->>NotificationService: Notify editor: "Approved ✅"
+    NotificationService-->>Editor: "Your post has been approved"
+
+    Browser->>Admin: Shows success

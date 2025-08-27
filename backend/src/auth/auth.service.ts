@@ -1,7 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { UsersService } from '../users/users.service';
 import { User } from 'src/entities/user.entity';
 import { Logger } from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/core';
@@ -12,7 +11,6 @@ const logger = new Logger('Auth');
 @Injectable()
 export class AuthService {
   constructor(
-    private usersService: UsersService,
     private jwtService: JwtService,
     private readonly em: EntityManager,
   ) {}
@@ -72,6 +70,16 @@ export class AuthService {
   async login(user: User) {
     return this.generateTokens(user);
   }
+  async logout(user: User) {
+    const token = await this.em.findOne(RefreshToken, {
+      userId: user.id,
+      revoked: false,
+    });
+    if (token) {
+      token.revoked = true;
+      await this.em.persistAndFlush(token);
+    }
+  }
   async refresh(userId: number, refreshToken: string) {
     const candidates = await this.em.find(
       RefreshToken,
@@ -98,5 +106,22 @@ export class AuthService {
     }
 
     throw new UnauthorizedException('Invalid refresh token');
+  }
+  async forgotPassword(email: string) {
+    const user = await this.em.findOne(User, { email });
+    if (!user) {
+      // For security, do not reveal whether the email exists
+      return;
+    }
+    // Here you would generate a password reset token and send an email
+    // This is a placeholder implementation
+    logger.log(`Password reset link sent to ${email}`);
+  }
+  async resetPassword(token: string, newPassword: string) {
+    const user = await this.em.findOne(User, { resetToken: token });
+    if (!user) throw new UnauthorizedException('Invalid or expired token');
+    user.passwordHash = await bcrypt.hash(newPassword, 10);
+    await this.em.persistAndFlush(user);
+    logger.log(`Password reset successfully for user ${user.email}`);
   }
 }

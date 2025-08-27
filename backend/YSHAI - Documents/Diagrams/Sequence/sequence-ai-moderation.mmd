@@ -1,0 +1,25 @@
+sequenceDiagram
+    title AI Content Moderation
+
+    participant AiService
+    participant LLMProvider
+    participant ModerationService
+    participant ModerationProvider
+    participant Database
+    participant PostService
+
+    AiService->>LLMProvider: Generate Arabic caption
+    LLMProvider-->>AiService: Returns generated text
+    AiService->>ModerationService: checkContent(text)
+    ModerationService->>ModerationProvider: Call OpenAI Moderation / Custom Rule Engine
+    ModerationProvider-->>ModerationService: { flagged: true, reasons: ["sensitive"] }
+
+    alt Content is safe
+        ModerationService-->>AiService: allowed = true
+        AiService-->>PostService: return caption
+    else Content violates policy
+        ModerationService-->>AiService: allowed = false, reasons = [...]
+        AiService->>Database: Save MODERATION_RESULT
+        AiService-->>PostService: throw PolicyViolationException
+        PostService-->>User: Show warning: "This content may violate policies"
+    end

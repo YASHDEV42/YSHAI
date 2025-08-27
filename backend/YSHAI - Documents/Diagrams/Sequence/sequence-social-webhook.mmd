@@ -1,0 +1,23 @@
+sequenceDiagram
+    title Social Platform Webhook (e.g., Post Failed)
+
+    participant SocialAPI
+    participant WebhookController
+    participant WebhookService
+    participant Database
+    participant NotificationService
+
+    SocialAPI->>WebhookController: POST /webhooks/x-post-failed (payload)
+    WebhookController->>WebhookService: verifySignature(payload, secret)
+    WebhookService-->>WebhookController: valid = true
+
+    WebhookService->>Database: Find JOB and POST by provider_post_id
+    Database-->>WebhookService: Post + Job
+
+    WebhookService->>Database: Update JOB.status = failed, JOB.last_error = "rate_limit"
+    WebhookService->>Database: Update POST.status = failed
+
+    WebhookService->>NotificationService: Notify user: "Your post failed to publish"
+    NotificationService-->>User: In-app + email alert
+
+    WebhookController-->>SocialAPI: 200 OK

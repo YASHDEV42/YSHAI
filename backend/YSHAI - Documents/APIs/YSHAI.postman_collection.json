@@ -1,0 +1,375 @@
+{
+  "info": {
+    "name": "YSHAI API",
+    "description": "Postman Collection for YSHAI backend API covering Auth, Users, Teams, Posts, Media, AI, Moderation, Analytics, Billing, Notifications, Webhooks, and Meta.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"secret123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"secret123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/logout"
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/refresh"
+          }
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/forgot-password",
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"email\": \"john@example.com\" }"
+            }
+          }
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/reset-password",
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"token\": \"<reset-token>\", \"password\": \"newPass123\" }"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/users/me"
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/users/me",
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"name\": \"Updated Name\", \"preferences\": { \"language\": \"en\" } }"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Teams",
+      "item": [
+        {
+          "name": "Create Team",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/teams",
+            "body": { "mode": "raw", "raw": "{ \"name\": \"Marketing Team\" }" }
+          }
+        },
+        {
+          "name": "Invite Member",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/teams/{{teamId}}/invite",
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"email\": \"member@example.com\", \"role\": \"editor\" }"
+            }
+          }
+        },
+        {
+          "name": "Update Member Role",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/teams/{{teamId}}/members/{{memberId}}",
+            "body": { "mode": "raw", "raw": "{ \"role\": \"admin\" }" }
+          }
+        },
+        {
+          "name": "Remove Member",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/teams/{{teamId}}/members/{{memberId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Accounts",
+      "item": [
+        {
+          "name": "Link Account",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/accounts",
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"provider\": \"facebook\", \"accessToken\": \"abc123\" }"
+            }
+          }
+        },
+        {
+          "name": "Unlink Account",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/accounts/{{accountId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Posts",
+      "item": [
+        {
+          "name": "Create Post",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/posts",
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"content\": \"Hello World\", \"scheduledAt\": \"2025-08-20T12:00:00Z\" }"
+            }
+          }
+        },
+        {
+          "name": "Update Post",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/posts/{{postId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"content\": \"Updated post\" }"
+            }
+          }
+        },
+        {
+          "name": "Delete Post",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/posts/{{postId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Media",
+      "item": [
+        {
+          "name": "Upload Media",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/media",
+            "body": {
+              "mode": "formdata",
+              "formdata": [{ "key": "file", "type": "file", "src": "" }]
+            }
+          }
+        },
+        {
+          "name": "List Media",
+          "request": { "method": "GET", "url": "{{baseUrl}}/media" }
+        },
+        {
+          "name": "Delete Media",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/media/{{mediaId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "AI",
+      "item": [
+        {
+          "name": "Generate Caption",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/ai/caption",
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"prompt\": \"Promote coffee product\" }"
+            }
+          }
+        },
+        {
+          "name": "Generate Hashtags",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/ai/hashtags",
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"prompt\": \"Coffee shop post\" }"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Moderation",
+      "item": [
+        {
+          "name": "Moderate Text",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/moderation/text",
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"text\": \"Some text to check\" }"
+            }
+          }
+        },
+        {
+          "name": "Moderate Image",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/moderation/image",
+            "body": {
+              "mode": "formdata",
+              "formdata": [{ "key": "file", "type": "file", "src": "" }]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Analytics",
+      "item": [
+        {
+          "name": "Post Insights",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/analytics/posts/{{postId}}"
+          }
+        },
+        {
+          "name": "Account Insights",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/analytics/accounts/{{accountId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Billing",
+      "item": [
+        {
+          "name": "List Plans",
+          "request": { "method": "GET", "url": "{{baseUrl}}/billing/plans" }
+        },
+        {
+          "name": "Create Subscription",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/billing/subscribe",
+            "body": { "mode": "raw", "raw": "{ \"planId\": \"pro-monthly\" }" }
+          }
+        },
+        {
+          "name": "Cancel Subscription",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/billing/cancel" }
+        },
+        {
+          "name": "Get Invoices",
+          "request": { "method": "GET", "url": "{{baseUrl}}/billing/invoices" }
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        {
+          "name": "List Notifications",
+          "request": { "method": "GET", "url": "{{baseUrl}}/notifications" }
+        },
+        {
+          "name": "Mark Notification as Read",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/notifications/{{notificationId}}/read"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Webhooks",
+      "item": [
+        {
+          "name": "Register Webhook",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/webhooks",
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"url\": \"https://example.com/webhook\" }"
+            }
+          }
+        },
+        {
+          "name": "List Webhooks",
+          "request": { "method": "GET", "url": "{{baseUrl}}/webhooks" }
+        },
+        {
+          "name": "Delete Webhook",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/webhooks/{{webhookId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Meta",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": { "method": "GET", "url": "{{baseUrl}}/health" }
+        },
+        {
+          "name": "List Timezones",
+          "request": { "method": "GET", "url": "{{baseUrl}}/meta/timezones" }
+        }
+      ]
+    }
+  ],
+  "variable": [{ "key": "baseUrl", "value": "http://localhost:5000/api" }]
+}
