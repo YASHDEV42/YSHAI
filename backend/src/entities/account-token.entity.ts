@@ -4,7 +4,7 @@ import { SocialAccount } from './social-account.entity';
 @Entity()
 export class AccountToken {
   @PrimaryKey()
-  id!: string;
+  id!: number;
 
   @ManyToOne(() => SocialAccount)
   account!: SocialAccount;

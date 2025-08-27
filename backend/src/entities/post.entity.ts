@@ -20,7 +20,7 @@ import { Template } from './template.entity';
 @Entity()
 export class Post {
   @PrimaryKey()
-  id!: string;
+  id!: number;
 
   @ManyToOne(() => User)
   author!: User;

@@ -4,7 +4,7 @@ import { Post } from './post.entity';
 @Entity()
 export class Media {
   @PrimaryKey()
-  id!: string;
+  id!: number;
 
   @ManyToOne(() => Post)
   post!: Post;

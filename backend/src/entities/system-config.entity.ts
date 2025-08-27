@@ -4,10 +4,10 @@ import { User } from './user.entity';
 @Entity()
 export class SystemConfig {
   @PrimaryKey()
-  id!: string; // e.g., "llm_provider", "feature_ai_moderation"
+  id!: number;
 
   @Property()
-  value!: string; // can be JSON
+  value!: string;
 
   @Property({ nullable: true })
   description?: string;

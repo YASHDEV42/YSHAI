@@ -13,7 +13,7 @@ import { Post } from './post.entity';
 @Entity()
 export class SocialAccount {
   @PrimaryKey()
-  id!: string;
+  id!: number;
 
   @Property()
   provider: 'x' | 'instagram' | 'linkedin' | 'tiktok' = 'x';

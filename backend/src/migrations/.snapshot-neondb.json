@@ -8,13 +8,12 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(255)",
+          "type": "serial",
           "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
+          "autoincrement": true,
+          "primary": true,
           "nullable": false,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "name": {
           "name": "name",
@@ -119,13 +118,12 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(255)",
+          "type": "serial",
           "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
+          "autoincrement": true,
+          "primary": true,
           "nullable": false,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "name": {
           "name": "name",
@@ -238,6 +236,16 @@
           "length": 255,
           "mappedType": "string"
         },
+        "reset_token": {
+          "name": "reset_token",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 255,
+          "mappedType": "string"
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamptz",
@@ -301,13 +309,12 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(255)",
+          "type": "serial",
           "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
+          "autoincrement": true,
+          "primary": true,
           "nullable": false,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "name": {
           "name": "name",
@@ -394,13 +401,12 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(255)",
+          "type": "serial",
           "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
+          "autoincrement": true,
+          "primary": true,
           "nullable": false,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "name": {
           "name": "name",
@@ -443,13 +449,12 @@
         },
         "team_id": {
           "name": "team_id",
-          "type": "varchar(255)",
+          "type": "int",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": true,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "visibility": {
           "name": "visibility",
@@ -531,13 +536,12 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(255)",
+          "type": "serial",
           "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
+          "autoincrement": true,
+          "primary": true,
           "nullable": false,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "value": {
           "name": "value",
@@ -636,13 +640,12 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(255)",
+          "type": "serial",
           "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
+          "autoincrement": true,
+          "primary": true,
           "nullable": false,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "user_id": {
           "name": "user_id",
@@ -655,13 +658,12 @@
         },
         "plan_id": {
           "name": "plan_id",
-          "type": "varchar(255)",
+          "type": "int",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "status": {
           "name": "status",
@@ -782,13 +784,12 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(255)",
+          "type": "serial",
           "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
+          "autoincrement": true,
+          "primary": true,
           "nullable": false,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "provider": {
           "name": "provider",
@@ -886,23 +887,21 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(255)",
+          "type": "serial",
           "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
+          "autoincrement": true,
+          "primary": true,
           "nullable": false,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "account_id": {
           "name": "account_id",
-          "type": "varchar(255)",
+          "type": "int",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "token_type": {
           "name": "token_type",
@@ -1133,13 +1132,12 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(255)",
+          "type": "serial",
           "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
+          "autoincrement": true,
+          "primary": true,
           "nullable": false,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "user_id": {
           "name": "user_id",
@@ -1236,13 +1234,12 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(255)",
+          "type": "serial",
           "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
+          "autoincrement": true,
+          "primary": true,
           "nullable": false,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "user_id": {
           "name": "user_id",
@@ -1255,13 +1252,12 @@
         },
         "team_id": {
           "name": "team_id",
-          "type": "varchar(255)",
+          "type": "int",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "role": {
           "name": "role",
@@ -1342,13 +1338,12 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(255)",
+          "type": "serial",
           "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
+          "autoincrement": true,
+          "primary": true,
           "nullable": false,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "amount": {
           "name": "amount",
@@ -1461,13 +1456,12 @@
         },
         "subscription_id": {
           "name": "subscription_id",
-          "type": "varchar(255)",
+          "type": "int",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         }
       },
       "name": "invoice",
@@ -1537,13 +1531,12 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(255)",
+          "type": "serial",
           "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
+          "autoincrement": true,
+          "primary": true,
           "nullable": false,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "name": {
           "name": "name",
@@ -1651,13 +1644,12 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(255)",
+          "type": "serial",
           "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
+          "autoincrement": true,
+          "primary": true,
           "nullable": false,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "author_id": {
           "name": "author_id",
@@ -1670,23 +1662,21 @@
         },
         "team_id": {
           "name": "team_id",
-          "type": "varchar(255)",
+          "type": "int",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": true,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "social_account_id": {
           "name": "social_account_id",
-          "type": "varchar(255)",
+          "type": "int",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": true,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "content_ar": {
           "name": "content_ar",
@@ -1771,23 +1761,21 @@
         },
         "campaign_id": {
           "name": "campaign_id",
-          "type": "varchar(255)",
+          "type": "int",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": true,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "template_id": {
           "name": "template_id",
-          "type": "varchar(255)",
+          "type": "int",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": true,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "schedule_at": {
           "name": "schedule_at",
@@ -1897,33 +1885,30 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(255)",
+          "type": "serial",
           "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
+          "autoincrement": true,
+          "primary": true,
           "nullable": false,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "post_id": {
           "name": "post_id",
-          "type": "varchar(255)",
+          "type": "int",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "tag_id": {
           "name": "tag_id",
-          "type": "varchar(255)",
+          "type": "int",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "created_at": {
           "name": "created_at",
@@ -1983,23 +1968,21 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(255)",
+          "type": "serial",
           "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
+          "autoincrement": true,
+          "primary": true,
           "nullable": false,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "post_id": {
           "name": "post_id",
-          "type": "varchar(255)",
+          "type": "int",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "impressions": {
           "name": "impressions",
@@ -2107,23 +2090,21 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(255)",
+          "type": "serial",
           "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
+          "autoincrement": true,
+          "primary": true,
           "nullable": false,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "post_id": {
           "name": "post_id",
-          "type": "varchar(255)",
+          "type": "int",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "url": {
           "name": "url",
@@ -2202,23 +2183,21 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(255)",
+          "type": "serial",
           "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
+          "autoincrement": true,
+          "primary": true,
           "nullable": false,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "post_id": {
           "name": "post_id",
-          "type": "varchar(255)",
+          "type": "int",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "provider": {
           "name": "provider",
@@ -2318,23 +2297,21 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(255)",
+          "type": "serial",
           "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
+          "autoincrement": true,
+          "primary": true,
           "nullable": false,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "post_id": {
           "name": "post_id",
-          "type": "varchar(255)",
+          "type": "int",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "prompt": {
           "name": "prompt",
@@ -2434,33 +2411,30 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(255)",
+          "type": "serial",
           "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
+          "autoincrement": true,
+          "primary": true,
           "nullable": false,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "generation_id": {
           "name": "generation_id",
-          "type": "varchar(255)",
+          "type": "int",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": true,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "post_id": {
           "name": "post_id",
-          "type": "varchar(255)",
+          "type": "int",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "provider": {
           "name": "provider",
@@ -2552,13 +2526,12 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(255)",
+          "type": "serial",
           "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
+          "autoincrement": true,
+          "primary": true,
           "nullable": false,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "user_id": {
           "name": "user_id",
@@ -2654,13 +2627,12 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(255)",
+          "type": "serial",
           "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
+          "autoincrement": true,
+          "primary": true,
           "nullable": false,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "user_id": {
           "name": "user_id",
@@ -2673,23 +2645,21 @@
         },
         "subscription_id": {
           "name": "subscription_id",
-          "type": "varchar(255)",
+          "type": "int",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": true,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "generation_id": {
           "name": "generation_id",
-          "type": "varchar(255)",
+          "type": "int",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": true,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "model_used": {
           "name": "model_used",
@@ -2810,13 +2780,12 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(255)",
+          "type": "serial",
           "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
+          "autoincrement": true,
+          "primary": true,
           "nullable": false,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "user_id": {
           "name": "user_id",

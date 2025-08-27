@@ -13,7 +13,7 @@ import { User } from './user.entity';
 @Entity()
 export class Team {
   @PrimaryKey()
-  id!: string;
+  id!: number;
 
   @Property()
   name!: string;

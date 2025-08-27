@@ -13,7 +13,7 @@ import { Invoice } from './invoice.entity';
 @Entity()
 export class Subscription {
   @PrimaryKey()
-  id!: string;
+  id!: number;
 
   @ManyToOne(() => User)
   user!: User;

@@ -5,7 +5,7 @@ import { Team } from './team.entity';
 @Entity()
 export class Membership {
   @PrimaryKey()
-  id!: string;
+  id!: number;
 
   @ManyToOne(() => User)
   user!: User;

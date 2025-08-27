@@ -3,7 +3,7 @@ import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
 @Entity()
 export class Plan {
   @PrimaryKey()
-  id!: string;
+  id!: number;
 
   @Property()
   name: 'Free' | 'Pro' | 'Business' = 'Free';

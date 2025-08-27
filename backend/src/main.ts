@@ -16,6 +16,8 @@ async function bootstrap() {
     .setDescription('The YSHAI backend API documentation')
     .setVersion('1.0')
     .addTag('auth')
+    .addTag('users')
+    .addTag('posts')
     .addBearerAuth(
       {
         type: 'http',

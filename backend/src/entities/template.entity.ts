@@ -13,7 +13,7 @@ import { Post } from './post.entity';
 @Entity()
 export class Template {
   @PrimaryKey()
-  id!: string;
+  id!: number;
 
   @Property()
   name!: string;

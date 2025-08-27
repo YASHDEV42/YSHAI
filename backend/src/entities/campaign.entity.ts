@@ -12,7 +12,7 @@ import { Post } from './post.entity';
 @Entity()
 export class Campaign {
   @PrimaryKey()
-  id!: string;
+  id!: number;
 
   @Property()
   name!: string;

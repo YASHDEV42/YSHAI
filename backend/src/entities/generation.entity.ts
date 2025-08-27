@@ -4,7 +4,7 @@ import { Post } from './post.entity';
 @Entity()
 export class Generation {
   @PrimaryKey()
-  id!: string;
+  id!: number;
 
   @ManyToOne(() => Post)
   post!: Post;

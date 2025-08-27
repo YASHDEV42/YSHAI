@@ -5,7 +5,7 @@ import { Post } from './post.entity';
 @Entity()
 export class ModerationResult {
   @PrimaryKey()
-  id!: string;
+  id!: number;
 
   @ManyToOne(() => Generation, { nullable: true })
   generation?: Generation;

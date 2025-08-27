@@ -6,7 +6,7 @@ import { Subscription } from './subscription.entity';
 @Entity()
 export class AiUsageLog {
   @PrimaryKey()
-  id!: string;
+  id!: number;
 
   @ManyToOne(() => User)
   user!: User;

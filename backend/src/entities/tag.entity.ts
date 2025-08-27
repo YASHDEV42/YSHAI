@@ -10,7 +10,7 @@ import { PostTag } from './post-tag.entity';
 @Entity()
 export class Tag {
   @PrimaryKey()
-  id!: string;
+  id!: number;
 
   @Property()
   name!: string;

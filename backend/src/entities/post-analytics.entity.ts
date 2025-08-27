@@ -10,7 +10,7 @@ import { Post } from './post.entity';
 @Entity()
 export class PostAnalytics {
   @PrimaryKey()
-  id!: string;
+  id!: number;
 
   @Index({ name: 'post_analytics_post_time_idx' })
   @ManyToOne(() => Post)

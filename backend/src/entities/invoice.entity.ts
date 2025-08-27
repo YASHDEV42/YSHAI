@@ -11,7 +11,7 @@ import { Subscription } from './subscription.entity';
 @Entity()
 export class Invoice {
   @PrimaryKey()
-  id!: string;
+  id!: number;
 
   @Property()
   amount!: number;

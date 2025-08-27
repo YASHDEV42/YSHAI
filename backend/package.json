@@ -20,7 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "mikro-orm": "mikro-orm",
     "db:drop": "npx mikro-orm schema:drop --run --drop-migrations-table",
-    "db:create": "rmdir /S /Q migrations migrations && npx mikro-orm migration:create --initial",
+    "db:create": "npx mikro-orm migration:create --initial",
     "db:migrate": "npx mikro-orm migration:up",
     "db:fresh": "npm run db:drop && npm run db:create && npm run db:migrate"
   },

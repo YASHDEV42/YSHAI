@@ -5,7 +5,7 @@ import { Tag } from './tag.entity';
 @Entity()
 export class PostTag {
   @PrimaryKey()
-  id!: string;
+  id!: number;
 
   @ManyToOne(() => Post)
   post!: Post;

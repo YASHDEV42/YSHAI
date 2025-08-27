@@ -4,7 +4,7 @@ import { User } from './user.entity';
 @Entity()
 export class WebhookSubscription {
   @PrimaryKey()
-  id!: string;
+  id!: number;
 
   @ManyToOne(() => User)
   user!: User;
