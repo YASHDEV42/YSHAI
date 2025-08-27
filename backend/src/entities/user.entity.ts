@@ -15,10 +15,13 @@ import { AuditLog } from './audit-log.entity';
 @Entity()
 export class User {
   @PrimaryKey()
-  id!: string;
+  id!: number;
 
-  @Property()
+  @Property({ unique: true })
   email!: string;
+
+  @Property({ nullable: true, hidden: true })
+  passwordHash?: string;
 
   @Property()
   name!: string;
@@ -30,10 +33,10 @@ export class User {
   timezone?: string;
 
   @Property({ onCreate: () => new Date() })
-  createdAt = new Date();
+  createdAt!: Date;
 
   @Property({ onUpdate: () => new Date() })
-  updatedAt = new Date();
+  updatedAt!: Date;
 
   @Property({ nullable: true })
   deletedAt?: Date;

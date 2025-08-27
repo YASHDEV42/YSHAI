@@ -3,23 +3,21 @@ import { Options } from '@mikro-orm/core';
 import { config as loadEnv } from 'dotenv';
 import { join } from 'path';
 
-loadEnv({ path: join(__dirname, '.env') });
+const envPath = join(process.cwd(), '.env');
+loadEnv({ path: envPath });
+
 const config: Options = {
   driver: PostgreSqlDriver,
-  entities: ['./dist/entities'],
+  entities: ['./dist/src/entities'],
   entitiesTs: ['./src/entities'],
-  migrations: {
-    path: './dist/migrations',
-    pathTs: './src/migrations',
-  },
   driverOptions: {
     connection: {
-      ssl: true,
-      rejectUnauthorized: false,
+      ssl: {
+        rejectUnauthorized: false,
+      },
     },
   },
   clientUrl: process.env.DATABASE_URL,
-  debug: true,
 };
 
 export default config;

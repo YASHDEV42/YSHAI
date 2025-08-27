@@ -9,16 +9,16 @@ import { User } from './user.entity';
 @Entity()
 export class RefreshToken {
   @PrimaryKey()
-  id!: string;
+  id!: number;
 
   @ManyToOne(() => User)
   user!: User;
 
   @Property()
-  tokenHash!: string; // bcrypt hash of the token
+  tokenHash!: string;
 
   @Property()
-  userAgent?: string; // e.g., "Chrome 128 / Windows"
+  userAgent?: string;
 
   @Property()
   ipAddress?: string;
@@ -30,8 +30,10 @@ export class RefreshToken {
   updatedAt = new Date();
 
   @Index({ name: 'refresh_token_active_idx' })
-  @Property()
-  userId!: string;
+  @Property({ persist: false })
+  get userId(): number {
+    return this.user.id;
+  }
 
   @Index()
   @Property()
