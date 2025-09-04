@@ -1,4 +1,3 @@
-// src/posts/posts.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/core';
 import { Post } from 'src/entities/post.entity';

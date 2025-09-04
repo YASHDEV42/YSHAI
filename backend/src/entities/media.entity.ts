@@ -6,8 +6,8 @@ export class Media {
   @PrimaryKey()
   id!: number;
 
-  @ManyToOne(() => Post)
-  post!: Post;
+  @ManyToOne(() => Post, { nullable: true })
+  post?: Post | null;
 
   @Property()
   url!: string;

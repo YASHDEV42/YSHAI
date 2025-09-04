@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "YSHAI API",
-    "description": "Postman Collection for YSHAI backend API covering Auth, Users, Teams, Posts, Media, AI, Moderation, Analytics, Billing, Notifications, Webhooks, and Meta.",
+    "description": "Full Postman Collection for YSHAI backend API (Auth, Users, Teams, Posts, Media, AI, Moderation, Analytics, Billing, Notifications, Webhooks, Meta, Admin).",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -10,62 +10,32 @@
       "item": [
         {
           "name": "Register",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "url": "{{baseUrl}}/auth/register",
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"secret123\"\n}"
-            }
-          }
+          "request": { "method": "POST", "url": "{{baseUrl}}/auth/register" }
         },
         {
           "name": "Login",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "url": "{{baseUrl}}/auth/login",
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"secret123\"\n}"
-            }
-          }
+          "request": { "method": "POST", "url": "{{baseUrl}}/auth/login" }
         },
         {
           "name": "Logout",
-          "request": {
-            "method": "POST",
-            "url": "{{baseUrl}}/auth/logout"
-          }
+          "request": { "method": "POST", "url": "{{baseUrl}}/auth/logout" }
         },
         {
           "name": "Refresh Token",
-          "request": {
-            "method": "POST",
-            "url": "{{baseUrl}}/auth/refresh"
-          }
+          "request": { "method": "POST", "url": "{{baseUrl}}/auth/refresh" }
         },
         {
           "name": "Forgot Password",
           "request": {
             "method": "POST",
-            "url": "{{baseUrl}}/auth/forgot-password",
-            "body": {
-              "mode": "raw",
-              "raw": "{ \"email\": \"john@example.com\" }"
-            }
+            "url": "{{baseUrl}}/auth/forgot-password"
           }
         },
         {
           "name": "Reset Password",
           "request": {
             "method": "POST",
-            "url": "{{baseUrl}}/auth/reset-password",
-            "body": {
-              "mode": "raw",
-              "raw": "{ \"token\": \"<reset-token>\", \"password\": \"newPass123\" }"
-            }
+            "url": "{{baseUrl}}/auth/reset-password"
           }
         }
       ]
@@ -75,20 +45,17 @@
       "item": [
         {
           "name": "Get Current User",
-          "request": {
-            "method": "GET",
-            "url": "{{baseUrl}}/users/me"
-          }
+          "request": { "method": "GET", "url": "{{baseUrl}}/users/me" }
         },
         {
           "name": "Update Profile",
+          "request": { "method": "PUT", "url": "{{baseUrl}}/users/me" }
+        },
+        {
+          "name": "Set Language & Dialect",
           "request": {
             "method": "PUT",
-            "url": "{{baseUrl}}/users/me",
-            "body": {
-              "mode": "raw",
-              "raw": "{ \"name\": \"Updated Name\", \"preferences\": { \"language\": \"en\" } }"
-            }
+            "url": "{{baseUrl}}/users/me/preferences"
           }
         }
       ]
@@ -98,29 +65,20 @@
       "item": [
         {
           "name": "Create Team",
-          "request": {
-            "method": "POST",
-            "url": "{{baseUrl}}/teams",
-            "body": { "mode": "raw", "raw": "{ \"name\": \"Marketing Team\" }" }
-          }
+          "request": { "method": "POST", "url": "{{baseUrl}}/teams" }
         },
         {
           "name": "Invite Member",
           "request": {
             "method": "POST",
-            "url": "{{baseUrl}}/teams/{{teamId}}/invite",
-            "body": {
-              "mode": "raw",
-              "raw": "{ \"email\": \"member@example.com\", \"role\": \"editor\" }"
-            }
+            "url": "{{baseUrl}}/teams/{{teamId}}/invite"
           }
         },
         {
           "name": "Update Member Role",
           "request": {
             "method": "PUT",
-            "url": "{{baseUrl}}/teams/{{teamId}}/members/{{memberId}}",
-            "body": { "mode": "raw", "raw": "{ \"role\": \"admin\" }" }
+            "url": "{{baseUrl}}/teams/{{teamId}}/members/{{memberId}}"
           }
         },
         {
@@ -128,6 +86,27 @@
           "request": {
             "method": "DELETE",
             "url": "{{baseUrl}}/teams/{{teamId}}/members/{{memberId}}"
+          }
+        },
+        {
+          "name": "Approve Post",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/teams/{{teamId}}/posts/{{postId}}/approve"
+          }
+        },
+        {
+          "name": "Reject Post",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/teams/{{teamId}}/posts/{{postId}}/reject"
+          }
+        },
+        {
+          "name": "Audit Logs",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/teams/{{teamId}}/audit-logs"
           }
         }
       ]
@@ -137,14 +116,7 @@
       "item": [
         {
           "name": "Link Account",
-          "request": {
-            "method": "POST",
-            "url": "{{baseUrl}}/accounts",
-            "body": {
-              "mode": "raw",
-              "raw": "{ \"provider\": \"facebook\", \"accessToken\": \"abc123\" }"
-            }
-          }
+          "request": { "method": "POST", "url": "{{baseUrl}}/accounts" }
         },
         {
           "name": "Unlink Account",
@@ -160,31 +132,50 @@
       "item": [
         {
           "name": "Create Post",
-          "request": {
-            "method": "POST",
-            "url": "{{baseUrl}}/posts",
-            "body": {
-              "mode": "raw",
-              "raw": "{ \"content\": \"Hello World\", \"scheduledAt\": \"2025-08-20T12:00:00Z\" }"
-            }
-          }
+          "request": { "method": "POST", "url": "{{baseUrl}}/posts" }
         },
         {
           "name": "Update Post",
-          "request": {
-            "method": "PUT",
-            "url": "{{baseUrl}}/posts/{{postId}}",
-            "body": {
-              "mode": "raw",
-              "raw": "{ \"content\": \"Updated post\" }"
-            }
-          }
+          "request": { "method": "PUT", "url": "{{baseUrl}}/posts/{{postId}}" }
         },
         {
           "name": "Delete Post",
           "request": {
             "method": "DELETE",
             "url": "{{baseUrl}}/posts/{{postId}}"
+          }
+        },
+        {
+          "name": "Bulk Upload Posts",
+          "request": { "method": "POST", "url": "{{baseUrl}}/posts/bulk" }
+        },
+        {
+          "name": "Recurring Post",
+          "request": { "method": "POST", "url": "{{baseUrl}}/posts/recurring" }
+        },
+        {
+          "name": "Draft Post",
+          "request": { "method": "POST", "url": "{{baseUrl}}/posts/draft" }
+        },
+        {
+          "name": "Reschedule Post",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/posts/{{postId}}/reschedule"
+          }
+        },
+        {
+          "name": "Publish Now",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/posts/{{postId}}/publish"
+          }
+        },
+        {
+          "name": "Post Status",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/posts/{{postId}}/status"
           }
         }
       ]
@@ -194,14 +185,7 @@
       "item": [
         {
           "name": "Upload Media",
-          "request": {
-            "method": "POST",
-            "url": "{{baseUrl}}/media",
-            "body": {
-              "mode": "formdata",
-              "formdata": [{ "key": "file", "type": "file", "src": "" }]
-            }
-          }
+          "request": { "method": "POST", "url": "{{baseUrl}}/media" }
         },
         {
           "name": "List Media",
@@ -221,25 +205,15 @@
       "item": [
         {
           "name": "Generate Caption",
-          "request": {
-            "method": "POST",
-            "url": "{{baseUrl}}/ai/caption",
-            "body": {
-              "mode": "raw",
-              "raw": "{ \"prompt\": \"Promote coffee product\" }"
-            }
-          }
+          "request": { "method": "POST", "url": "{{baseUrl}}/ai/caption" }
         },
         {
           "name": "Generate Hashtags",
-          "request": {
-            "method": "POST",
-            "url": "{{baseUrl}}/ai/hashtags",
-            "body": {
-              "mode": "raw",
-              "raw": "{ \"prompt\": \"Coffee shop post\" }"
-            }
-          }
+          "request": { "method": "POST", "url": "{{baseUrl}}/ai/hashtags" }
+        },
+        {
+          "name": "Generate Alt Text",
+          "request": { "method": "POST", "url": "{{baseUrl}}/ai/alt-text" }
         }
       ]
     },
@@ -248,24 +222,21 @@
       "item": [
         {
           "name": "Moderate Text",
-          "request": {
-            "method": "POST",
-            "url": "{{baseUrl}}/moderation/text",
-            "body": {
-              "mode": "raw",
-              "raw": "{ \"text\": \"Some text to check\" }"
-            }
-          }
+          "request": { "method": "POST", "url": "{{baseUrl}}/moderation/text" }
         },
         {
           "name": "Moderate Image",
+          "request": { "method": "POST", "url": "{{baseUrl}}/moderation/image" }
+        },
+        {
+          "name": "Moderate Video",
+          "request": { "method": "POST", "url": "{{baseUrl}}/moderation/video" }
+        },
+        {
+          "name": "Moderation Reports",
           "request": {
-            "method": "POST",
-            "url": "{{baseUrl}}/moderation/image",
-            "body": {
-              "mode": "formdata",
-              "formdata": [{ "key": "file", "type": "file", "src": "" }]
-            }
+            "method": "GET",
+            "url": "{{baseUrl}}/moderation/reports"
           }
         }
       ]
@@ -286,6 +257,27 @@
             "method": "GET",
             "url": "{{baseUrl}}/analytics/accounts/{{accountId}}"
           }
+        },
+        {
+          "name": "Campaign Insights",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/analytics/campaigns/{{campaignId}}"
+          }
+        },
+        {
+          "name": "Export Report (CSV)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/analytics/export/csv"
+          }
+        },
+        {
+          "name": "Export Report (PDF)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/analytics/export/pdf"
+          }
         }
       ]
     },
@@ -300,8 +292,7 @@
           "name": "Create Subscription",
           "request": {
             "method": "POST",
-            "url": "{{baseUrl}}/billing/subscribe",
-            "body": { "mode": "raw", "raw": "{ \"planId\": \"pro-monthly\" }" }
+            "url": "{{baseUrl}}/billing/subscribe"
           }
         },
         {
@@ -311,6 +302,10 @@
         {
           "name": "Get Invoices",
           "request": { "method": "GET", "url": "{{baseUrl}}/billing/invoices" }
+        },
+        {
+          "name": "Payment Callback (HyperPay/PayTabs)",
+          "request": { "method": "POST", "url": "{{baseUrl}}/billing/callback" }
         }
       ]
     },
@@ -335,14 +330,7 @@
       "item": [
         {
           "name": "Register Webhook",
-          "request": {
-            "method": "POST",
-            "url": "{{baseUrl}}/webhooks",
-            "body": {
-              "mode": "raw",
-              "raw": "{ \"url\": \"https://example.com/webhook\" }"
-            }
-          }
+          "request": { "method": "POST", "url": "{{baseUrl}}/webhooks" }
         },
         {
           "name": "List Webhooks",
@@ -367,9 +355,40 @@
         {
           "name": "List Timezones",
           "request": { "method": "GET", "url": "{{baseUrl}}/meta/timezones" }
+        },
+        {
+          "name": "List Locales",
+          "request": { "method": "GET", "url": "{{baseUrl}}/meta/locales" }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "List Users",
+          "request": { "method": "GET", "url": "{{baseUrl}}/admin/users" }
+        },
+        {
+          "name": "Ban User",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/admin/users/{{userId}}/ban"
+          }
+        },
+        {
+          "name": "Assign Role",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/admin/users/{{userId}}/role"
+          }
+        },
+        {
+          "name": "Audit Logs",
+          "request": { "method": "GET", "url": "{{baseUrl}}/admin/audit-logs" }
         }
       ]
     }
   ],
-  "variable": [{ "key": "baseUrl", "value": "http://localhost:5000/api" }]
+  "variable": [{ "key": "baseUrl", "value": "http://localhost:5000/api/v1" }]
 }
