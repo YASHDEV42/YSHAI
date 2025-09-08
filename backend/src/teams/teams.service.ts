@@ -1,9 +1,15 @@
 // teams/teams.service.ts
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/core';
 import { Team } from 'src/entities/team.entity';
 import { User } from 'src/entities/user.entity';
 import { Membership } from 'src/entities/membership.entity';
+import { Post } from 'src/entities/post.entity';
+import { AuditLog } from 'src/entities/audit-log.entity';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { InviteMemberDto } from './dto/invite-member.dto';
 import { UpdateMemberRoleDto } from './dto/update-member-role.dto';
@@ -165,5 +171,126 @@ export class TeamsService {
     }
 
     await this.em.removeAndFlush(membership);
+  }
+
+  private async assertAdminOrOwner(
+    teamId: number,
+    userId: number,
+  ): Promise<{ team: Team }> {
+    const team = await this.em.findOne(
+      Team,
+      { id: teamId },
+      { populate: ['owner'] },
+    );
+    if (!team) throw new NotFoundException(`Team with ID ${teamId} not found`);
+
+    const isOwner = team.owner.id === userId;
+    const membership = await this.em.findOne(Membership, {
+      user: userId,
+      team: teamId,
+    });
+    const isAdmin = membership?.role === 'admin';
+    if (!isOwner && !isAdmin)
+      throw new ForbiddenException('Requires admin or owner');
+    return { team };
+  }
+
+  async approvePost(
+    teamId: number,
+    postId: number,
+    approverId: number,
+  ): Promise<void> {
+    await this.assertAdminOrOwner(teamId, approverId);
+    const post = await this.em.findOne(Post, { id: postId, team: teamId });
+    if (!post) throw new NotFoundException('Post not found');
+    post.status = 'scheduled';
+    await this.em.persistAndFlush(post);
+    this.em.persist(
+      this.em.create(AuditLog, {
+        user: this.em.getReference(User, approverId),
+        action: 'post.approved',
+        entityType: 'post',
+        entityId: String(postId),
+        timestamp: new Date(),
+      }),
+    );
+    await this.em.flush();
+  }
+
+  async rejectPost(
+    teamId: number,
+    postId: number,
+    approverId: number,
+  ): Promise<void> {
+    await this.assertAdminOrOwner(teamId, approverId);
+    const post = await this.em.findOne(Post, { id: postId, team: teamId });
+    if (!post) throw new NotFoundException('Post not found');
+    post.status = 'draft';
+    await this.em.persistAndFlush(post);
+    this.em.persist(
+      this.em.create(AuditLog, {
+        user: this.em.getReference(User, approverId),
+        action: 'post.rejected',
+        entityType: 'post',
+        entityId: String(postId),
+        timestamp: new Date(),
+      }),
+    );
+    await this.em.flush();
+  }
+
+  async listAuditLogs(
+    teamId: number,
+    userId: number,
+  ): Promise<
+    Array<{
+      id: number;
+      action: string;
+      entityType?: string;
+      entityId?: string;
+      timestamp: Date;
+    }>
+  > {
+    await this.assertAdminOrOwner(teamId, userId);
+    // Fetch recent logs and filter by team: include
+    // - post.* logs where the post belongs to this team
+    // - team.* logs where entityId == teamId
+    const logs = await this.em.find(
+      AuditLog,
+      {},
+      { orderBy: { timestamp: 'DESC' }, limit: 200 },
+    );
+
+    const postIds = logs
+      .filter(
+        (l) =>
+          l.entityType === 'post' && !!l.entityId && /^\d+$/.test(l.entityId),
+      )
+      .map((l) => Number(l.entityId));
+
+    const teamPosts = postIds.length
+      ? await this.em.find(
+          Post,
+          { id: { $in: postIds }, team: teamId },
+          { fields: ['id'] },
+        )
+      : [];
+    const allowedPostIds = new Set(teamPosts.map((p) => p.id));
+
+    const filtered = logs.filter(
+      (l) =>
+        (l.entityType === 'post' &&
+          !!l.entityId &&
+          allowedPostIds.has(Number(l.entityId))) ||
+        (l.entityType === 'team' && l.entityId === String(teamId)),
+    );
+
+    return filtered.map((l) => ({
+      id: l.id,
+      action: l.action,
+      entityType: l.entityType,
+      entityId: l.entityId,
+      timestamp: l.timestamp,
+    }));
   }
 }

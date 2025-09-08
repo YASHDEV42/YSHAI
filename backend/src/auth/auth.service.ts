@@ -1,10 +1,17 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  BadRequestException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { User } from 'src/entities/user.entity';
 import { Logger } from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/core';
+import { randomBytes, createHash } from 'crypto';
 import { RefreshToken } from 'src/entities/refresh-token.entity';
+import { PasswordResetToken } from 'src/entities/password-reset-token.entity';
+import { MailerService } from 'src/mailer/mailer.service';
 
 const logger = new Logger('Auth');
 
@@ -13,6 +20,7 @@ export class AuthService {
   constructor(
     private jwtService: JwtService,
     private readonly em: EntityManager,
+    private readonly mailer: MailerService,
   ) {}
   private async generateTokens(user: User) {
     const payload = { userId: user.id, email: user.email, role: user.role };
@@ -110,18 +118,58 @@ export class AuthService {
   async forgotPassword(email: string) {
     const user = await this.em.findOne(User, { email });
     if (!user) {
-      // For security, do not reveal whether the email exists
+      // Do not reveal whether the email exists
       return;
     }
-    // Here you would generate a password reset token and send an email
-    // This is a placeholder implementation
-    logger.log(`Password reset link sent to ${email}`);
+
+    // Invalidate any previous active tokens for this user
+    await this.em.nativeUpdate(
+      PasswordResetToken,
+      { user, used: false, expiresAt: { $gt: new Date() } },
+      { used: true },
+    );
+
+    // Generate a secure token and store only its hash in a separate entity
+    const token = randomBytes(32).toString('hex');
+    const tokenHash = createHash('sha256').update(token).digest('hex');
+    const reset = this.em.create(PasswordResetToken, {
+      user,
+      tokenHash,
+      used: false,
+      expiresAt: new Date(Date.now() + 60 * 60 * 1000), // 1 hour
+      createdAt: new Date(),
+    });
+    await this.em.persistAndFlush(reset);
+
+    // Send email with the plain token embedded in a reset link
+    await this.mailer.sendPasswordResetEmail(user.email, token);
+    logger.log(`Password reset token generated for ${email}`);
+
+    return { message: 'If the email exists, a reset link has been sent.' };
   }
   async resetPassword(token: string, newPassword: string) {
-    const user = await this.em.findOne(User, { resetToken: token });
-    if (!user) throw new UnauthorizedException('Invalid or expired token');
+    if (!token || !newPassword)
+      throw new BadRequestException('Token and newPassword are required');
+
+    const tokenHash = createHash('sha256').update(token).digest('hex');
+    const reset = await this.em.findOne(
+      PasswordResetToken,
+      {
+        tokenHash,
+        used: false,
+        expiresAt: { $gt: new Date() },
+      },
+      { populate: ['user'] },
+    );
+    if (!reset) {
+      throw new UnauthorizedException('Invalid or expired token');
+    }
+
+    const user = reset.user as User;
     user.passwordHash = await bcrypt.hash(newPassword, 10);
-    await this.em.persistAndFlush(user);
+    reset.used = true;
+    await this.em.persistAndFlush([user, reset]);
     logger.log(`Password reset successfully for user ${user.email}`);
+    return { message: 'Password reset successfully' };
   }
 }

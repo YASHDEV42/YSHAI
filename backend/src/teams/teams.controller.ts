@@ -8,6 +8,7 @@ import {
   UseGuards,
   ParseIntPipe,
   Req,
+  Get,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -22,7 +23,7 @@ import { CreateTeamDto } from './dto/create-team.dto';
 import { InviteMemberDto } from './dto/invite-member.dto';
 import { UpdateMemberRoleDto } from './dto/update-member-role.dto';
 
-@ApiTags('teams')
+@ApiTags('Teams')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('teams')
@@ -81,5 +82,44 @@ export class TeamsController {
     const userId = req.user.id;
     await this.teamsService.removeMember(teamId, memberId, userId);
     return { message: 'Member removed successfully' };
+  }
+
+  @Post(':teamId/posts/:postId/approve')
+  @ApiOperation({ summary: 'Approve a post for publishing' })
+  async approvePost(
+    @Param('teamId', ParseIntPipe) teamId: number,
+    @Param('postId', ParseIntPipe) postId: number,
+    @Req() req: { user: { id: number } },
+  ): Promise<{ message: string }> {
+    await this.teamsService.approvePost(teamId, postId, req.user.id);
+    return { message: 'Post approved' } as const;
+  }
+
+  @Post(':teamId/posts/:postId/reject')
+  @ApiOperation({ summary: 'Reject a post' })
+  async rejectPost(
+    @Param('teamId', ParseIntPipe) teamId: number,
+    @Param('postId', ParseIntPipe) postId: number,
+    @Req() req: { user: { id: number } },
+  ): Promise<{ message: string }> {
+    await this.teamsService.rejectPost(teamId, postId, req.user.id);
+    return { message: 'Post rejected' } as const;
+  }
+
+  @Get(':teamId/audit-logs')
+  @ApiOperation({ summary: 'List team audit logs' })
+  async listAuditLogs(
+    @Param('teamId', ParseIntPipe) teamId: number,
+    @Req() req: { user: { id: number } },
+  ): Promise<
+    Array<{
+      id: number;
+      action: string;
+      entityType?: string;
+      entityId?: string;
+      timestamp: Date;
+    }>
+  > {
+    return this.teamsService.listAuditLogs(teamId, req.user.id);
   }
 }

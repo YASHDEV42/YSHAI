@@ -9,16 +9,18 @@ import {
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdatePreferencesDto } from './dto/update-preferences.dto';
 
-@ApiTags('users')
+@ApiTags('Users')
 @ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  // get current user profile using JWT
   @Get('me')
-  @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Get current user' })
+  @ApiOperation({ summary: 'Get current user using JWT' })
   @ApiResponse({
     status: 200,
     description: 'Current user retrieved successfully.',
@@ -31,9 +33,9 @@ export class UsersController {
     return this.usersService.getProfile(req.user.id);
   }
 
+  // update current user profile using JWT
   @Put('me')
-  @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Update current user' })
+  @ApiOperation({ summary: 'Update current user using JWT' })
   @ApiResponse({
     status: 200,
     description: 'Current user updated successfully.',
@@ -47,5 +49,19 @@ export class UsersController {
     @Body() updateUserDto: UpdateUserDto,
   ) {
     return this.usersService.updateProfile(req.user.id, updateUserDto);
+  }
+
+  // update current user preferences using JWT
+  @Put('me/preferences')
+  @ApiOperation({ summary: 'Update current user preferences using JWT' })
+  @ApiResponse({
+    status: 200,
+    description: 'Preferences updated successfully.',
+  })
+  async updatePreferences(
+    @Req() req: { user: { id: number } },
+    @Body() body: UpdatePreferencesDto,
+  ) {
+    return this.usersService.updatePreferences(req.user.id, body);
   }
 }

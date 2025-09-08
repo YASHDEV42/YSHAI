@@ -32,8 +32,21 @@ export class User {
   @Property({ nullable: true })
   timezone?: string;
 
+  // Optional user preference fields
+  @Property({ nullable: true })
+  language?: string;
+
+  @Property({ nullable: true })
+  locale?: string;
+
+  @Property({ nullable: true })
+  timeFormat?: '12h' | '24h';
+
   @Property({ nullable: true })
   resetToken?: string;
+
+  @Property({ nullable: true })
+  resetTokenExpiresAt?: Date;
 
   @Property({ onCreate: () => new Date() })
   createdAt!: Date;

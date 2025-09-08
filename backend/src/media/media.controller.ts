@@ -24,7 +24,7 @@ import { UploadMediaDto } from './dto/upload-media.dto';
 import { MediaResponseDto } from './dto/media-response.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UseGuards } from '@nestjs/common';
-@ApiTags('media')
+@ApiTags('Media')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('media')

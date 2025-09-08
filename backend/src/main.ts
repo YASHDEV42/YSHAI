@@ -35,18 +35,20 @@ async function bootstrap() {
       'The YSHAI backend API documentation. This API manages posts, teams, media, AI generation, moderation, analytics, billing, and more.',
     )
     .setVersion('1.0')
-    .addTag('auth')
-    .addTag('users')
-    .addTag('teams')
-    .addTag('posts')
-    .addTag('media')
-    .addTag('ai')
-    .addTag('moderation')
-    .addTag('analytics')
-    .addTag('billing')
-    .addTag('notifications')
-    .addTag('webhooks')
-    .addTag('meta')
+    .addTag('Auth')
+    .addTag('Users')
+    .addTag('Teams')
+    .addTag('Posts')
+    .addTag('Media')
+    .addTag('AI')
+    .addTag('Admin')
+    .addTag('Accounts')
+    .addTag('Notifications')
+    .addTag('Analytics')
+    .addTag('Billing')
+    .addTag('Webhooks')
+    .addTag('Meta')
+    .addTag('Moderation')
     .addBearerAuth(
       {
         type: 'http',
@@ -71,4 +73,7 @@ async function bootstrap() {
   console.log(`Swagger docs: http://localhost:${port}/docs`);
 }
 
-bootstrap();
+bootstrap().catch((err) => {
+  console.error('Bootstrap failed:', err);
+  process.exit(1);
+});
