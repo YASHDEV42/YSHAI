@@ -1,5 +1,6 @@
 import { Entity, PrimaryKey, Property, ManyToOne } from '@mikro-orm/core';
 import { Post } from './post.entity';
+import { PostTarget } from './post-target.entity';
 
 @Entity()
 export class Job {
@@ -8,6 +9,10 @@ export class Job {
 
   @ManyToOne(() => Post)
   post!: Post;
+
+  // Link to the exact PostTarget (per social account) this job will publish
+  @ManyToOne(() => PostTarget, { nullable: true })
+  target?: PostTarget;
 
   @Property()
   provider: 'x' | 'instagram' | 'linkedin' | 'tiktok' = 'x';

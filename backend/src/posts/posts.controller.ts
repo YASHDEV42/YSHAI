@@ -41,6 +41,7 @@ import { parse as parseCsv } from 'csv-parse/sync';
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
+  // endpoint to create a post
   @Post()
   @ApiOperation({ summary: 'Create a new post' })
   @ApiResponse({

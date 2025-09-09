@@ -12,10 +12,10 @@ graph TD
     A --> L[NotificationModule]
     A --> M[DatabaseModule]
     A --> N[ConfigModule]
-    A --> O[SchedulerModule]
+    A --> O[PublisherModule]
 
     %% Shared Module
-    P[SharedModule] --> Q[MailService]
+    P[SharedModule] --> Q[MailerService]
     P --> R[Logger]
     P --> S[Utils]
     B --> P
@@ -23,19 +23,24 @@ graph TD
     H --> P
     L --> P
 
+    %% Provider Adapters (social APIs)
+    Y[ProviderAdapters\n(X, Instagram, LinkedIn, TikTok)]
+
     %% Dependencies
     D --> F %% Post uses AI
     D --> G %% Post uses Media
     D --> E %% Post may belong to Team
     F --> N %% AI uses Config (LLM keys)
     H --> N %% Subscription uses Config (payment keys)
-    O --> D %% Scheduler publishes posts
-    J --> D %% Webhook updates post status
+    O --> D %% Publisher consumes scheduled posts (one job per PostTarget)
+    O --> Y %% Publisher calls provider adapters per target
+    J --> D %% Webhook updates post status / emits events
     K --> C %% Audit logs user actions
     L --> C %% Notifications to users
+    E -.-> H %% Business plan gating for team features
 
     %% Style
     classDef module fill:#f0f8ff,stroke:#006d77,stroke-width:2px;
     classDef core fill:#e3963e,stroke:#006d77,color:white;
     class A,M,N,O,P core
-    class B,C,D,E,F,G,H,I,J,K,L module
+    class B,C,D,E,F,G,H,I,J,K,L,Y module

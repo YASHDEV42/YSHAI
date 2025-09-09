@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/core';
 import { Post } from 'src/entities/post.entity';
 import { User } from 'src/entities/user.entity';
@@ -44,6 +48,11 @@ export class PostsService {
     }
 
     const now = new Date();
+    // Validate scheduleAt
+    const scheduleAtDate = new Date(data.scheduleAt);
+    if (Number.isNaN(scheduleAtDate.getTime())) {
+      throw new BadRequestException('Invalid scheduleAt');
+    }
 
     const post = this.em.create(Post, {
       ...data,
@@ -51,7 +60,7 @@ export class PostsService {
       team,
       campaign,
       template,
-      scheduleAt: new Date(data.scheduleAt),
+      scheduleAt: scheduleAtDate,
       status: data.status ?? 'draft',
       isRecurring: data.isRecurring ?? false,
       createdAt: now,
@@ -62,9 +71,13 @@ export class PostsService {
 
     // Create PostTargets for each selected social account
     if (socialAccountIds && socialAccountIds.length > 0) {
+      const uniqueIds = Array.from(new Set(socialAccountIds));
       const accounts = await this.em.find(SocialAccount, {
-        id: { $in: socialAccountIds },
+        id: { $in: uniqueIds },
       });
+      if (accounts.length !== uniqueIds.length) {
+        throw new NotFoundException('One or more socialAccountIds are invalid');
+      }
       for (const acc of accounts) {
         const target = this.em.create(PostTarget, {
           post,
@@ -79,6 +92,23 @@ export class PostsService {
         this.em.persist(target);
       }
       await this.em.flush();
+
+      // If post is scheduled, create jobs for each target now
+      if (post.status === 'scheduled') {
+        const targets = await this.em.find(PostTarget, { post: post.id });
+        for (const t of targets) {
+          const job = this.em.create(Job, {
+            post,
+            target: t,
+            provider: t.socialAccount.provider,
+            attempt: 0,
+            status: 'pending',
+            scheduledAt: post.scheduleAt,
+          });
+          this.em.persist(job);
+        }
+        await this.em.flush();
+      }
     }
     return post;
   }
@@ -118,7 +148,11 @@ export class PostsService {
     if (updateData.isRecurring !== undefined)
       post.isRecurring = updateData.isRecurring;
     if (updateData.scheduleAt !== undefined) {
-      post.scheduleAt = new Date(updateData.scheduleAt);
+      const dt = new Date(updateData.scheduleAt);
+      if (Number.isNaN(dt.getTime())) {
+        throw new BadRequestException('Invalid scheduleAt');
+      }
+      post.scheduleAt = dt;
     }
 
     // ✅ Update relationships: use `?? undefined` to convert `null` → `undefined`
@@ -133,9 +167,15 @@ export class PostsService {
       const existing = await this.em.find(PostTarget, { post: post.id });
       existing.forEach((t) => this.em.remove(t));
       if (socialAccountIds && socialAccountIds.length > 0) {
+        const uniqueIds = Array.from(new Set(socialAccountIds));
         const accounts = await this.em.find(SocialAccount, {
-          id: { $in: socialAccountIds },
+          id: { $in: uniqueIds },
         });
+        if (accounts.length !== uniqueIds.length) {
+          throw new NotFoundException(
+            'One or more socialAccountIds are invalid',
+          );
+        }
         for (const acc of accounts) {
           const target = this.em.create(PostTarget, {
             post,
@@ -165,6 +205,32 @@ export class PostsService {
     }
 
     await this.em.flush();
+
+    // If post is scheduled, ensure jobs exist for each target
+    if (post.status === 'scheduled') {
+      const targets = await this.em.find(PostTarget, { post: post.id });
+      for (const t of targets) {
+        // Try to find an existing pending/failed job for this target
+        const jobs = await this.em.find(Job, { target: t.id });
+        const job = jobs[0];
+        if (job) {
+          job.status = 'pending';
+          job.attempt = 0;
+          job.scheduledAt = post.scheduleAt;
+        } else {
+          const newJob = this.em.create(Job, {
+            post,
+            target: t,
+            provider: t.socialAccount.provider,
+            attempt: 0,
+            status: 'pending',
+            scheduledAt: post.scheduleAt,
+          });
+          this.em.persist(newJob);
+        }
+      }
+      await this.em.flush();
+    }
     return post;
   }
 
@@ -173,8 +239,38 @@ export class PostsService {
     if (!post) {
       throw new NotFoundException(`Post with ID "${id}" not found`);
     }
-    post.scheduleAt = new Date(scheduleAt);
+    const newDt = new Date(scheduleAt);
+    if (Number.isNaN(newDt.getTime())) {
+      throw new BadRequestException('Invalid scheduleAt');
+    }
+    post.scheduleAt = newDt;
     post.status = 'scheduled';
+    // Update targets and (re)create or reschedule jobs for not-yet-success targets
+    const targets = await this.em.find(PostTarget, { post: post.id });
+    for (const t of targets) {
+      if (t.status !== 'success') {
+        t.status = 'scheduled';
+        t.scheduledAt = newDt;
+        // Find existing job for this target or create one
+        const jobs = await this.em.find(Job, { target: t.id });
+        const job = jobs[0];
+        if (job) {
+          job.status = 'pending';
+          job.attempt = 0;
+          job.scheduledAt = newDt;
+        } else {
+          const newJob = this.em.create(Job, {
+            post,
+            target: t,
+            provider: t.socialAccount.provider,
+            attempt: 0,
+            status: 'pending',
+            scheduledAt: newDt,
+          });
+          this.em.persist(newJob);
+        }
+      }
+    }
     await this.em.flush();
     return post;
   }
@@ -185,15 +281,17 @@ export class PostsService {
       throw new NotFoundException(`Post with ID "${id}" not found`);
     }
     // Enqueue a job for immediate publishing; provider inferred from socialAccount
-    // Enqueue a job per target
+    // Enqueue a job per target (skip targets already successful)
     const targets = await this.em.find(
       PostTarget,
       { post: post.id },
       { populate: ['socialAccount'] },
     );
     for (const t of targets) {
+      if (t.status === 'success') continue;
       const job = this.em.create(Job, {
         post,
+        target: t,
         provider: t.socialAccount.provider,
         attempt: 0,
         status: 'pending',
