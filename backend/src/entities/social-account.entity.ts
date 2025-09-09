@@ -8,7 +8,7 @@ import {
 } from '@mikro-orm/core';
 import { User } from './user.entity';
 import { AccountToken } from './account-token.entity';
-import { Post } from './post.entity';
+import { PostTarget } from './post-target.entity';
 
 @Entity()
 export class SocialAccount {
@@ -36,6 +36,6 @@ export class SocialAccount {
   @OneToMany(() => AccountToken, (token) => token.account)
   tokens = new Collection<AccountToken>(this);
 
-  @OneToMany(() => Post, (post) => post.socialAccount)
-  posts = new Collection<Post>(this);
+  @OneToMany(() => PostTarget, (target) => target.socialAccount)
+  postTargets = new Collection<PostTarget>(this);
 }

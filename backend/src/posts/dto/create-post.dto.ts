@@ -86,14 +86,14 @@ export class CreatePostDto {
   teamId?: number;
 
   @ApiProperty({
-    description: 'ID of the social account to post to (optional)',
-    example: 12,
+    description:
+      'IDs of the social accounts to post to (optional, multi-target)',
+    example: [12, 15],
     required: false,
-    type: Number,
+    type: [Number],
   })
-  @IsNumber()
   @IsOptional()
-  socialAccountId?: number;
+  socialAccountIds?: number[];
 
   @ApiProperty({
     description: 'ID of the associated campaign (optional)',

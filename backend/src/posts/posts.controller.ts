@@ -29,7 +29,6 @@ import { RecurringPostDto } from './dto/recurring-post.dto';
 import { DraftPostDto } from './dto/draft-post.dto';
 import { ReschedulePostDto } from './dto/reschedule-post.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-// Minimal file type to avoid coupling to Express v4/v5 types
 interface UploadedFileLike {
   buffer?: Buffer;
 }
@@ -50,6 +49,7 @@ export class PostsController {
     type: PostEntity,
   })
   @ApiResponse({ status: 404, description: 'Related entity not found' })
+  @ApiBody({ type: CreatePostDto })
   async create(@Body() createPostDto: CreatePostDto) {
     const post = await this.postsService.create(createPostDto);
     return post;
@@ -78,7 +78,7 @@ export class PostsController {
           type: 'string',
           format: 'binary',
           description:
-            'CSV with headers: contentAr,contentEn?,scheduleAt,authorId,teamId?,socialAccountId?,campaignId?,templateId?,status?,isRecurring?',
+            'CSV with headers: contentAr,contentEn?,scheduleAt,authorId,teamId?,socialAccountIds?(comma-separated),campaignId?,templateId?,status?,isRecurring?',
         },
       },
       required: ['file'],
@@ -122,8 +122,13 @@ export class PostsController {
         isRecurring: r.isRecurring ? r.isRecurring === 'true' : undefined,
         authorId: Number(r.authorId),
         teamId: r.teamId ? Number(r.teamId) : undefined,
-        socialAccountId: r.socialAccountId
-          ? Number(r.socialAccountId)
+        socialAccountIds: r.socialAccountIds
+          ? String(r.socialAccountIds)
+              .split(',')
+              .map((s) => s.trim())
+              .filter((s) => s.length > 0)
+              .map((s) => Number(s))
+              .filter((n) => !Number.isNaN(n))
           : undefined,
         campaignId: r.campaignId ? Number(r.campaignId) : undefined,
         templateId: r.templateId ? Number(r.templateId) : undefined,

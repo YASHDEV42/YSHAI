@@ -40,13 +40,12 @@ export class DraftPostDto {
   teamId?: number;
 
   @ApiProperty({
-    description: 'Social account ID',
+    description: 'Social account IDs (multi-target)',
     required: false,
-    type: Number,
+    type: [Number],
   })
-  @IsNumber()
   @IsOptional()
-  socialAccountId?: number;
+  socialAccountIds?: number[];
 
   @ApiProperty({ description: 'Campaign ID', required: false, type: Number })
   @IsNumber()

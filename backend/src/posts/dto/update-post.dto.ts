@@ -76,14 +76,13 @@ export class UpdatePostDto {
   teamId?: number;
 
   @ApiProperty({
-    description: 'Social account ID',
-    example: 12,
+    description: 'Social account IDs (multi-target)',
+    example: [12, 15],
     required: false,
-    type: Number,
+    type: [Number],
   })
-  @IsNumber()
   @IsOptional()
-  socialAccountId?: number;
+  socialAccountIds?: number[];
 
   @ApiProperty({
     description: 'Campaign ID',

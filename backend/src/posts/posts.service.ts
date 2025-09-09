@@ -12,6 +12,7 @@ import { BulkCreatePostsDto } from './dto/bulk-create-posts.dto';
 import { RecurringPostDto } from './dto/recurring-post.dto';
 import { DraftPostDto } from './dto/draft-post.dto';
 import { Job } from 'src/entities/job.entity';
+import { PostTarget } from 'src/entities/post-target.entity';
 
 @Injectable()
 export class PostsService {
@@ -21,7 +22,7 @@ export class PostsService {
     const {
       authorId,
       teamId,
-      socialAccountId,
+      socialAccountIds,
       campaignId,
       templateId,
       ...data
@@ -31,17 +32,12 @@ export class PostsService {
       throw new NotFoundException('Author ID is required');
     }
 
-    const [author, team, socialAccount, campaign, template] = await Promise.all(
-      [
-        this.em.findOne(User, { id: authorId }),
-        teamId ? this.em.findOne(Team, { id: teamId }) : undefined,
-        socialAccountId
-          ? this.em.findOne(SocialAccount, { id: socialAccountId })
-          : undefined,
-        campaignId ? this.em.findOne(Campaign, { id: campaignId }) : undefined,
-        templateId ? this.em.findOne(Template, { id: templateId }) : undefined,
-      ],
-    );
+    const [author, team, campaign, template] = await Promise.all([
+      this.em.findOne(User, { id: authorId }),
+      teamId ? this.em.findOne(Team, { id: teamId }) : undefined,
+      campaignId ? this.em.findOne(Campaign, { id: campaignId }) : undefined,
+      templateId ? this.em.findOne(Template, { id: templateId }) : undefined,
+    ]);
 
     if (!author) {
       throw new NotFoundException(`Author with ID "${authorId}" not found`);
@@ -53,7 +49,6 @@ export class PostsService {
       ...data,
       author,
       team,
-      socialAccount,
       campaign,
       template,
       scheduleAt: new Date(data.scheduleAt),
@@ -64,6 +59,27 @@ export class PostsService {
     });
 
     await this.em.persistAndFlush(post);
+
+    // Create PostTargets for each selected social account
+    if (socialAccountIds && socialAccountIds.length > 0) {
+      const accounts = await this.em.find(SocialAccount, {
+        id: { $in: socialAccountIds },
+      });
+      for (const acc of accounts) {
+        const target = this.em.create(PostTarget, {
+          post,
+          socialAccount: acc,
+          status: post.status === 'scheduled' ? 'scheduled' : 'pending',
+          scheduledAt:
+            post.status === 'scheduled' ? post.scheduleAt : undefined,
+          attempt: 0,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+        this.em.persist(target);
+      }
+      await this.em.flush();
+    }
     return post;
   }
 
@@ -90,7 +106,7 @@ export class PostsService {
       throw new NotFoundException(`Post with ID "${id}" not found`);
     }
 
-    const { teamId, socialAccountId, campaignId, templateId, ...updateData } =
+    const { teamId, socialAccountIds, campaignId, templateId, ...updateData } =
       updatePostDto;
 
     // Update scalar fields
@@ -112,11 +128,28 @@ export class PostsService {
         : undefined;
     }
 
-    if (socialAccountId !== undefined) {
-      post.socialAccount = socialAccountId
-        ? ((await this.em.findOne(SocialAccount, { id: socialAccountId })) ??
-          undefined)
-        : undefined;
+    if (socialAccountIds !== undefined) {
+      // Replace existing targets with this new set
+      const existing = await this.em.find(PostTarget, { post: post.id });
+      existing.forEach((t) => this.em.remove(t));
+      if (socialAccountIds && socialAccountIds.length > 0) {
+        const accounts = await this.em.find(SocialAccount, {
+          id: { $in: socialAccountIds },
+        });
+        for (const acc of accounts) {
+          const target = this.em.create(PostTarget, {
+            post,
+            socialAccount: acc,
+            status: post.status === 'scheduled' ? 'scheduled' : 'pending',
+            scheduledAt:
+              post.status === 'scheduled' ? post.scheduleAt : undefined,
+            attempt: 0,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          });
+          this.em.persist(target);
+        }
+      }
     }
 
     if (campaignId !== undefined) {
@@ -147,25 +180,32 @@ export class PostsService {
   }
 
   async publishNow(id: number): Promise<Post> {
-    const post = await this.em.findOne(
-      Post,
-      { id },
-      { populate: ['socialAccount'] },
-    );
+    const post = await this.em.findOne(Post, { id });
     if (!post) {
       throw new NotFoundException(`Post with ID "${id}" not found`);
     }
     // Enqueue a job for immediate publishing; provider inferred from socialAccount
-    const job = this.em.create(Job, {
-      post,
-      provider: post.socialAccount?.provider ?? 'x',
-      attempt: 0,
-      status: 'pending',
-      scheduledAt: new Date(),
-    });
+    // Enqueue a job per target
+    const targets = await this.em.find(
+      PostTarget,
+      { post: post.id },
+      { populate: ['socialAccount'] },
+    );
+    for (const t of targets) {
+      const job = this.em.create(Job, {
+        post,
+        provider: t.socialAccount.provider,
+        attempt: 0,
+        status: 'pending',
+        scheduledAt: new Date(),
+      });
+      this.em.persist(job);
+      t.status = 'scheduled';
+      t.scheduledAt = job.scheduledAt;
+    }
     post.status = 'scheduled';
     post.publishedAt = undefined;
-    await this.em.persistAndFlush(job);
+    await this.em.flush();
     return post;
   }
 

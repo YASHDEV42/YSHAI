@@ -9,13 +9,13 @@ import {
 } from '@mikro-orm/core';
 import { User } from './user.entity';
 import { Team } from './team.entity';
-import { SocialAccount } from './social-account.entity';
 import { Media } from './media.entity';
 import { Job } from './job.entity';
 import { Generation } from './generation.entity';
 import { PostAnalytics } from './post-analytics.entity';
 import { Campaign } from './campaign.entity';
 import { Template } from './template.entity';
+import { PostTarget } from './post-target.entity';
 
 @Entity()
 export class Post {
@@ -28,8 +28,7 @@ export class Post {
   @ManyToOne(() => Team, { nullable: true })
   team?: Team;
 
-  @ManyToOne(() => SocialAccount, { nullable: true })
-  socialAccount?: SocialAccount;
+  // Targets now live in PostTarget; keep this for backward compat only if needed
 
   @Property()
   contentAr!: string;
@@ -61,6 +60,9 @@ export class Post {
 
   @OneToMany(() => Job, (job) => job.post)
   jobs = new Collection<Job>(this);
+
+  @OneToMany(() => PostTarget, (target) => target.post)
+  targets = new Collection<PostTarget>(this);
 
   @OneToMany(() => Generation, (gen) => gen.post)
   generations = new Collection<Generation>(this);

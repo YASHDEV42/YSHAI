@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -6,7 +6,7 @@
     <title>YSHAI - SRS Document</title>
     <style>
       body {
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         line-height: 1.6;
         color: #333;
         max-width: 900px;
@@ -97,7 +97,7 @@
     </div>
 
     <p><strong>Version:</strong> 2.0</p>
-    <p><strong>Date:</strong> 22nd August 2025</p>
+    <p><strong>Date:</strong> 9th September 2025</p>
     <p><strong>Prepared by:</strong> Yahya Shannat</p>
     <hr />
 
@@ -152,6 +152,15 @@
           <td>2.0</td>
           <td>Yahya Shannat</td>
           <td>Updated: PostgreSQL + MikroORM, removed MongoDB</td>
+        </tr>
+        <tr>
+          <td>2025-09-09</td>
+          <td>2.1</td>
+          <td>Yahya Shannat</td>
+          <td>
+            Multi-platform publishing via PostTarget, webhooks & notifications,
+            Business-plan gating for team features
+          </td>
         </tr>
       </table>
     </section>
@@ -217,8 +226,11 @@
     <p>
       YSHAI provides AI-assisted Arabic content generation, cross-platform
       scheduling (X, Instagram, LinkedIn, TikTok), analytics, team workflows,
-      and payment/subscription management. The initial release focuses on web
-      (responsive) and core integrations; mobile is planned in Phase 2.
+      and payment/subscription management. A single post can target multiple
+      social accounts simultaneously using a per-target delivery model
+      (<code>PostTarget</code>), enabling independent status tracking and
+      retries per platform. The initial release focuses on web (responsive) and
+      core integrations; mobile is planned in Phase 2.
     </p>
     <p>
       <strong>Technology stack (initial):</strong> Next.js (frontend), NestJS
@@ -312,8 +324,10 @@
       communicates with LLM services for content generation. The backend uses
       <strong>PostgreSQL</strong> for data consistency and
       <strong>MikroORM</strong> to ensure reliable, transaction-safe operations.
-      Components (scheduler, AI, analytics) are designed to scale independently.
-      This architecture supports auditability, compliance, and real-time
+      Posts target one or many social accounts through a per-target entity
+      (<code>PostTarget</code>) processed by background workers. Components
+      (scheduler, AI, analytics) are designed to scale independently. This
+      architecture supports auditability, compliance, and real-time
       collaboration.
     </p>
 
@@ -405,18 +419,24 @@
       </li>
       <li id="F5">
         <strong>F5 – Publishing Engine:</strong> Reliable background worker that
-        executes scheduled posts, handles retries and failure reporting, and
-        records delivery status.
+        executes scheduled posts and enqueues one job per target
+        (<code>PostTarget</code>), with independent status tracking
+        (pending/processing/success/failed), exponential backoff retries, and
+        delivery metadata (external post ID/URL, errors, timestamps). Aggregates
+        post-level status from targets and emits notifications/webhooks on state
+        changes.
       </li>
       <li id="F6">
         <strong>F6 – Analytics & Reports:</strong> Collect basic engagement
         metrics, display trends, and export CSV/PDF reports per account or
-        campaign.
+        campaign. Enable campaign-level rollups across all targets of included
+        posts.
       </li>
       <li id="F7">
         <strong>F7 – Team Collaboration:</strong> Invite members, assign roles
         (Admin, Editor, Viewer), approval workflow for posts, and change
-        history.
+        history. Team collaboration features are available for the
+        <strong>Business</strong> plan only.
       </li>
       <li id="F8">
         <strong>F8 – Payments & Subscriptions:</strong> Manage plans (Free, Pro,
@@ -432,6 +452,18 @@
         <strong>F10 – Moderation & Compliance:</strong> Run automated checks on
         generated content for policy violations and present warnings to users.
       </li>
+      <li id="F11">
+        <strong>F11 – Notifications & Webhooks:</strong> In-app notifications
+        for publish success/failure and approvals. Deliver outbound webhooks
+        (e.g., <code>post.published</code>, <code>post.failed</code>) with
+        HMAC-signature verification and persisted delivery attempts, with
+        pagination and retry.
+      </li>
+      <li id="F12">
+        <strong>F12 – Email & Password Reset:</strong> Send transactional emails
+        (e.g., password reset). Secure reset tokens are hashed and stored with
+        expiry and single-use semantics.
+      </li>
     </ol>
 
     <h3>3.1 Use Cases</h3>
@@ -443,15 +475,16 @@
       <tr>
         <td>UC1: Create scheduled post</td>
         <td>
-          User writes or generates Arabic caption, attaches media, selects
-          accounts and time, and saves as scheduled.
+          User writes or generates Arabic caption, attaches media, selects one
+          or more social accounts, and saves as scheduled.
         </td>
       </tr>
       <tr>
         <td>UC2: Bulk upload</td>
         <td>
           User uploads CSV with posts and schedule times; system imports,
-          validates, and queues them.
+          validates, and queues them. CSV supports <code>socialAccountIds</code>
+          as a comma-separated list.
         </td>
       </tr>
       <tr>
@@ -459,6 +492,27 @@
         <td>
           Editor submits a post for approval; Admin approves and it is scheduled
           to publish.
+        </td>
+      </tr>
+      <tr>
+        <td>UC4: Publish to multiple accounts</td>
+        <td>
+          Scheduler enqueues one job per <code>PostTarget</code>; each target is
+          published independently with its own status and retry policy.
+        </td>
+      </tr>
+      <tr>
+        <td>UC5: Retry failed target</td>
+        <td>
+          System or user-triggered retry re-enqueues only the failed target and
+          preserves attempt counters and error details.
+        </td>
+      </tr>
+      <tr>
+        <td>UC6: Consume webhooks</td>
+        <td>
+          External systems receive signed webhooks for post lifecycle events and
+          can verify signatures and inspect delivery attempts.
         </td>
       </tr>
     </table>
@@ -484,7 +538,28 @@
       </tr>
       <tr>
         <td>Social Platform APIs</td>
-        <td>Publish posts, fetch metrics, webhooks for status</td>
+        <td>
+          Publish posts (per-target), fetch metrics, and receive callbacks.
+          Examples:
+          <ul>
+            <li>
+              <strong>X</strong>: OAuth 2.0 (user context), media upload then
+              tweet create
+            </li>
+            <li>
+              <strong>Instagram</strong>: Graph API (Business/Creator), media
+              container then publish
+            </li>
+            <li>
+              <strong>LinkedIn</strong>: Assets API (upload) then UGC Post
+              create
+            </li>
+            <li>
+              <strong>TikTok</strong>: Content Posting API, upload session then
+              publish
+            </li>
+          </ul>
+        </td>
       </tr>
       <tr>
         <td>PostgreSQL (Neon/Railway)</td>
@@ -497,6 +572,14 @@
       <tr>
         <td>Payment Gateways</td>
         <td>Handle subscription payments and invoicing</td>
+      </tr>
+      <tr>
+        <td>Webhooks Delivery</td>
+        <td>Outbound events with HMAC signatures and persisted attempts</td>
+      </tr>
+      <tr>
+        <td>SMTP (Mailer)</td>
+        <td>Transactional emails (password reset, notifications)</td>
       </tr>
     </table>
 
@@ -564,16 +647,32 @@
         sandbox accounts).
       </li>
       <li>
-        AC2: Generated Arabic caption respects requested tone and does not
+        AC2: A single post targeting multiple accounts results in one job per
+        target, with per-target success/failure and stored external IDs/URLs.
+      </li>
+      <li>
+        AC3: CSV import supports <code>socialAccountIds</code> as
+        comma-separated values and creates corresponding targets.
+      </li>
+      <li>
+        AC4: Webhook deliveries are signed (HMAC) and attempts are persisted and
+        listable with pagination.
+      </li>
+      <li>
+        AC5: Team collaboration endpoints are accessible only to Business-plan
+        subscribers; access is denied otherwise.
+      </li>
+      <li>
+        AC6: Generated Arabic caption respects requested tone and does not
         contain banned content (moderation test).
       </li>
-      <li>AC3: RTL UI displays correctly on desktop and mobile breakpoints.</li>
+      <li>AC7: RTL UI displays correctly on desktop and mobile breakpoints.</li>
       <li>
-        AC4: API endpoints return documented status codes and validate inputs
+        AC8: API endpoints return documented status codes and validate inputs
         (unit tests).
       </li>
       <li>
-        AC5: Database transactions ensure data consistency during post creation
+        AC9: Database transactions ensure data consistency during post creation
         and publishing (integration test).
       </li>
     </ul>

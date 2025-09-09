@@ -10,6 +10,8 @@ import { User } from 'src/entities/user.entity';
 import { Membership } from 'src/entities/membership.entity';
 import { Post } from 'src/entities/post.entity';
 import { AuditLog } from 'src/entities/audit-log.entity';
+import { Subscription } from 'src/entities/subscription.entity';
+import { Plan } from 'src/entities/plan.entity';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { InviteMemberDto } from './dto/invite-member.dto';
 import { UpdateMemberRoleDto } from './dto/update-member-role.dto';
@@ -81,6 +83,9 @@ export class TeamsService {
       throw new NotFoundException('User is already a member of this team');
     }
 
+    // Enforce Business plan for collaboration features
+    await this.assertBusinessPlanForTeam(team);
+
     this.em.create(Membership, {
       user: invitedUser,
       team,
@@ -128,6 +133,7 @@ export class TeamsService {
       throw new NotFoundException(`User is not a member of this team`);
     }
 
+    await this.assertBusinessPlanForTeam(team);
     membership.role = dto.role;
     await this.em.flush();
   }
@@ -170,6 +176,7 @@ export class TeamsService {
       throw new NotFoundException(`User is not a member of this team`);
     }
 
+    await this.assertBusinessPlanForTeam(team);
     await this.em.removeAndFlush(membership);
   }
 
@@ -201,6 +208,8 @@ export class TeamsService {
     approverId: number,
   ): Promise<void> {
     await this.assertAdminOrOwner(teamId, approverId);
+    const { team } = await this.getTeamWithOwner(teamId);
+    await this.assertBusinessPlanForTeam(team);
     const post = await this.em.findOne(Post, { id: postId, team: teamId });
     if (!post) throw new NotFoundException('Post not found');
     post.status = 'scheduled';
@@ -223,6 +232,8 @@ export class TeamsService {
     approverId: number,
   ): Promise<void> {
     await this.assertAdminOrOwner(teamId, approverId);
+    const { team } = await this.getTeamWithOwner(teamId);
+    await this.assertBusinessPlanForTeam(team);
     const post = await this.em.findOne(Post, { id: postId, team: teamId });
     if (!post) throw new NotFoundException('Post not found');
     post.status = 'draft';
@@ -252,6 +263,8 @@ export class TeamsService {
     }>
   > {
     await this.assertAdminOrOwner(teamId, userId);
+    const { team } = await this.getTeamWithOwner(teamId);
+    await this.assertBusinessPlanForTeam(team);
     // Fetch recent logs and filter by team: include
     // - post.* logs where the post belongs to this team
     // - team.* logs where entityId == teamId
@@ -292,5 +305,33 @@ export class TeamsService {
       entityId: l.entityId,
       timestamp: l.timestamp,
     }));
+  }
+
+  private async getTeamWithOwner(teamId: number): Promise<{ team: Team }> {
+    const team = await this.em.findOne(
+      Team,
+      { id: teamId },
+      { populate: ['owner'] },
+    );
+    if (!team) throw new NotFoundException(`Team with ID ${teamId} not found`);
+    return { team };
+  }
+
+  private async assertBusinessPlanForTeam(team: Team): Promise<void> {
+    // Check the team owner's active subscription and require Business plan
+    const now = new Date();
+    const sub = await this.em.findOne(
+      Subscription,
+      {
+        user: team.owner.id,
+        status: { $in: ['active', 'trialing'] },
+        periodStartsAt: { $lte: now },
+        periodEndsAt: { $gte: now },
+      },
+      { populate: ['plan'] },
+    );
+    if (!sub || !sub.plan || (sub.plan as Plan).name !== 'Business') {
+      throw new ForbiddenException('Business plan required for team features');
+    }
   }
 }

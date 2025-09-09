@@ -16,7 +16,6 @@ export class MailerService {
     const secure = process.env.SMTP_SECURE
       ? process.env.SMTP_SECURE === 'true'
       : port === 465;
-    // nodemailer typing under NodeNext can be noisy; calls are safe here.
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment
     this.transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
