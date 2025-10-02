@@ -10,7 +10,6 @@ export class Job {
   @ManyToOne(() => Post)
   post!: Post;
 
-  // Link to the exact PostTarget (per social account) this job will publish
   @ManyToOne(() => PostTarget, { nullable: true })
   target?: PostTarget;
 

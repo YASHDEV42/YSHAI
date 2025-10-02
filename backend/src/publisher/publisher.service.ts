@@ -12,24 +12,36 @@ import { ProviderFactory } from './providers/provider.factory';
 
 @Injectable()
 export class PublisherService implements OnModuleInit {
+  // Logger → log to console/Nest logs.
+  // timer → the setInterval handle (background job runner).
+  // maxAttempts = 5 → each job can be retried up to 5 times before permanently failing.
   private readonly log = new Logger(PublisherService.name);
   private timer?: NodeJS.Timeout;
   private readonly maxAttempts = 5;
+
+  // em → MikroORM EntityManager for DB queries.
+  // webhooks → service to emit internal/external events.
+  // providers → factory that returns the correct provider adapter (twitterProvider, instagramProvider, etc.).
   constructor(
     private readonly em: EntityManager,
     private readonly webhooks: WebhooksService,
     private readonly providers: ProviderFactory,
   ) {}
 
+  // When Nest starts this module, it starts a loop (tick()) every 5 seconds.
+  // tick() is where pending jobs are checked and processed.
   onModuleInit(): void {
-    // Simple polling loop; in production use a queue/worker
+    this.log.log('Starting publisher service...');
     this.timer = setInterval(() => void this.tick(), 5_000);
   }
 
   private async tick(): Promise<void> {
-    // Use a forked EM since this runs outside of request scope
+    // Creates a forked EM → safe for background usage.
     const em = this.em.fork();
     const now = new Date();
+
+    // Finds up to 10 jobs that are pending and ready (scheduledAt <= now).
+    // Populates relations → so each job comes with its post, target, and social account.
     const jobs = await em.find(
       Job,
       { status: 'pending', scheduledAt: { $lte: now } },
@@ -39,13 +51,19 @@ export class PublisherService implements OnModuleInit {
         populate: ['post', 'target', 'target.socialAccount'],
       },
     );
+
     if (jobs.length === 0) return;
 
     for (const job of jobs) {
       try {
+        // Marks job as processing.
         job.status = 'processing';
+
+        // Flush writes this change to DB immediately.
         await em.flush();
 
+        // Each job must be tied to a post + target.
+        // If not found → fail the job.
         const post = job.post;
         if (!post) {
           job.status = 'failed';
@@ -54,7 +72,8 @@ export class PublisherService implements OnModuleInit {
           continue;
         }
 
-        // Ensure we have a target
+        // Each job must be tied to a post + target.
+        // If not found → fail the job.
         const target = job.target;
         if (!target) {
           job.status = 'failed';
@@ -62,6 +81,7 @@ export class PublisherService implements OnModuleInit {
           await em.flush();
           continue;
         }
+
         const account = target.socialAccount as SocialAccount;
 
         // Fetch latest non-revoked access token (decrypt as needed)
@@ -81,6 +101,7 @@ export class PublisherService implements OnModuleInit {
           await em.flush();
           continue;
         }
+        // let's make the decrypt happen here
         const accessToken = token.tokenEncrypted; // TODO: decrypt
 
         // Move target to processing

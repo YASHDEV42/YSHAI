@@ -5,6 +5,386 @@ erDiagram
     %% ======================
 
     USER {
+        int id PK
+        string email
+        string name
+        string role
+        string timezone
+        datetime createdAt
+        datetime updatedAt
+        datetime deletedAt
+    }
+
+    REFRESH_TOKEN {
+        int id PK
+        int userId FK
+        string tokenHash
+        string userAgent
+        string ipAddress
+        boolean revoked
+        datetime expiresAt
+        datetime createdAt
+        datetime updatedAt
+    }
+
+    %% INDEX: refresh_token_active_idx (userId, revoked, expiresAt) → session validation
+
+    %% ======================
+    %% Social Accounts
+    %% ======================
+
+    SOCIAL_ACCOUNT {
+        int id PK
+        string provider
+        string providerAccountId
+        int userId FK
+        boolean active
+        datetime connectedAt
+        datetime disconnectedAt
+    }
+
+    ACCOUNT_TOKEN {
+        int id PK
+        int accountId FK
+        string tokenType
+        string tokenEncrypted
+        datetime expiresAt
+        boolean revoked
+    }
+
+    %% ======================
+    %% Teams & Collaboration
+    %% ======================
+
+    TEAM {
+        int id PK
+        string name
+        int ownerId FK
+        datetime createdAt
+        datetime updatedAt
+        datetime deletedAt
+    }
+
+    MEMBERSHIP {
+        int id PK
+        int userId FK
+        int teamId FK
+        string role
+        datetime joinedAt
+        datetime leftAt
+    }
+
+    %% ======================
+    %% Content & Scheduling
+    %% ======================
+
+    POST {
+        int id PK
+        int authorId FK
+        int teamId FK
+        string contentAr
+        string contentEn
+        datetime scheduleAt
+        string status
+        boolean isRecurring
+        datetime publishedAt
+        datetime createdAt
+        datetime updatedAt
+        datetime deletedAt
+    }
+
+    %% INDEX: post_schedule_status_idx (scheduleAt, status) → scheduler worker
+
+    MEDIA {
+        int id PK
+        int postId FK
+        string url
+        string type
+        int orderIndex
+        datetime createdAt
+    }
+
+    %% Per-platform delivery mapping
+    POST_TARGET {
+        int id PK
+        int postId FK
+        int socialAccountId FK
+        string status
+        int attempt
+        string lastError
+        string externalPostId
+        string externalUrl
+        datetime scheduledAt
+        datetime publishedAt
+        datetime createdAt
+        datetime updatedAt
+    }
+
+    JOB {
+        int id PK
+        int postId FK
+        int targetId FK
+        string provider
+        int attempt
+        string status
+        string lastError
+        datetime scheduledAt
+        datetime executedAt
+    }
+
+    GENERATION {
+        int id PK
+        int postId FK
+        string prompt
+        string text
+        string dialect
+        string tone
+        datetime generatedAt
+        datetime updatedAt
+    }
+
+    MODERATION_RESULT {
+        int id PK
+        int generationId FK
+        int postId FK
+        string provider
+        string verdict
+        string details
+        datetime checkedAt
+    }
+
+    POST_ANALYTICS {
+        int id PK
+        int postId FK
+        int impressions
+        int clicks
+        int likes
+        int comments
+        int shares
+        datetime fetchedAt
+    }
+
+    %% INDEX: post_analytics_post_time_idx (postId, fetchedAt DESC) → analytics trends
+
+    TAG {
+        int id PK
+        string name
+        string normalized
+        datetime createdAt
+    }
+
+    POST_TAG {
+        int id PK
+        int postId FK
+        int tagId FK
+        datetime createdAt
+    }
+
+    TEMPLATE {
+        int id PK
+        string name
+        string contentAr
+        string contentEn
+        int ownerId FK
+        int teamId FK
+        string visibility
+        datetime createdAt
+        datetime updatedAt
+    }
+
+    CAMPAIGN {
+        int id PK
+        string name
+        int ownerId FK
+        string status
+        datetime startsAt
+        datetime endsAt
+        datetime createdAt
+        datetime updatedAt
+    }
+
+    %% ======================
+    %% Billing & Monetization
+    %% ======================
+
+    PLAN {
+        int id PK
+        string name
+        decimal priceMonthly
+        int maxAccounts
+        boolean aiCreditsUnlimited
+        int aiCreditsLimit
+        boolean teamCollaboration
+        boolean analyticsExport
+        boolean apiAccess
+        datetime createdAt
+    }
+
+    SUBSCRIPTION {
+        int id PK
+        int userId FK
+        int planId FK
+        string status
+        datetime periodStartsAt
+        datetime periodEndsAt
+        datetime canceledAt
+        string paymentGatewaySubscriptionId
+        datetime createdAt
+        datetime updatedAt
+    }
+
+    INVOICE {
+        int id PK
+        int subscriptionId FK
+        int userId FK
+        decimal amount
+        string currency
+        string status
+        string paymentGatewayId
+        string paymentMethod
+        datetime issuedAt
+        datetime paidAt
+        datetime downloadedAt
+        string pdfUrl
+        json metadata
+    }
+
+    %% INDEX: invoice_user_idx (userId)
+    %% INDEX: invoice_subscription_idx (subscriptionId)
+    %% INDEX: invoice_user_status_idx (userId, status) → billing dashboard
+
+    %% ======================
+    %% AI Usage Tracking
+    %% ======================
+
+    AI_USAGE_LOG {
+        int id PK
+        int userId FK
+        int subscriptionId FK
+        int generationId FK
+        string modelUsed
+        int inputTokens
+        int outputTokens
+        decimal costUsd
+        json metadata
+        datetime createdAt
+    }
+
+    %% INDEX: ai_usage_user_period_idx (userId, createdAt) → monthly usage reports
+
+    %% ======================
+    %% Notifications & Events
+    %% ======================
+
+    NOTIFICATION {
+        int id PK
+        int userId FK
+        string type
+        json payload
+        string link
+        boolean read
+        datetime createdAt
+    }
+
+    WEBHOOK_SUBSCRIPTION {
+        int id PK
+        int userId FK
+        string url
+        string event
+        boolean active
+        string secretEncrypted
+        datetime createdAt
+    }
+
+    WEBHOOK_DELIVERY_ATTEMPT {
+        int id PK
+        int webhookSubscriptionId FK
+        string event
+        string status
+        int responseCode
+        int attemptNo
+        string requestBodyHash
+        datetime sentAt
+        datetime createdAt
+    }
+
+    %% ======================
+    %% Audit & Admin
+    %% ======================
+
+    AUDIT_LOG {
+        int id PK
+        int userId FK
+        string action
+        string entityType
+        string entityId
+        json details
+        datetime timestamp
+    }
+
+    SYSTEM_CONFIG {
+        int id PK
+        string value
+        string description
+        string type
+        int updatedByUserId FK
+        datetime createdAt
+        datetime updatedAt
+    }
+
+    %% ======================
+    %% Relationships
+    %% ======================
+
+    USER ||--o{ REFRESH_TOKEN : "has"
+    USER ||--o{ SOCIAL_ACCOUNT : "owns"
+    USER ||--o{ MEMBERSHIP : "member_of"
+    USER ||--o{ POST : "creates"
+    USER ||--o{ INVOICE : "billed_to"
+    USER ||--o{ NOTIFICATION : "receives"
+    USER ||--o{ WEBHOOK_SUBSCRIPTION : "subscribes"
+    USER ||--o{ AUDIT_LOG : "performs"
+    USER ||--o{ SUBSCRIPTION : "has"
+    USER ||--o{ SYSTEM_CONFIG : "updates"
+    USER ||--o{ AI_USAGE_LOG : "generates"
+
+    TEAM ||--o{ MEMBERSHIP : "has"
+    TEAM ||--o{ POST : "owns"
+    TEAM ||--o{ TEMPLATE : "owns"
+    TEAM ||--o{ CAMPAIGN : "manages"
+
+    SOCIAL_ACCOUNT ||--o{ ACCOUNT_TOKEN : "has_tokens"
+    POST ||--o{ MEDIA : "contains"
+    POST ||--o{ JOB : "enqueues"
+    POST ||--o{ GENERATION : "generated_by"
+    POST ||--o{ MODERATION_RESULT : "moderated"
+    POST ||--o{ POST_ANALYTICS : "metrics"
+    POST ||--o{ POST_TAG : "tagged_with"
+    POST ||--o{ TEMPLATE : "based_on"
+
+    %% New relationships for targets and jobs
+    POST ||--o{ POST_TARGET : "targets"
+    SOCIAL_ACCOUNT ||--o{ POST_TARGET : "used_by"
+    POST_TARGET ||--o{ JOB : "enqueues"
+
+    GENERATION ||--o{ MODERATION_RESULT : "checked_by"
+    GENERATION ||--o{ AI_USAGE_LOG : "usage_record"
+
+    CAMPAIGN ||--o{ POST : "contains"
+
+    PLAN ||--o{ SUBSCRIPTION : "defines"
+    SUBSCRIPTION ||--o{ INVOICE : "generates"
+    SUBSCRIPTION ||--o{ AI_USAGE_LOG : "tracks_usage"
+
+    SYSTEM_CONFIG ||--o{ USER : "updated_by"
+    WEBHOOK_SUBSCRIPTION ||--o{ WEBHOOK_DELIVERY_ATTEMPT : "delivers"
+erDiagram
+
+    %% ======================
+    %% Core User & Auth
+    %% ======================
+
+    USER {
         string id PK
         string email
         string name

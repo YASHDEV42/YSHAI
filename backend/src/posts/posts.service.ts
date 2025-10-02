@@ -23,6 +23,7 @@ export class PostsService {
   constructor(private readonly em: EntityManager) {}
 
   async create(createPostDto: CreatePostDto): Promise<Post> {
+    // Extract and remove relational IDs from DTO
     const {
       authorId,
       teamId,
@@ -31,11 +32,15 @@ export class PostsService {
       templateId,
       ...data
     } = createPostDto;
-
+    // Validate required relations
     if (!authorId) {
       throw new NotFoundException('Author ID is required');
     }
+    if (!socialAccountIds || socialAccountIds.length === 0) {
+      throw new BadRequestException('At least one socialAccountId is required');
+    }
 
+    // Fetch related entities in parallel
     const [author, team, campaign, template] = await Promise.all([
       this.em.findOne(User, { id: authorId }),
       teamId ? this.em.findOne(Team, { id: teamId }) : undefined,
@@ -47,13 +52,14 @@ export class PostsService {
       throw new NotFoundException(`Author with ID "${authorId}" not found`);
     }
 
+    // Validate and parse scheduleAt
     const now = new Date();
-    // Validate scheduleAt
     const scheduleAtDate = new Date(data.scheduleAt);
     if (Number.isNaN(scheduleAtDate.getTime())) {
       throw new BadRequestException('Invalid scheduleAt');
     }
 
+    // Create the Post entity
     const post = this.em.create(Post, {
       ...data,
       author,
@@ -67,6 +73,7 @@ export class PostsService {
       updatedAt: now,
     });
 
+    // Save the Post first to get an ID
     await this.em.persistAndFlush(post);
 
     // Create PostTargets for each selected social account
@@ -91,6 +98,7 @@ export class PostsService {
         });
         this.em.persist(target);
       }
+      // Save all PostTargets
       await this.em.flush();
 
       // If post is scheduled, create jobs for each target now
