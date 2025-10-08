@@ -1,5 +1,12 @@
 {
   "HomePage": {
-    "title": "welcome to the home page"
+    "title": "Welcome to the home page"
+  },
+  "HeroSection": {
+    "heading": "Plan, Execute, and Publish",
+    "subHeading": "Manage all your social media accounts with the help of AI",
+    "primaryButton": "Start your free account now",
+    "secondaryButton": "Watch more",
+    "highlight": "AI-Powered Social Media Management"
   }
 }
