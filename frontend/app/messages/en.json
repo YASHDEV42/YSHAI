@@ -208,5 +208,101 @@
       "scheduled": "Scheduled",
       "failed": "Failed"
     }
+  },
+  "CreatePage": {
+    "header": {
+      "saveDraft": "Save Draft",
+      "schedule": "Schedule",
+      "publishNow": "Publish Now"
+    },
+    "aiGenerator": {
+      "title": "AI Content Generator",
+      "promptLabel": "Describe what you want to post about",
+      "placeholder": "e.g., Write a post about the benefits of AI in social media management for Arabic businesses...",
+      "generateButton": "Generate with AI",
+      "generating": "Generating..."
+    },
+    "platforms": {
+      "title": "Select Platforms",
+      "twitter": "X (Twitter)",
+      "instagram": "Instagram",
+      "linkedin": "LinkedIn",
+      "tiktok": "TikTok"
+    },
+    "contentEditor": {
+      "title": "Post Content",
+      "placeholder": "Write your post content here... You can also write in Arabic",
+      "characters": "{count} characters",
+      "twitterLimitExceeded": "Twitter limit exceeded"
+    },
+    "media": {
+      "title": "Media",
+      "uploadImage": "Upload Image",
+      "uploadVideo": "Upload Video"
+    },
+    "schedule": {
+      "title": "Schedule",
+      "publishNowTab": "Publish Now",
+      "scheduleLaterTab": "Schedule for Later",
+      "publishNowDescription": "Your post will be published immediately to all selected platforms.",
+      "dateLabel": "Date",
+      "timeLabel": "Time",
+      "timezoneLabel": "Timezone",
+      "timezones": {
+        "riyadh": "Riyadh (GMT+3)",
+        "dubai": "Dubai (GMT+4)",
+        "cairo": "Cairo (GMT+2)"
+      }
+    },
+    "preview": {
+      "title": "Preview",
+      "noContent": "Your post content will appear here...",
+      "captionPlaceholder": "Your caption will appear here...",
+      "likes": "👍 Like",
+      "comments": "💬 Comment",
+      "reposts": "🔄 Repost",
+      "shares": "📊 Share",
+      "send": "📤 Send"
+    }
+  },
+  "CalendarPage": {
+    "title": "Content Calendar",
+    "subtitle": "Manage and schedule your social media posts",
+    "filterButton": "Filter",
+    "newPostButton": "New Post",
+    "views": {
+      "month": "Month",
+      "week": "Week",
+      "list": "List"
+    },
+    "platforms": {
+      "twitter": "X (Twitter)",
+      "instagram": "Instagram",
+      "linkedin": "LinkedIn",
+      "tiktok": "TikTok"
+    },
+    "selectedDate": {
+      "title": "Select a date",
+      "noPosts": "No posts scheduled for this date",
+      "schedulePost": "Schedule a post"
+    },
+    "postActions": {
+      "edit": "Edit",
+      "duplicate": "Duplicate",
+      "delete": "Delete"
+    },
+    "status": {
+      "scheduled": "Scheduled"
+    },
+    "weekDays": [
+      "Sun",
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri",
+      "Sat"
+    ],
+    "allScheduledPosts": "All Scheduled Posts"
   }
 }

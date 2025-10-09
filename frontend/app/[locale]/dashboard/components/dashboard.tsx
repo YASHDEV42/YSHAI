@@ -35,6 +35,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { ModeToggle } from "@/app/components/toggleTheme";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -216,19 +217,25 @@ export default function DashboardPage({ text, locale }: DashboardPageProps) {
     switch (status) {
       case "success":
         return (
-          <Badge variant="default" className="bg-teal-500/20 text-teal-400">
+          <Badge variant="default" className="bg-primary ">
             {text.activityStatus.published}
           </Badge>
         );
       case "pending":
         return (
-          <Badge variant="secondary" className="bg-gold-500/20 text-gold-400">
+          <Badge variant="secondary" className="bg-gold-500/20 dark:bg-gold-500/80 text-gold-400">
             {text.activityStatus.scheduled}
           </Badge>
         );
+      case "scheduled":
+        return (
+          <Badge variant="secondary" className="bg-amber-500/20 dark:bg-amber-500/80 text-gold-400">
+            {text.activityStatus.scheduled}
+          </Badge>
+        )
       case "error":
         return (
-          <Badge variant="destructive" className="bg-red-500/20 text-red-400">
+          <Badge variant="destructive" className="bg-red-500">
             {text.activityStatus.failed}
           </Badge>
         );
@@ -296,7 +303,7 @@ export default function DashboardPage({ text, locale }: DashboardPageProps) {
             </SidebarMenu>     </SidebarContent>
 
           <SidebarFooter className="border-t border-border p-4">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center justify-between gap-3">
               <Avatar className="size-8">
                 <AvatarImage src="/placeholder.svg?height=32&width=32" />
                 <AvatarFallback>JD</AvatarFallback>
@@ -305,6 +312,7 @@ export default function DashboardPage({ text, locale }: DashboardPageProps) {
                 <span className="text-sm font-medium text-foreground">{text.user.name}</span>
                 <span className="text-xs text-muted-foreground">{text.user.email}</span>
               </div>
+              <ModeToggle />
             </div>
           </SidebarFooter>
         </Sidebar>
@@ -330,7 +338,6 @@ export default function DashboardPage({ text, locale }: DashboardPageProps) {
                       <div>
                         <p className="text-sm text-muted-foreground">{stat.title}</p>
                         <p className="mt-2 font-bold text-3xl text-foreground">{stat.value}</p>
-                        {/* ✅ Use text-primary instead of hardcoded teal */}
                         <p className="mt-1 text-sm text-primary">{stat.change} {text.stats.changeFromLastWeek}</p>
                       </div>
                       <div className="flex size-12 items-center justify-center rounded-lg bg-primary/20">
