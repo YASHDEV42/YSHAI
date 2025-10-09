@@ -120,7 +120,7 @@ export default async function Home({ params }: { params: { locale: string } }) {
   return (
     <section>
       <HeroSection text={heroText} locale={locale} />
-      <FeatureSection text={featureText} locale={locale} />
+      <FeatureSection text={featureText} />
       <PricingSection text={pricingText} locale={locale} />
       <CtaSection text={ctaText} locale={locale} />
       <FooterSection text={footerText} locale={locale} />

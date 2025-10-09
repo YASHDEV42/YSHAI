@@ -139,5 +139,74 @@
     "privacyPolicy": "سياسة الخصوصية",
     "needHelp": "هل تحتاج مساعدة؟",
     "contactSupport": "اتصل بالدعم"
+  },
+  "LoginPage": {
+    "title": "مرحباً بك مجدداً",
+    "subtitle": "سجّل الدخول إلى حسابك للمتابعة",
+    "googleButton": "الاستمرار مع Google",
+    "githubButton": "الاستمرار مع GitHub",
+    "orDivider": "أو الاستمرار عبر البريد الإلكتروني",
+    "emailLabel": "البريد الإلكتروني",
+    "emailPlaceholder": "ahmed@example.com",
+    "emailRequired": "البريد الإلكتروني مطلوب",
+    "emailInvalid": "يرجى إدخال بريد إلكتروني صالح",
+    "passwordLabel": "كلمة المرور",
+    "passwordPlaceholder": "••••••••",
+    "passwordRequired": "كلمة المرور مطلوبة",
+    "forgotPassword": "نسيت كلمة المرور؟",
+    "noAccount": "ليس لديك حساب؟",
+    "signUpLink": "إنشاء حساب",
+    "signInButton": "تسجيل الدخول",
+    "signingInButton": "جارٍ تسجيل الدخول...",
+    "termsAgreement": "بتسجيلك الدخول، فإنك توافق على",
+    "termsOfService": "شروط الخدمة",
+    "privacyPolicy": "سياسة الخصوصية",
+    "needHelp": "هل تحتاج مساعدة؟",
+    "contactSupport": "اتصل بالدعم"
+  },
+  "DashboardPage": {
+    "welcomeMessage": "مرحباً بك مجدداً، جون",
+    "welcomeSubtitle": "هذا ما يحدث مع وسائل التواصل الاجتماعي الخاصة بك اليوم",
+    "stats": {
+      "scheduledPosts": "المنشورات المجدولة",
+      "publishedThisWeek": "منشورة هذا الأسبوع",
+      "connectedAccounts": "الحسابات المتصلة",
+      "avgEngagement": "متوسط التفاعل",
+      "changeFromLastWeek": "مقارنة بالأسبوع الماضي"
+    },
+    "recentActivity": {
+      "title": "النشاط الأخير",
+      "description": "أحدث منشوراتك والمحتوى المجدول",
+      "viewAll": "عرض كل النشاطات"
+    },
+    "quickActions": {
+      "title": "إجراءات سريعة",
+      "createPost": "إنشاء منشور جديد",
+      "viewCalendar": "عرض التقويم",
+      "viewAnalytics": "عرض التحليلات"
+    },
+    "connectedPlatforms": {
+      "title": "المنصات المتصلة",
+      "description": "إدارة حساباتك الاجتماعية",
+      "connected": "متصل",
+      "connect": "اتصل",
+      "addPlatform": "إضافة منصة"
+    },
+    "sidebar": {
+      "overview": "نظرة عامة",
+      "createPost": "إنشاء منشور",
+      "calendar": "التقويم",
+      "analytics": "التحليلات",
+      "settings": "الإعدادات"
+    },
+    "user": {
+      "name": "جون دو",
+      "email": "john@example.com"
+    },
+    "activityStatus": {
+      "published": "منشور",
+      "scheduled": "مجدول",
+      "failed": "فشل"
+    }
   }
 }

@@ -139,5 +139,74 @@
     "privacyPolicy": "Privacy Policy",
     "needHelp": "Need help?",
     "contactSupport": "Contact support"
+  },
+  "LoginPage": {
+    "title": "Welcome back",
+    "subtitle": "Sign in to your account to continue",
+    "googleButton": "Continue with Google",
+    "githubButton": "Continue with GitHub",
+    "orDivider": "Or continue with email",
+    "emailLabel": "Email",
+    "emailPlaceholder": "ahmed@example.com",
+    "emailRequired": "Email is required",
+    "emailInvalid": "Please enter a valid email",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "••••••••",
+    "passwordRequired": "Password is required",
+    "forgotPassword": "Forgot password?",
+    "noAccount": "Don't have an account?",
+    "signUpLink": "Sign Up",
+    "signInButton": "Sign in",
+    "signingInButton": "Signing in...",
+    "termsAgreement": "By signing in, you agree to our",
+    "termsOfService": "Terms of Service",
+    "privacyPolicy": "Privacy Policy",
+    "needHelp": "Need help?",
+    "contactSupport": "Contact support"
+  },
+  "DashboardPage": {
+    "welcomeMessage": "Welcome back, John",
+    "welcomeSubtitle": "Here's what's happening with your social media today",
+    "stats": {
+      "scheduledPosts": "Scheduled Posts",
+      "publishedThisWeek": "Published This Week",
+      "connectedAccounts": "Connected Accounts",
+      "avgEngagement": "Avg. Engagement",
+      "changeFromLastWeek": "from last week"
+    },
+    "recentActivity": {
+      "title": "Recent Activity",
+      "description": "Your latest posts and scheduled content",
+      "viewAll": "View All Activity"
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "createPost": "Create New Post",
+      "viewCalendar": "View Calendar",
+      "viewAnalytics": "View Analytics"
+    },
+    "connectedPlatforms": {
+      "title": "Connected Platforms",
+      "description": "Manage your social accounts",
+      "connected": "Connected",
+      "connect": "Connect",
+      "addPlatform": "Add Platform"
+    },
+    "sidebar": {
+      "overview": "Overview",
+      "createPost": "Create Post",
+      "calendar": "Calendar",
+      "analytics": "Analytics",
+      "settings": "Settings"
+    },
+    "user": {
+      "name": "John Doe",
+      "email": "john@example.com"
+    },
+    "activityStatus": {
+      "published": "Published",
+      "scheduled": "Scheduled",
+      "failed": "Failed"
+    }
   }
 }

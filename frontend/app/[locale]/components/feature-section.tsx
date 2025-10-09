@@ -19,10 +19,8 @@ interface FeatureSectionText {
 }
 
 export const FeatureSection = ({
-  locale,
   text,
 }: {
-  locale: string;
   text: FeatureSectionText;
 }) => {
   const { badge, heading, subHeading, features } = text;
