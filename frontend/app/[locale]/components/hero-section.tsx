@@ -1,13 +1,11 @@
 
 "use client";
-import { Navbar } from "./Navbar";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, Sparkles } from "lucide-react";
 
 export function HeroSection({ locale, text }: { locale: string, text: { heading: string, subHeading: string, primaryButton: string, secondaryButton: string, highlight: string } }) {
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-background px-4 py-20">
-      <Navbar params={Promise.resolve({ locale })} />
       <div className="absolute inset-0 dark:bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[linear-gradient(to_right,#00000018_1px,transparent_1px),linear-gradient(to_bottom,#00000018_1px,transparent_1px)] bg-[size:4rem_4rem]" />
 
       <div className="relative z-10 max-w-6xl mx-auto text-center space-y-8">
@@ -28,8 +26,9 @@ export function HeroSection({ locale, text }: { locale: string, text: { heading:
           <Button size="lg" className="text-base px-8 group flex items-center justify-center">
             {locale === "ar" ? (
               <>
-                <ArrowLeft className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+
                 {text.primaryButton}
+                <ArrowLeft className="ml-2 w-4 h-4 group-hover:-translate-x-1 transition-transform" />
               </>
             ) : (
               <>

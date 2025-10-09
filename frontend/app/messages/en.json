@@ -1,12 +1,143 @@
 {
-  "HomePage": {
-    "title": "Welcome to the home page"
-  },
   "HeroSection": {
     "heading": "Plan, Execute, and Publish",
     "subHeading": "Manage all your social media accounts with the help of AI",
     "primaryButton": "Start your free account now",
     "secondaryButton": "Watch more",
     "highlight": "AI-Powered Social Media Management"
+  },
+  "FeatureSection": {
+    "badge": "Features",
+    "heading": "Everything you need to succeed",
+    "subHeading": "Built for Arabic content creators with powerful AI and seamless multi-platform publishing",
+    "features": {
+      "ai": {
+        "title": "AI Content Generation",
+        "description": "Generate engaging Arabic captions, hashtags, and alt text with AI trained for MENA audiences. Support for MSA and Gulf dialects."
+      },
+      "schedule": {
+        "title": "Smart Scheduling",
+        "description": "Schedule posts across multiple platforms with timezone support, recurring posts, and drag-and-drop calendar management."
+      },
+      "analytics": {
+        "title": "Analytics & Reports",
+        "description": "Track engagement metrics, analyze trends, and export detailed reports. Campaign-level insights across all platforms."
+      },
+      "team": {
+        "title": "Team Collaboration",
+        "description": "Invite team members, assign roles, and manage approval workflows. Perfect for agencies managing multiple clients."
+      },
+      "publish": {
+        "title": "Reliable Publishing",
+        "description": "Independent status tracking per platform with automatic retries, webhooks, and real-time notifications for every post."
+      },
+      "rtl": {
+        "title": "RTL Support",
+        "description": "Full right-to-left UI support with Arabic typography. Switch between Arabic and English seamlessly."
+      }
+    }
+  },
+  "PricingSection": {
+    "badge": "Pricing",
+    "heading": "Simple, transparent pricing",
+    "subHeading": "Choose the plan that fits your needs. All plans include AI generation and multi-platform support.",
+    "plans": {
+      "free": {
+        "title": "Free",
+        "price": "$0",
+        "period": "/month",
+        "features": [
+          "1 social account",
+          "10 scheduled posts",
+          "Basic AI generation",
+          "Basic analytics"
+        ],
+        "button": "Get Started"
+      },
+      "pro": {
+        "title": "Pro",
+        "price": "$29",
+        "period": "/month",
+        "badge": "Most Popular",
+        "features": [
+          "10 social accounts",
+          "Unlimited scheduled posts",
+          "Advanced AI generation",
+          "Advanced analytics & reports",
+          "Bulk upload (CSV)"
+        ],
+        "button": "Start Free Trial"
+      },
+      "business": {
+        "title": "Business",
+        "price": "$99",
+        "period": "/month",
+        "features": [
+          "Unlimited accounts",
+          "Everything in Pro",
+          "Team collaboration",
+          "Approval workflows",
+          "Priority support"
+        ],
+        "button": "Contact Sales"
+      }
+    }
+  },
+  "CtaSection": {
+    "heading": "Ready to transform your social media?",
+    "subHeading": "Join thousands of creators and businesses using YSHAI to schedule smarter and grow faster.",
+    "primaryButton": "Start Free Trial",
+    "secondaryButton": "Schedule a Demo"
+  },
+  "FooterSection": {
+    "description": "Arabic-first AI social media scheduler for the MENA region.",
+    "product": {
+      "title": "Product",
+      "features": "Features",
+      "pricing": "Pricing",
+      "api": "API",
+      "integrations": "Integrations"
+    },
+    "company": {
+      "title": "Company",
+      "about": "About",
+      "blog": "Blog",
+      "careers": "Careers",
+      "contact": "Contact"
+    },
+    "legal": {
+      "title": "Legal",
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "security": "Security"
+    },
+    "copyright": "© 2025 YSHAI. All rights reserved."
+  },
+  "SignUpPage": {
+    "title": "Create your account",
+    "subtitle": "Start scheduling smarter with AI-powered Arabic content",
+    "googleButton": "Continue with Google",
+    "orDivider": "Or continue with email",
+    "nameLabel": "Full Name",
+    "namePlaceholder": "Ahmed Al-Rashid",
+    "nameRequired": "Name is required",
+    "emailLabel": "Email",
+    "emailPlaceholder": "ahmed@example.com",
+    "emailRequired": "Email is required",
+    "emailInvalid": "Please enter a valid email",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "••••••••",
+    "passwordRequired": "Password is required",
+    "passwordTooShort": "Password must be at least 8 characters",
+    "passwordHint": "Must be at least 8 characters",
+    "haveAccount": "Already have an account?",
+    "signInLink": "Sign In",
+    "createAccountButton": "Create account",
+    "creatingAccountButton": "Creating account...",
+    "termsAgreement": "By creating an account, you agree to our",
+    "termsOfService": "Terms of Service",
+    "privacyPolicy": "Privacy Policy",
+    "needHelp": "Need help?",
+    "contactSupport": "Contact support"
   }
 }
