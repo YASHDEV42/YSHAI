@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import { useState } from "react";
 import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export interface SignUpPageText {
   title: string;
@@ -46,12 +47,12 @@ interface SignUpPageProps {
 export default function SignUpPage({ text, locale }: SignUpPageProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    name: "",
     email: "",
     password: "",
+    name: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
-
+  const router = useRouter();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -79,14 +80,31 @@ export default function SignUpPage({ text, locale }: SignUpPageProps) {
     }
 
     console.log("[v0] Signup form submitted:", formData);
+    console.log(JSON.stringify(formData));
+    try {
+      const response = await fetch('http://localhost:5000/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        setErrors({ form: errorData.message || 'An error occurred. Please try again.' });
+        console.log('Signup failed:', errorData);
+      } else {
+        const data = await response.json();
+        console.log('Signup successful:', data);
+        router.push('/dashboard');
 
-    // Simulate API call
-    setTimeout(() => {
+      }
+    } catch (error) {
+      console.error('Error during signup:', error);
+    } finally {
       setIsLoading(false);
-      // TODO: redirect or show success
-    }, 2000);
-  };
-
+    }
+  }
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -232,3 +250,4 @@ export default function SignUpPage({ text, locale }: SignUpPageProps) {
     </div>
   );
 }
+

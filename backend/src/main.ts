@@ -14,7 +14,7 @@ async function bootstrap() {
     mkdirSync(uploadDir, { recursive: true });
   }
 
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, { cors: true });
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -66,8 +66,7 @@ async function bootstrap() {
   SwaggerModule.setup('docs', app, document);
 
   // Use environment port
-  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
-
+  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 5000;
   await app.listen(port);
   console.log(`Application is running on: http://localhost:${port}`);
   console.log(`Swagger docs: http://localhost:${port}/docs`);

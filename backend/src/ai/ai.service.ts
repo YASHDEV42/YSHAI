@@ -8,10 +8,10 @@ export class AiService {
   private readonly model: GenerativeModel;
 
   constructor() {
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      throw new Error('GEMINI_API_KEY is not set');
-    }
+    const apiKey = process.env.GEMINI_API_KEY || " ";
+    //if (!apiKey) {
+    // throw new Error('GEMINI_API_KEY is not set');
+    //}
 
     const client = new GoogleGenerativeAI(apiKey);
     this.model = client.getGenerativeModel({
