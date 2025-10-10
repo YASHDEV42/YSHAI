@@ -32,6 +32,9 @@ export class User {
   @Property({ nullable: true })
   timezone?: string;
 
+  @Property({ default: false })
+  isEmailVerified: boolean;
+
   // Optional user preference fields
   @Property({ nullable: true })
   language?: string;
