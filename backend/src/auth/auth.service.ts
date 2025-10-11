@@ -47,6 +47,17 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
+  // find user by email Function
+  async findUserByEmail(email: string): Promise<User | null> {
+    return this.em.findOne(User, { email });
+  }
+
+  // send verification email Function
+  async sendVerificationEmail(email: string, token: string): Promise<void> {
+    const url = `${process.env.FRONTEND_URL}/auth/verify?token=${token}`;
+    await this.mailer.sendEmailVerification(email, url);
+  }
+
   // register User Function
   async register(email: string, password: string, name: string) {
 
@@ -288,12 +299,5 @@ export class AuthService {
     logger.log(`Password reset successfully for user ${user.email}`);
     return { message: 'Password reset successfully' };
   }
-  async findUserByEmail(email: string): Promise<User | null> {
-    return this.em.findOne(User, { email });
-  }
 
-  async sendVerificationEmail(email: string, token: string): Promise<void> {
-    const url = `${process.env.FRONTEND_URL}/auth/verify?token=${token}`;
-    await this.mailer.sendEmailVerification(email, url);
-  }
 }
