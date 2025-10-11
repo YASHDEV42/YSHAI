@@ -32,6 +32,9 @@ const page = async ({ params: { locale } }: { params: { locale: string } }) => {
     privacyPolicy: t("privacyPolicy"),
     needHelp: t("needHelp"),
     contactSupport: t("contactSupport"),
+    verificationTitle: t("verificationTitle"),
+    verificationMessage: t("verificationMessage"),
+    verificationButton: t("verificationButton"),
   };
   return (
     <SignUpPage text={text} locale={locale} />

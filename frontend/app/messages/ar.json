@@ -138,7 +138,10 @@
     "termsOfService": "شروط الخدمة",
     "privacyPolicy": "سياسة الخصوصية",
     "needHelp": "هل تحتاج مساعدة؟",
-    "contactSupport": "اتصل بالدعم"
+    "contactSupport": "اتصل بالدعم",
+    "verificationTitle": "التحقق من البريد الاكتروني",
+    "verificationMessage": "لقد أرسلنا رابط التحقق إلى بريدك الإلكتروني. يُرجى التحقق من بريدك الإلكتروني قبل تسجيل الدخول.",
+    "verificationButton": "لقد قمت بالتحقق - انتقل إلى تسجيل الدخول"
   },
   "LoginPage": {
     "title": "مرحباً بك مجدداً",

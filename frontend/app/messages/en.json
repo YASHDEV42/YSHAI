@@ -138,7 +138,10 @@
     "termsOfService": "Terms of Service",
     "privacyPolicy": "Privacy Policy",
     "needHelp": "Need help?",
-    "contactSupport": "Contact support"
+    "contactSupport": "Contact support",
+    "verificationTitle": "Check Your Email",
+    "verificationMessage": "We've sent a verification link to your email address. Please check your inbox and verify your email before signing in.",
+    "verificationButton": "I've Verified - Go to Login"
   },
   "LoginPage": {
     "title": "Welcome back",

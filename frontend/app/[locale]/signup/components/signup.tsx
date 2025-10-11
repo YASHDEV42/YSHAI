@@ -1,124 +1,156 @@
-"use client";
+"use client"
 
-import type React from "react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Field, FieldLabel, FieldDescription, FieldError } from "@/components/ui/field";
-import { Separator } from "@/components/ui/separator";
-import Link from "next/link";
-import { useState } from "react";
-import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import type React from "react"
+import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Field, FieldLabel, FieldDescription, FieldError } from "@/components/ui/field"
+import { Separator } from "@/components/ui/separator"
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog"
+import Link from "next/link"
+import { useState } from "react"
+import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 export interface SignUpPageText {
-  title: string;
-  subtitle: string;
-  googleButton: string;
-  orDivider: string;
-  nameLabel: string;
-  namePlaceholder: string;
-  nameRequired: string;
-  emailLabel: string;
-  emailPlaceholder: string;
-  emailRequired: string;
-  emailInvalid: string;
-  passwordLabel: string;
-  passwordPlaceholder: string;
-  passwordRequired: string;
-  passwordTooShort: string;
-  passwordHint: string;
-  haveAccount: string;
-  signInLink: string;
-  createAccountButton: string;
-  creatingAccountButton: string;
-  termsAgreement: string;
-  termsOfService: string;
-  privacyPolicy: string;
-  needHelp: string;
-  contactSupport: string;
+  title: string
+  subtitle: string
+  googleButton: string
+  orDivider: string
+  nameLabel: string
+  namePlaceholder: string
+  nameRequired: string
+  emailLabel: string
+  emailPlaceholder: string
+  emailRequired: string
+  emailInvalid: string
+  passwordLabel: string
+  passwordPlaceholder: string
+  passwordRequired: string
+  passwordTooShort: string
+  passwordHint: string
+  haveAccount: string
+  signInLink: string
+  createAccountButton: string
+  creatingAccountButton: string
+  termsAgreement: string
+  termsOfService: string
+  privacyPolicy: string
+  needHelp: string
+  contactSupport: string
+  verificationTitle: string
+  verificationMessage: string
+  verificationButton: string
 }
 
 interface SignUpPageProps {
-  text: SignUpPageText;
-  locale: string;
+  text: SignUpPageText
+  locale: string
 }
 
 export default function SignUpPage({ text, locale }: SignUpPageProps) {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     name: "",
-  });
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const router = useRouter();
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setErrors({});
+  })
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [showVerificationMessage, setShowVerificationMessage] = useState(false)
+  const router = useRouter()
 
-    const newErrors: Record<string, string> = {};
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsLoading(true)
+    setErrors({})
+
+    const newErrors: Record<string, string> = {}
     if (!formData.name.trim()) {
-      newErrors.name = text.nameRequired;
+      newErrors.name = text.nameRequired
     }
     if (!formData.email.trim()) {
-      newErrors.email = text.emailRequired;
+      newErrors.email = text.emailRequired
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = text.emailInvalid;
+      newErrors.email = text.emailInvalid
     }
     if (!formData.password) {
-      newErrors.password = text.passwordRequired;
+      newErrors.password = text.passwordRequired
     } else if (formData.password.length < 8) {
-      newErrors.password = text.passwordTooShort;
+      newErrors.password = text.passwordTooShort
     }
 
     if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      setIsLoading(false);
-      return;
+      setErrors(newErrors)
+      setIsLoading(false)
+      return
     }
 
-    console.log("[v0] Signup form submitted:", formData);
-    console.log(JSON.stringify(formData));
+    console.log("[v0] Signup form submitted:", formData)
+    console.log(JSON.stringify(formData))
     try {
-      const response = await fetch('http://localhost:5000/auth/register', {
-        method: 'POST',
+      const response = await fetch("http://localhost:5000/auth/register", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
-      });
+      })
       if (!response.ok) {
-        const errorData = await response.json();
-        setErrors({ form: errorData.message || 'An error occurred. Please try again.' });
-        console.log('Signup failed:', errorData);
+        const errorData = await response.json()
+        setErrors({ form: errorData.message || "An error occurred. Please try again." })
+        console.log("Signup failed:", errorData)
       } else {
-        const data = await response.json();
-        console.log('Signup successful:', data);
-        router.push('/dashboard');
-
+        const data = await response.json()
+        console.log("Signup successful:", data)
+        setShowVerificationMessage(true)
       }
     } catch (error) {
-      console.error('Error during signup:', error);
+      console.error("Error during signup:", error)
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
   }
+
+  const handleVerificationComplete = () => {
+    setShowVerificationMessage(false)
+    router.push("/login")
+  }
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
     if (errors[name]) {
       setErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors[name];
-        return newErrors;
-      });
+        const newErrors = { ...prev }
+        delete newErrors[name]
+        return newErrors
+      })
     }
-  };
+  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <AlertDialog open={showVerificationMessage} onOpenChange={setShowVerificationMessage}>
+        <AlertDialogContent className={locale === 'ar' ? 'direction-rtl' : ''}
+          dir={locale === 'ar' ? 'rtl' : 'ltr'}>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{text.verificationTitle}</AlertDialogTitle>
+            <AlertDialogDescription>{text.verificationMessage}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={handleVerificationComplete}>{text.verificationButton}</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <main className="flex-1 flex items-center justify-center px-4 pt-10 pb-4">
         <div className="w-full max-w-md">
           <div className="text-center mt-8 mb-6">
@@ -212,6 +244,7 @@ export default function SignUpPage({ text, locale }: SignUpPageProps) {
                 </Link>
               </div>
 
+              {errors.form && <p className="text-base text-red-600 text-center font-bold">{errors.form}</p>}
               <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={isLoading}>
                 {isLoading ? (
                   <>
@@ -221,7 +254,7 @@ export default function SignUpPage({ text, locale }: SignUpPageProps) {
                 ) : (
                   <>
                     {text.createAccountButton}
-                    {locale === "ar" ? (<ArrowLeft className="mr-2 w-4 h-4" />) : (<ArrowRight className="ml-2 w-4 h-4" />)}
+                    {locale === "ar" ? <ArrowLeft className="mr-2 w-4 h-4" /> : <ArrowRight className="ml-2 w-4 h-4" />}
                   </>
                 )}
               </Button>
@@ -248,6 +281,5 @@ export default function SignUpPage({ text, locale }: SignUpPageProps) {
         </div>
       </main>
     </div>
-  );
+  )
 }
-
