@@ -6,6 +6,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import * as path from 'path';
 import { existsSync, mkdirSync } from 'fs';
+import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   // Ensure upload directory exists
@@ -14,8 +15,13 @@ async function bootstrap() {
     mkdirSync(uploadDir, { recursive: true });
   }
 
-  const app = await NestFactory.create<NestExpressApplication>(AppModule, { cors: true });
-
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    cors: {
+      origin: 'http://localhost:3000',
+      credentials: true,
+    },
+  });
+  app.use(cookieParser());
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,

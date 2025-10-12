@@ -59,7 +59,7 @@ export class AuthService {
   }
 
   // register User Function
-  async register(email: string, password: string, name: string) {
+  async register(email: string, password: string, name: string, timezone: string, timeFormat: '12h' | '24h') {
 
     //cheack if email already exists
     const existing = await this.em.findOne(User, { email });
@@ -79,6 +79,8 @@ export class AuthService {
       updatedAt: new Date(),
       role: 'user',
       isEmailVerified: false,
+      timezone,
+      timeFormat,
     });
     await this.em.persistAndFlush(user);
     logger.log(`✅ User Registered Successfully!`);

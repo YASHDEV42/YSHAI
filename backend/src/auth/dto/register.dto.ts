@@ -38,4 +38,18 @@ export class RegisterDto {
   @MinLength(2)
   @MaxLength(100)
   name: string;
+
+  @IsString()
+  @ApiProperty({
+    description: 'Timezone of the user',
+    example: 'America/New_York',
+  })
+  timezone: string;
+
+  @IsString()
+  @ApiProperty({
+    description: 'Preferred time format of the user',
+    example: '12h',
+  })
+  timeFormat: '12h' | '24h';
 }

@@ -86,12 +86,18 @@ export interface DashboardPageText {
   };
 }
 
+interface User {
+  name: string;
+  email: string;
+
+}
 interface DashboardPageProps {
   text: DashboardPageText;
   locale: string;
+  user: User | null;
 }
 
-export default function DashboardPage({ text, locale }: DashboardPageProps) {
+export default function DashboardPage({ text, locale, user }: DashboardPageProps) {
   const statsRef = useRef<HTMLDivElement>(null);
   const activityRef = useRef<HTMLDivElement>(null);
   const quickActionsRef = useRef<HTMLDivElement>(null);
@@ -309,8 +315,8 @@ export default function DashboardPage({ text, locale }: DashboardPageProps) {
                 <AvatarFallback>JD</AvatarFallback>
               </Avatar>
               <div className="flex flex-col">
-                <span className="text-sm font-medium text-foreground">{text.user.name}</span>
-                <span className="text-xs text-muted-foreground">{text.user.email}</span>
+                <span className="text-sm font-medium text-foreground">{user?.name}</span>
+                <span className="text-xs text-muted-foreground">{user?.email}</span>
               </div>
               <ModeToggle />
             </div>

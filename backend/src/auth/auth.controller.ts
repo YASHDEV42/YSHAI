@@ -7,6 +7,7 @@ import {
   Body,
   Query,
   BadRequestException,
+  Res
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiQuery } from '@nestjs/swagger';
@@ -14,6 +15,7 @@ import { PassportLocalGuard } from './guards/passport-local.guard';
 import { RegisterDto } from './dto/register.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { User } from 'src/entities/user.entity';
+import type { Response } from 'express';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -29,7 +31,7 @@ export class AuthController {
   })
   @ApiBody({ type: RegisterDto })
   async register(@Body() dto: RegisterDto) {
-    return this.authService.register(dto.email, dto.password, dto.name);
+    return this.authService.register(dto.email, dto.password, dto.name, dto.timezone, dto.timeFormat);
   }
 
   @Get('verify')
@@ -107,8 +109,26 @@ export class AuthController {
       required: ['email', 'password'],
     },
   })
-  login(@Request() req: { user: User }) {
-    return this.authService.login(req.user);
+  async login(@Request() req: any, @Res({ passthrough: true }) res: Response) {
+    const { accessToken, refreshToken } = await this.authService.login(req.user);
+    try {
+      res.cookie('accessToken', accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 60 * 60 * 1000,
+      });
+    } catch (error) {
+      console.error('Error setting access token cookie:', error);
+    }
+    res.cookie('refreshJwt', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+    console.log('Cookies set successfully');
+    return { message: 'Login successful' };
   }
 
   @Post('logout')

@@ -16,7 +16,7 @@ import { UpdatePreferencesDto } from './dto/update-preferences.dto';
 @UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
   // get current user profile using JWT
   @Get('me')
@@ -29,8 +29,8 @@ export class UsersController {
     status: 404,
     description: 'User not found.',
   })
-  async getProfile(@Req() req: { user: { id: number } }) {
-    return this.usersService.getProfile(req.user.id);
+  async getProfile(@Req() req: { user: { userId: number } }) {
+    return this.usersService.getProfile(req.user.userId);
   }
 
   // update current user profile using JWT

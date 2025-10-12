@@ -96,12 +96,24 @@ export default function SignUpPage({ text, locale }: SignUpPageProps) {
     console.log("[v0] Signup form submitted:", formData)
     console.log(JSON.stringify(formData))
     try {
-      const response = await fetch("http://localhost:5000/auth/register", {
+
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const timeFormat = new Intl.DateTimeFormat([], {
+        hour: 'numeric'
+      }).format(new Date(2024, 0, 1, 13, 0)) === '1 PM' ? '12h' : '24h';
+
+      const signupData = {
+        ...formData,
+        timezone,      // e.g., "Asia/Riyadh"
+        timeFormat,    // "12h" or "24h"
+      };
+
+      const response = await fetch(`${process.env.Backend || "http://localhost:5000"}/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(signupData),
       })
       if (!response.ok) {
         const errorData = await response.json()

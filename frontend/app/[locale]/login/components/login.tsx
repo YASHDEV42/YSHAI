@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import { useState } from "react";
 import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 // Define the text interface
 export interface LoginPageText {
@@ -48,7 +49,7 @@ export default function LoginPage({ text, locale }: LoginPageProps) {
     password: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
-
+  const router = useRouter()
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -71,14 +72,30 @@ export default function LoginPage({ text, locale }: LoginPageProps) {
     }
 
     console.log("[v0] Login form submitted:", formData);
-
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      // TODO: redirect or show success
-    }, 2000);
-  };
-
+    try {
+      const response = await fetch(`${process.env.Backend || "http://localhost:5000"}/auth/login`, {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(formData),
+      })
+      if (!response.ok) {
+        const errorData = await response.json()
+        setErrors({ form: errorData.message || "An error occurred. Please try again." })
+        console.log("Signup failed:", errorData)
+      } else {
+        const data = await response.json()
+        console.log("Signup successful:", data)
+        router.push(`/dashboard`)
+      }
+    } catch (error) {
+      console.error("An unexpected error occurred:", error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -176,7 +193,9 @@ export default function LoginPage({ text, locale }: LoginPageProps) {
                 </Link>
               </div>
 
+              {errors.form && (<p className="text-base text-red-600 text-center font-bold">{errors.form}</p>)}
               <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={isLoading}>
+
                 {isLoading ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -214,3 +233,4 @@ export default function LoginPage({ text, locale }: LoginPageProps) {
     </div>
   );
 }
+
