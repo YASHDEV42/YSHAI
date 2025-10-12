@@ -7,6 +7,10 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import * as path from 'path';
 import { existsSync, mkdirSync } from 'fs';
 import cookieParser from 'cookie-parser';
+import { writeFileSync } from 'fs';
+import { join } from 'path';
+import { Response } from 'express';
+
 
 async function bootstrap() {
   // Ensure upload directory exists
@@ -70,7 +74,10 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
-
+  writeFileSync(join(process.cwd(), 'swagger-spec.json'), JSON.stringify(document, null, 2));
+  app.getHttpAdapter().get('/api-json', (req, res: Response) => {
+    res.json(document);
+  })
   // Use environment port
   const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 5000;
   await app.listen(port);

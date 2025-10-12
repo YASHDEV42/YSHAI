@@ -1,0 +1,2872 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "operationId": "AuthController_register",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User registered successfully."
+          },
+          "400": {
+            "description": "Bad request (e.g. email already exists)."
+          }
+        },
+        "summary": "Register a new user",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/verify": {
+      "get": {
+        "operationId": "AuthController_verifyEmail",
+        "parameters": [
+          {
+            "name": "token",
+            "required": true,
+            "in": "query",
+            "description": "Verification token from email",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Email verified successfully."
+          },
+          "400": {
+            "description": "Invalid or expired token."
+          }
+        },
+        "summary": "Verify user email via token",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/resend-verification": {
+      "post": {
+        "operationId": "AuthController_resendVerification",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  }
+                },
+                "required": [
+                  "email"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Verification email resent."
+          },
+          "400": {
+            "description": "Bad request (e.g. user not found or already verified)."
+          }
+        },
+        "summary": "Resend email verification link",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "maxLength": 50,
+                    "minLength": 5
+                  },
+                  "password": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 6
+                  }
+                },
+                "required": [
+                  "email",
+                  "password"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User logged in successfully."
+          },
+          "401": {
+            "description": "Unauthorized (invalid credentials or email not verified)."
+          }
+        },
+        "summary": "Login",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "User logged out successfully."
+          },
+          "401": {
+            "description": "Unauthorized."
+          }
+        },
+        "summary": "Logout",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/forgot-password": {
+      "post": {
+        "operationId": "AuthController_forgotPassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "maxLength": 50,
+                    "minLength": 5
+                  }
+                },
+                "required": [
+                  "email"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset link sent."
+          },
+          "400": {
+            "description": "Bad request."
+          }
+        },
+        "summary": "Forgot password",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/reset-password": {
+      "post": {
+        "operationId": "AuthController_resetPassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "token": {
+                    "type": "string"
+                  },
+                  "newPassword": {
+                    "type": "string",
+                    "minLength": 6
+                  }
+                },
+                "required": [
+                  "token",
+                  "newPassword"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset successfully."
+          },
+          "400": {
+            "description": "Bad request."
+          }
+        },
+        "summary": "Reset password",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/users/me": {
+      "get": {
+        "operationId": "UsersController_getProfile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Current user retrieved successfully."
+          },
+          "404": {
+            "description": "User not found."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get current user using JWT",
+        "tags": [
+          "Users"
+        ]
+      },
+      "put": {
+        "operationId": "UsersController_updateProfile",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Current user updated successfully."
+          },
+          "404": {
+            "description": "User not found."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update current user using JWT",
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/users/me/preferences": {
+      "put": {
+        "operationId": "UsersController_updatePreferences",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePreferencesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Preferences updated successfully."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update current user preferences using JWT",
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/posts": {
+      "post": {
+        "operationId": "PostsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePostDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Post created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Post"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Related entity not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new post",
+        "tags": [
+          "Posts"
+        ]
+      }
+    },
+    "/posts/bulk": {
+      "post": {
+        "operationId": "PostsController_bulkCreate",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkCreatePostsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Posts created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Post"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Bulk create posts",
+        "tags": [
+          "Posts"
+        ]
+      }
+    },
+    "/posts/bulk/csv": {
+      "post": {
+        "operationId": "PostsController_bulkCreateFromCsv",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "CSV with headers: contentAr,contentEn?,scheduleAt,authorId,teamId?,socialAccountIds?(comma-separated),campaignId?,templateId?,status?,isRecurring?"
+                  }
+                },
+                "required": [
+                  "file"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Posts created from CSV",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Post"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Bulk create posts from CSV upload",
+        "tags": [
+          "Posts"
+        ]
+      }
+    },
+    "/posts/recurring": {
+      "post": {
+        "operationId": "PostsController_createRecurring",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecurringPostDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Recurring post created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Post"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a recurring post",
+        "tags": [
+          "Posts"
+        ]
+      }
+    },
+    "/posts/draft": {
+      "post": {
+        "operationId": "PostsController_createDraft",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DraftPostDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Draft post created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Post"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a draft post",
+        "tags": [
+          "Posts"
+        ]
+      }
+    },
+    "/posts/{id}": {
+      "put": {
+        "operationId": "PostsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePostDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Post updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Post"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Post not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update an existing post",
+        "tags": [
+          "Posts"
+        ]
+      },
+      "delete": {
+        "operationId": "PostsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Post marked as deleted"
+          },
+          "404": {
+            "description": "Post not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a post (soft delete)",
+        "tags": [
+          "Posts"
+        ]
+      }
+    },
+    "/posts/{id}/reschedule": {
+      "put": {
+        "operationId": "PostsController_reschedule",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReschedulePostDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Post rescheduled",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Post"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Reschedule a post",
+        "tags": [
+          "Posts"
+        ]
+      }
+    },
+    "/posts/{id}/publish": {
+      "post": {
+        "operationId": "PostsController_publishNow",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Publish job enqueued",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Post"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Publish a post immediately (enqueue job)",
+        "tags": [
+          "Posts"
+        ]
+      }
+    },
+    "/posts/{id}/status": {
+      "get": {
+        "operationId": "PostsController_statusGet",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status fetched"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get post status",
+        "tags": [
+          "Posts"
+        ]
+      }
+    },
+    "/media": {
+      "post": {
+        "operationId": "MediaController_upload",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Media file to upload",
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "The media file (image or video)"
+                  },
+                  "postId": {
+                    "type": "number",
+                    "description": "Optional: ID of the post to associate with"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Media uploaded successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MediaResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Upload a media file (image or video) to Cloudinary",
+        "tags": [
+          "Media"
+        ]
+      },
+      "get": {
+        "operationId": "MediaController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of media files",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MediaResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List all uploaded media",
+        "tags": [
+          "Media"
+        ]
+      }
+    },
+    "/media/{id}": {
+      "delete": {
+        "operationId": "MediaController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Media deleted successfully"
+          },
+          "404": {
+            "description": "Media not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a media file from Cloudinary and database",
+        "tags": [
+          "Media"
+        ]
+      }
+    },
+    "/teams": {
+      "post": {
+        "operationId": "TeamsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTeamDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Team created successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new team",
+        "tags": [
+          "Teams"
+        ]
+      }
+    },
+    "/teams/{teamId}/invite": {
+      "post": {
+        "operationId": "TeamsController_inviteMember",
+        "parameters": [
+          {
+            "name": "teamId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InviteMemberDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Member invited successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Invite a member to the team",
+        "tags": [
+          "Teams"
+        ]
+      }
+    },
+    "/teams/{teamId}/members/{memberId}": {
+      "put": {
+        "operationId": "TeamsController_updateMemberRole",
+        "parameters": [
+          {
+            "name": "teamId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "memberId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMemberRoleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Member role updated successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update a team member’s role",
+        "tags": [
+          "Teams"
+        ]
+      },
+      "delete": {
+        "operationId": "TeamsController_removeMember",
+        "parameters": [
+          {
+            "name": "teamId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "memberId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Member removed successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Remove a member from the team",
+        "tags": [
+          "Teams"
+        ]
+      }
+    },
+    "/teams/{teamId}/posts/{postId}/approve": {
+      "post": {
+        "operationId": "TeamsController_approvePost",
+        "parameters": [
+          {
+            "name": "teamId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "postId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Approve a post for publishing",
+        "tags": [
+          "Teams"
+        ]
+      }
+    },
+    "/teams/{teamId}/posts/{postId}/reject": {
+      "post": {
+        "operationId": "TeamsController_rejectPost",
+        "parameters": [
+          {
+            "name": "teamId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "postId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Reject a post",
+        "tags": [
+          "Teams"
+        ]
+      }
+    },
+    "/teams/{teamId}/audit-logs": {
+      "get": {
+        "operationId": "TeamsController_listAuditLogs",
+        "parameters": [
+          {
+            "name": "teamId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List team audit logs",
+        "tags": [
+          "Teams"
+        ]
+      }
+    },
+    "/moderation/text": {
+      "post": {
+        "operationId": "ModerationController_moderateText",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModerateTextDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Moderation result returned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModerationResult"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Moderate Arabic text",
+        "tags": [
+          "Moderation"
+        ]
+      }
+    },
+    "/moderation/image": {
+      "post": {
+        "operationId": "ModerationController_moderateImage",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModerateImageDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Moderation result returned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModerationResult"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Moderate an image by URL",
+        "tags": [
+          "Moderation"
+        ]
+      }
+    },
+    "/moderation/video": {
+      "post": {
+        "operationId": "ModerationController_moderateVideo",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModerateVideoDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Moderation result returned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModerationResult"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Moderate a video by URL",
+        "tags": [
+          "Moderation"
+        ]
+      }
+    },
+    "/moderation/reports": {
+      "get": {
+        "operationId": "ModerationController_getReports",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of moderation reports",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ModerationResult"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Fetch moderation reports",
+        "tags": [
+          "Moderation"
+        ]
+      }
+    },
+    "/analytics/posts/{postId}": {
+      "get": {
+        "operationId": "AnalyticsController_getPostInsights",
+        "parameters": [
+          {
+            "name": "postId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostInsightsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Post Insights",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/analytics/accounts/{accountId}": {
+      "get": {
+        "operationId": "AnalyticsController_getAccountInsights",
+        "parameters": [
+          {
+            "name": "accountId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountInsightsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Account Insights",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/analytics/campaigns/{campaignId}": {
+      "get": {
+        "operationId": "AnalyticsController_getCampaignInsights",
+        "parameters": [
+          {
+            "name": "campaignId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignInsightsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Campaign Insights",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/analytics/export/csv": {
+      "get": {
+        "operationId": "AnalyticsController_exportCsv",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Export report as CSV",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/analytics/export/pdf": {
+      "get": {
+        "operationId": "AnalyticsController_exportPdf",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Export report as PDF",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/ai/caption": {
+      "post": {
+        "operationId": "AiController_generateCaption",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateCaptionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Generate social media caption",
+        "tags": [
+          "AI"
+        ]
+      }
+    },
+    "/ai/hashtags": {
+      "post": {
+        "operationId": "AiController_generateHashtags",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateHashtagsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Generate hashtags for text",
+        "tags": [
+          "AI"
+        ]
+      }
+    },
+    "/ai/alt-text": {
+      "post": {
+        "operationId": "AiController_generateAltText",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateAltTextDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Generate alternative text for image",
+        "tags": [
+          "AI"
+        ]
+      }
+    },
+    "/": {
+      "get": {
+        "operationId": "MetaController_root",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Root",
+        "tags": [
+          "Meta"
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "operationId": "MetaController_health",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Health Check",
+        "tags": [
+          "Meta"
+        ]
+      }
+    },
+    "/meta/timezones": {
+      "get": {
+        "operationId": "MetaController_listTimezones",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "List Timezones",
+        "tags": [
+          "Meta"
+        ]
+      }
+    },
+    "/meta/locales": {
+      "get": {
+        "operationId": "MetaController_listLocales",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "List Locales",
+        "tags": [
+          "Meta"
+        ]
+      }
+    },
+    "/accounts": {
+      "post": {
+        "operationId": "AccountsController_link",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LinkAccountWithTokensDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Link Account",
+        "tags": [
+          "Accounts"
+        ]
+      }
+    },
+    "/accounts/{accountId}": {
+      "delete": {
+        "operationId": "AccountsController_unlink",
+        "parameters": [
+          {
+            "name": "accountId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Unlink Account",
+        "tags": [
+          "Accounts"
+        ]
+      }
+    },
+    "/notifications": {
+      "get": {
+        "operationId": "NotificationsController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List notifications for current user",
+        "tags": [
+          "Notifications"
+        ]
+      }
+    },
+    "/notifications/{notificationId}/read": {
+      "patch": {
+        "operationId": "NotificationsController_markRead",
+        "parameters": [
+          {
+            "name": "notificationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Mark notification as read",
+        "tags": [
+          "Notifications"
+        ]
+      }
+    },
+    "/notifications/unread-count": {
+      "get": {
+        "operationId": "NotificationsController_unreadCount",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get unread notifications count",
+        "tags": [
+          "Notifications"
+        ]
+      }
+    },
+    "/notifications/mark-all-read": {
+      "patch": {
+        "operationId": "NotificationsController_markAllRead",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Mark all notifications as read",
+        "tags": [
+          "Notifications"
+        ]
+      }
+    },
+    "/webhooks": {
+      "post": {
+        "operationId": "WebhooksController_register",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateWebhookDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Webhook registered"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Register webhook",
+        "tags": [
+          "Webhooks"
+        ]
+      },
+      "get": {
+        "operationId": "WebhooksController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List webhooks",
+        "tags": [
+          "Webhooks"
+        ]
+      }
+    },
+    "/webhooks/{webhookId}": {
+      "delete": {
+        "operationId": "WebhooksController_remove",
+        "parameters": [
+          {
+            "name": "webhookId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete webhook",
+        "tags": [
+          "Webhooks"
+        ]
+      }
+    },
+    "/webhooks/{webhookId}/deliveries": {
+      "get": {
+        "operationId": "WebhooksController_deliveries",
+        "parameters": [
+          {
+            "name": "webhookId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List delivery attempts for a webhook",
+        "tags": [
+          "Webhooks"
+        ]
+      }
+    },
+    "/billing/plans": {
+      "get": {
+        "operationId": "BillingController_listPlans",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List available plans",
+        "tags": [
+          "Billing"
+        ]
+      }
+    },
+    "/billing/subscribe": {
+      "post": {
+        "operationId": "BillingController_subscribe",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubscribeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create or switch subscription",
+        "tags": [
+          "Billing"
+        ]
+      }
+    },
+    "/billing/cancel": {
+      "delete": {
+        "operationId": "BillingController_cancel",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cancel current subscription",
+        "tags": [
+          "Billing"
+        ]
+      }
+    },
+    "/billing/invoices": {
+      "get": {
+        "operationId": "BillingController_invoices",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List invoices for current user",
+        "tags": [
+          "Billing"
+        ]
+      }
+    },
+    "/billing/callback": {
+      "post": {
+        "operationId": "BillingController_callback",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Payment gateway callback",
+        "tags": [
+          "Billing"
+        ]
+      }
+    },
+    "/admin/users": {
+      "get": {
+        "operationId": "AdminController_listUsers",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List users",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/admin/users/{id}/ban": {
+      "post": {
+        "operationId": "AdminController_banUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Ban user",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/admin/users/{id}/role": {
+      "put": {
+        "operationId": "AdminController_assignRole",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignRoleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Assign role",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/admin/audit-logs": {
+      "get": {
+        "operationId": "AdminController_auditLogs",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Audit logs",
+        "tags": [
+          "Admin"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "YSHAI API",
+    "description": "The YSHAI backend API documentation. This API manages posts, teams, media, AI generation, moderation, analytics, billing, and more.",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [
+    {
+      "name": "Auth",
+      "description": ""
+    },
+    {
+      "name": "Users",
+      "description": ""
+    },
+    {
+      "name": "Teams",
+      "description": ""
+    },
+    {
+      "name": "Posts",
+      "description": ""
+    },
+    {
+      "name": "Media",
+      "description": ""
+    },
+    {
+      "name": "AI",
+      "description": ""
+    },
+    {
+      "name": "Admin",
+      "description": ""
+    },
+    {
+      "name": "Accounts",
+      "description": ""
+    },
+    {
+      "name": "Notifications",
+      "description": ""
+    },
+    {
+      "name": "Analytics",
+      "description": ""
+    },
+    {
+      "name": "Billing",
+      "description": ""
+    },
+    {
+      "name": "Webhooks",
+      "description": ""
+    },
+    {
+      "name": "Meta",
+      "description": ""
+    },
+    {
+      "name": "Moderation",
+      "description": ""
+    }
+  ],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "access-token": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http",
+        "name": "Authorization",
+        "description": "Enter JWT token",
+        "in": "header"
+      }
+    },
+    "schemas": {
+      "RegisterDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "User email address",
+            "example": "user@example.com",
+            "maxLength": 50,
+            "minLength": 5,
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "description": "Password for authentication",
+            "example": "strongPass123",
+            "minLength": 6,
+            "maxLength": 100,
+            "format": "password"
+          },
+          "name": {
+            "type": "string",
+            "description": "Full name of the user",
+            "example": "John Doe",
+            "minLength": 2,
+            "maxLength": 100
+          },
+          "timezone": {
+            "type": "string",
+            "description": "Timezone of the user",
+            "example": "America/New_York"
+          },
+          "timeFormat": {
+            "type": "string",
+            "description": "Preferred time format of the user",
+            "example": "12h"
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "name",
+          "timezone",
+          "timeFormat"
+        ]
+      },
+      "RefreshTokenDto": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "description": "The refresh token"
+          },
+          "userId": {
+            "type": "number",
+            "description": "The user ID associated with the refresh token"
+          }
+        },
+        "required": [
+          "refreshToken",
+          "userId"
+        ]
+      },
+      "UpdateUserDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "john.doe@example.com"
+          },
+          "name": {
+            "type": "string",
+            "example": "John Doe"
+          }
+        },
+        "required": [
+          "email",
+          "name"
+        ]
+      },
+      "UpdatePreferencesDto": {
+        "type": "object",
+        "properties": {
+          "timezone": {
+            "type": "string",
+            "description": "IANA timezone, e.g., America/New_York"
+          },
+          "language": {
+            "type": "string",
+            "description": "BCP 47 language tag, e.g., en or ar"
+          },
+          "locale": {
+            "type": "string",
+            "description": "Locale for formatting, e.g., en-US or ar-EG"
+          },
+          "timeFormat": {
+            "type": "string",
+            "description": "12h or 24h clock format"
+          }
+        }
+      },
+      "CreatePostDto": {
+        "type": "object",
+        "properties": {
+          "contentAr": {
+            "type": "string",
+            "description": "Arabic content of the post",
+            "example": "هذا محتوى المنشور باللغة العربية"
+          },
+          "contentEn": {
+            "type": "string",
+            "description": "English content of the post (optional)",
+            "example": "This is the post content in English"
+          },
+          "scheduleAt": {
+            "type": "string",
+            "description": "Scheduled date and time for the post (ISO format)",
+            "example": "2025-04-05T10:00:00Z",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "description": "Status of the post",
+            "enum": [
+              "draft",
+              "scheduled",
+              "published",
+              "failed",
+              "pending_approval"
+            ],
+            "default": "draft"
+          },
+          "isRecurring": {
+            "type": "boolean",
+            "description": "Whether the post is part of a recurring schedule",
+            "default": false
+          },
+          "authorId": {
+            "type": "number",
+            "description": "ID of the author (User)",
+            "example": 1
+          },
+          "teamId": {
+            "type": "number",
+            "description": "ID of the team (optional)",
+            "example": 5
+          },
+          "socialAccountIds": {
+            "description": "IDs of the social accounts to post to (optional, multi-target)",
+            "example": [
+              12,
+              15
+            ],
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "campaignId": {
+            "type": "number",
+            "description": "ID of the associated campaign (optional)",
+            "example": 7
+          },
+          "templateId": {
+            "type": "number",
+            "description": "ID of the template used (optional)",
+            "example": 3
+          }
+        },
+        "required": [
+          "contentAr",
+          "scheduleAt",
+          "authorId"
+        ]
+      },
+      "Post": {
+        "type": "object",
+        "properties": {}
+      },
+      "BulkCreatePostsDto": {
+        "type": "object",
+        "properties": {
+          "posts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreatePostDto"
+            }
+          }
+        },
+        "required": [
+          "posts"
+        ]
+      },
+      "RecurringPostDto": {
+        "type": "object",
+        "properties": {
+          "contentAr": {
+            "type": "string",
+            "description": "Arabic content"
+          },
+          "contentEn": {
+            "type": "string",
+            "description": "English content"
+          },
+          "scheduleAt": {
+            "type": "string",
+            "description": "First scheduled time (ISO)",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "description": "Status",
+            "enum": [
+              "draft",
+              "scheduled",
+              "published",
+              "failed",
+              "pending_approval"
+            ]
+          },
+          "isRecurring": {
+            "type": "boolean",
+            "description": "Force recurring",
+            "default": true
+          },
+          "authorId": {
+            "type": "number",
+            "description": "Author ID"
+          },
+          "teamId": {
+            "type": "number",
+            "description": "Team ID"
+          },
+          "socialAccountIds": {
+            "description": "Social account IDs (multi-target)",
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "campaignId": {
+            "type": "number",
+            "description": "Campaign ID"
+          },
+          "templateId": {
+            "type": "number",
+            "description": "Template ID"
+          }
+        },
+        "required": [
+          "contentAr",
+          "scheduleAt",
+          "isRecurring",
+          "authorId"
+        ]
+      },
+      "DraftPostDto": {
+        "type": "object",
+        "properties": {
+          "contentAr": {
+            "type": "string",
+            "description": "Arabic content"
+          },
+          "contentEn": {
+            "type": "string",
+            "description": "English content"
+          },
+          "scheduleAt": {
+            "type": "string",
+            "description": "When you plan to publish this draft",
+            "format": "date-time"
+          },
+          "authorId": {
+            "type": "number",
+            "description": "Author ID"
+          },
+          "teamId": {
+            "type": "number",
+            "description": "Team ID"
+          },
+          "socialAccountIds": {
+            "description": "Social account IDs (multi-target)",
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "campaignId": {
+            "type": "number",
+            "description": "Campaign ID"
+          },
+          "templateId": {
+            "type": "number",
+            "description": "Template ID"
+          }
+        },
+        "required": [
+          "contentAr",
+          "scheduleAt",
+          "authorId"
+        ]
+      },
+      "UpdatePostDto": {
+        "type": "object",
+        "properties": {
+          "contentAr": {
+            "type": "string",
+            "description": "Arabic content",
+            "example": "محتوى محدث"
+          },
+          "contentEn": {
+            "type": "string",
+            "description": "English content",
+            "example": "Updated content"
+          },
+          "scheduleAt": {
+            "type": "string",
+            "description": "Scheduled date/time",
+            "example": "2025-04-06T14:30:00Z",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "description": "Status",
+            "enum": [
+              "draft",
+              "scheduled",
+              "published",
+              "failed",
+              "pending_approval"
+            ]
+          },
+          "isRecurring": {
+            "type": "boolean",
+            "description": "Is recurring?"
+          },
+          "teamId": {
+            "type": "number",
+            "description": "Team ID",
+            "example": 5
+          },
+          "socialAccountIds": {
+            "description": "Social account IDs (multi-target)",
+            "example": [
+              12,
+              15
+            ],
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "campaignId": {
+            "type": "number",
+            "description": "Campaign ID",
+            "example": 7
+          },
+          "templateId": {
+            "type": "number",
+            "description": "Template ID",
+            "example": 3
+          }
+        }
+      },
+      "ReschedulePostDto": {
+        "type": "object",
+        "properties": {
+          "scheduleAt": {
+            "type": "string",
+            "description": "New scheduled date/time",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "scheduleAt"
+        ]
+      },
+      "MediaResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1
+          },
+          "url": {
+            "type": "string",
+            "example": "https://res.cloudinary.com/your-cloud/media/upload/v123/post_1.jpg"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "image",
+              "video"
+            ],
+            "example": "image"
+          },
+          "orderIndex": {
+            "type": "number",
+            "example": 0
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-08-22T10:00:00Z"
+          },
+          "postId": {
+            "type": "number",
+            "example": 123,
+            "description": "Associated post ID (if any)"
+          }
+        },
+        "required": [
+          "id",
+          "url",
+          "type",
+          "orderIndex",
+          "createdAt",
+          "postId"
+        ]
+      },
+      "CreateTeamDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the team",
+            "example": "Marketing Team"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "InviteMemberDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "Email of the user to invite",
+            "example": "member@example.com"
+          },
+          "role": {
+            "type": "string",
+            "description": "Role to assign to the invited member",
+            "enum": [
+              "admin",
+              "editor",
+              "viewer"
+            ],
+            "example": "editor"
+          }
+        },
+        "required": [
+          "email",
+          "role"
+        ]
+      },
+      "UpdateMemberRoleDto": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "description": "New role for the team member",
+            "enum": [
+              "admin",
+              "editor",
+              "viewer"
+            ],
+            "example": "admin"
+          }
+        },
+        "required": [
+          "role"
+        ]
+      },
+      "ModerateTextDto": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "Arabic text to moderate",
+            "maxLength": 5000,
+            "example": "اشتري الآن واحصل على خصم 50%"
+          },
+          "postId": {
+            "type": "number",
+            "description": "Related post ID",
+            "example": 123
+          }
+        },
+        "required": [
+          "text",
+          "postId"
+        ]
+      },
+      "ModerationResult": {
+        "type": "object",
+        "properties": {
+          "post": {
+            "description": "Associated post",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Post"
+              }
+            ]
+          },
+          "provider": {
+            "type": "string",
+            "enum": [
+              "gemini",
+              "custom"
+            ]
+          },
+          "verdict": {
+            "type": "string",
+            "enum": [
+              "allowed",
+              "flagged",
+              "blocked"
+            ]
+          },
+          "details": {
+            "type": "object",
+            "description": "Raw moderation details"
+          },
+          "checkedAt": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "post",
+          "provider",
+          "verdict",
+          "checkedAt"
+        ]
+      },
+      "ModerateImageDto": {
+        "type": "object",
+        "properties": {
+          "imageUrl": {
+            "type": "string",
+            "description": "Publicly accessible image URL to moderate",
+            "example": "https://example.com/image.jpg"
+          },
+          "postId": {
+            "type": "number",
+            "description": "Related post ID",
+            "example": 123
+          }
+        },
+        "required": [
+          "imageUrl",
+          "postId"
+        ]
+      },
+      "ModerateVideoDto": {
+        "type": "object",
+        "properties": {
+          "videoUrl": {
+            "type": "string",
+            "description": "Publicly accessible video URL to moderate",
+            "example": "https://example.com/video.mp4"
+          },
+          "postId": {
+            "type": "number",
+            "description": "Related post ID",
+            "example": 123
+          }
+        },
+        "required": [
+          "videoUrl",
+          "postId"
+        ]
+      },
+      "PostInsightsDto": {
+        "type": "object",
+        "properties": {
+          "postId": {
+            "type": "number"
+          },
+          "impressions": {
+            "type": "number"
+          },
+          "clicks": {
+            "type": "number"
+          },
+          "likes": {
+            "type": "number"
+          },
+          "comments": {
+            "type": "number"
+          },
+          "shares": {
+            "type": "number"
+          },
+          "fetchedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "postId",
+          "impressions",
+          "clicks",
+          "likes",
+          "comments",
+          "shares",
+          "fetchedAt"
+        ]
+      },
+      "AccountInsightsDto": {
+        "type": "object",
+        "properties": {
+          "accountId": {
+            "type": "number"
+          },
+          "totalPosts": {
+            "type": "number"
+          },
+          "totalImpressions": {
+            "type": "number"
+          },
+          "totalClicks": {
+            "type": "number"
+          },
+          "totalEngagements": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "accountId",
+          "totalPosts",
+          "totalImpressions",
+          "totalClicks",
+          "totalEngagements"
+        ]
+      },
+      "CampaignInsightsDto": {
+        "type": "object",
+        "properties": {
+          "campaignId": {
+            "type": "number"
+          },
+          "posts": {
+            "type": "number"
+          },
+          "impressions": {
+            "type": "number"
+          },
+          "clicks": {
+            "type": "number"
+          },
+          "engagements": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "campaignId",
+          "posts",
+          "impressions",
+          "clicks",
+          "engagements"
+        ]
+      },
+      "GenerateCaptionDto": {
+        "type": "object",
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "description": "Prompt text for caption generation"
+          },
+          "tone": {
+            "type": "string",
+            "description": "Tone of the caption"
+          },
+          "count": {
+            "type": "object",
+            "description": "Number of captions to generate",
+            "default": 1
+          }
+        },
+        "required": [
+          "prompt",
+          "count"
+        ]
+      },
+      "GenerateHashtagsDto": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "Text to generate hashtags for"
+          },
+          "count": {
+            "type": "object",
+            "description": "Number of hashtags to generate",
+            "default": 5
+          }
+        },
+        "required": [
+          "text",
+          "count"
+        ]
+      },
+      "GenerateAltTextDto": {
+        "type": "object",
+        "properties": {
+          "imageUrl": {
+            "type": "string",
+            "description": "Image URL for alt text generation"
+          },
+          "context": {
+            "type": "string",
+            "description": "Optional context for the image"
+          }
+        },
+        "required": [
+          "imageUrl"
+        ]
+      },
+      "LinkAccountWithTokensDto": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": [
+              "x",
+              "instagram",
+              "linkedin",
+              "tiktok"
+            ]
+          },
+          "providerAccountId": {
+            "type": "string"
+          },
+          "accessToken": {
+            "type": "string",
+            "description": "Short-lived access token from the provider"
+          },
+          "refreshToken": {
+            "type": "string",
+            "description": "Long-lived refresh token from the provider"
+          },
+          "expiresAt": {
+            "type": "string",
+            "description": "Access token expiration (ISO 8601)"
+          }
+        },
+        "required": [
+          "provider",
+          "providerAccountId"
+        ]
+      },
+      "CreateWebhookDto": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "HTTPS endpoint to receive events"
+          },
+          "event": {
+            "type": "string",
+            "enum": [
+              "post.published",
+              "post.failed",
+              "account.disconnected"
+            ]
+          },
+          "secret": {
+            "type": "string",
+            "description": "Shared secret to sign webhook payloads"
+          }
+        },
+        "required": [
+          "url",
+          "event",
+          "secret"
+        ]
+      },
+      "SubscribeDto": {
+        "type": "object",
+        "properties": {
+          "planId": {
+            "type": "number",
+            "description": "Plan ID to subscribe to"
+          },
+          "paymentMethod": {
+            "type": "string",
+            "description": "Payment method token or identifier"
+          },
+          "couponCode": {
+            "type": "string",
+            "description": "Optional coupon code"
+          }
+        },
+        "required": [
+          "planId",
+          "paymentMethod"
+        ]
+      },
+      "AssignRoleDto": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": [
+              "user",
+              "admin"
+            ]
+          }
+        },
+        "required": [
+          "role"
+        ]
+      }
+    }
+  }
+}
