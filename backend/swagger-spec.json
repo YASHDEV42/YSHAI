@@ -127,7 +127,14 @@
         },
         "responses": {
           "201": {
-            "description": "User logged in successfully."
+            "description": "User logged in successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "401": {
             "description": "Unauthorized (invalid credentials or email not verified)."
@@ -243,7 +250,14 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Current user retrieved successfully."
+            "description": "Current user profile retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponseDto"
+                }
+              }
+            }
           },
           "404": {
             "description": "User not found."
@@ -274,7 +288,14 @@
         },
         "responses": {
           "200": {
-            "description": "Current user updated successfully."
+            "description": "Current user updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateUserDto"
+                }
+              }
+            }
           },
           "404": {
             "description": "User not found."
@@ -2115,22 +2136,87 @@
           "userId"
         ]
       },
-      "UpdateUserDto": {
+      "UserResponseDto": {
         "type": "object",
         "properties": {
+          "id": {
+            "type": "number"
+          },
           "email": {
-            "type": "string",
-            "example": "john.doe@example.com"
+            "type": "string"
           },
           "name": {
+            "type": "string"
+          },
+          "role": {
             "type": "string",
-            "example": "John Doe"
+            "enum": [
+              "user",
+              "admin"
+            ]
+          },
+          "timezone": {
+            "type": "string"
+          },
+          "isEmailVerified": {
+            "type": "boolean"
+          },
+          "language": {
+            "type": "string"
+          },
+          "locale": {
+            "type": "string"
+          },
+          "timeFormat": {
+            "type": "string",
+            "enum": [
+              "12h",
+              "24h"
+            ]
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
           }
         },
         "required": [
+          "id",
           "email",
-          "name"
+          "name",
+          "role",
+          "isEmailVerified",
+          "createdAt",
+          "updatedAt"
         ]
+      },
+      "UpdateUserDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "timezone": {
+            "type": "string"
+          },
+          "timeFormat": {
+            "type": "string",
+            "enum": [
+              "12h",
+              "24h"
+            ]
+          },
+          "language": {
+            "type": "string"
+          },
+          "locale": {
+            "type": "string"
+          }
+        }
       },
       "UpdatePreferencesDto": {
         "type": "object",

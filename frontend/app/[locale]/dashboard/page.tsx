@@ -66,7 +66,6 @@ export default async function DashboardPageRoute({
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-
         'Cookie': allCookies,
       },
       credentials: 'include',

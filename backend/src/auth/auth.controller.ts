@@ -85,7 +85,7 @@ export class AuthController {
   @Post('login')
   @UseGuards(PassportLocalGuard)
   @ApiOperation({ summary: 'Login' })
-  @ApiResponse({ status: 201, description: 'User logged in successfully.' })
+  @ApiResponse({ status: 201, description: 'User logged in successfully.', type: String })
   @ApiResponse({
     status: 401,
     description: 'Unauthorized (invalid credentials or email not verified).',

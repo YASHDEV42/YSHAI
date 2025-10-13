@@ -18,7 +18,7 @@ export class UsersService {
 
     return user;
   }
-  async updateProfile(userId: number, updateData: Partial<User>) {
+  async updateProfile(userId: number, updateData: Partial<User>): Promise<User> {
     const user = await this.em.findOne(User, { id: userId });
     if (!user) {
       throw new Error('User not found');
@@ -28,7 +28,7 @@ export class UsersService {
     return user;
   }
 
-  async updatePreferences(userId: number, prefs: UpdatePreferencesDto) {
+  async updatePreferences(userId: number, prefs: UpdatePreferencesDto): Promise<{ message: string }> {
     const user = await this.em.findOne(User, { id: userId });
     if (!user) {
       throw new Error('User not found');
@@ -39,6 +39,6 @@ export class UsersService {
     if (prefs.timeFormat !== undefined) user.timeFormat = prefs.timeFormat;
     // Optional extension points: user.language, user.locale, user.timeFormat
     await this.em.flush();
-    return { message: 'Preferences updated' } as const;
+    return { message: 'Preferences updated' };
   }
 }

@@ -1,11 +1,14 @@
+
 import { Controller, Get, UseGuards, Req, Put, Body } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
   ApiResponse,
   ApiTags,
+  ApiOkResponse,
+  ApiNotFoundResponse,
 } from '@nestjs/swagger';
-
+import { UserResponseDto } from './dto/user-response.dto';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -21,34 +24,28 @@ export class UsersController {
   // get current user profile using JWT
   @Get('me')
   @ApiOperation({ summary: 'Get current user using JWT' })
-  @ApiResponse({
-    status: 200,
-    description: 'Current user retrieved successfully.',
+  @ApiOkResponse({
+    description: 'Current user profile retrieved successfully.',
+    type: UserResponseDto,
   })
-  @ApiResponse({
-    status: 404,
-    description: 'User not found.',
-  })
-  async getProfile(@Req() req: { user: { userId: number } }) {
+  @ApiNotFoundResponse({ description: 'User not found.' })
+  async getProfile(@Req() req: { user: { userId: number } }): Promise<UserResponseDto> {
     return this.usersService.getProfile(req.user.userId);
   }
 
   // update current user profile using JWT
   @Put('me')
   @ApiOperation({ summary: 'Update current user using JWT' })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Current user updated successfully.',
+    type: UpdateUserDto,
   })
-  @ApiResponse({
-    status: 404,
-    description: 'User not found.',
-  })
+  @ApiNotFoundResponse({ description: 'User not found.' })
   async updateProfile(
-    @Req() req: { user: { id: number } },
+    @Req() req: { user: { userId: number } },
     @Body() updateUserDto: UpdateUserDto,
-  ) {
-    return this.usersService.updateProfile(req.user.id, updateUserDto);
+  ): Promise<UserResponseDto> {
+    return this.usersService.updateProfile(req.user.userId, updateUserDto);
   }
 
   // update current user preferences using JWT
@@ -59,9 +56,9 @@ export class UsersController {
     description: 'Preferences updated successfully.',
   })
   async updatePreferences(
-    @Req() req: { user: { id: number } },
+    @Req() req: { user: { userId: number } },
     @Body() body: UpdatePreferencesDto,
-  ) {
-    return this.usersService.updatePreferences(req.user.id, body);
+  ): Promise<{ message: string }> {
+    return this.usersService.updatePreferences(req.user.userId, body);
   }
 }
