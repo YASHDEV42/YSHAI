@@ -1,9 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
+export class TokensResponseDto {
+  @ApiProperty()
+  accessToken: string;
 
-export class RefreshTokenDto {
   @ApiProperty()
   refreshToken: string;
-
-  @ApiProperty()
-  userId: number;
 }

@@ -16,79 +16,18 @@
           }
         },
         "responses": {
-          "201": {
-            "description": "User registered successfully."
-          },
-          "400": {
-            "description": "Bad request (e.g. email already exists)."
-          }
-        },
-        "summary": "Register a new user",
-        "tags": [
-          "Auth"
-        ]
-      }
-    },
-    "/auth/verify": {
-      "get": {
-        "operationId": "AuthController_verifyEmail",
-        "parameters": [
-          {
-            "name": "token",
-            "required": true,
-            "in": "query",
-            "description": "Verification token from email",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
           "200": {
-            "description": "Email verified successfully."
-          },
-          "400": {
-            "description": "Invalid or expired token."
-          }
-        },
-        "summary": "Verify user email via token",
-        "tags": [
-          "Auth"
-        ]
-      }
-    },
-    "/auth/resend-verification": {
-      "post": {
-        "operationId": "AuthController_resendVerification",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "email": {
-                    "type": "string",
-                    "format": "email"
-                  }
-                },
-                "required": [
-                  "email"
-                ]
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponseDto"
+                }
               }
             }
           }
         },
-        "responses": {
-          "200": {
-            "description": "Verification email resent."
-          },
-          "400": {
-            "description": "Bad request (e.g. user not found or already verified)."
-          }
-        },
-        "summary": "Resend email verification link",
+        "summary": "Register a new user",
         "tags": [
           "Auth"
         ]
@@ -103,44 +42,24 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "email": {
-                    "type": "string",
-                    "format": "email",
-                    "maxLength": 50,
-                    "minLength": 5
-                  },
-                  "password": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 6
-                  }
-                },
-                "required": [
-                  "email",
-                  "password"
-                ]
+                "$ref": "#/components/schemas/LoginDto"
               }
             }
           }
         },
         "responses": {
-          "201": {
-            "description": "User logged in successfully.",
+          "200": {
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/MessageResponseDto"
                 }
               }
             }
-          },
-          "401": {
-            "description": "Unauthorized (invalid credentials or email not verified)."
           }
         },
-        "summary": "Login",
+        "summary": "Login User",
         "tags": [
           "Auth"
         ]
@@ -152,10 +71,24 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "User logged out successfully."
+            "description": "User logged out successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
-          "401": {
-            "description": "Unauthorized."
+          "404": {
+            "description": "Unauthorized.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "summary": "Logout",
@@ -191,10 +124,24 @@
         },
         "responses": {
           "200": {
-            "description": "Password reset link sent."
+            "description": "Password reset link sent.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
-          "400": {
-            "description": "Bad request."
+          "404": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "summary": "Forgot password",
@@ -232,13 +179,151 @@
         },
         "responses": {
           "200": {
-            "description": "Password reset successfully."
+            "description": "Password reset successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Promise"
+                }
+              }
+            }
           },
-          "400": {
-            "description": "Bad request."
+          "404": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Promise"
+                }
+              }
+            }
           }
         },
         "summary": "Reset password",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/verify": {
+      "get": {
+        "operationId": "AuthController_verifyEmail",
+        "parameters": [
+          {
+            "name": "token",
+            "required": true,
+            "in": "query",
+            "description": "Verification token from email",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Email verified successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Invalid or expired token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Verify user email via token",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/resend-verification": {
+      "post": {
+        "operationId": "AuthController_resendVerification",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  }
+                },
+                "required": [
+                  "email"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Verification email resent.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Bad request (e.g. user not found or already verified).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Resend email verification link",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "operationId": "AuthController_refresh",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokenDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokensResponseDto"
+                }
+              }
+            }
+          }
+        },
         "tags": [
           "Auth"
         ]
@@ -2119,21 +2204,67 @@
           "timeFormat"
         ]
       },
+      "MessageResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operation successful"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "user@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "password123"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "Promise": {
+        "type": "object",
+        "properties": {}
+      },
       "RefreshTokenDto": {
         "type": "object",
         "properties": {
           "refreshToken": {
-            "type": "string",
-            "description": "The refresh token"
+            "type": "string"
           },
           "userId": {
-            "type": "number",
-            "description": "The user ID associated with the refresh token"
+            "type": "number"
           }
         },
         "required": [
           "refreshToken",
           "userId"
+        ]
+      },
+      "TokensResponseDto": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string"
+          },
+          "refreshToken": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "accessToken",
+          "refreshToken"
         ]
       },
       "UserResponseDto": {

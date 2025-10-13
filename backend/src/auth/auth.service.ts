@@ -12,6 +12,7 @@ import { randomBytes, createHash } from 'crypto';
 import { RefreshToken } from 'src/entities/refresh-token.entity';
 import { PasswordResetToken } from 'src/entities/password-reset-token.entity';
 import { MailerService } from 'src/mailer/mailer.service';
+import { RegisterDto } from './dto/register.dto';
 
 const logger = new Logger('Auth');
 
@@ -24,12 +25,12 @@ export class AuthService {
   ) { }
 
   // generate token
-  private async generateTokens(user: User) {
+  private async generateTokens(user: User): Promise<{ accessToken: string; refreshToken: string }> {
     const payload = { userId: user.id, email: user.email, role: user.role };
-
     const accessToken = this.jwtService.sign(payload, { expiresIn: '15m' });
     const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
     const tokenHash = await bcrypt.hash(refreshToken, 10);
+    await this.em.nativeUpdate(RefreshToken, { userId: user.id }, { revoked: true });
     const tokenEntity = this.em.create(RefreshToken, {
       user,
       userId: user.id,
@@ -59,8 +60,8 @@ export class AuthService {
   }
 
   // register User Function
-  async register(email: string, password: string, name: string, timezone: string, timeFormat: '12h' | '24h') {
-
+  async register(dto: RegisterDto): Promise<{ message: string }> {
+    const { email, password, name, timezone, timeFormat } = dto;
     //cheack if email already exists
     const existing = await this.em.findOne(User, { email });
     if (existing) { throw new BadRequestException('Email already in use'); };
@@ -181,26 +182,26 @@ export class AuthService {
   }
 
   // logout User Function
-  async logout(user: User) {
+  async logout(user: any): Promise<void> {
 
     //find the active token for this user and revoke it
     const token = await this.em.findOne(RefreshToken, {
-      userId: user.id,
+      userId: user.userId,
       revoked: false,
     });
     if (!token) {
       throw new BadRequestException('No active session found');
     }
-    logger.log(`Logging out user: ${user.email}`);
+    logger.log(`Logging out user`);
     if (token) {
       token.revoked = true;
       await this.em.persistAndFlush(token);
     }
-    logger.log(`User ${user.email} logged out successfully`);
+    logger.log(`User logged out successfully`);
   }
 
   // refresh tokens Function
-  async refresh(userId: number, refreshToken: string) {
+  async refresh(userId: number, refreshToken: string): Promise<{ accessToken: string; refreshToken: string }> {
     //find the token in the database
     const candidates = await this.em.find(
       RefreshToken,
@@ -237,7 +238,7 @@ export class AuthService {
   }
 
   // forgot password Function
-  async forgotPassword(email: string) {
+  async forgotPassword(email: string): Promise<{ message: string } | void> {
     const user = await this.em.findOne(User, { email });
     if (!user) {
       logger.warn(`Password reset requested for non-existent email: ${email}`);
