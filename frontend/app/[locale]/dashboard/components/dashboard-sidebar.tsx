@@ -59,7 +59,7 @@ export function DashboardSidebar({ locale = "en", text = {} }: DashboardSidebarP
     const fetchData = async () => {
       try {
         const [userResponse, notificationsResponse] = await Promise.all([
-          usersControllerGetProfile({ headers: {} }),
+          usersControllerGetProfile({ headers: { credentials: 'include' }, }),
           notificationsControllerList({ headers: {} }),
         ])
 

@@ -15,27 +15,12 @@ import {
   Linkedin,
   Music2,
   BarChart3,
-  Settings,
-  Sparkles,
   Clock,
   CheckCircle2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
-import { ModeToggle } from "@/app/components/toggleTheme";
 import { UserResponseDto } from "@/api/model";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -117,17 +102,7 @@ export default function DashboardPage({ text, locale, user }: DashboardPageProps
         delay: 0.3,
         ease: "power2.out",
       });
-
-      gsap.from(".quick-action", {
-        opacity: 0,
-        scale: 0.9,
-        duration: 0.5,
-        stagger: 0.1,
-        delay: 0.5,
-        ease: "back.out(1.7)",
-      });
     });
-
     return () => ctx.revert();
   }, []);
 
@@ -247,155 +222,157 @@ export default function DashboardPage({ text, locale, user }: DashboardPageProps
     }
   };
 
-  return (<>
-    < div ref={statsRef} className="mb-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4" >
-      {
-        stats.map((stat, index) => (
-          < Card key={index} className="stat-card border-border bg-card" >
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">{stat.title}</p>
-                  <p className="mt-2 font-bold text-3xl text-foreground">{stat.value}</p>
-                  <p className="mt-1 text-sm text-primary">{stat.change} {text.stats.changeFromLastWeek}</p>
-                </div>
-                <div className="flex size-12 items-center justify-center rounded-lg bg-primary/20">
-                  <stat.icon className="size-6 text-primary" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))
-      }
-    </div >
+  return (
+    <div className="container mx-auto p-8">
 
-    <div className="grid gap-6 lg:grid-cols-3">
-      {/* Recent Activity */}
-      <Card className="border-border bg-card lg:col-span-2">
-        <CardHeader>
-          <CardTitle className="text-foreground">{text.recentActivity.title}</CardTitle>
-          <CardDescription className="text-muted-foreground">
-            {text.recentActivity.description}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div ref={activityRef} className="space-y-4">
-            {recentActivity.map((activity) => (
-              <div
-                key={activity.id}
-                className="activity-item flex items-start gap-4 rounded-lg border border-border bg-card p-4 transition-colors hover:bg-muted"
-              >
-                <div className="flex size-10 items-center justify-center rounded-lg bg-muted">
-                  {getPlatformIcon(activity.platform)}
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <p className="font-medium text-sm text-foreground">{activity.content}</p>
-                    {getStatusBadge(activity.status)}
+      < div ref={statsRef} className="mb-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4" >
+        {
+          stats.map((stat, index) => (
+            < Card key={index} className="stat-card border-border bg-card" >
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">{stat.title}</p>
+                    <p className="mt-2 font-bold text-3xl text-foreground">{stat.value}</p>
+                    <p className="mt-1 text-sm text-primary">{stat.change} {text.stats.changeFromLastWeek}</p>
                   </div>
-                  <p className="mt-1 text-xs text-muted-foreground">{activity.time}</p>
+                  <div className="flex size-12 items-center justify-center rounded-lg bg-primary/20">
+                    <stat.icon className="size-6 text-primary" />
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-          <Button
-            variant="ghost"
-            className="mt-4 w-full text-primary hover:bg-primary/10 hover:text-primary"
-            asChild
-          >
-            <Link href="/dashboard/activity">
-              {text.recentActivity.viewAll}
-            </Link>
-          </Button>
-        </CardContent>
-      </Card>
+              </CardContent>
+            </Card>
+          ))
+        }
+      </div >
 
-      {/* Quick Actions & Connected Platforms */}
-      <div className="space-y-6">
-        {/* Quick Actions */}
-        <Card className="border-border bg-card">
+      <div className="grid gap-6 lg:grid-cols-3">
+        {/* Recent Activity */}
+        <Card className="border-border bg-card lg:col-span-2">
           <CardHeader>
-            <CardTitle className="text-foreground">{text.quickActions.title}</CardTitle>
-          </CardHeader>
-          <CardContent ref={quickActionsRef} className="space-y-3">
-            <Button
-              className="quick-action w-full justify-start bg-primary text-primary-foreground hover:bg-primary/90"
-              asChild
-            >
-              <Link href="/dashboard/create">
-                <Plus className="mr-2 size-4" />
-                {text.quickActions.createPost}
-              </Link>
-            </Button>
-            <Button
-              variant="outline"
-              className="quick-action w-full justify-start border-border bg-card text-foreground hover:bg-muted"
-              asChild
-            >
-              <Link href="/dashboard/calendar">
-                <Calendar className="mr-2 size-4" />
-                {text.quickActions.viewCalendar}
-              </Link>
-            </Button>
-            <Button
-              variant="outline"
-              className="quick-action w-full justify-start border-border bg-card text-foreground hover:bg-muted"
-              asChild
-            >
-              <Link href="/dashboard/analytics">
-                <BarChart3 className="mr-2 size-4" />
-                {text.quickActions.viewAnalytics}
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Connected Platforms */}
-        <Card className="border-border bg-card">
-          <CardHeader>
-            <CardTitle className="text-foreground">{text.connectedPlatforms.title}</CardTitle>
+            <CardTitle className="text-foreground">{text.recentActivity.title}</CardTitle>
             <CardDescription className="text-muted-foreground">
-              {text.connectedPlatforms.description}
+              {text.recentActivity.description}
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3">
-            {connectedPlatforms.map((platform) => (
-              <div
-                key={platform.name}
-                className="flex items-center justify-between rounded-lg border border-border bg-card p-3"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="flex size-8 items-center justify-center rounded-lg bg-muted">
-                    <platform.icon className="size-4 text-foreground" />
+          <CardContent>
+            <div ref={activityRef} className="space-y-4">
+              {recentActivity.map((activity) => (
+                <div
+                  key={activity.id}
+                  className="activity-item flex items-start gap-4 rounded-lg border border-border bg-card p-4 transition-colors hover:bg-muted"
+                >
+                  <div className="flex size-10 items-center justify-center rounded-lg bg-muted">
+                    {getPlatformIcon(activity.platform)}
                   </div>
-                  <span className="text-sm text-foreground">{platform.name}</span>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <p className="font-medium text-sm text-foreground">{activity.content}</p>
+                      {getStatusBadge(activity.status)}
+                    </div>
+                    <p className="mt-1 text-xs text-muted-foreground">{activity.time}</p>
+                  </div>
                 </div>
-                {platform.connected ? (
-                  <Badge variant="default" className="bg-primary/20 text-primary">
-                    {text.connectedPlatforms.connected}
-                  </Badge>
-                ) : (
-                  <Button size="sm" variant="ghost">
-                    {text.connectedPlatforms.connect}
-                  </Button>
-                )}
-              </div>
-            ))}
+              ))}
+            </div>
             <Button
               variant="ghost"
-              className="w-full text-primary hover:bg-primary/10 hover:text-primary"
+              className="mt-4 w-full text-primary hover:bg-primary/10 hover:text-primary"
               asChild
             >
-              <Link href="/dashboard/platforms">
-                <Plus className="mr-2 size-4" />
-                {text.connectedPlatforms.addPlatform}
+              <Link href="/dashboard/activity">
+                {text.recentActivity.viewAll}
               </Link>
             </Button>
           </CardContent>
         </Card>
+
+        {/* Quick Actions & Connected Platforms */}
+        <div className="space-y-6">
+          {/* Quick Actions */}
+          <Card className="border-border bg-card">
+            <CardHeader>
+              <CardTitle className="text-foreground">{text.quickActions.title}</CardTitle>
+            </CardHeader>
+            <CardContent ref={quickActionsRef} className="space-y-3">
+              <Button
+                className="quick-action w-full justify-start bg-primary text-primary-foreground hover:bg-primary/90"
+                asChild
+              >
+                <Link href="/dashboard/create">
+                  <Plus className="mr-2 size-4" />
+                  {text.quickActions.createPost}
+                </Link>
+              </Button>
+              <Button
+                variant="outline"
+                className="quick-action w-full justify-start border-border bg-card text-foreground hover:bg-muted"
+                asChild
+              >
+                <Link href="/dashboard/calendar">
+                  <Calendar className="mr-2 size-4" />
+                  {text.quickActions.viewCalendar}
+                </Link>
+              </Button>
+              <Button
+                variant="outline"
+                className="quick-action w-full justify-start border-border bg-card text-foreground hover:bg-muted"
+                asChild
+              >
+                <Link href="/dashboard/analytics">
+                  <BarChart3 className="mr-2 size-4" />
+                  {text.quickActions.viewAnalytics}
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Connected Platforms */}
+          <Card className="border-border bg-card">
+            <CardHeader>
+              <CardTitle className="text-foreground">{text.connectedPlatforms.title}</CardTitle>
+              <CardDescription className="text-muted-foreground">
+                {text.connectedPlatforms.description}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {connectedPlatforms.map((platform) => (
+                <div
+                  key={platform.name}
+                  className="flex items-center justify-between rounded-lg border border-border bg-card p-3"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex size-8 items-center justify-center rounded-lg bg-muted">
+                      <platform.icon className="size-4 text-foreground" />
+                    </div>
+                    <span className="text-sm text-foreground">{platform.name}</span>
+                  </div>
+                  {platform.connected ? (
+                    <Badge variant="default" className="bg-primary/20 text-primary">
+                      {text.connectedPlatforms.connected}
+                    </Badge>
+                  ) : (
+                    <Button size="sm" variant="ghost">
+                      {text.connectedPlatforms.connect}
+                    </Button>
+                  )}
+                </div>
+              ))}
+              <Button
+                variant="ghost"
+                className="w-full text-primary hover:bg-primary/10 hover:text-primary"
+                asChild
+              >
+                <Link href="/dashboard/platforms">
+                  <Plus className="mr-2 size-4" />
+                  {text.connectedPlatforms.addPlatform}
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
-  </>
 
   );
 }

@@ -20,7 +20,7 @@ export default async function DashboardLayout({
     analytics: t("analytics"),
     settings: t("settings"),
     notifications: t("notifications"),
-    noNotificationsDescription: t("notificationsDescription"),
+    noNotifications: t("noNotifications"),
     markAll: t("markAll"),
     new: t("new"),
     justNow: t("justNow"),

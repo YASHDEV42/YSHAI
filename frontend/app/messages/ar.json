@@ -216,9 +216,9 @@
     "markAll": "تحديد الكل كمقروء",
     "new": "جديد",
     "justNow": "الآن",
-    "minutesAgo": "منذ {count} دقيقة",
-    "hoursAgo": "منذ {count} ساعة",
-    "daysAgo": "منذ {count} يوم"
+    "minutesAgo": "منذ اكثر دقيقة",
+    "hoursAgo": "منذ اكثر ساعة",
+    "daysAgo": "منذ اكثر يوم"
   },
   "CreatePage": {
     "header": {
