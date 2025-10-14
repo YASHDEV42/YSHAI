@@ -9,10 +9,7 @@ import type {
   MetaControllerHealth200
 } from '.././model';
 
-import metaControllerRootMutator from '../../lib/orval-mutator';
-import metaControllerHealthMutator from '../../lib/orval-mutator';
-import metaControllerListTimezonesMutator from '../../lib/orval-mutator';
-import metaControllerListLocalesMutator from '../../lib/orval-mutator';
+import { orvalMutator } from '../../lib/orval-mutator';
 
 /**
  * @summary Root
@@ -39,7 +36,7 @@ export const getMetaControllerRootUrl = () => {
 
 export const metaControllerRoot = async ( options?: RequestInit): Promise<metaControllerRootResponse> => {
   
-  return metaControllerRootMutator<metaControllerRootResponse>(getMetaControllerRootUrl(),
+  return orvalMutator<metaControllerRootResponse>(getMetaControllerRootUrl(),
   {      
     ...options,
     method: 'GET'
@@ -74,7 +71,7 @@ export const getMetaControllerHealthUrl = () => {
 
 export const metaControllerHealth = async ( options?: RequestInit): Promise<metaControllerHealthResponse> => {
   
-  return metaControllerHealthMutator<metaControllerHealthResponse>(getMetaControllerHealthUrl(),
+  return orvalMutator<metaControllerHealthResponse>(getMetaControllerHealthUrl(),
   {      
     ...options,
     method: 'GET'
@@ -109,7 +106,7 @@ export const getMetaControllerListTimezonesUrl = () => {
 
 export const metaControllerListTimezones = async ( options?: RequestInit): Promise<metaControllerListTimezonesResponse> => {
   
-  return metaControllerListTimezonesMutator<metaControllerListTimezonesResponse>(getMetaControllerListTimezonesUrl(),
+  return orvalMutator<metaControllerListTimezonesResponse>(getMetaControllerListTimezonesUrl(),
   {      
     ...options,
     method: 'GET'
@@ -144,7 +141,7 @@ export const getMetaControllerListLocalesUrl = () => {
 
 export const metaControllerListLocales = async ( options?: RequestInit): Promise<metaControllerListLocalesResponse> => {
   
-  return metaControllerListLocalesMutator<metaControllerListLocalesResponse>(getMetaControllerListLocalesUrl(),
+  return orvalMutator<metaControllerListLocalesResponse>(getMetaControllerListLocalesUrl(),
   {      
     ...options,
     method: 'GET'

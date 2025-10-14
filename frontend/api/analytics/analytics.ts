@@ -11,11 +11,7 @@ import type {
   PostInsightsDto
 } from '.././model';
 
-import analyticsControllerGetPostInsightsMutator from '../../lib/orval-mutator';
-import analyticsControllerGetAccountInsightsMutator from '../../lib/orval-mutator';
-import analyticsControllerGetCampaignInsightsMutator from '../../lib/orval-mutator';
-import analyticsControllerExportCsvMutator from '../../lib/orval-mutator';
-import analyticsControllerExportPdfMutator from '../../lib/orval-mutator';
+import { orvalMutator } from '../../lib/orval-mutator';
 
 /**
  * @summary Post Insights
@@ -42,7 +38,7 @@ export const getAnalyticsControllerGetPostInsightsUrl = (postId: number,) => {
 
 export const analyticsControllerGetPostInsights = async (postId: number, options?: RequestInit): Promise<analyticsControllerGetPostInsightsResponse> => {
   
-  return analyticsControllerGetPostInsightsMutator<analyticsControllerGetPostInsightsResponse>(getAnalyticsControllerGetPostInsightsUrl(postId),
+  return orvalMutator<analyticsControllerGetPostInsightsResponse>(getAnalyticsControllerGetPostInsightsUrl(postId),
   {      
     ...options,
     method: 'GET'
@@ -77,7 +73,7 @@ export const getAnalyticsControllerGetAccountInsightsUrl = (accountId: number,) 
 
 export const analyticsControllerGetAccountInsights = async (accountId: number, options?: RequestInit): Promise<analyticsControllerGetAccountInsightsResponse> => {
   
-  return analyticsControllerGetAccountInsightsMutator<analyticsControllerGetAccountInsightsResponse>(getAnalyticsControllerGetAccountInsightsUrl(accountId),
+  return orvalMutator<analyticsControllerGetAccountInsightsResponse>(getAnalyticsControllerGetAccountInsightsUrl(accountId),
   {      
     ...options,
     method: 'GET'
@@ -112,7 +108,7 @@ export const getAnalyticsControllerGetCampaignInsightsUrl = (campaignId: number,
 
 export const analyticsControllerGetCampaignInsights = async (campaignId: number, options?: RequestInit): Promise<analyticsControllerGetCampaignInsightsResponse> => {
   
-  return analyticsControllerGetCampaignInsightsMutator<analyticsControllerGetCampaignInsightsResponse>(getAnalyticsControllerGetCampaignInsightsUrl(campaignId),
+  return orvalMutator<analyticsControllerGetCampaignInsightsResponse>(getAnalyticsControllerGetCampaignInsightsUrl(campaignId),
   {      
     ...options,
     method: 'GET'
@@ -147,7 +143,7 @@ export const getAnalyticsControllerExportCsvUrl = () => {
 
 export const analyticsControllerExportCsv = async ( options?: RequestInit): Promise<analyticsControllerExportCsvResponse> => {
   
-  return analyticsControllerExportCsvMutator<analyticsControllerExportCsvResponse>(getAnalyticsControllerExportCsvUrl(),
+  return orvalMutator<analyticsControllerExportCsvResponse>(getAnalyticsControllerExportCsvUrl(),
   {      
     ...options,
     method: 'GET'
@@ -182,7 +178,7 @@ export const getAnalyticsControllerExportPdfUrl = () => {
 
 export const analyticsControllerExportPdf = async ( options?: RequestInit): Promise<analyticsControllerExportPdfResponse> => {
   
-  return analyticsControllerExportPdfMutator<analyticsControllerExportPdfResponse>(getAnalyticsControllerExportPdfUrl(),
+  return orvalMutator<analyticsControllerExportPdfResponse>(getAnalyticsControllerExportPdfUrl(),
   {      
     ...options,
     method: 'GET'

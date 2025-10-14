@@ -6,13 +6,15 @@
  * OpenAPI spec version: 1.0
  */
 
-export type NotificationResponseDtoType = typeof NotificationResponseDtoType[keyof typeof NotificationResponseDtoType];
+/**
+ * Which AI artifact is ready
+ */
+export type AiReadyPayloadDtoArtifact = typeof AiReadyPayloadDtoArtifact[keyof typeof AiReadyPayloadDtoArtifact];
 
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const NotificationResponseDtoType = {
-  post_scheduled: 'post_scheduled',
-  publish_failed: 'publish_failed',
-  ai_ready: 'ai_ready',
-  approved: 'approved',
+export const AiReadyPayloadDtoArtifact = {
+  caption: 'caption',
+  hashtags: 'hashtags',
+  alt_text: 'alt_text',
 } as const;

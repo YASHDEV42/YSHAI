@@ -7,7 +7,9 @@
  */
 import type {
   CreateWebhookDto,
-  WebhooksControllerDeliveriesParams
+  MessageDto,
+  WebhooksControllerDeliveriesParams,
+  WebhooksControllerRegister201
 } from '.././models';
 
 
@@ -15,7 +17,7 @@ import type {
  * @summary Register webhook
  */
 export type webhooksControllerRegisterResponse201 = {
-  data: void
+  data: WebhooksControllerRegister201
   status: 201
 }
     
@@ -98,7 +100,7 @@ export const webhooksControllerList = async ( options?: RequestInit): Promise<we
  * @summary Delete webhook
  */
 export type webhooksControllerRemoveResponse200 = {
-  data: void
+  data: MessageDto
   status: 200
 }
     

@@ -14,9 +14,7 @@ import type {
   GenerateHashtagsResponseDto
 } from '.././model';
 
-import aiControllerGenerateCaptionMutator from '../../lib/orval-mutator';
-import aiControllerGenerateHashtagsMutator from '../../lib/orval-mutator';
-import aiControllerGenerateAltTextMutator from '../../lib/orval-mutator';
+import { orvalMutator } from '../../lib/orval-mutator';
 
 /**
  * @summary Generate social media caption
@@ -43,7 +41,7 @@ export const getAiControllerGenerateCaptionUrl = () => {
 
 export const aiControllerGenerateCaption = async (generateCaptionDto: GenerateCaptionDto, options?: RequestInit): Promise<aiControllerGenerateCaptionResponse> => {
   
-  return aiControllerGenerateCaptionMutator<aiControllerGenerateCaptionResponse>(getAiControllerGenerateCaptionUrl(),
+  return orvalMutator<aiControllerGenerateCaptionResponse>(getAiControllerGenerateCaptionUrl(),
   {      
     ...options,
     method: 'POST',
@@ -79,7 +77,7 @@ export const getAiControllerGenerateHashtagsUrl = () => {
 
 export const aiControllerGenerateHashtags = async (generateHashtagsDto: GenerateHashtagsDto, options?: RequestInit): Promise<aiControllerGenerateHashtagsResponse> => {
   
-  return aiControllerGenerateHashtagsMutator<aiControllerGenerateHashtagsResponse>(getAiControllerGenerateHashtagsUrl(),
+  return orvalMutator<aiControllerGenerateHashtagsResponse>(getAiControllerGenerateHashtagsUrl(),
   {      
     ...options,
     method: 'POST',
@@ -115,7 +113,7 @@ export const getAiControllerGenerateAltTextUrl = () => {
 
 export const aiControllerGenerateAltText = async (generateAltTextDto: GenerateAltTextDto, options?: RequestInit): Promise<aiControllerGenerateAltTextResponse> => {
   
-  return aiControllerGenerateAltTextMutator<aiControllerGenerateAltTextResponse>(getAiControllerGenerateAltTextUrl(),
+  return orvalMutator<aiControllerGenerateAltTextResponse>(getAiControllerGenerateAltTextUrl(),
   {      
     ...options,
     method: 'POST',

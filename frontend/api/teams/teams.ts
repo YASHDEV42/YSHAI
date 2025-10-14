@@ -13,13 +13,7 @@ import type {
   UpdateMemberRoleDto
 } from '.././model';
 
-import teamsControllerCreateMutator from '../../lib/orval-mutator';
-import teamsControllerInviteMemberMutator from '../../lib/orval-mutator';
-import teamsControllerUpdateMemberRoleMutator from '../../lib/orval-mutator';
-import teamsControllerRemoveMemberMutator from '../../lib/orval-mutator';
-import teamsControllerApprovePostMutator from '../../lib/orval-mutator';
-import teamsControllerRejectPostMutator from '../../lib/orval-mutator';
-import teamsControllerListAuditLogsMutator from '../../lib/orval-mutator';
+import { orvalMutator } from '../../lib/orval-mutator';
 
 /**
  * @summary Create a new team
@@ -46,7 +40,7 @@ export const getTeamsControllerCreateUrl = () => {
 
 export const teamsControllerCreate = async (createTeamDto: CreateTeamDto, options?: RequestInit): Promise<teamsControllerCreateResponse> => {
   
-  return teamsControllerCreateMutator<teamsControllerCreateResponse>(getTeamsControllerCreateUrl(),
+  return orvalMutator<teamsControllerCreateResponse>(getTeamsControllerCreateUrl(),
   {      
     ...options,
     method: 'POST',
@@ -83,7 +77,7 @@ export const getTeamsControllerInviteMemberUrl = (teamId: number,) => {
 export const teamsControllerInviteMember = async (teamId: number,
     inviteMemberDto: InviteMemberDto, options?: RequestInit): Promise<teamsControllerInviteMemberResponse> => {
   
-  return teamsControllerInviteMemberMutator<teamsControllerInviteMemberResponse>(getTeamsControllerInviteMemberUrl(teamId),
+  return orvalMutator<teamsControllerInviteMemberResponse>(getTeamsControllerInviteMemberUrl(teamId),
   {      
     ...options,
     method: 'POST',
@@ -122,7 +116,7 @@ export const teamsControllerUpdateMemberRole = async (teamId: number,
     memberId: number,
     updateMemberRoleDto: UpdateMemberRoleDto, options?: RequestInit): Promise<teamsControllerUpdateMemberRoleResponse> => {
   
-  return teamsControllerUpdateMemberRoleMutator<teamsControllerUpdateMemberRoleResponse>(getTeamsControllerUpdateMemberRoleUrl(teamId,memberId),
+  return orvalMutator<teamsControllerUpdateMemberRoleResponse>(getTeamsControllerUpdateMemberRoleUrl(teamId,memberId),
   {      
     ...options,
     method: 'PUT',
@@ -160,7 +154,7 @@ export const getTeamsControllerRemoveMemberUrl = (teamId: number,
 export const teamsControllerRemoveMember = async (teamId: number,
     memberId: number, options?: RequestInit): Promise<teamsControllerRemoveMemberResponse> => {
   
-  return teamsControllerRemoveMemberMutator<teamsControllerRemoveMemberResponse>(getTeamsControllerRemoveMemberUrl(teamId,memberId),
+  return orvalMutator<teamsControllerRemoveMemberResponse>(getTeamsControllerRemoveMemberUrl(teamId,memberId),
   {      
     ...options,
     method: 'DELETE'
@@ -197,7 +191,7 @@ export const getTeamsControllerApprovePostUrl = (teamId: number,
 export const teamsControllerApprovePost = async (teamId: number,
     postId: number, options?: RequestInit): Promise<teamsControllerApprovePostResponse> => {
   
-  return teamsControllerApprovePostMutator<teamsControllerApprovePostResponse>(getTeamsControllerApprovePostUrl(teamId,postId),
+  return orvalMutator<teamsControllerApprovePostResponse>(getTeamsControllerApprovePostUrl(teamId,postId),
   {      
     ...options,
     method: 'POST'
@@ -234,7 +228,7 @@ export const getTeamsControllerRejectPostUrl = (teamId: number,
 export const teamsControllerRejectPost = async (teamId: number,
     postId: number, options?: RequestInit): Promise<teamsControllerRejectPostResponse> => {
   
-  return teamsControllerRejectPostMutator<teamsControllerRejectPostResponse>(getTeamsControllerRejectPostUrl(teamId,postId),
+  return orvalMutator<teamsControllerRejectPostResponse>(getTeamsControllerRejectPostUrl(teamId,postId),
   {      
     ...options,
     method: 'POST'
@@ -269,7 +263,7 @@ export const getTeamsControllerListAuditLogsUrl = (teamId: number,) => {
 
 export const teamsControllerListAuditLogs = async (teamId: number, options?: RequestInit): Promise<teamsControllerListAuditLogsResponse> => {
   
-  return teamsControllerListAuditLogsMutator<teamsControllerListAuditLogsResponse>(getTeamsControllerListAuditLogsUrl(teamId),
+  return orvalMutator<teamsControllerListAuditLogsResponse>(getTeamsControllerListAuditLogsUrl(teamId),
   {      
     ...options,
     method: 'GET'

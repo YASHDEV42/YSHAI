@@ -195,13 +195,6 @@
       "connect": "Connect",
       "addPlatform": "Add Platform"
     },
-    "sidebar": {
-      "overview": "Overview",
-      "createPost": "Create Post",
-      "calendar": "Calendar",
-      "analytics": "Analytics",
-      "settings": "Settings"
-    },
     "user": {
       "name": "John Doe",
       "email": "john@example.com"
@@ -211,6 +204,21 @@
       "scheduled": "Scheduled",
       "failed": "Failed"
     }
+  },
+  "DashboardSidebar": {
+    "overview": "Overview",
+    "createPost": "Create Post",
+    "calendar": "Calendar",
+    "analytics": "Analytics",
+    "settings": "Settings",
+    "notifications": "Notifications",
+    "noNotifications": "No notifications yet",
+    "markAll": "Mark all as read",
+    "new": "new",
+    "justNow": "just now",
+    "minutesAgo": "{count} min ago",
+    "hoursAgo": "{count} hours ago",
+    "daysAgo": "{count} days ago"
   },
   "CreatePage": {
     "header": {

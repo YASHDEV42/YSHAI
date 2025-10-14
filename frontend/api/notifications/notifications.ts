@@ -11,10 +11,7 @@ import type {
   NotificationResponseDto
 } from '.././model';
 
-import notificationsControllerListMutator from '../../lib/orval-mutator';
-import notificationsControllerMarkReadMutator from '../../lib/orval-mutator';
-import notificationsControllerUnreadCountMutator from '../../lib/orval-mutator';
-import notificationsControllerMarkAllReadMutator from '../../lib/orval-mutator';
+import { orvalMutator } from '../../lib/orval-mutator';
 
 /**
  * @summary List notifications for current user
@@ -41,7 +38,7 @@ export const getNotificationsControllerListUrl = () => {
 
 export const notificationsControllerList = async ( options?: RequestInit): Promise<notificationsControllerListResponse> => {
   
-  return notificationsControllerListMutator<notificationsControllerListResponse>(getNotificationsControllerListUrl(),
+  return orvalMutator<notificationsControllerListResponse>(getNotificationsControllerListUrl(),
   {      
     ...options,
     method: 'GET'
@@ -76,7 +73,7 @@ export const getNotificationsControllerMarkReadUrl = (notificationId: number,) =
 
 export const notificationsControllerMarkRead = async (notificationId: number, options?: RequestInit): Promise<notificationsControllerMarkReadResponse> => {
   
-  return notificationsControllerMarkReadMutator<notificationsControllerMarkReadResponse>(getNotificationsControllerMarkReadUrl(notificationId),
+  return orvalMutator<notificationsControllerMarkReadResponse>(getNotificationsControllerMarkReadUrl(notificationId),
   {      
     ...options,
     method: 'PATCH'
@@ -111,7 +108,7 @@ export const getNotificationsControllerUnreadCountUrl = () => {
 
 export const notificationsControllerUnreadCount = async ( options?: RequestInit): Promise<notificationsControllerUnreadCountResponse> => {
   
-  return notificationsControllerUnreadCountMutator<notificationsControllerUnreadCountResponse>(getNotificationsControllerUnreadCountUrl(),
+  return orvalMutator<notificationsControllerUnreadCountResponse>(getNotificationsControllerUnreadCountUrl(),
   {      
     ...options,
     method: 'GET'
@@ -146,7 +143,7 @@ export const getNotificationsControllerMarkAllReadUrl = () => {
 
 export const notificationsControllerMarkAllRead = async ( options?: RequestInit): Promise<notificationsControllerMarkAllReadResponse> => {
   
-  return notificationsControllerMarkAllReadMutator<notificationsControllerMarkAllReadResponse>(getNotificationsControllerMarkAllReadUrl(),
+  return orvalMutator<notificationsControllerMarkAllReadResponse>(getNotificationsControllerMarkAllReadUrl(),
   {      
     ...options,
     method: 'PATCH'

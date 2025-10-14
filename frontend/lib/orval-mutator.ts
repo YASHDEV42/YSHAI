@@ -4,7 +4,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000';
  * Generic mutator used by Orval-generated clients.
  * Handles URL resolution, headers, JSON parsing, and response typing.
  */
-export default async function orvalMutator<T>(
+export async function orvalMutator<T>(
   url: string,
   config: RequestInit
 ): Promise<T> {
@@ -20,11 +20,6 @@ export default async function orvalMutator<T>(
     headers.set('Content-Type', 'application/json');
   }
 
-  // Optional: Add auth token automatically
-  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-  if (token && !headers.has('Authorization')) {
-    headers.set('Authorization', `Bearer ${token}`);
-  }
 
   const response = await fetch(fullUrl, { ...config, headers });
 

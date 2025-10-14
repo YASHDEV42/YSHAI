@@ -17,16 +17,7 @@ import type {
   UpdatePostDto
 } from '.././model';
 
-import postsControllerCreateMutator from '../../lib/orval-mutator';
-import postsControllerBulkCreateMutator from '../../lib/orval-mutator';
-import postsControllerBulkCreateFromCsvMutator from '../../lib/orval-mutator';
-import postsControllerCreateRecurringMutator from '../../lib/orval-mutator';
-import postsControllerCreateDraftMutator from '../../lib/orval-mutator';
-import postsControllerUpdateMutator from '../../lib/orval-mutator';
-import postsControllerRemoveMutator from '../../lib/orval-mutator';
-import postsControllerRescheduleMutator from '../../lib/orval-mutator';
-import postsControllerPublishNowMutator from '../../lib/orval-mutator';
-import postsControllerStatusGetMutator from '../../lib/orval-mutator';
+import { orvalMutator } from '../../lib/orval-mutator';
 
 /**
  * @summary Create a new post
@@ -60,7 +51,7 @@ export const getPostsControllerCreateUrl = () => {
 
 export const postsControllerCreate = async (createPostDto: CreatePostDto, options?: RequestInit): Promise<postsControllerCreateResponse> => {
   
-  return postsControllerCreateMutator<postsControllerCreateResponse>(getPostsControllerCreateUrl(),
+  return orvalMutator<postsControllerCreateResponse>(getPostsControllerCreateUrl(),
   {      
     ...options,
     method: 'POST',
@@ -96,7 +87,7 @@ export const getPostsControllerBulkCreateUrl = () => {
 
 export const postsControllerBulkCreate = async (bulkCreatePostsDto: BulkCreatePostsDto, options?: RequestInit): Promise<postsControllerBulkCreateResponse> => {
   
-  return postsControllerBulkCreateMutator<postsControllerBulkCreateResponse>(getPostsControllerBulkCreateUrl(),
+  return orvalMutator<postsControllerBulkCreateResponse>(getPostsControllerBulkCreateUrl(),
   {      
     ...options,
     method: 'POST',
@@ -134,7 +125,7 @@ export const postsControllerBulkCreateFromCsv = async (postsControllerBulkCreate
     const formData = new FormData();
 formData.append(`file`, postsControllerBulkCreateFromCsvBody.file)
 
-  return postsControllerBulkCreateFromCsvMutator<postsControllerBulkCreateFromCsvResponse>(getPostsControllerBulkCreateFromCsvUrl(),
+  return orvalMutator<postsControllerBulkCreateFromCsvResponse>(getPostsControllerBulkCreateFromCsvUrl(),
   {      
     ...options,
     method: 'POST'
@@ -170,7 +161,7 @@ export const getPostsControllerCreateRecurringUrl = () => {
 
 export const postsControllerCreateRecurring = async (recurringPostDto: RecurringPostDto, options?: RequestInit): Promise<postsControllerCreateRecurringResponse> => {
   
-  return postsControllerCreateRecurringMutator<postsControllerCreateRecurringResponse>(getPostsControllerCreateRecurringUrl(),
+  return orvalMutator<postsControllerCreateRecurringResponse>(getPostsControllerCreateRecurringUrl(),
   {      
     ...options,
     method: 'POST',
@@ -206,7 +197,7 @@ export const getPostsControllerCreateDraftUrl = () => {
 
 export const postsControllerCreateDraft = async (draftPostDto: DraftPostDto, options?: RequestInit): Promise<postsControllerCreateDraftResponse> => {
   
-  return postsControllerCreateDraftMutator<postsControllerCreateDraftResponse>(getPostsControllerCreateDraftUrl(),
+  return orvalMutator<postsControllerCreateDraftResponse>(getPostsControllerCreateDraftUrl(),
   {      
     ...options,
     method: 'POST',
@@ -250,7 +241,7 @@ export const getPostsControllerUpdateUrl = (id: number,) => {
 export const postsControllerUpdate = async (id: number,
     updatePostDto: UpdatePostDto, options?: RequestInit): Promise<postsControllerUpdateResponse> => {
   
-  return postsControllerUpdateMutator<postsControllerUpdateResponse>(getPostsControllerUpdateUrl(id),
+  return orvalMutator<postsControllerUpdateResponse>(getPostsControllerUpdateUrl(id),
   {      
     ...options,
     method: 'PUT',
@@ -293,7 +284,7 @@ export const getPostsControllerRemoveUrl = (id: number,) => {
 
 export const postsControllerRemove = async (id: number, options?: RequestInit): Promise<postsControllerRemoveResponse> => {
   
-  return postsControllerRemoveMutator<postsControllerRemoveResponse>(getPostsControllerRemoveUrl(id),
+  return orvalMutator<postsControllerRemoveResponse>(getPostsControllerRemoveUrl(id),
   {      
     ...options,
     method: 'DELETE'
@@ -329,7 +320,7 @@ export const getPostsControllerRescheduleUrl = (id: number,) => {
 export const postsControllerReschedule = async (id: number,
     reschedulePostDto: ReschedulePostDto, options?: RequestInit): Promise<postsControllerRescheduleResponse> => {
   
-  return postsControllerRescheduleMutator<postsControllerRescheduleResponse>(getPostsControllerRescheduleUrl(id),
+  return orvalMutator<postsControllerRescheduleResponse>(getPostsControllerRescheduleUrl(id),
   {      
     ...options,
     method: 'PUT',
@@ -365,7 +356,7 @@ export const getPostsControllerPublishNowUrl = (id: number,) => {
 
 export const postsControllerPublishNow = async (id: number, options?: RequestInit): Promise<postsControllerPublishNowResponse> => {
   
-  return postsControllerPublishNowMutator<postsControllerPublishNowResponse>(getPostsControllerPublishNowUrl(id),
+  return orvalMutator<postsControllerPublishNowResponse>(getPostsControllerPublishNowUrl(id),
   {      
     ...options,
     method: 'POST'
@@ -400,7 +391,7 @@ export const getPostsControllerStatusGetUrl = (id: number,) => {
 
 export const postsControllerStatusGet = async (id: number, options?: RequestInit): Promise<postsControllerStatusGetResponse> => {
   
-  return postsControllerStatusGetMutator<postsControllerStatusGetResponse>(getPostsControllerStatusGetUrl(id),
+  return orvalMutator<postsControllerStatusGetResponse>(getPostsControllerStatusGetUrl(id),
   {      
     ...options,
     method: 'GET'

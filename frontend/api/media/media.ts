@@ -10,9 +10,7 @@ import type {
   MediaResponseDto
 } from '.././model';
 
-import mediaControllerUploadMutator from '../../lib/orval-mutator';
-import mediaControllerFindAllMutator from '../../lib/orval-mutator';
-import mediaControllerRemoveMutator from '../../lib/orval-mutator';
+import { orvalMutator } from '../../lib/orval-mutator';
 
 /**
  * @summary Upload a media file (image or video) to Cloudinary
@@ -46,7 +44,7 @@ if(mediaControllerUploadBody.postId !== undefined) {
  formData.append(`postId`, mediaControllerUploadBody.postId.toString())
  }
 
-  return mediaControllerUploadMutator<mediaControllerUploadResponse>(getMediaControllerUploadUrl(),
+  return orvalMutator<mediaControllerUploadResponse>(getMediaControllerUploadUrl(),
   {      
     ...options,
     method: 'POST'
@@ -82,7 +80,7 @@ export const getMediaControllerFindAllUrl = () => {
 
 export const mediaControllerFindAll = async ( options?: RequestInit): Promise<mediaControllerFindAllResponse> => {
   
-  return mediaControllerFindAllMutator<mediaControllerFindAllResponse>(getMediaControllerFindAllUrl(),
+  return orvalMutator<mediaControllerFindAllResponse>(getMediaControllerFindAllUrl(),
   {      
     ...options,
     method: 'GET'
@@ -124,7 +122,7 @@ export const getMediaControllerRemoveUrl = (id: number,) => {
 
 export const mediaControllerRemove = async (id: number, options?: RequestInit): Promise<mediaControllerRemoveResponse> => {
   
-  return mediaControllerRemoveMutator<mediaControllerRemoveResponse>(getMediaControllerRemoveUrl(id),
+  return orvalMutator<mediaControllerRemoveResponse>(getMediaControllerRemoveUrl(id),
   {      
     ...options,
     method: 'DELETE'

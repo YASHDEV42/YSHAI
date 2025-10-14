@@ -5,12 +5,16 @@
  * Generated for Orval client
  * OpenAPI spec version: 1.0
  */
+import type {
+  MetaControllerHealth200
+} from '.././models';
+
 
 /**
  * @summary Root
  */
 export type metaControllerRootResponse200 = {
-  data: void
+  data: string
   status: 200
 }
     
@@ -51,7 +55,7 @@ export const metaControllerRoot = async ( options?: RequestInit): Promise<metaCo
  * @summary Health Check
  */
 export type metaControllerHealthResponse200 = {
-  data: void
+  data: MetaControllerHealth200
   status: 200
 }
     
@@ -92,7 +96,7 @@ export const metaControllerHealth = async ( options?: RequestInit): Promise<meta
  * @summary List Timezones
  */
 export type metaControllerListTimezonesResponse200 = {
-  data: void
+  data: string[]
   status: 200
 }
     
@@ -133,7 +137,7 @@ export const metaControllerListTimezones = async ( options?: RequestInit): Promi
  * @summary List Locales
  */
 export type metaControllerListLocalesResponse200 = {
-  data: void
+  data: string[]
   status: 200
 }
     

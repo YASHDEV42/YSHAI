@@ -13,11 +13,7 @@ import type {
   SubscribeResponseDto
 } from '.././model';
 
-import billingControllerListPlansMutator from '../../lib/orval-mutator';
-import billingControllerSubscribeMutator from '../../lib/orval-mutator';
-import billingControllerCancelMutator from '../../lib/orval-mutator';
-import billingControllerInvoicesMutator from '../../lib/orval-mutator';
-import billingControllerCallbackMutator from '../../lib/orval-mutator';
+import { orvalMutator } from '../../lib/orval-mutator';
 
 /**
  * @summary List available plans
@@ -44,7 +40,7 @@ export const getBillingControllerListPlansUrl = () => {
 
 export const billingControllerListPlans = async ( options?: RequestInit): Promise<billingControllerListPlansResponse> => {
   
-  return billingControllerListPlansMutator<billingControllerListPlansResponse>(getBillingControllerListPlansUrl(),
+  return orvalMutator<billingControllerListPlansResponse>(getBillingControllerListPlansUrl(),
   {      
     ...options,
     method: 'GET'
@@ -79,7 +75,7 @@ export const getBillingControllerSubscribeUrl = () => {
 
 export const billingControllerSubscribe = async (subscribeDto: SubscribeDto, options?: RequestInit): Promise<billingControllerSubscribeResponse> => {
   
-  return billingControllerSubscribeMutator<billingControllerSubscribeResponse>(getBillingControllerSubscribeUrl(),
+  return orvalMutator<billingControllerSubscribeResponse>(getBillingControllerSubscribeUrl(),
   {      
     ...options,
     method: 'POST',
@@ -115,7 +111,7 @@ export const getBillingControllerCancelUrl = () => {
 
 export const billingControllerCancel = async ( options?: RequestInit): Promise<billingControllerCancelResponse> => {
   
-  return billingControllerCancelMutator<billingControllerCancelResponse>(getBillingControllerCancelUrl(),
+  return orvalMutator<billingControllerCancelResponse>(getBillingControllerCancelUrl(),
   {      
     ...options,
     method: 'DELETE'
@@ -150,7 +146,7 @@ export const getBillingControllerInvoicesUrl = () => {
 
 export const billingControllerInvoices = async ( options?: RequestInit): Promise<billingControllerInvoicesResponse> => {
   
-  return billingControllerInvoicesMutator<billingControllerInvoicesResponse>(getBillingControllerInvoicesUrl(),
+  return orvalMutator<billingControllerInvoicesResponse>(getBillingControllerInvoicesUrl(),
   {      
     ...options,
     method: 'GET'
@@ -185,7 +181,7 @@ export const getBillingControllerCallbackUrl = () => {
 
 export const billingControllerCallback = async ( options?: RequestInit): Promise<billingControllerCallbackResponse> => {
   
-  return billingControllerCallbackMutator<billingControllerCallbackResponse>(getBillingControllerCallbackUrl(),
+  return orvalMutator<billingControllerCallbackResponse>(getBillingControllerCallbackUrl(),
   {      
     ...options,
     method: 'POST'

@@ -5,12 +5,18 @@
  * Generated for Orval client
  * OpenAPI spec version: 1.0
  */
+import type {
+  CountDto,
+  MessageDto,
+  NotificationResponseDto
+} from '.././models';
+
 
 /**
  * @summary List notifications for current user
  */
 export type notificationsControllerListResponse200 = {
-  data: void
+  data: NotificationResponseDto[]
   status: 200
 }
     
@@ -51,7 +57,7 @@ export const notificationsControllerList = async ( options?: RequestInit): Promi
  * @summary Mark notification as read
  */
 export type notificationsControllerMarkReadResponse200 = {
-  data: void
+  data: MessageDto
   status: 200
 }
     
@@ -92,7 +98,7 @@ export const notificationsControllerMarkRead = async (notificationId: number, op
  * @summary Get unread notifications count
  */
 export type notificationsControllerUnreadCountResponse200 = {
-  data: void
+  data: CountDto
   status: 200
 }
     
@@ -133,7 +139,7 @@ export const notificationsControllerUnreadCount = async ( options?: RequestInit)
  * @summary Mark all notifications as read
  */
 export type notificationsControllerMarkAllReadResponse200 = {
-  data: void
+  data: MessageDto
   status: 200
 }
     

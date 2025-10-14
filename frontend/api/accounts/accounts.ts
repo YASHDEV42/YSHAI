@@ -11,8 +11,7 @@ import type {
   MessageDto
 } from '.././model';
 
-import accountsControllerLinkMutator from '../../lib/orval-mutator';
-import accountsControllerUnlinkMutator from '../../lib/orval-mutator';
+import { orvalMutator } from '../../lib/orval-mutator';
 
 /**
  * @summary Link Account
@@ -39,7 +38,7 @@ export const getAccountsControllerLinkUrl = () => {
 
 export const accountsControllerLink = async (linkAccountWithTokensDto: LinkAccountWithTokensDto, options?: RequestInit): Promise<accountsControllerLinkResponse> => {
   
-  return accountsControllerLinkMutator<accountsControllerLinkResponse>(getAccountsControllerLinkUrl(),
+  return orvalMutator<accountsControllerLinkResponse>(getAccountsControllerLinkUrl(),
   {      
     ...options,
     method: 'POST',
@@ -75,7 +74,7 @@ export const getAccountsControllerUnlinkUrl = (accountId: number,) => {
 
 export const accountsControllerUnlink = async (accountId: number, options?: RequestInit): Promise<accountsControllerUnlinkResponse> => {
   
-  return accountsControllerUnlinkMutator<accountsControllerUnlinkResponse>(getAccountsControllerUnlinkUrl(accountId),
+  return orvalMutator<accountsControllerUnlinkResponse>(getAccountsControllerUnlinkUrl(accountId),
   {      
     ...options,
     method: 'DELETE'

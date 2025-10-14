@@ -12,10 +12,7 @@ import type {
   ModerationResultResponseDto
 } from '.././model';
 
-import moderationControllerModerateTextMutator from '../../lib/orval-mutator';
-import moderationControllerModerateImageMutator from '../../lib/orval-mutator';
-import moderationControllerModerateVideoMutator from '../../lib/orval-mutator';
-import moderationControllerGetReportsMutator from '../../lib/orval-mutator';
+import { orvalMutator } from '../../lib/orval-mutator';
 
 /**
  * @summary Moderate Arabic text
@@ -42,7 +39,7 @@ export const getModerationControllerModerateTextUrl = () => {
 
 export const moderationControllerModerateText = async (moderateTextDto: ModerateTextDto, options?: RequestInit): Promise<moderationControllerModerateTextResponse> => {
   
-  return moderationControllerModerateTextMutator<moderationControllerModerateTextResponse>(getModerationControllerModerateTextUrl(),
+  return orvalMutator<moderationControllerModerateTextResponse>(getModerationControllerModerateTextUrl(),
   {      
     ...options,
     method: 'POST',
@@ -78,7 +75,7 @@ export const getModerationControllerModerateImageUrl = () => {
 
 export const moderationControllerModerateImage = async (moderateImageDto: ModerateImageDto, options?: RequestInit): Promise<moderationControllerModerateImageResponse> => {
   
-  return moderationControllerModerateImageMutator<moderationControllerModerateImageResponse>(getModerationControllerModerateImageUrl(),
+  return orvalMutator<moderationControllerModerateImageResponse>(getModerationControllerModerateImageUrl(),
   {      
     ...options,
     method: 'POST',
@@ -114,7 +111,7 @@ export const getModerationControllerModerateVideoUrl = () => {
 
 export const moderationControllerModerateVideo = async (moderateVideoDto: ModerateVideoDto, options?: RequestInit): Promise<moderationControllerModerateVideoResponse> => {
   
-  return moderationControllerModerateVideoMutator<moderationControllerModerateVideoResponse>(getModerationControllerModerateVideoUrl(),
+  return orvalMutator<moderationControllerModerateVideoResponse>(getModerationControllerModerateVideoUrl(),
   {      
     ...options,
     method: 'POST',
@@ -150,7 +147,7 @@ export const getModerationControllerGetReportsUrl = () => {
 
 export const moderationControllerGetReports = async ( options?: RequestInit): Promise<moderationControllerGetReportsResponse> => {
   
-  return moderationControllerGetReportsMutator<moderationControllerGetReportsResponse>(getModerationControllerGetReportsUrl(),
+  return orvalMutator<moderationControllerGetReportsResponse>(getModerationControllerGetReportsUrl(),
   {      
     ...options,
     method: 'GET'

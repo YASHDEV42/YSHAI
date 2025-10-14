@@ -11,9 +11,7 @@ import type {
   UserResponseDto
 } from '.././model';
 
-import usersControllerGetProfileMutator from '../../lib/orval-mutator';
-import usersControllerUpdateProfileMutator from '../../lib/orval-mutator';
-import usersControllerUpdatePreferencesMutator from '../../lib/orval-mutator';
+import { orvalMutator } from '../../lib/orval-mutator';
 
 /**
  * @summary Get current user using JWT
@@ -27,7 +25,7 @@ export type usersControllerGetProfileResponse404 = {
   data: void
   status: 404
 }
-
+    
 export type usersControllerGetProfileResponseSuccess = (usersControllerGetProfileResponse200) & {
   headers: Headers;
 };
@@ -40,22 +38,21 @@ export type usersControllerGetProfileResponse = (usersControllerGetProfileRespon
 export const getUsersControllerGetProfileUrl = () => {
 
 
-
+  
 
   return `/users/me`
 }
 
-export const usersControllerGetProfile = async (options?: RequestInit): Promise<usersControllerGetProfileResponse> => {
-
-  return usersControllerGetProfileMutator<usersControllerGetProfileResponse>(getUsersControllerGetProfileUrl(),
-    {
-      ...options,
-      method: 'GET'
-
-
-    }
-  );
-}
+export const usersControllerGetProfile = async ( options?: RequestInit): Promise<usersControllerGetProfileResponse> => {
+  
+  return orvalMutator<usersControllerGetProfileResponse>(getUsersControllerGetProfileUrl(),
+  {      
+    ...options,
+    method: 'GET'
+    
+    
+  }
+);}
 
 
 /**
@@ -70,7 +67,7 @@ export type usersControllerUpdateProfileResponse404 = {
   data: void
   status: 404
 }
-
+    
 export type usersControllerUpdateProfileResponseSuccess = (usersControllerUpdateProfileResponse200) & {
   headers: Headers;
 };
@@ -83,23 +80,22 @@ export type usersControllerUpdateProfileResponse = (usersControllerUpdateProfile
 export const getUsersControllerUpdateProfileUrl = () => {
 
 
-
+  
 
   return `/users/me`
 }
 
 export const usersControllerUpdateProfile = async (updateUserDto: UpdateUserDto, options?: RequestInit): Promise<usersControllerUpdateProfileResponse> => {
-
-  return usersControllerUpdateProfileMutator<usersControllerUpdateProfileResponse>(getUsersControllerUpdateProfileUrl(),
-    {
-      ...options,
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json', ...options?.headers },
-      body: JSON.stringify(
-        updateUserDto,)
-    }
-  );
-}
+  
+  return orvalMutator<usersControllerUpdateProfileResponse>(getUsersControllerUpdateProfileUrl(),
+  {      
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      updateUserDto,)
+  }
+);}
 
 
 /**
@@ -109,7 +105,7 @@ export type usersControllerUpdatePreferencesResponse200 = {
   data: void
   status: 200
 }
-
+    
 export type usersControllerUpdatePreferencesResponseSuccess = (usersControllerUpdatePreferencesResponse200) & {
   headers: Headers;
 };
@@ -120,22 +116,21 @@ export type usersControllerUpdatePreferencesResponse = (usersControllerUpdatePre
 export const getUsersControllerUpdatePreferencesUrl = () => {
 
 
-
+  
 
   return `/users/me/preferences`
 }
 
 export const usersControllerUpdatePreferences = async (updatePreferencesDto: UpdatePreferencesDto, options?: RequestInit): Promise<usersControllerUpdatePreferencesResponse> => {
-
-  return usersControllerUpdatePreferencesMutator<usersControllerUpdatePreferencesResponse>(getUsersControllerUpdatePreferencesUrl(),
-    {
-      ...options,
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json', ...options?.headers },
-      body: JSON.stringify(
-        updatePreferencesDto,)
-    }
-  );
-}
+  
+  return orvalMutator<usersControllerUpdatePreferencesResponse>(getUsersControllerUpdatePreferencesUrl(),
+  {      
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      updatePreferencesDto,)
+  }
+);}
 
 

@@ -1,5 +1,18 @@
-import { Entity, PrimaryKey, Property, ManyToOne } from '@mikro-orm/core';
+import { Entity, PrimaryKey, Property, ManyToOne, Enum } from '@mikro-orm/core';
 import { User } from './user.entity';
+
+export enum NotificationType {
+  POST_SCHEDULED = 'post_scheduled',
+  PUBLISH_FAILED = 'publish_failed',
+  AI_READY = 'ai_ready',
+  APPROVED = 'approved',
+}
+
+export interface NotificationMessage {
+  en: string;
+  ar: string;
+  tr: string;
+}
 
 @Entity()
 export class Notification {
@@ -9,12 +22,17 @@ export class Notification {
   @ManyToOne(() => User)
   user!: User;
 
-  @Property()
-  type: 'post_scheduled' | 'publish_failed' | 'ai_ready' | 'approved' =
-    'post_scheduled';
+  @Enum(() => NotificationType)
+  type!: NotificationType;
 
   @Property({ type: 'json' })
-  payload!: Record<string, any>;
+  title!: NotificationMessage;
+
+  @Property({ type: 'json' })
+  message!: NotificationMessage;
+
+  @Property({ type: 'json', nullable: true })
+  data?: Record<string, any>;
 
   @Property({ default: false })
   read = false;

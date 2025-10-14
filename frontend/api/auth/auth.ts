@@ -17,14 +17,7 @@ import type {
   TokensResponseDto
 } from '.././model';
 
-import authControllerRegisterMutator from '../../lib/orval-mutator';
-import authControllerLoginMutator from '../../lib/orval-mutator';
-import authControllerLogoutMutator from '../../lib/orval-mutator';
-import authControllerForgotPasswordMutator from '../../lib/orval-mutator';
-import authControllerResetPasswordMutator from '../../lib/orval-mutator';
-import authControllerVerifyEmailMutator from '../../lib/orval-mutator';
-import authControllerResendVerificationMutator from '../../lib/orval-mutator';
-import authControllerRefreshMutator from '../../lib/orval-mutator';
+import { orvalMutator } from '../../lib/orval-mutator';
 
 /**
  * @summary Register a new user
@@ -51,7 +44,7 @@ export const getAuthControllerRegisterUrl = () => {
 
 export const authControllerRegister = async (registerDto: RegisterDto, options?: RequestInit): Promise<authControllerRegisterResponse> => {
   
-  return authControllerRegisterMutator<authControllerRegisterResponse>(getAuthControllerRegisterUrl(),
+  return orvalMutator<authControllerRegisterResponse>(getAuthControllerRegisterUrl(),
   {      
     ...options,
     method: 'POST',
@@ -87,7 +80,7 @@ export const getAuthControllerLoginUrl = () => {
 
 export const authControllerLogin = async (loginDto: LoginDto, options?: RequestInit): Promise<authControllerLoginResponse> => {
   
-  return authControllerLoginMutator<authControllerLoginResponse>(getAuthControllerLoginUrl(),
+  return orvalMutator<authControllerLoginResponse>(getAuthControllerLoginUrl(),
   {      
     ...options,
     method: 'POST',
@@ -130,7 +123,7 @@ export const getAuthControllerLogoutUrl = () => {
 
 export const authControllerLogout = async ( options?: RequestInit): Promise<authControllerLogoutResponse> => {
   
-  return authControllerLogoutMutator<authControllerLogoutResponse>(getAuthControllerLogoutUrl(),
+  return orvalMutator<authControllerLogoutResponse>(getAuthControllerLogoutUrl(),
   {      
     ...options,
     method: 'POST'
@@ -172,7 +165,7 @@ export const getAuthControllerForgotPasswordUrl = () => {
 
 export const authControllerForgotPassword = async (forgotPasswordDto: ForgotPasswordDto, options?: RequestInit): Promise<authControllerForgotPasswordResponse> => {
   
-  return authControllerForgotPasswordMutator<authControllerForgotPasswordResponse>(getAuthControllerForgotPasswordUrl(),
+  return orvalMutator<authControllerForgotPasswordResponse>(getAuthControllerForgotPasswordUrl(),
   {      
     ...options,
     method: 'POST',
@@ -215,7 +208,7 @@ export const getAuthControllerResetPasswordUrl = () => {
 
 export const authControllerResetPassword = async (resetPasswordDto: ResetPasswordDto, options?: RequestInit): Promise<authControllerResetPasswordResponse> => {
   
-  return authControllerResetPasswordMutator<authControllerResetPasswordResponse>(getAuthControllerResetPasswordUrl(),
+  return orvalMutator<authControllerResetPasswordResponse>(getAuthControllerResetPasswordUrl(),
   {      
     ...options,
     method: 'POST',
@@ -265,7 +258,7 @@ export const getAuthControllerVerifyEmailUrl = (params: AuthControllerVerifyEmai
 
 export const authControllerVerifyEmail = async (params: AuthControllerVerifyEmailParams, options?: RequestInit): Promise<authControllerVerifyEmailResponse> => {
   
-  return authControllerVerifyEmailMutator<authControllerVerifyEmailResponse>(getAuthControllerVerifyEmailUrl(params),
+  return orvalMutator<authControllerVerifyEmailResponse>(getAuthControllerVerifyEmailUrl(params),
   {      
     ...options,
     method: 'GET'
@@ -307,7 +300,7 @@ export const getAuthControllerResendVerificationUrl = () => {
 
 export const authControllerResendVerification = async (resendVerificationDto: ResendVerificationDto, options?: RequestInit): Promise<authControllerResendVerificationResponse> => {
   
-  return authControllerResendVerificationMutator<authControllerResendVerificationResponse>(getAuthControllerResendVerificationUrl(),
+  return orvalMutator<authControllerResendVerificationResponse>(getAuthControllerResendVerificationUrl(),
   {      
     ...options,
     method: 'POST',
@@ -340,7 +333,7 @@ export const getAuthControllerRefreshUrl = () => {
 
 export const authControllerRefresh = async (refreshTokenDto: RefreshTokenDto, options?: RequestInit): Promise<authControllerRefreshResponse> => {
   
-  return authControllerRefreshMutator<authControllerRefreshResponse>(getAuthControllerRefreshUrl(),
+  return orvalMutator<authControllerRefreshResponse>(getAuthControllerRefreshUrl(),
   {      
     ...options,
     method: 'POST',

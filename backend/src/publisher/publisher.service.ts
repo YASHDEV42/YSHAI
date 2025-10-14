@@ -2,7 +2,10 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/core';
 import { Job } from 'src/entities/job.entity';
 import { Post } from 'src/entities/post.entity';
-import { Notification } from 'src/entities/notification.entity';
+import {
+  Notification,
+  NotificationType,
+} from 'src/entities/notification.entity';
 import { AuditLog } from 'src/entities/audit-log.entity';
 import { WebhooksService } from 'src/webhooks/webhooks.service';
 import { PostTarget } from 'src/entities/post-target.entity';
@@ -167,8 +170,18 @@ export class PublisherService implements OnModuleInit {
           if (job.status === 'failed') {
             const notif = em.create(Notification, {
               user: post.author,
-              type: 'publish_failed',
-              payload: { postId: post.id, error: job.lastError },
+              type: NotificationType.PUBLISH_FAILED,
+              title: {
+                en: 'Publish Failed',
+                ar: 'فشل النشر',
+                tr: 'Yayın Başarısız',
+              },
+              message: {
+                en: `Failed to publish post: ${job.lastError ?? 'unknown error'}`,
+                ar: `فشل نشر المنشور: ${job.lastError ?? 'خطأ غير معروف'}`,
+                tr: `Gönderi yayınlanamadı: ${job.lastError ?? 'bilinmeyen hata'}`,
+              },
+              data: { postId: post.id, error: job.lastError },
               read: false,
               createdAt: new Date(),
             });

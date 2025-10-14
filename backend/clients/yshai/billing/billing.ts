@@ -6,7 +6,11 @@
  * OpenAPI spec version: 1.0
  */
 import type {
-  SubscribeDto
+  BillingControllerCancel200,
+  InvoiceResponseDto,
+  PlanResponseDto,
+  SubscribeDto,
+  SubscribeResponseDto
 } from '.././models';
 
 
@@ -14,7 +18,7 @@ import type {
  * @summary List available plans
  */
 export type billingControllerListPlansResponse200 = {
-  data: void
+  data: PlanResponseDto[]
   status: 200
 }
     
@@ -54,12 +58,12 @@ export const billingControllerListPlans = async ( options?: RequestInit): Promis
 /**
  * @summary Create or switch subscription
  */
-export type billingControllerSubscribeResponse201 = {
-  data: void
-  status: 201
+export type billingControllerSubscribeResponse200 = {
+  data: SubscribeResponseDto
+  status: 200
 }
     
-export type billingControllerSubscribeResponseSuccess = (billingControllerSubscribeResponse201) & {
+export type billingControllerSubscribeResponseSuccess = (billingControllerSubscribeResponse200) & {
   headers: Headers;
 };
 ;
@@ -97,7 +101,7 @@ export const billingControllerSubscribe = async (subscribeDto: SubscribeDto, opt
  * @summary Cancel current subscription
  */
 export type billingControllerCancelResponse200 = {
-  data: void
+  data: BillingControllerCancel200
   status: 200
 }
     
@@ -138,7 +142,7 @@ export const billingControllerCancel = async ( options?: RequestInit): Promise<b
  * @summary List invoices for current user
  */
 export type billingControllerInvoicesResponse200 = {
-  data: void
+  data: InvoiceResponseDto[]
   status: 200
 }
     

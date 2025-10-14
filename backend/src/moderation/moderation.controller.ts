@@ -11,14 +11,14 @@ import { ModerateTextDto } from './dto/moderate-text.dto';
 import { ModerateImageDto } from './dto/moderate-image.dto';
 import { ModerateVideoDto } from './dto/moderate-video.dto';
 import { ModerationResultResponseDto } from './dto/moderation-result-response.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @ApiTags('Moderation')
 @ApiCookieAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('moderation')
 export class ModerationController {
-  constructor(private readonly moderationService: ModerationService) {}
+  constructor(private readonly moderationService: ModerationService) { }
 
   @Post('text')
   @ApiOperation({ summary: 'Moderate Arabic text' })
@@ -57,8 +57,8 @@ export class ModerationController {
     return {
       id: r.id,
       provider: r.provider,
-      verdict: r.verdict,
       details: r.details ?? null,
+      verdict: r.verdict,
       checkedAt: r.checkedAt,
       postId: r.post.id,
     };

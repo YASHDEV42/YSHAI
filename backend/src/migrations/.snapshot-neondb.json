@@ -1302,22 +1302,44 @@
         },
         "type": {
           "name": "type",
-          "type": "varchar(255)",
+          "type": "text",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "length": 255,
-          "default": "'post_scheduled'",
-          "mappedType": "string"
+          "enumItems": [
+            "post_scheduled",
+            "publish_failed",
+            "ai_ready",
+            "approved"
+          ],
+          "mappedType": "enum"
         },
-        "payload": {
-          "name": "payload",
+        "title": {
+          "name": "title",
           "type": "jsonb",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "mappedType": "json"
+        },
+        "message": {
+          "name": "message",
+          "type": "jsonb",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "json"
+        },
+        "data": {
+          "name": "data",
+          "type": "jsonb",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
           "mappedType": "json"
         },
         "read": {

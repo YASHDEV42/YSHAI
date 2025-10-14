@@ -195,13 +195,6 @@
       "connect": "اتصل",
       "addPlatform": "إضافة منصة"
     },
-    "sidebar": {
-      "overview": "نظرة عامة",
-      "createPost": "إنشاء منشور",
-      "calendar": "التقويم",
-      "analytics": "التحليلات",
-      "settings": "الإعدادات"
-    },
     "user": {
       "name": "يحيى شنات",
       "email": "john@example.com"
@@ -211,6 +204,21 @@
       "scheduled": "مجدول",
       "failed": "فشل"
     }
+  },
+  "DashboardSidebar": {
+    "overview": "نظرة عامة",
+    "createPost": "إنشاء منشور",
+    "calendar": "التقويم",
+    "analytics": "التحليلات",
+    "settings": "الإعدادات",
+    "notifications": "الإشعارات",
+    "noNotifications": "لا توجد إشعارات بعد",
+    "markAll": "تحديد الكل كمقروء",
+    "new": "جديد",
+    "justNow": "الآن",
+    "minutesAgo": "منذ {count} دقيقة",
+    "hoursAgo": "منذ {count} ساعة",
+    "daysAgo": "منذ {count} يوم"
   },
   "CreatePage": {
     "header": {

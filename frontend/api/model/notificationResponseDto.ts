@@ -5,16 +5,26 @@
  * The YSHAI backend API documentation. This API manages posts, teams, media, AI generation, moderation, analytics, billing, and more.
  * OpenAPI spec version: 1.0
  */
-import type { NotificationResponseDtoType } from './notificationResponseDtoType';
-import type { NotificationResponseDtoPayload } from './notificationResponseDtoPayload';
-import type { NotificationResponseDtoLink } from './notificationResponseDtoLink';
+import type { NotificationType } from './notificationType';
+import type { NotificationMessageDto } from './notificationMessageDto';
+import type { NotificationResponseDtoData } from './notificationResponseDtoData';
+import type { NotificationResponseDtoLinkProperty } from './notificationResponseDtoLinkProperty';
 
 export interface NotificationResponseDto {
   id: number;
-  type: NotificationResponseDtoType;
-  payload: NotificationResponseDtoPayload;
+  type: NotificationType;
+  title: NotificationMessageDto;
+  message: NotificationMessageDto;
+  /**
+   * Type-specific payload for the notification
+   * @nullable
+   */
+  data?: NotificationResponseDtoData;
   read: boolean;
   createdAt: string;
-  /** @nullable */
-  link?: NotificationResponseDtoLink;
+  /**
+   * Optional URL for deep-linking to the related resource
+   * @nullable
+   */
+  link?: NotificationResponseDtoLinkProperty;
 }

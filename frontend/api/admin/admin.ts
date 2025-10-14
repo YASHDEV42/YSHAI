@@ -13,10 +13,7 @@ import type {
   AssignRoleDto
 } from '.././model';
 
-import adminControllerListUsersMutator from '../../lib/orval-mutator';
-import adminControllerBanUserMutator from '../../lib/orval-mutator';
-import adminControllerAssignRoleMutator from '../../lib/orval-mutator';
-import adminControllerAuditLogsMutator from '../../lib/orval-mutator';
+import { orvalMutator } from '../../lib/orval-mutator';
 
 /**
  * @summary List users
@@ -43,7 +40,7 @@ export const getAdminControllerListUsersUrl = () => {
 
 export const adminControllerListUsers = async ( options?: RequestInit): Promise<adminControllerListUsersResponse> => {
   
-  return adminControllerListUsersMutator<adminControllerListUsersResponse>(getAdminControllerListUsersUrl(),
+  return orvalMutator<adminControllerListUsersResponse>(getAdminControllerListUsersUrl(),
   {      
     ...options,
     method: 'GET'
@@ -78,7 +75,7 @@ export const getAdminControllerBanUserUrl = (id: number,) => {
 
 export const adminControllerBanUser = async (id: number, options?: RequestInit): Promise<adminControllerBanUserResponse> => {
   
-  return adminControllerBanUserMutator<adminControllerBanUserResponse>(getAdminControllerBanUserUrl(id),
+  return orvalMutator<adminControllerBanUserResponse>(getAdminControllerBanUserUrl(id),
   {      
     ...options,
     method: 'POST'
@@ -114,7 +111,7 @@ export const getAdminControllerAssignRoleUrl = (id: number,) => {
 export const adminControllerAssignRole = async (id: number,
     assignRoleDto: AssignRoleDto, options?: RequestInit): Promise<adminControllerAssignRoleResponse> => {
   
-  return adminControllerAssignRoleMutator<adminControllerAssignRoleResponse>(getAdminControllerAssignRoleUrl(id),
+  return orvalMutator<adminControllerAssignRoleResponse>(getAdminControllerAssignRoleUrl(id),
   {      
     ...options,
     method: 'PUT',
@@ -150,7 +147,7 @@ export const getAdminControllerAuditLogsUrl = () => {
 
 export const adminControllerAuditLogs = async ( options?: RequestInit): Promise<adminControllerAuditLogsResponse> => {
   
-  return adminControllerAuditLogsMutator<adminControllerAuditLogsResponse>(getAdminControllerAuditLogsUrl(),
+  return orvalMutator<adminControllerAuditLogsResponse>(getAdminControllerAuditLogsUrl(),
   {      
     ...options,
     method: 'GET'

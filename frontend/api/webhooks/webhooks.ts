@@ -12,10 +12,7 @@ import type {
   WebhooksControllerRegister201
 } from '.././model';
 
-import webhooksControllerRegisterMutator from '../../lib/orval-mutator';
-import webhooksControllerListMutator from '../../lib/orval-mutator';
-import webhooksControllerRemoveMutator from '../../lib/orval-mutator';
-import webhooksControllerDeliveriesMutator from '../../lib/orval-mutator';
+import { orvalMutator } from '../../lib/orval-mutator';
 
 /**
  * @summary Register webhook
@@ -42,7 +39,7 @@ export const getWebhooksControllerRegisterUrl = () => {
 
 export const webhooksControllerRegister = async (createWebhookDto: CreateWebhookDto, options?: RequestInit): Promise<webhooksControllerRegisterResponse> => {
   
-  return webhooksControllerRegisterMutator<webhooksControllerRegisterResponse>(getWebhooksControllerRegisterUrl(),
+  return orvalMutator<webhooksControllerRegisterResponse>(getWebhooksControllerRegisterUrl(),
   {      
     ...options,
     method: 'POST',
@@ -78,7 +75,7 @@ export const getWebhooksControllerListUrl = () => {
 
 export const webhooksControllerList = async ( options?: RequestInit): Promise<webhooksControllerListResponse> => {
   
-  return webhooksControllerListMutator<webhooksControllerListResponse>(getWebhooksControllerListUrl(),
+  return orvalMutator<webhooksControllerListResponse>(getWebhooksControllerListUrl(),
   {      
     ...options,
     method: 'GET'
@@ -113,7 +110,7 @@ export const getWebhooksControllerRemoveUrl = (webhookId: number,) => {
 
 export const webhooksControllerRemove = async (webhookId: number, options?: RequestInit): Promise<webhooksControllerRemoveResponse> => {
   
-  return webhooksControllerRemoveMutator<webhooksControllerRemoveResponse>(getWebhooksControllerRemoveUrl(webhookId),
+  return orvalMutator<webhooksControllerRemoveResponse>(getWebhooksControllerRemoveUrl(webhookId),
   {      
     ...options,
     method: 'DELETE'
@@ -157,7 +154,7 @@ export const getWebhooksControllerDeliveriesUrl = (webhookId: number,
 export const webhooksControllerDeliveries = async (webhookId: number,
     params?: WebhooksControllerDeliveriesParams, options?: RequestInit): Promise<webhooksControllerDeliveriesResponse> => {
   
-  return webhooksControllerDeliveriesMutator<webhooksControllerDeliveriesResponse>(getWebhooksControllerDeliveriesUrl(webhookId,params),
+  return orvalMutator<webhooksControllerDeliveriesResponse>(getWebhooksControllerDeliveriesUrl(webhookId,params),
   {      
     ...options,
     method: 'GET'

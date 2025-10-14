@@ -6,7 +6,4 @@
  * OpenAPI spec version: 1.0
  */
 
-/**
- * @nullable
- */
-export type NotificationResponseDtoLink = { [key: string]: unknown } | null;
+export interface NotificationResponseDtoLink { [key: string]: unknown }

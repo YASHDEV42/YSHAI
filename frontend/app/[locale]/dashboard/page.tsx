@@ -40,13 +40,6 @@ export default async function DashboardPageRoute({
       connect: t("connectedPlatforms.connect"),
       addPlatform: t("connectedPlatforms.addPlatform"),
     },
-    sidebar: {
-      overview: t("sidebar.overview"),
-      createPost: t("sidebar.createPost"),
-      calendar: t("sidebar.calendar"),
-      analytics: t("sidebar.analytics"),
-      settings: t("sidebar.settings"),
-    },
     user: {
       name: t("user.name"),
       email: t("user.email"),

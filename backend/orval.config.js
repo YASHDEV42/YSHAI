@@ -1,4 +1,3 @@
-/** @type {import('orval').Config} */
 module.exports = {
   yshai: {
     input: './swagger-spec.json',
