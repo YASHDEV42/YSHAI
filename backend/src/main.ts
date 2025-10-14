@@ -11,7 +11,6 @@ import { writeFileSync } from 'fs';
 import { join } from 'path';
 import { Response } from 'express';
 
-
 async function bootstrap() {
   // Ensure upload directory exists
   const uploadDir = path.join(__dirname, '..', 'uploads');
@@ -59,25 +58,23 @@ async function bootstrap() {
     .addTag('Webhooks')
     .addTag('Meta')
     .addTag('Moderation')
-    .addBearerAuth(
-      {
-        type: 'http',
-        scheme: 'bearer',
-        bearerFormat: 'JWT',
-        name: 'Authorization',
-        description: 'Enter JWT token',
-        in: 'header',
-      },
-      'access-token',
-    )
+    .addCookieAuth('accessToken', {
+      type: 'apiKey',
+      in: 'cookie',
+      name: 'accessToken',
+      description: 'HttpOnly JWT access token cookie',
+    })
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
-  writeFileSync(join(process.cwd(), 'swagger-spec.json'), JSON.stringify(document, null, 2));
+  writeFileSync(
+    join(process.cwd(), 'swagger-spec.json'),
+    JSON.stringify(document, null, 2),
+  );
   app.getHttpAdapter().get('/api-json', (req, res: Response) => {
     res.json(document);
-  })
+  });
   // Use environment port
   const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 5000;
   await app.listen(port);

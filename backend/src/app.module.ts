@@ -22,7 +22,10 @@ import { PublisherModule } from './publisher/publisher.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    MikroOrmModule.forRoot(mikroOrmConfig),
+    // Allow generating Swagger without DB by setting SKIP_DB=true
+    ...(process.env.SKIP_DB === 'true'
+      ? []
+      : [MikroOrmModule.forRoot(mikroOrmConfig)]),
     AuthModule,
     UsersModule,
     PostsModule,

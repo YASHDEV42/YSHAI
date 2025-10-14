@@ -1,12 +1,21 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+  ApiCookieAuth,
+} from '@nestjs/swagger';
 import { ModerationService } from './moderation.service';
 import { ModerateTextDto } from './dto/moderate-text.dto';
 import { ModerateImageDto } from './dto/moderate-image.dto';
 import { ModerateVideoDto } from './dto/moderate-video.dto';
-import { ModerationResult } from '../entities/moderation-result.entity';
+import { ModerationResultResponseDto } from './dto/moderation-result-response.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('Moderation')
+@ApiCookieAuth()
+@UseGuards(JwtAuthGuard)
 @Controller('moderation')
 export class ModerationController {
   constructor(private readonly moderationService: ModerationService) {}
@@ -16,11 +25,21 @@ export class ModerationController {
   @ApiResponse({
     status: 200,
     description: 'Moderation result returned',
-    type: ModerationResult,
+    type: ModerationResultResponseDto,
   })
   @ApiBody({ type: ModerateTextDto })
-  moderateText(@Body() dto: ModerateTextDto): Promise<ModerationResult> {
-    return this.moderationService.moderateText(dto);
+  async moderateText(
+    @Body() dto: ModerateTextDto,
+  ): Promise<ModerationResultResponseDto> {
+    const r = await this.moderationService.moderateText(dto);
+    return {
+      id: r.id,
+      provider: r.provider,
+      verdict: r.verdict,
+      details: r.details ?? null,
+      checkedAt: r.checkedAt,
+      postId: r.post.id,
+    };
   }
 
   @Post('image')
@@ -28,11 +47,21 @@ export class ModerationController {
   @ApiResponse({
     status: 200,
     description: 'Moderation result returned',
-    type: ModerationResult,
+    type: ModerationResultResponseDto,
   })
   @ApiBody({ type: ModerateImageDto })
-  moderateImage(@Body() dto: ModerateImageDto): Promise<ModerationResult> {
-    return this.moderationService.moderateImage(dto);
+  async moderateImage(
+    @Body() dto: ModerateImageDto,
+  ): Promise<ModerationResultResponseDto> {
+    const r = await this.moderationService.moderateImage(dto);
+    return {
+      id: r.id,
+      provider: r.provider,
+      verdict: r.verdict,
+      details: r.details ?? null,
+      checkedAt: r.checkedAt,
+      postId: r.post.id,
+    };
   }
 
   @Post('video')
@@ -40,11 +69,21 @@ export class ModerationController {
   @ApiResponse({
     status: 200,
     description: 'Moderation result returned',
-    type: ModerationResult,
+    type: ModerationResultResponseDto,
   })
   @ApiBody({ type: ModerateVideoDto })
-  moderateVideo(@Body() dto: ModerateVideoDto): Promise<ModerationResult> {
-    return this.moderationService.moderateVideo(dto);
+  async moderateVideo(
+    @Body() dto: ModerateVideoDto,
+  ): Promise<ModerationResultResponseDto> {
+    const r = await this.moderationService.moderateVideo(dto);
+    return {
+      id: r.id,
+      provider: r.provider,
+      verdict: r.verdict,
+      details: r.details ?? null,
+      checkedAt: r.checkedAt,
+      postId: r.post.id,
+    };
   }
 
   @Get('reports')
@@ -52,9 +91,17 @@ export class ModerationController {
   @ApiResponse({
     status: 200,
     description: 'List of moderation reports',
-    type: [ModerationResult],
+    type: [ModerationResultResponseDto],
   })
-  getReports(): Promise<ModerationResult[]> {
-    return this.moderationService.getReports();
+  async getReports(): Promise<ModerationResultResponseDto[]> {
+    const list = await this.moderationService.getReports();
+    return list.map((r) => ({
+      id: r.id,
+      provider: r.provider,
+      verdict: r.verdict,
+      details: r.details ?? null,
+      checkedAt: r.checkedAt,
+      postId: r.post.id,
+    }));
   }
 }

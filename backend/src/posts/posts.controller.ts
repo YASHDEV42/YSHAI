@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiTags,
-  ApiBearerAuth,
+  ApiCookieAuth,
   ApiOperation,
   ApiResponse,
   ApiConsumes,
@@ -33,13 +33,31 @@ interface UploadedFileLike {
   buffer?: Buffer;
 }
 import { parse as parseCsv } from 'csv-parse/sync';
+import {
+  PostResponseDto,
+  PostStatusResponseDto,
+} from './dto/post-response.dto';
 
 @ApiTags('Posts')
-@ApiBearerAuth()
+@ApiCookieAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
+
+  private toDto(p: PostEntity): PostResponseDto {
+    return {
+      id: p.id,
+      contentAr: p.contentAr,
+      contentEn: p.contentEn,
+      status: p.status,
+      isRecurring: p.isRecurring,
+      publishedAt: p.publishedAt ?? null,
+      createdAt: p.createdAt,
+      updatedAt: p.updatedAt,
+      scheduleAt: p.scheduleAt,
+    };
+  }
 
   // endpoint to create
   @Post()
@@ -47,13 +65,13 @@ export class PostsController {
   @ApiResponse({
     status: 201,
     description: 'Post created successfully',
-    type: PostEntity,
+    type: PostResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Related entity not found' })
   @ApiBody({ type: CreatePostDto })
   async create(@Body() createPostDto: CreatePostDto) {
     const post = await this.postsService.create(createPostDto);
-    return post;
+    return this.toDto(post);
   }
 
   @Post('bulk')
@@ -61,10 +79,11 @@ export class PostsController {
   @ApiResponse({
     status: 201,
     description: 'Posts created',
-    type: [PostEntity],
+    type: [PostResponseDto],
   })
   async bulkCreate(@Body() dto: BulkCreatePostsDto) {
-    return await this.postsService.bulkCreate(dto);
+    const posts = await this.postsService.bulkCreate(dto);
+    return posts.map((p) => this.toDto(p));
   }
 
   @Post('bulk/csv')
@@ -88,7 +107,7 @@ export class PostsController {
   @ApiResponse({
     status: 201,
     description: 'Posts created from CSV',
-    type: [PostEntity],
+    type: [PostResponseDto],
   })
   async bulkCreateFromCsv(@UploadedFile() file: UploadedFileLike | undefined) {
     if (!file?.buffer) {
@@ -137,7 +156,8 @@ export class PostsController {
       return obj;
     });
 
-    return this.postsService.bulkCreate({ posts });
+    const created = await this.postsService.bulkCreate({ posts });
+    return created.map((p) => this.toDto(p));
   }
 
   @Post('recurring')
@@ -145,10 +165,11 @@ export class PostsController {
   @ApiResponse({
     status: 201,
     description: 'Recurring post created',
-    type: PostEntity,
+    type: PostResponseDto,
   })
   async createRecurring(@Body() dto: RecurringPostDto) {
-    return await this.postsService.createRecurring(dto);
+    const p = await this.postsService.createRecurring(dto);
+    return this.toDto(p);
   }
 
   @Post('draft')
@@ -156,10 +177,11 @@ export class PostsController {
   @ApiResponse({
     status: 201,
     description: 'Draft post created',
-    type: PostEntity,
+    type: PostResponseDto,
   })
   async createDraft(@Body() dto: DraftPostDto) {
-    return await this.postsService.createDraft(dto);
+    const p = await this.postsService.createDraft(dto);
+    return this.toDto(p);
   }
 
   @Put(':id')
@@ -167,14 +189,15 @@ export class PostsController {
   @ApiResponse({
     status: 200,
     description: 'Post updated successfully',
-    type: PostEntity,
+    type: PostResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Post not found' })
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updatePostDto: UpdatePostDto,
   ) {
-    return await this.postsService.update(id, updatePostDto);
+    const p = await this.postsService.update(id, updatePostDto);
+    return this.toDto(p);
   }
 
   @Put(':id/reschedule')
@@ -182,13 +205,14 @@ export class PostsController {
   @ApiResponse({
     status: 200,
     description: 'Post rescheduled',
-    type: PostEntity,
+    type: PostResponseDto,
   })
   async reschedule(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: ReschedulePostDto,
   ) {
-    return await this.postsService.reschedule(id, dto.scheduleAt);
+    const p = await this.postsService.reschedule(id, dto.scheduleAt);
+    return this.toDto(p);
   }
 
   @Post(':id/publish')
@@ -196,17 +220,23 @@ export class PostsController {
   @ApiResponse({
     status: 200,
     description: 'Publish job enqueued',
-    type: PostEntity,
+    type: PostResponseDto,
   })
   async publishNow(@Param('id', ParseIntPipe) id: number) {
-    return await this.postsService.publishNow(id);
+    const p = await this.postsService.publishNow(id);
+    return this.toDto(p);
   }
 
   @Get(':id/status')
   @ApiOperation({ summary: 'Get post status' })
-  @ApiResponse({ status: 200, description: 'Status fetched' })
+  @ApiResponse({
+    status: 200,
+    description: 'Status fetched',
+    type: PostStatusResponseDto,
+  })
   async statusGet(@Param('id', ParseIntPipe) id: number) {
-    return await this.postsService.getStatus(id);
+    const s = await this.postsService.getStatus(id);
+    return s as PostStatusResponseDto;
   }
 
   @Delete(':id')

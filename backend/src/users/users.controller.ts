@@ -1,7 +1,6 @@
-
 import { Controller, Get, UseGuards, Req, Put, Body } from '@nestjs/common';
 import {
-  ApiBearerAuth,
+  ApiCookieAuth,
   ApiOperation,
   ApiResponse,
   ApiTags,
@@ -15,11 +14,11 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdatePreferencesDto } from './dto/update-preferences.dto';
 
 @ApiTags('Users')
-@ApiBearerAuth()
+@ApiCookieAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService) {}
 
   // get current user profile using JWT
   @Get('me')
@@ -29,7 +28,9 @@ export class UsersController {
     type: UserResponseDto,
   })
   @ApiNotFoundResponse({ description: 'User not found.' })
-  async getProfile(@Req() req: { user: { userId: number } }): Promise<UserResponseDto> {
+  async getProfile(
+    @Req() req: { user: { userId: number } },
+  ): Promise<UserResponseDto> {
     return this.usersService.getProfile(req.user.userId);
   }
 
@@ -38,7 +39,7 @@ export class UsersController {
   @ApiOperation({ summary: 'Update current user using JWT' })
   @ApiOkResponse({
     description: 'Current user updated successfully.',
-    type: UpdateUserDto,
+    type: UserResponseDto,
   })
   @ApiNotFoundResponse({ description: 'User not found.' })
   async updateProfile(

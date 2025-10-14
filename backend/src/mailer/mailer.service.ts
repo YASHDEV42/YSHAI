@@ -1,5 +1,9 @@
 // src/mailer/mailer.service.ts
-import { Injectable, Logger, ServiceUnavailableException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { Resend } from 'resend';
 
 @Injectable()
@@ -48,8 +52,13 @@ export class MailerService {
 
       this.logger.log(`Password reset email sent to ${to}`);
     } catch (error) {
-      this.logger.error('Failed to send password reset email', error instanceof Error ? error.stack : String(error));
-      throw new ServiceUnavailableException('Failed to send email. Please try again later.');
+      this.logger.error(
+        'Failed to send password reset email',
+        error instanceof Error ? error.stack : String(error),
+      );
+      throw new ServiceUnavailableException(
+        'Failed to send email. Please try again later.',
+      );
     }
   }
 
@@ -85,8 +94,13 @@ export class MailerService {
 
       this.logger.log(`Verification email sent to ${to}`);
     } catch (error) {
-      this.logger.error('Failed to send verification email', error instanceof Error ? error.stack : String(error));
-      throw new ServiceUnavailableException('Failed to send email. Please try again later.');
+      this.logger.error(
+        'Failed to send verification email',
+        error instanceof Error ? error.stack : String(error),
+      );
+      throw new ServiceUnavailableException(
+        'Failed to send email. Please try again later.',
+      );
     }
   }
 }

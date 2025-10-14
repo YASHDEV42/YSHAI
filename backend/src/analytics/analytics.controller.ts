@@ -7,7 +7,7 @@ import {
   Header,
 } from '@nestjs/common';
 import {
-  ApiBearerAuth,
+  ApiCookieAuth,
   ApiOperation,
   ApiParam,
   ApiResponse,
@@ -20,7 +20,7 @@ import { CampaignInsightsDto } from './dto/campaign-insights.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @ApiTags('Analytics')
-@ApiBearerAuth()
+@ApiCookieAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('analytics')
 export class AnalyticsController {
@@ -56,6 +56,7 @@ export class AnalyticsController {
   @ApiOperation({ summary: 'Export report as CSV' })
   @Header('Content-Type', 'text/csv')
   @Header('Content-Disposition', 'attachment; filename="analytics.csv"')
+  @ApiResponse({ status: 200, schema: { type: 'string', format: 'binary' } })
   exportCsv(): Promise<string> {
     return this.analytics.exportCsv();
   }
@@ -64,6 +65,7 @@ export class AnalyticsController {
   @ApiOperation({ summary: 'Export report as PDF' })
   @Header('Content-Type', 'application/pdf')
   @Header('Content-Disposition', 'attachment; filename="analytics.pdf"')
+  @ApiResponse({ status: 200, schema: { type: 'string', format: 'binary' } })
   exportPdf(): Promise<Buffer> {
     return this.analytics.exportPdf();
   }

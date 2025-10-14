@@ -22,15 +22,21 @@ export class AuthService {
     private jwtService: JwtService,
     private readonly em: EntityManager,
     private readonly mailer: MailerService,
-  ) { }
+  ) {}
 
   // generate token
-  private async generateTokens(user: User): Promise<{ accessToken: string; refreshToken: string }> {
+  private async generateTokens(
+    user: User,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
     const payload = { userId: user.id, email: user.email, role: user.role };
     const accessToken = this.jwtService.sign(payload, { expiresIn: '15m' });
     const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
     const tokenHash = await bcrypt.hash(refreshToken, 10);
-    await this.em.nativeUpdate(RefreshToken, { userId: user.id }, { revoked: true });
+    await this.em.nativeUpdate(
+      RefreshToken,
+      { userId: user.id },
+      { revoked: true },
+    );
     const tokenEntity = this.em.create(RefreshToken, {
       user,
       userId: user.id,
@@ -64,7 +70,9 @@ export class AuthService {
     const { email, password, name, timezone, timeFormat } = dto;
     //cheack if email already exists
     const existing = await this.em.findOne(User, { email });
-    if (existing) { throw new BadRequestException('Email already in use'); };
+    if (existing) {
+      throw new BadRequestException('Email already in use');
+    }
     logger.log(`Registering user with email: ${email}`);
 
     //hash the password
@@ -87,52 +95,66 @@ export class AuthService {
     logger.log(`✅ User Registered Successfully!`);
 
     // generate email verification token
-    const verificationToken = this.generateEmailVerificationToken(user.id, user.email);
+    const verificationToken = this.generateEmailVerificationToken(
+      user.id,
+      user.email,
+    );
     await this.mailer.sendEmailVerification(user.email, verificationToken);
     logger.log(`Verification email sent to ${email}`);
 
     // reutrn success message
-    return { message: 'User registered. Please check your email to verify your account.' };
+    return {
+      message:
+        'User registered. Please check your email to verify your account.',
+    };
   }
 
   // generate email verification token Function
   generateEmailVerificationToken(userId: number, email: string): string {
-
     //sign and return token
     return this.jwtService.sign(
       { userId, email },
       {
         expiresIn: '1h',
-        secret: process.env.JWT_VERIFICATION_SECRET || 'strong_secret_hahahah$%',
+        secret:
+          process.env.JWT_VERIFICATION_SECRET || 'strong_secret_hahahah$%',
       },
     );
   }
 
   // verify email verification token Function
-  verifyEmailVerificationToken(token: string): { userId: number; email: string } | null {
+  verifyEmailVerificationToken(
+    token: string,
+  ): { userId: number; email: string } | null {
     try {
-      const payload = this.jwtService.verify(token, {
-        secret: process.env.JWT_VERIFICATION_SECRET || 'strong_secret_hahahah$%',
+      const payload: unknown = this.jwtService.verify(token, {
+        secret:
+          process.env.JWT_VERIFICATION_SECRET || 'strong_secret_hahahah$%',
       });
 
-      // ✅ Validate structure and types
-      if (
-        typeof payload === 'object' &&
-        payload !== null &&
-        typeof (payload as any).userId === 'number' &&
-        typeof (payload as any).email === 'string' &&
-        (payload as any).email.length > 0
-      ) {
+      const isValid = (p: unknown): p is { userId: number; email: string } => {
+        return (
+          typeof p === 'object' &&
+          p !== null &&
+          'userId' in p &&
+          typeof (p as { userId: unknown }).userId === 'number' &&
+          'email' in p &&
+          typeof (p as { email: unknown }).email === 'string' &&
+          ((p as { email: string }).email?.length ?? 0) > 0
+        );
+      };
+
+      if (isValid(payload)) {
         return {
-          userId: (payload as any).userId,
-          email: (payload as any).email,
+          userId: payload.userId,
+          email: payload.email,
         };
       }
 
-      logger.warn('Token payload has invalid structure', payload);
+      logger.warn('Token payload has invalid structure', payload as any);
       return null;
     } catch (error) {
-      logger.warn('Invalid or expired email verification token', error.message || error);
+      logger.warn('Invalid or expired email verification token', error);
       return null;
     }
   }
@@ -170,20 +192,22 @@ export class AuthService {
       throw new UnauthorizedException('Invalid password');
     }
     if (!user.isEmailVerified) {
-      throw new UnauthorizedException('Please verify your email before logging in');
+      throw new UnauthorizedException(
+        'Please verify your email before logging in',
+      );
     }
     logger.log('User validated successfully');
     return user;
   }
 
   // login User Function
-  async login(user: User) {
-    return this.generateTokens(user);
+  async login(user: unknown) {
+    // assert shape at runtime if needed; here we assume passport-local provides a valid User entity
+    return this.generateTokens(user as User);
   }
 
   // logout User Function
-  async logout(user: any): Promise<void> {
-
+  async logout(user: { userId: number }): Promise<void> {
     //find the active token for this user and revoke it
     const token = await this.em.findOne(RefreshToken, {
       userId: user.userId,
@@ -201,7 +225,10 @@ export class AuthService {
   }
 
   // refresh tokens Function
-  async refresh(userId: number, refreshToken: string): Promise<{ accessToken: string; refreshToken: string }> {
+  async refresh(
+    userId: number,
+    refreshToken: string,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
     //find the token in the database
     const candidates = await this.em.find(
       RefreshToken,
@@ -215,7 +242,9 @@ export class AuthService {
     if (!candidates || candidates.length === 0) {
       throw new UnauthorizedException('No valid refresh tokens found');
     }
-    logger.log(`Found ${candidates.length} candidate tokens for user ID ${userId}`);
+    logger.log(
+      `Found ${candidates.length} candidate tokens for user ID ${userId}`,
+    );
 
     // find the matching token
     for (const t of candidates) {
@@ -302,5 +331,4 @@ export class AuthService {
     logger.log(`Password reset successfully for user ${user.email}`);
     return { message: 'Password reset successfully' };
   }
-
 }

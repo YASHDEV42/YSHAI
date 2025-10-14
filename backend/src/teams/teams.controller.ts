@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiTags,
-  ApiBearerAuth,
+  ApiCookieAuth,
   ApiOperation,
   ApiResponse,
 } from '@nestjs/swagger';
@@ -22,9 +22,11 @@ import { TeamsService } from './teams.service';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { InviteMemberDto } from './dto/invite-member.dto';
 import { UpdateMemberRoleDto } from './dto/update-member-role.dto';
+import { MessageDto } from 'src/common/dto/message.dto';
+import { TeamAuditLogResponseDto } from './dto/team-audit-log.response.dto';
 
 @ApiTags('Teams')
-@ApiBearerAuth()
+@ApiCookieAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('teams')
 export class TeamsController {
@@ -46,7 +48,11 @@ export class TeamsController {
 
   @Post(':teamId/invite')
   @ApiOperation({ summary: 'Invite a member to the team' })
-  @ApiResponse({ status: 200, description: 'Member invited successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Member invited successfully',
+    type: MessageDto,
+  })
   async inviteMember(
     @Param('teamId', ParseIntPipe) teamId: number,
     @Body() dto: InviteMemberDto,
@@ -59,7 +65,11 @@ export class TeamsController {
 
   @Put(':teamId/members/:memberId')
   @ApiOperation({ summary: 'Update a team member’s role' })
-  @ApiResponse({ status: 200, description: 'Member role updated successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Member role updated successfully',
+    type: MessageDto,
+  })
   async updateMemberRole(
     @Param('teamId', ParseIntPipe) teamId: number,
     @Param('memberId', ParseIntPipe) memberId: number,
@@ -73,7 +83,11 @@ export class TeamsController {
 
   @Delete(':teamId/members/:memberId')
   @ApiOperation({ summary: 'Remove a member from the team' })
-  @ApiResponse({ status: 200, description: 'Member removed successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Member removed successfully',
+    type: MessageDto,
+  })
   async removeMember(
     @Param('teamId', ParseIntPipe) teamId: number,
     @Param('memberId', ParseIntPipe) memberId: number,
@@ -108,18 +122,11 @@ export class TeamsController {
 
   @Get(':teamId/audit-logs')
   @ApiOperation({ summary: 'List team audit logs' })
+  @ApiResponse({ status: 200, type: [TeamAuditLogResponseDto] })
   async listAuditLogs(
     @Param('teamId', ParseIntPipe) teamId: number,
     @Req() req: { user: { id: number } },
-  ): Promise<
-    Array<{
-      id: number;
-      action: string;
-      entityType?: string;
-      entityId?: string;
-      timestamp: Date;
-    }>
-  > {
+  ): Promise<TeamAuditLogResponseDto[]> {
     return this.teamsService.listAuditLogs(teamId, req.user.id);
   }
 }

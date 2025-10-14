@@ -11,7 +11,7 @@ import {
   Query,
 } from '@nestjs/common';
 import {
-  ApiBearerAuth,
+  ApiCookieAuth,
   ApiOperation,
   ApiParam,
   ApiResponse,
@@ -21,10 +21,16 @@ import {
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CreateWebhookDto } from './dto/create-webhook.dto';
 import { WebhooksService } from './webhooks.service';
-import { WebhookSubscription } from 'src/entities/webhook-subscription.entity';
+// import { WebhookSubscription } from 'src/entities/webhook-subscription.entity';
+import {
+  PaginatedDeliveryAttemptsDto,
+  // WebhookDeliveryAttemptResponseDto,
+  WebhookSubscriptionResponseDto,
+} from './dto/webhook-response.dto';
+import { MessageDto } from 'src/common/dto/message.dto';
 
 @ApiTags('Webhooks')
-@ApiBearerAuth()
+@ApiCookieAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('webhooks')
 export class WebhooksController {
@@ -32,7 +38,17 @@ export class WebhooksController {
 
   @Post()
   @ApiOperation({ summary: 'Register webhook' })
-  @ApiResponse({ status: 201, description: 'Webhook registered' })
+  @ApiResponse({
+    status: 201,
+    schema: {
+      type: 'object',
+      properties: {
+        id: { type: 'number' },
+        message: { type: 'string' },
+      },
+      required: ['id', 'message'],
+    },
+  })
   register(
     @Req() req: { user: { id: number } },
     @Body() dto: CreateWebhookDto,
@@ -42,13 +58,23 @@ export class WebhooksController {
 
   @Get()
   @ApiOperation({ summary: 'List webhooks' })
-  list(@Req() req: { user: { id: number } }): Promise<WebhookSubscription[]> {
-    return this.webhooks.list(req.user.id);
+  async list(
+    @Req() req: { user: { id: number } },
+  ): Promise<WebhookSubscriptionResponseDto[]> {
+    const subs = await this.webhooks.list(req.user.id);
+    return subs.map((s) => ({
+      id: s.id,
+      url: s.url,
+      event: s.event,
+      active: s.active,
+      createdAt: s.createdAt,
+    }));
   }
 
   @Delete(':webhookId')
   @ApiOperation({ summary: 'Delete webhook' })
   @ApiParam({ name: 'webhookId', type: Number })
+  @ApiResponse({ status: 200, type: MessageDto })
   remove(
     @Req() req: { user: { id: number } },
     @Param('webhookId', ParseIntPipe) webhookId: number,
@@ -69,17 +95,31 @@ export class WebhooksController {
     required: false,
     schema: { type: 'integer', default: 20, minimum: 1, maximum: 100 },
   })
-  deliveries(
+  async deliveries(
     @Req() req: { user: { id: number } },
     @Param('webhookId', ParseIntPipe) webhookId: number,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
-  ) {
+  ): Promise<PaginatedDeliveryAttemptsDto> {
     const p = Math.max(1, Number(page) || 1);
     const l = Math.max(1, Math.min(100, Number(limit) || 20));
-    return this.webhooks.listDeliveries(req.user.id, webhookId, {
+    const result = await this.webhooks.listDeliveries(req.user.id, webhookId, {
       page: p,
       limit: l,
     });
+    return {
+      data: result.data.map((d) => ({
+        id: d.id,
+        url: d.url,
+        event: d.event,
+        attemptNumber: d.attemptNumber,
+        status: d.status,
+        responseCode: d.responseCode ?? null,
+        errorMessage: d.errorMessage ?? null,
+        durationMs: d.durationMs ?? null,
+        createdAt: d.createdAt,
+      })),
+      meta: result.meta,
+    };
   }
 }

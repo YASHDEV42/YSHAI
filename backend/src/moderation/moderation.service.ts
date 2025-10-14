@@ -11,18 +11,22 @@ import { Post } from '../entities/post.entity';
 @Injectable()
 export class ModerationService {
   private readonly logger = new Logger(ModerationService.name);
-  private readonly model: GenerativeModel;
+  private readonly model: GenerativeModel | null;
 
   constructor(private readonly em: EntityManager) {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      throw new Error('GEMINI_API_KEY is not set');
+      // Do not block app startup; allow boot without key (dev/docs). Guard usage in methods.
+      this.logger.warn(
+        'GEMINI_API_KEY is not set — moderation will run in fallback mode.',
+      );
+      this.model = null;
+    } else {
+      const client = new GoogleGenerativeAI(apiKey);
+      this.model = client.getGenerativeModel({
+        model: process.env.GEMINI_MODEL || 'gemini-1.5-pro',
+      });
     }
-
-    const client = new GoogleGenerativeAI(apiKey);
-    this.model = client.getGenerativeModel({
-      model: process.env.GEMINI_MODEL || 'gemini-1.5-pro',
-    });
   }
 
   async moderateText({
@@ -42,6 +46,9 @@ export class ModerationService {
     let details: Record<string, any> = {};
 
     try {
+      if (!this.model) {
+        throw new Error('Model not configured');
+      }
       const result = await this.model.generateContent(prompt);
       const response = result.response;
       const normalized = response.text().trim().toLowerCase();

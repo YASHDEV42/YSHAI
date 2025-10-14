@@ -8,20 +8,28 @@ import {
   UseGuards,
   Req,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiCookieAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { AccountsService } from './accounts.service';
 import { LinkAccountWithTokensDto } from './dto/link-account-with-tokens.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { LinkAccountResponseDto } from './dto/link-account.response.dto';
+import { MessageDto } from 'src/common/dto/message.dto';
 
 @ApiTags('Accounts')
 @Controller('accounts')
 @UseGuards(JwtAuthGuard)
-@ApiBearerAuth()
+@ApiCookieAuth()
 export class AccountsController {
   constructor(private readonly accounts: AccountsService) {}
 
   @Post()
   @ApiOperation({ summary: 'Link Account' })
+  @ApiResponse({ status: 201, type: LinkAccountResponseDto })
   link(
     @Req() req: { user: { userId: number } },
     @Body() dto: LinkAccountWithTokensDto,
@@ -52,6 +60,7 @@ export class AccountsController {
 
   @Delete(':accountId')
   @ApiOperation({ summary: 'Unlink Account' })
+  @ApiResponse({ status: 200, type: MessageDto })
   unlink(
     @Req() req: { user: { userId: number } },
     @Param('accountId', ParseIntPipe) accountId: number,

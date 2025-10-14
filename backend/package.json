@@ -24,7 +24,10 @@
     "db:migrate": "npx mikro-orm migration:up",
     "db:fresh": "npm run db:drop && npm run db:create && npm run db:migrate",
     "db:diff": "npx mikro-orm migration:create",
-    "db:sync": "npm run db:diff && npm run db:migrate"
+    "db:sync": "npm run db:diff && npm run db:migrate",
+    "swagger:gen": "node -r ts-node/register -r tsconfig-paths/register scripts/gen-swagger.ts",
+    "orval": "orval --config orval.config.js",
+    "client:gen": "npm run swagger:gen && npm run orval"
   },
   "dependencies": {
     "@google-ai/generativelanguage": "^3.4.0",
@@ -88,7 +91,8 @@
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.7.3",
-    "typescript-eslint": "^8.20.0"
+    "typescript-eslint": "^8.20.0",
+    "orval": "^7.1.1"
   },
   "jest": {
     "moduleFileExtensions": [

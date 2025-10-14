@@ -7,10 +7,17 @@ import {
   Body,
   Query,
   BadRequestException,
-  Res
+  Res,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ApiTags, ApiOperation, ApiBody, ApiQuery, ApiOkResponse, ApiNotFoundResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBody,
+  ApiQuery,
+  ApiOkResponse,
+  ApiNotFoundResponse,
+} from '@nestjs/swagger';
 import { PassportLocalGuard } from './guards/passport-local.guard';
 import { RegisterDto } from './dto/register.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
@@ -18,11 +25,16 @@ import type { Response } from 'express';
 import { MessageResponseDto } from './dto/message-response.dto';
 import { TokensResponseDto } from './dto/token-response.dto';
 import { LoginDto } from './dto/login.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import {
+  ResetPasswordDto,
+  ResendVerificationDto,
+} from './dto/reset-password.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) {}
 
   @Post('register')
   @ApiOperation({ summary: 'Register a new user' })
@@ -36,25 +48,28 @@ export class AuthController {
   @ApiOperation({ summary: 'Login User' })
   @ApiOkResponse({ type: MessageResponseDto })
   @ApiBody({ type: LoginDto })
-  async login(@Request() req, @Res({ passthrough: true }) res: Response): Promise<MessageResponseDto> {
-    const { accessToken, refreshToken } = await this.authService.login(req.user);
-    try {
-      res.cookie('accessToken', accessToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 60 * 60 * 1000,
-      });
-    } catch (error) {
-      console.error('Error setting access token cookie:', error);
-    }
+  async login(
+    @Request() req: { user: { id?: number; userId?: number; email: string } },
+    @Body() _body: LoginDto,
+    // Use Response to set cookies
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<MessageResponseDto> {
+    const { accessToken, refreshToken } = await this.authService.login(
+      req.user,
+    );
+    // Set httpOnly cookies
+    res.cookie('accessToken', accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 15 * 60 * 1000,
+    });
     res.cookie('refreshJwt', refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-    console.log('Cookies set successfully');
     return { message: 'Login successful' };
   }
 
@@ -62,51 +77,60 @@ export class AuthController {
   @ApiOperation({ summary: 'Logout' })
   @ApiOkResponse({ description: 'User logged out successfully.', type: String })
   @ApiNotFoundResponse({ description: 'Unauthorized.', type: String })
-  async logout(@Request() req: { user: any }): Promise<void> {
+  async logout(@Request() req: { user: { userId: number } }): Promise<void> {
     return await this.authService.logout(req.user);
   }
 
   @Post('forgot-password')
   @ApiOperation({ summary: 'Forgot password' })
-  @ApiOkResponse({ description: 'Password reset link sent.', type: String })
-  @ApiNotFoundResponse({ description: 'Bad request.', type: String })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        email: { type: 'string', format: 'email', maxLength: 50, minLength: 5 },
-      },
-      required: ['email'],
-    },
+  @ApiOkResponse({
+    description: 'Password reset link sent.',
+    type: MessageResponseDto,
   })
-  async forgotPassword(@Body('email') email: string): Promise<{ message: string } | void> {
-    return await this.authService.forgotPassword(email);
+  @ApiNotFoundResponse({
+    description: 'Bad request.',
+    type: MessageResponseDto,
+  })
+  @ApiBody({ type: ForgotPasswordDto })
+  async forgotPassword(
+    @Body() dto: ForgotPasswordDto,
+  ): Promise<MessageResponseDto | void> {
+    return await this.authService.forgotPassword(dto.email);
   }
 
   @Post('reset-password')
   @ApiOperation({ summary: 'Reset password' })
-  @ApiOkResponse({ description: 'Password reset successfully.', type: Promise<{ message: string }> })
-  @ApiNotFoundResponse({ description: 'Bad request.', type: Promise<{ message: string }> })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        token: { type: 'string' },
-        newPassword: { type: 'string', minLength: 6 },
-      },
-      required: ['token', 'newPassword'],
-    },
+  @ApiOkResponse({
+    description: 'Password reset successfully.',
+    type: MessageResponseDto,
   })
-  async resetPassword(@Body() dto: { token: string; newPassword: string }): Promise<{ message: string }> {
+  @ApiNotFoundResponse({
+    description: 'Bad request.',
+    type: MessageResponseDto,
+  })
+  @ApiBody({ type: ResetPasswordDto })
+  async resetPassword(
+    @Body() dto: ResetPasswordDto,
+  ): Promise<MessageResponseDto> {
     return await this.authService.resetPassword(dto.token, dto.newPassword);
   }
 
   @Get('verify')
   @ApiOperation({ summary: 'Verify user email via token' })
-  @ApiQuery({ name: 'token', type: String, required: true, description: 'Verification token from email' })
+  @ApiQuery({
+    name: 'token',
+    type: String,
+    required: true,
+    description: 'Verification token from email',
+  })
   @ApiOkResponse({ description: 'Email verified successfully.', type: String })
-  @ApiNotFoundResponse({ description: 'Invalid or expired token.', type: String })
-  async verifyEmail(@Query('token') token: string): Promise<{ message: string }> {
+  @ApiNotFoundResponse({
+    description: 'Invalid or expired token.',
+    type: String,
+  })
+  async verifyEmail(
+    @Query('token') token: string,
+  ): Promise<{ message: string }> {
     if (!token) {
       throw new BadRequestException('Verification token is required');
     }
@@ -122,29 +146,35 @@ export class AuthController {
 
   @Post('resend-verification')
   @ApiOperation({ summary: 'Resend email verification link' })
-  @ApiOkResponse({ description: 'Verification email resent.', type: String })
-  @ApiNotFoundResponse({ description: 'Bad request (e.g. user not found or already verified).', type: String })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        email: { type: 'string', format: 'email' },
-      },
-      required: ['email'],
-    },
+  @ApiOkResponse({
+    description: 'Verification email resent.',
+    type: MessageResponseDto,
   })
-  async resendVerification(@Body('email') email: string): Promise<{ message: string }> {
-    const user = await this.authService.findUserByEmail(email);
+  @ApiNotFoundResponse({
+    description: 'Bad request (e.g. user not found or already verified).',
+    type: MessageResponseDto,
+  })
+  @ApiBody({ type: ResendVerificationDto })
+  async resendVerification(
+    @Body() dto: ResendVerificationDto,
+  ): Promise<{ message: string }> {
+    const user = await this.authService.findUserByEmail(dto.email);
     if (!user) {
       // Do not reveal whether email exists (security best practice)
-      return { message: 'If this email is registered, a verification link has been sent.' };
+      return {
+        message:
+          'If this email is registered, a verification link has been sent.',
+      };
     }
 
     if (user.isEmailVerified) {
       throw new BadRequestException('Email is already verified');
     }
 
-    const token = this.authService.generateEmailVerificationToken(user.id, user.email);
+    const token = this.authService.generateEmailVerificationToken(
+      user.id,
+      user.email,
+    );
     await this.authService.sendVerificationEmail(user.email, token);
     return { message: 'Verification email resent.' };
   }

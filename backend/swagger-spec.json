@@ -106,18 +106,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "email": {
-                    "type": "string",
-                    "format": "email",
-                    "maxLength": 50,
-                    "minLength": 5
-                  }
-                },
-                "required": [
-                  "email"
-                ]
+                "$ref": "#/components/schemas/ForgotPasswordDto"
               }
             }
           }
@@ -128,7 +117,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/MessageResponseDto"
                 }
               }
             }
@@ -138,7 +127,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/MessageResponseDto"
                 }
               }
             }
@@ -159,20 +148,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "token": {
-                    "type": "string"
-                  },
-                  "newPassword": {
-                    "type": "string",
-                    "minLength": 6
-                  }
-                },
-                "required": [
-                  "token",
-                  "newPassword"
-                ]
+                "$ref": "#/components/schemas/ResetPasswordDto"
               }
             }
           }
@@ -183,7 +159,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Promise"
+                  "$ref": "#/components/schemas/MessageResponseDto"
                 }
               }
             }
@@ -193,7 +169,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Promise"
+                  "$ref": "#/components/schemas/MessageResponseDto"
                 }
               }
             }
@@ -256,16 +232,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "email": {
-                    "type": "string",
-                    "format": "email"
-                  }
-                },
-                "required": [
-                  "email"
-                ]
+                "$ref": "#/components/schemas/ResendVerificationDto"
               }
             }
           }
@@ -276,7 +243,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/MessageResponseDto"
                 }
               }
             }
@@ -286,7 +253,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/MessageResponseDto"
                 }
               }
             }
@@ -350,7 +317,7 @@
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "Get current user using JWT",
@@ -377,7 +344,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UpdateUserDto"
+                  "$ref": "#/components/schemas/UserResponseDto"
                 }
               }
             }
@@ -388,7 +355,7 @@
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "Update current user using JWT",
@@ -418,7 +385,7 @@
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "Update current user preferences using JWT",
@@ -447,7 +414,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Post"
+                  "$ref": "#/components/schemas/PostResponseDto"
                 }
               }
             }
@@ -458,7 +425,7 @@
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "Create a new post",
@@ -489,7 +456,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Post"
+                    "$ref": "#/components/schemas/PostResponseDto"
                   }
                 }
               }
@@ -498,7 +465,7 @@
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "Bulk create posts",
@@ -539,7 +506,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Post"
+                    "$ref": "#/components/schemas/PostResponseDto"
                   }
                 }
               }
@@ -548,7 +515,7 @@
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "Bulk create posts from CSV upload",
@@ -577,7 +544,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Post"
+                  "$ref": "#/components/schemas/PostResponseDto"
                 }
               }
             }
@@ -585,7 +552,7 @@
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "Create a recurring post",
@@ -614,7 +581,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Post"
+                  "$ref": "#/components/schemas/PostResponseDto"
                 }
               }
             }
@@ -622,7 +589,7 @@
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "Create a draft post",
@@ -660,7 +627,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Post"
+                  "$ref": "#/components/schemas/PostResponseDto"
                 }
               }
             }
@@ -671,7 +638,7 @@
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "Update an existing post",
@@ -701,7 +668,7 @@
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "Delete a post (soft delete)",
@@ -739,7 +706,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Post"
+                  "$ref": "#/components/schemas/PostResponseDto"
                 }
               }
             }
@@ -747,7 +714,7 @@
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "Reschedule a post",
@@ -775,7 +742,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Post"
+                  "$ref": "#/components/schemas/PostResponseDto"
                 }
               }
             }
@@ -783,7 +750,7 @@
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "Publish a post immediately (enqueue job)",
@@ -807,12 +774,19 @@
         ],
         "responses": {
           "200": {
-            "description": "Status fetched"
+            "description": "Status fetched",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostStatusResponseDto"
+                }
+              }
+            }
           }
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "Get post status",
@@ -861,7 +835,7 @@
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "Upload a media file (image or video) to Cloudinary",
@@ -889,7 +863,7 @@
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "List all uploaded media",
@@ -921,7 +895,7 @@
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "Delete a media file from Cloudinary and database",
@@ -951,7 +925,7 @@
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "Create a new team",
@@ -985,12 +959,19 @@
         },
         "responses": {
           "200": {
-            "description": "Member invited successfully"
+            "description": "Member invited successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageDto"
+                }
+              }
+            }
           }
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "Invite a member to the team",
@@ -1032,12 +1013,19 @@
         },
         "responses": {
           "200": {
-            "description": "Member role updated successfully"
+            "description": "Member role updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageDto"
+                }
+              }
+            }
           }
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "Update a team member’s role",
@@ -1067,12 +1055,19 @@
         ],
         "responses": {
           "200": {
-            "description": "Member removed successfully"
+            "description": "Member removed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageDto"
+                }
+              }
+            }
           }
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "Remove a member from the team",
@@ -1109,7 +1104,7 @@
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "Approve a post for publishing",
@@ -1146,7 +1141,7 @@
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "Reject a post",
@@ -1170,12 +1165,22 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TeamAuditLogResponseDto"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "List team audit logs",
@@ -1204,12 +1209,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ModerationResult"
+                  "$ref": "#/components/schemas/ModerationResultResponseDto"
                 }
               }
             }
           }
         },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
         "summary": "Moderate Arabic text",
         "tags": [
           "Moderation"
@@ -1236,12 +1246,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ModerationResult"
+                  "$ref": "#/components/schemas/ModerationResultResponseDto"
                 }
               }
             }
           }
         },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
         "summary": "Moderate an image by URL",
         "tags": [
           "Moderation"
@@ -1268,12 +1283,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ModerationResult"
+                  "$ref": "#/components/schemas/ModerationResultResponseDto"
                 }
               }
             }
           }
         },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
         "summary": "Moderate a video by URL",
         "tags": [
           "Moderation"
@@ -1292,13 +1312,18 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/ModerationResult"
+                    "$ref": "#/components/schemas/ModerationResultResponseDto"
                   }
                 }
               }
             }
           }
         },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
         "summary": "Fetch moderation reports",
         "tags": [
           "Moderation"
@@ -1332,7 +1357,7 @@
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "Post Insights",
@@ -1368,7 +1393,7 @@
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "Account Insights",
@@ -1404,7 +1429,7 @@
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "Campaign Insights",
@@ -1419,12 +1444,20 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
           }
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "Export report as CSV",
@@ -1439,12 +1472,20 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
           }
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "Export report as PDF",
@@ -1468,10 +1509,22 @@
           }
         },
         "responses": {
-          "201": {
-            "description": ""
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerateCaptionResponseDto"
+                }
+              }
+            }
           }
         },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
         "summary": "Generate social media caption",
         "tags": [
           "AI"
@@ -1493,10 +1546,22 @@
           }
         },
         "responses": {
-          "201": {
-            "description": ""
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerateHashtagsResponseDto"
+                }
+              }
+            }
           }
         },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
         "summary": "Generate hashtags for text",
         "tags": [
           "AI"
@@ -1518,10 +1583,22 @@
           }
         },
         "responses": {
-          "201": {
-            "description": ""
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerateAltTextResponseDto"
+                }
+              }
+            }
           }
         },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
         "summary": "Generate alternative text for image",
         "tags": [
           "AI"
@@ -1534,7 +1611,14 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "summary": "Root",
@@ -1549,7 +1633,26 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "time": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "time"
+                  ]
+                }
+              }
+            }
           }
         },
         "summary": "Health Check",
@@ -1564,7 +1667,17 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
           }
         },
         "summary": "List Timezones",
@@ -1579,7 +1692,17 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
           }
         },
         "summary": "List Locales",
@@ -1604,12 +1727,19 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LinkAccountResponseDto"
+                }
+              }
+            }
           }
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "Link Account",
@@ -1633,12 +1763,19 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageDto"
+                }
+              }
+            }
           }
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "Unlink Account",
@@ -1653,12 +1790,22 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NotificationResponseDto"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "List notifications for current user",
@@ -1682,12 +1829,19 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageDto"
+                }
+              }
+            }
           }
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "Mark notification as read",
@@ -1702,12 +1856,19 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CountDto"
+                }
+              }
+            }
           }
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "Get unread notifications count",
@@ -1722,12 +1883,19 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageDto"
+                }
+              }
+            }
           }
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "Mark all notifications as read",
@@ -1752,12 +1920,31 @@
         },
         "responses": {
           "201": {
-            "description": "Webhook registered"
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "message"
+                  ]
+                }
+              }
+            }
           }
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "Register webhook",
@@ -1775,7 +1962,7 @@
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "List webhooks",
@@ -1799,12 +1986,19 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageDto"
+                }
+              }
+            }
           }
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "Delete webhook",
@@ -1854,7 +2048,7 @@
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "List delivery attempts for a webhook",
@@ -1869,12 +2063,22 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PlanResponseDto"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "List available plans",
@@ -1898,13 +2102,20 @@
           }
         },
         "responses": {
-          "201": {
-            "description": ""
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscribeResponseDto"
+                }
+              }
+            }
           }
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "Create or switch subscription",
@@ -1919,12 +2130,23 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "Cancel current subscription",
@@ -1939,12 +2161,22 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InvoiceResponseDto"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "List invoices for current user",
@@ -1964,7 +2196,7 @@
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "Payment gateway callback",
@@ -1979,12 +2211,22 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AdminUserResponseDto"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "List users",
@@ -2007,13 +2249,24 @@
           }
         ],
         "responses": {
-          "201": {
-            "description": ""
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "Ban user",
@@ -2047,12 +2300,23 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "Assign role",
@@ -2067,12 +2331,22 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AdminAuditLogResponseDto"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
           {
-            "bearer": []
+            "cookie": []
           }
         ],
         "summary": "Audit logs",
@@ -2084,78 +2358,18 @@
   },
   "info": {
     "title": "YSHAI API",
-    "description": "The YSHAI backend API documentation. This API manages posts, teams, media, AI generation, moderation, analytics, billing, and more.",
+    "description": "Generated for Orval client",
     "version": "1.0",
     "contact": {}
   },
-  "tags": [
-    {
-      "name": "Auth",
-      "description": ""
-    },
-    {
-      "name": "Users",
-      "description": ""
-    },
-    {
-      "name": "Teams",
-      "description": ""
-    },
-    {
-      "name": "Posts",
-      "description": ""
-    },
-    {
-      "name": "Media",
-      "description": ""
-    },
-    {
-      "name": "AI",
-      "description": ""
-    },
-    {
-      "name": "Admin",
-      "description": ""
-    },
-    {
-      "name": "Accounts",
-      "description": ""
-    },
-    {
-      "name": "Notifications",
-      "description": ""
-    },
-    {
-      "name": "Analytics",
-      "description": ""
-    },
-    {
-      "name": "Billing",
-      "description": ""
-    },
-    {
-      "name": "Webhooks",
-      "description": ""
-    },
-    {
-      "name": "Meta",
-      "description": ""
-    },
-    {
-      "name": "Moderation",
-      "description": ""
-    }
-  ],
+  "tags": [],
   "servers": [],
   "components": {
     "securitySchemes": {
-      "access-token": {
-        "scheme": "bearer",
-        "bearerFormat": "JWT",
-        "type": "http",
-        "name": "Authorization",
-        "description": "Enter JWT token",
-        "in": "header"
+      "cookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "accessToken"
       }
     },
     "schemas": {
@@ -2233,9 +2447,52 @@
           "password"
         ]
       },
-      "Promise": {
+      "ForgotPasswordDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "user@example.com",
+            "format": "email",
+            "minLength": 5,
+            "maxLength": 50
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "ResetPasswordDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Password reset token"
+          },
+          "newPassword": {
+            "type": "string",
+            "minLength": 6,
+            "description": "New password"
+          }
+        },
+        "required": [
+          "token",
+          "newPassword"
+        ]
+      },
+      "ResendVerificationDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "Email to resend verification link to",
+            "example": "user@example.com",
+            "format": "email"
+          }
+        },
+        "required": [
+          "email"
+        ]
       },
       "RefreshTokenDto": {
         "type": "object",
@@ -2444,9 +2701,57 @@
           "authorId"
         ]
       },
-      "Post": {
+      "PostResponseDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "contentAr": {
+            "type": "string"
+          },
+          "contentEn": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "scheduled",
+              "published",
+              "failed",
+              "pending_approval"
+            ]
+          },
+          "isRecurring": {
+            "type": "boolean"
+          },
+          "publishedAt": {
+            "type": "object",
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "scheduleAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "contentAr",
+          "status",
+          "isRecurring",
+          "createdAt",
+          "updatedAt",
+          "scheduleAt"
+        ]
       },
       "BulkCreatePostsDto": {
         "type": "object",
@@ -2646,6 +2951,37 @@
           "scheduleAt"
         ]
       },
+      "PostStatusResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "scheduled",
+              "published",
+              "failed",
+              "pending_approval"
+            ]
+          },
+          "scheduledAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "publishedAt": {
+            "type": "object",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "scheduledAt"
+        ]
+      },
       "MediaResponseDto": {
         "type": "object",
         "properties": {
@@ -2726,6 +3062,17 @@
           "role"
         ]
       },
+      "MessageDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
       "UpdateMemberRoleDto": {
         "type": "object",
         "properties": {
@@ -2742,6 +3089,32 @@
         },
         "required": [
           "role"
+        ]
+      },
+      "TeamAuditLogResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "action": {
+            "type": "string"
+          },
+          "entityType": {
+            "type": "string"
+          },
+          "entityId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "action",
+          "timestamp"
         ]
       },
       "ModerateTextDto": {
@@ -2764,16 +3137,11 @@
           "postId"
         ]
       },
-      "ModerationResult": {
+      "ModerationResultResponseDto": {
         "type": "object",
         "properties": {
-          "post": {
-            "description": "Associated post",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Post"
-              }
-            ]
+          "id": {
+            "type": "number"
           },
           "provider": {
             "type": "string",
@@ -2792,17 +3160,22 @@
           },
           "details": {
             "type": "object",
-            "description": "Raw moderation details"
+            "nullable": true
           },
           "checkedAt": {
-            "type": "object"
+            "format": "date-time",
+            "type": "string"
+          },
+          "postId": {
+            "type": "number"
           }
         },
         "required": [
-          "post",
+          "id",
           "provider",
           "verdict",
-          "checkedAt"
+          "checkedAt",
+          "postId"
         ]
       },
       "ModerateImageDto": {
@@ -2955,6 +3328,18 @@
           "count"
         ]
       },
+      "GenerateCaptionResponseDto": {
+        "type": "object",
+        "properties": {
+          "caption": {
+            "type": "string",
+            "description": "Generated caption text"
+          }
+        },
+        "required": [
+          "caption"
+        ]
+      },
       "GenerateHashtagsDto": {
         "type": "object",
         "properties": {
@@ -2973,6 +3358,18 @@
           "count"
         ]
       },
+      "GenerateHashtagsResponseDto": {
+        "type": "object",
+        "properties": {
+          "hashtags": {
+            "type": "string",
+            "description": "Generated hashtags string with #"
+          }
+        },
+        "required": [
+          "hashtags"
+        ]
+      },
       "GenerateAltTextDto": {
         "type": "object",
         "properties": {
@@ -2987,6 +3384,18 @@
         },
         "required": [
           "imageUrl"
+        ]
+      },
+      "GenerateAltTextResponseDto": {
+        "type": "object",
+        "properties": {
+          "altText": {
+            "type": "string",
+            "description": "Generated alternative text for the image"
+          }
+        },
+        "required": [
+          "altText"
         ]
       },
       "LinkAccountWithTokensDto": {
@@ -3022,6 +3431,70 @@
           "providerAccountId"
         ]
       },
+      "LinkAccountResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "message"
+        ]
+      },
+      "NotificationResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "post_scheduled",
+              "publish_failed",
+              "ai_ready",
+              "approved"
+            ]
+          },
+          "payload": {
+            "type": "object"
+          },
+          "read": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "link": {
+            "type": "object",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "payload",
+          "read",
+          "createdAt"
+        ]
+      },
+      "CountDto": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "count"
+        ]
+      },
       "CreateWebhookDto": {
         "type": "object",
         "properties": {
@@ -3048,6 +3521,55 @@
           "secret"
         ]
       },
+      "PlanResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string",
+            "enum": [
+              "Free",
+              "Pro",
+              "Business"
+            ]
+          },
+          "priceMonthly": {
+            "type": "number"
+          },
+          "maxAccounts": {
+            "type": "number"
+          },
+          "aiCreditsUnlimited": {
+            "type": "boolean"
+          },
+          "aiCreditsLimit": {
+            "type": "object",
+            "nullable": true
+          },
+          "teamCollaboration": {
+            "type": "boolean"
+          },
+          "analyticsExport": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "priceMonthly",
+          "maxAccounts",
+          "aiCreditsUnlimited",
+          "teamCollaboration",
+          "analyticsExport",
+          "createdAt"
+        ]
+      },
       "SubscribeDto": {
         "type": "object",
         "properties": {
@@ -3069,6 +3591,173 @@
           "paymentMethod"
         ]
       },
+      "SubscriptionResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "canceled",
+              "past_due",
+              "trialing"
+            ]
+          },
+          "periodStartsAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "periodEndsAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "canceledAt": {
+            "type": "object",
+            "nullable": true
+          },
+          "paymentGatewaySubscriptionId": {
+            "type": "object",
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "planId": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "periodStartsAt",
+          "periodEndsAt",
+          "createdAt",
+          "updatedAt",
+          "planId"
+        ]
+      },
+      "SubscribeResponseDto": {
+        "type": "object",
+        "properties": {
+          "subscription": {
+            "$ref": "#/components/schemas/SubscriptionResponseDto"
+          },
+          "clientSecret": {
+            "type": "object",
+            "nullable": true
+          }
+        },
+        "required": [
+          "subscription"
+        ]
+      },
+      "InvoiceResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "currency": {
+            "type": "string",
+            "enum": [
+              "SAR",
+              "USD",
+              "EUR"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "paid",
+              "unpaid",
+              "refunded",
+              "failed"
+            ]
+          },
+          "paymentGatewayId": {
+            "type": "object",
+            "nullable": true
+          },
+          "paymentMethod": {
+            "type": "object",
+            "nullable": true
+          },
+          "issuedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "paidAt": {
+            "type": "object",
+            "nullable": true
+          },
+          "downloadedAt": {
+            "type": "object",
+            "nullable": true
+          },
+          "pdfUrl": {
+            "type": "object",
+            "nullable": true
+          },
+          "metadata": {
+            "type": "object",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "amount",
+          "currency",
+          "status",
+          "issuedAt"
+        ]
+      },
+      "AdminUserResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "email": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "user",
+              "admin"
+            ]
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "deletedAt": {
+            "type": "object",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "name",
+          "role",
+          "createdAt"
+        ]
+      },
       "AssignRoleDto": {
         "type": "object",
         "properties": {
@@ -3082,6 +3771,34 @@
         },
         "required": [
           "role"
+        ]
+      },
+      "AdminAuditLogResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "action": {
+            "type": "string"
+          },
+          "entityType": {
+            "type": "string"
+          },
+          "entityId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "action",
+          "entityType",
+          "entityId",
+          "timestamp"
         ]
       }
     }
