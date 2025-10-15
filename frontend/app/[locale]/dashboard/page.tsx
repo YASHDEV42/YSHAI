@@ -1,5 +1,5 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
-import DashboardPage, { DashboardPageText } from "./components/dashboard";
+import DashboardPage from "./components/dashboard";
 import { cookies } from "next/headers";
 import { usersControllerGetProfile } from "@/api/users/users";
 
@@ -12,7 +12,7 @@ export default async function DashboardPageRoute({
 
   const t = await getTranslations({ locale, namespace: "DashboardPage" });
 
-  const text: DashboardPageText = {
+  const text: any = {
     welcomeMessage: t("welcomeMessage"),
     welcomeSubtitle: t("welcomeSubtitle"),
     stats: {
@@ -50,11 +50,11 @@ export default async function DashboardPageRoute({
       failed: t("activityStatus.failed"),
     },
   };
-
+  let allCookies = '';
   let user = null;
   try {
     const cookieStore = await cookies();
-    const allCookies = cookieStore.toString();
+    allCookies = cookieStore.toString();
 
     const response = await usersControllerGetProfile({
       headers: {
@@ -71,5 +71,6 @@ export default async function DashboardPageRoute({
   } catch (err) {
     console.error('Error fetching user:', err);
   }
+  console.log("Rendering DashboardPage with locale:", locale, "and user:", user);
   return <DashboardPage text={text} locale={locale} user={user} />;
 }

@@ -35,10 +35,6 @@ import {
   UserResponseDto,
 } from "@/api/model"
 import {
-  usersControllerGetProfile,
-} from "@/api/users/users"
-import {
-  notificationsControllerList,
   notificationsControllerMarkAllRead,
   notificationsControllerMarkRead,
 } from "@/api/notifications/notifications"
@@ -46,32 +42,15 @@ import {
 interface DashboardSidebarProps {
   locale?: string
   text?: Record<string, string>
+  user: UserResponseDto | null
 }
 
-export function DashboardSidebar({ locale = "en", text = {} }: DashboardSidebarProps) {
+export function DashboardSidebar({ locale = "en", text = {}, user }: DashboardSidebarProps) {
   const pathname = usePathname()
   const [notifications, setNotifications] = useState<NotificationResponseDto[]>([])
   const [showNotifications, setShowNotifications] = useState(false)
-  const [user, setUser] = useState<UserResponseDto | null>(null)
   const isRTL = locale === "ar"
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [userResponse, notificationsResponse] = await Promise.all([
-          usersControllerGetProfile({ headers: { credentials: 'include' }, }),
-          notificationsControllerList({ headers: {} }),
-        ])
-
-        if (userResponse.status === 200) setUser(userResponse.data)
-        if (notificationsResponse.status === 200) setNotifications(notificationsResponse.data)
-      } catch (error) {
-        console.error("[DashboardSidebar] Error fetching data:", error)
-      }
-    }
-
-    fetchData()
-  }, [])
+  console.log("user in sidebar:", user)
 
   const unreadCount = notifications.filter((n) => !n.read).length
 
