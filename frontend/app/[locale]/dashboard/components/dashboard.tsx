@@ -22,7 +22,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { UserResponseDto } from "@/api/model";
-import { useRouter } from "next/navigation";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -84,12 +83,6 @@ export default function DashboardPage({ text, locale, user }: DashboardPageProps
   const statsRef = useRef<HTMLDivElement>(null);
   const activityRef = useRef<HTMLDivElement>(null);
   const quickActionsRef = useRef<HTMLDivElement>(null);
-  const router = useRouter()
-  useEffect(() => {
-    if (!user) {
-      router.replace(`/login`);
-    }
-  }, [])
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.from(".stat-card", {

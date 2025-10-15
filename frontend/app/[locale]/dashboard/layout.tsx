@@ -17,6 +17,7 @@ export default async function DashboardLayout({
   const t = await getTranslations({ locale, namespace: "DashboardSidebar" });
   const text = {
     overview: t("overview"),
+    logo: t("logo"),
     createPost: t("createPost"),
     calendar: t("calendar"),
     analytics: t("analytics"),

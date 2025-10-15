@@ -215,6 +215,7 @@
     }
   },
   "DashboardSidebar": {
+    "logo": "يشاي",
     "overview": "نظرة عامة",
     "createPost": "إنشاء منشور",
     "calendar": "التقويم",
@@ -368,6 +369,123 @@
       "shares": "المشاركات",
       "views": "المشاهدات",
       "engagement": "التفاعل"
+    }
+  },
+  "SettingsPage": {
+    "title": "الإعدادات",
+    "subtitle": "إدارة حسابك والتفضيلات",
+    "tabs": {
+      "profile": "الملف الشخصي",
+      "platforms": "المنصات",
+      "notifications": "الإشعارات",
+      "billing": "الفوترة"
+    },
+    "profile": {
+      "title": "معلومات الملف الشخصي",
+      "description": "حدّث معلوماتك الشخصية وصورة الملف الشخصي",
+      "changePhoto": "تغيير الصورة",
+      "photoHelp": "JPG أو PNG أو GIF. الحد الأقصى 2 ميغابايت",
+      "firstName": "الاسم الأول",
+      "lastName": "اسم العائلة",
+      "email": "البريد الإلكتروني",
+      "bio": "نبذة",
+      "timezone": "المنطقة الزمنية",
+      "saveChanges": "حفظ التغييرات",
+      "cancel": "إلغاء",
+      "security": {
+        "title": "الأمان",
+        "description": "إدارة كلمة المرور وإعدادات الأمان",
+        "currentPassword": "كلمة المرور الحالية",
+        "newPassword": "كلمة المرور الجديدة",
+        "confirmPassword": "تأكيد كلمة المرور الجديدة",
+        "updatePassword": "تحديث كلمة المرور"
+      }
+    },
+    "platforms": {
+      "title": "المنصات المتصلة",
+      "description": "إدارة اتصالات حسابات وسائل التواصل الاجتماعي",
+      "connected": "متصل",
+      "followers": "متابعين",
+      "reconnect": "إعادة الاتصال",
+      "disconnect": "فصل",
+      "connectNew": "ربط منصة جديدة",
+      "postingPreferences": {
+        "title": "تفضيلات النشر",
+        "description": "تكوين الإعدادات الافتراضية لمنشوراتك",
+        "autoPublish": {
+          "label": "النشر التلقائي للمنشورات المجدولة",
+          "description": "انشر المنشورات تلقائيًا في الوقت المجدول"
+        },
+        "watermark": {
+          "label": "إضافة علامة مائية للصور",
+          "description": "أضف علامة علامتك التجارية إلى الصور المرفوعة"
+        },
+        "crossPost": {
+          "label": "النشر على جميع المنصات",
+          "description": "انشر تلقائيًا على جميع المنصات المتصلة"
+        }
+      }
+    },
+    "notifications": {
+      "title": "تفضيلات الإشعارات",
+      "description": "اختر طريقة استلام الإشعارات",
+      "email": {
+        "label": "إشعارات البريد الإلكتروني",
+        "description": "تلقي الإشعارات عبر البريد الإلكتروني"
+      },
+      "push": {
+        "label": "إشعارات الدفع",
+        "description": "تلقي إشعارات الدفع في متصفحك"
+      },
+      "weeklyReport": {
+        "label": "تقرير أسبوعي",
+        "description": "احصل على ملخص أسبوعي لأدائك"
+      },
+      "postReminders": {
+        "label": "تذكيرات المنشورات",
+        "description": "ذكّرني قبل نشر المنشورات المجدولة"
+      },
+      "types": {
+        "title": "أنواع الإشعارات",
+        "description": "اختر الأحداث التي تُفعّل الإشعارات",
+        "published": "تم نشر المنشور بنجاح",
+        "failed": "فشل نشر المنشور",
+        "comments": "تعليقات جديدة على المنشورات",
+        "milestones": "معالم تفاعل",
+        "connectionIssues": "مشاكل في اتصال المنصة"
+      }
+    },
+    "billing": {
+      "title": "الفوترة",
+      "description": "إدارة اشتراكك والفواتير",
+      "currentPlan": "الخطة الحالية",
+      "proPlan": "الخطة الاحترافية",
+      "proDescription": "منشورات غير محدودة وتحليلات متقدمة",
+      "active": "نشط",
+      "nextBilling": "تاريخ الفوترة القادم",
+      "paymentMethod": "طريقة الدفع",
+      "changePlan": "تغيير الخطة",
+      "updatePayment": "تحديث الدفع",
+      "billingHistory": "سجل الفواتير",
+      "download": "تنزيل",
+      "paid": "مدفوع",
+      "dangerZone": "منطقة الخطر",
+      "dangerDescription": "إجراءات لا يمكن التراجع عنها لحسابك",
+      "cancelSubscription": "إلغاء الاشتراك",
+      "deleteAccount": "حذف الحساب"
+    },
+    "platformsNames": {
+      "twitter": "X (تويتر)",
+      "instagram": "إنستغرام",
+      "linkedin": "لينكدإن",
+      "tiktok": "تيك توك"
+    },
+    "timezones": {
+      "riyadh": "آسيا/الرياض (ت ع م+3)",
+      "dubai": "آسيا/دبي (ت ع م+4)",
+      "cairo": "إفريقيا/القاهرة (ت ع م+2)",
+      "london": "أوروبا/لندن (ت ع م+0)",
+      "newyork": "أمريكا/نيويورك (ت ع م-5)"
     }
   }
 }

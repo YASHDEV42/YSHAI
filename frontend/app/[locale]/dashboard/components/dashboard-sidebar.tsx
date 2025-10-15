@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import {
   Calendar,
   TrendingUp,
@@ -50,7 +50,12 @@ export function DashboardSidebar({ locale = "en", text = {}, user }: DashboardSi
   const [notifications, setNotifications] = useState<NotificationResponseDto[]>([])
   const [showNotifications, setShowNotifications] = useState(false)
   const isRTL = locale === "ar"
-
+  const router = useRouter()
+  useEffect(() => {
+    if (!user) {
+      router.replace(`/login`);
+    }
+  }, [])
   const unreadCount = notifications.filter((n) => !n.read).length
 
   const menuItems = [
@@ -114,7 +119,7 @@ export function DashboardSidebar({ locale = "en", text = {}, user }: DashboardSi
             <div className="flex size-8 items-center justify-center rounded-lg bg-primary">
               <Sparkles className="size-5 text-primary-foreground" />
             </div>
-            <span className="font-bold text-xl text-foreground">YSHAI</span>
+            <span className="font-bold text-xl text-foreground">{text.logo}</span>
           </Link>
         </SidebarHeader>
 
