@@ -324,5 +324,50 @@
       "Sat"
     ],
     "allScheduledPosts": "All Scheduled Posts"
+  },
+  "AnalyticsPage": {
+    "title": "Analytics",
+    "subtitle": "Track your social media performance and insights",
+    "timeRangeLabel": "Select time range",
+    "timeRanges": {
+      "7d": "Last 7 days",
+      "30d": "Last 30 days",
+      "90d": "Last 90 days",
+      "1y": "Last year"
+    },
+    "stats": {
+      "totalEngagement": "Total Engagement",
+      "totalReach": "Total Reach",
+      "newFollowers": "New Followers",
+      "avgEngagementRate": "Avg. Engagement Rate"
+    },
+    "charts": {
+      "engagementOverTime": "Engagement Over Time",
+      "engagementOverTimeDesc": "Daily engagement metrics for the selected period",
+      "platformPerformance": "Platform Performance",
+      "platformPerformanceDesc": "Engagement comparison across platforms"
+    },
+    "platformBreakdown": {
+      "title": "Platform Breakdown",
+      "description": "Performance by social platform",
+      "posts": "posts"
+    },
+    "topPosts": {
+      "title": "Top Performing Posts",
+      "description": "Your best content from the selected period"
+    },
+    "platforms": {
+      "twitter": "X (Twitter)",
+      "instagram": "Instagram",
+      "linkedin": "LinkedIn",
+      "tiktok": "TikTok"
+    },
+    "metrics": {
+      "likes": "Likes",
+      "comments": "Comments",
+      "shares": "Shares",
+      "views": "Views",
+      "engagement": "Engagement"
+    }
   }
 }

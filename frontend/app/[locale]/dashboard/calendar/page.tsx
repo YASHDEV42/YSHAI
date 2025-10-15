@@ -1,5 +1,5 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
-import CalendarPage, { CalendarPageText } from "./components/calendar";
+import CalendarPage from "./components/calendar";
 
 export default async function CalendarPageRoute({
   params: { locale }
@@ -10,7 +10,7 @@ export default async function CalendarPageRoute({
 
   const t = await getTranslations({ locale, namespace: "CalendarPage" });
 
-  const text: CalendarPageText = {
+  const text: any = {
     title: t("title"),
     subtitle: t("subtitle"),
     filterButton: t("filterButton"),
@@ -43,5 +43,5 @@ export default async function CalendarPageRoute({
     allScheduledPosts: t("allScheduledPosts"),
   };
 
-  return <CalendarPage text={text} locale={locale} />;
+  return <CalendarPage text={text} />;
 }

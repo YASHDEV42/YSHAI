@@ -50,7 +50,6 @@ export function DashboardSidebar({ locale = "en", text = {}, user }: DashboardSi
   const [notifications, setNotifications] = useState<NotificationResponseDto[]>([])
   const [showNotifications, setShowNotifications] = useState(false)
   const isRTL = locale === "ar"
-  console.log("user in sidebar:", user)
 
   const unreadCount = notifications.filter((n) => !n.read).length
 

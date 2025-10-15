@@ -324,5 +324,50 @@
       "سبت"
     ],
     "allScheduledPosts": "جميع المنشورات المجدولة"
+  },
+  "AnalyticsPage": {
+    "title": "التحليلات",
+    "subtitle": "تتبّع أداء وسائل التواصل الاجتماعي واحصل على رؤى",
+    "timeRangeLabel": "اختر المدى الزمني",
+    "timeRanges": {
+      "7d": "آخر 7 أيام",
+      "30d": "آخر 30 يومًا",
+      "90d": "آخر 90 يومًا",
+      "1y": "السنة الماضية"
+    },
+    "stats": {
+      "totalEngagement": "إجمالي التفاعل",
+      "totalReach": "إجمالي الوصول",
+      "newFollowers": "المتابعون الجدد",
+      "avgEngagementRate": "متوسط معدل التفاعل"
+    },
+    "charts": {
+      "engagementOverTime": "التفاعل بمرور الوقت",
+      "engagementOverTimeDesc": "مقاييس التفاعل اليومية للفترة المحددة",
+      "platformPerformance": "أداء المنصات",
+      "platformPerformanceDesc": "مقارنة التفاعل عبر المنصات المختلفة"
+    },
+    "platformBreakdown": {
+      "title": "تفصيل حسب المنصة",
+      "description": "الأداء حسب منصة التواصل الاجتماعي",
+      "posts": "منشورات"
+    },
+    "topPosts": {
+      "title": "أفضل المنشورات أداءً",
+      "description": "أفضل المحتويات التي نشرتها خلال الفترة المحددة"
+    },
+    "platforms": {
+      "twitter": "X (تويتر)",
+      "instagram": "إنستغرام",
+      "linkedin": "لينكدإن",
+      "tiktok": "تيك توك"
+    },
+    "metrics": {
+      "likes": "الإعجابات",
+      "comments": "التعليقات",
+      "shares": "المشاركات",
+      "views": "المشاهدات",
+      "engagement": "التفاعل"
+    }
   }
 }
