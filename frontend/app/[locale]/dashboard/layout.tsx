@@ -49,7 +49,7 @@ export default async function DashboardLayout({
       console.log('User fetch failed:', response.status);
     }
   } catch (err) {
-    console.error('Error fetching user:', err);
+    console.log('Error fetching user:', err);
   }
   return (
     <SidebarProvider>

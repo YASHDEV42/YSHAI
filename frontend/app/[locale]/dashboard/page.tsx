@@ -2,6 +2,7 @@ import { setRequestLocale, getTranslations } from "next-intl/server";
 import DashboardPage from "./components/dashboard";
 import { cookies } from "next/headers";
 import { usersControllerGetProfile } from "@/api/users/users";
+import { revalidatePath } from "next/cache";
 
 export default async function DashboardPageRoute({
   params: { locale }
@@ -9,7 +10,6 @@ export default async function DashboardPageRoute({
   params: { locale: string };
 }) {
   setRequestLocale(locale);
-
   const t = await getTranslations({ locale, namespace: "DashboardPage" });
 
   const text: any = {
@@ -69,7 +69,7 @@ export default async function DashboardPageRoute({
       console.log('User fetch failed:', response.status);
     }
   } catch (err) {
-    console.error('Error fetching user:', err);
+    console.log('Error fetching user:', err);
   }
   console.log("Rendering DashboardPage with locale:", locale, "and user:", user);
   return <DashboardPage text={text} locale={locale} user={user} />;

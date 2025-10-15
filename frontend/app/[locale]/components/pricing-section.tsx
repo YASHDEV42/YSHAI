@@ -50,7 +50,7 @@ export const PricingSection = ({
         {Object.entries(plans).map(([key, plan]) => (
           <Card
             key={key}
-            className={`p-8 bg-card ${key === "pro" ? "border-primary relative" : "border-border"
+            className={`p-8 bg-card flex justify-between items-start flex-col ${key === "pro" ? "border-primary relative" : "border-border"
               }`}
           >
             {plan.badge && (

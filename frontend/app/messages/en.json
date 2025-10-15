@@ -1,4 +1,13 @@
 {
+  "Navbar": {
+    "logo": "YSHAI",
+    "features": "Features",
+    "pricing": "Pricing",
+    "about": "About",
+    "login": "Login",
+    "register": "Sign Up",
+    "dashboard": "Dashboard"
+  },
   "HeroSection": {
     "heading": "Plan, Execute, and Publish",
     "subHeading": "Manage all your social media accounts with the help of AI",
@@ -56,7 +65,7 @@
       },
       "pro": {
         "title": "Pro",
-        "price": "$29",
+        "price": "$9",
         "period": "/month",
         "badge": "Most Popular",
         "features": [
@@ -70,7 +79,7 @@
       },
       "business": {
         "title": "Business",
-        "price": "$99",
+        "price": "$19",
         "period": "/month",
         "features": [
           "Unlimited accounts",
