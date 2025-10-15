@@ -6,13 +6,8 @@ import { setRequestLocale, getTranslations } from "next-intl/server";
 import { cookies } from "next/headers";
 import { usersControllerGetProfile } from "@/api/users/users";
 
-export default async function DashboardLayout({
-  children,
-  params: { locale }
-}: {
-  children: React.ReactNode,
-  params: { locale: string }
-}) {
+export default async function DashboardLayout({ children, params }: LayoutProps<'/[locale]/dashboard'>) {
+  const { locale } = await params
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: "DashboardSidebar" });
   const text = {
