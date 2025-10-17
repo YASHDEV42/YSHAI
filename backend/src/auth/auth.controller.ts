@@ -9,6 +9,7 @@ import {
   Res,
   UnauthorizedException,
   Req,
+  Logger,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
@@ -24,7 +25,6 @@ import { RegisterDto } from './dto/register.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import type { Response, Request } from 'express';
 import { MessageResponseDto } from './dto/message-response.dto';
-import { TokensResponseDto } from './dto/token-response.dto';
 import { LoginDto } from './dto/login.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import {
@@ -32,6 +32,7 @@ import {
   ResendVerificationDto,
 } from './dto/reset-password.dto';
 
+const logger = new Logger('AuthController');
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
@@ -82,18 +83,21 @@ export class AuthController {
   @ApiBody({ type: RefreshTokenDto })
   @ApiOkResponse({ type: MessageResponseDto })
   async refresh(@Req() req: Request, @Res({ passthrough: true }) res: Response): Promise<MessageResponseDto> {
-    const refreshToken = req.cookies['refreshToken'];
-    if (!refreshToken) throw new UnauthorizedException('Missing refresh token');
-    const tokens = await this.authService.refresh(refreshToken);
+    const refreshTokenCookie = req.cookies['refreshToken'];
+    if (!refreshTokenCookie) throw new UnauthorizedException('Missing refresh token');
+    const { accessToken, refreshToken } = await this.authService.refresh(refreshTokenCookie);
 
     // Set httpOnly cookies
-    res.cookie('accessToken', tokens.accessToken, {
+    res.clearCookie('accessToken');
+    res.cookie('accessToken', accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       maxAge: 15 * 60 * 1000,
     });
-    res.cookie('refreshToken', tokens.refreshToken, {
+    logger.log("new access token: " + accessToken);
+
+    res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',

@@ -46,7 +46,7 @@ export class AuthService {
       userId: id,
       tokenHash,
       revoked: false,
-      ipAddress,
+      ipAddress: '<ip_address>', //TODO: get actual ip address
       userAgent: '<user_agent>', //TODO: get actual user agent
       createdAt: new Date(),
       updatedAt: new Date(),

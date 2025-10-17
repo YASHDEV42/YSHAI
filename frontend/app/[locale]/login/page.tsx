@@ -1,11 +1,10 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import LoginPage from "./components/login";
 
-export default async function LoginPageRoute({
-  params: { locale }
-}: {
-  params: { locale: string };
-}) {
+export default async function LoginPageRoute(
+  params: any
+) {
+  const locale = await params.locale;
   setRequestLocale(locale);
 
   const t = await getTranslations({ locale, namespace: "LoginPage" });

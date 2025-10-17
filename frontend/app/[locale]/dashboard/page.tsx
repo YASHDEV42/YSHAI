@@ -50,11 +50,10 @@ export default async function DashboardPageRoute({
       failed: t("activityStatus.failed"),
     },
   };
-  let allCookies = '';
   let user = null;
   try {
     const cookieStore = await cookies();
-    allCookies = cookieStore.toString();
+    const allCookies = cookieStore.toString();
 
     const response = await usersControllerGetProfile({
       headers: {

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useActionState, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -13,13 +13,21 @@ import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { User, Bell, CreditCard, Twitter, Instagram, Linkedin, Music2, Plus, Trash2, Check } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-
-export default function SettingsClient({ text }: { text: any }) {
+import { UserResponseDto } from "@/api/model"
+import updateUser from "../action"
+import { Spinner } from "@/components/ui/spinner"
+const initialState = {
+  arMessage: '',
+  enMessage: '',
+  success: false,
+}
+export default function SettingsClient({ text, user, locale }: { text: any, user: UserResponseDto | null, locale: string }) {
   const [emailNotifications, setEmailNotifications] = useState(true)
   const [pushNotifications, setPushNotifications] = useState(true)
   const [weeklyReport, setWeeklyReport] = useState(true)
   const [postReminders, setPostReminders] = useState(true)
-
+  const [state, formAction, pending] = useActionState(updateUser, initialState)
+  const dir = locale === 'ar' ? 'rtl' : 'ltr';
   const connectedPlatforms = [
     {
       id: "twitter",
@@ -66,7 +74,7 @@ export default function SettingsClient({ text }: { text: any }) {
         <SidebarTrigger className="lg:hidden" />
       </div>
 
-      <Tabs defaultValue="profile" className="space-y-6">
+      <Tabs defaultValue="profile" className="space-y-6" dir={dir} >
         <TabsList className="grid w-full grid-cols-4 lg:w-[600px]">
           <TabsTrigger value="profile">
             <User className="mr-2 size-4" />
@@ -106,52 +114,40 @@ export default function SettingsClient({ text }: { text: any }) {
               </div>
 
               <Separator />
-
-              <div className="grid gap-4 md:grid-cols-2">
+              <form action={formAction} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="firstName">{text.profile.firstName}</Label>
-                  <Input id="firstName" placeholder="John" defaultValue="John" />
+                  <Label htmlFor="name">{text.profile.name}</Label>
+                  <Input id="name" placeholder={user?.name} name="name" defaultValue={user?.name} />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="lastName">{text.profile.lastName}</Label>
-                  <Input id="lastName" placeholder="Doe" defaultValue="Doe" />
+                  <Label htmlFor="timezone">{text.profile.timezone}</Label>
+                  <Select defaultValue="riyadh" name="timezone">
+                    <SelectTrigger id="timezone" name="timezone">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="riyadh">{text.timezones.riyadh}</SelectItem>
+                      <SelectItem value="dubai">{text.timezones.dubai}</SelectItem>
+                      <SelectItem value="cairo">{text.timezones.cairo}</SelectItem>
+                      <SelectItem value="london">{text.timezones.london}</SelectItem>
+                      <SelectItem value="newyork">{text.timezones.newyork}</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="email">{text.profile.email}</Label>
-                <Input id="email" type="email" placeholder="john@example.com" defaultValue="john@example.com" />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="bio">{text.profile.bio}</Label>
-                <Input
-                  id="bio"
-                  placeholder="Tell us about yourself"
-                  defaultValue="Social media manager and content creator"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="timezone">{text.profile.timezone}</Label>
-                <Select defaultValue="riyadh">
-                  <SelectTrigger id="timezone">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="riyadh">{text.timezones.riyadh}</SelectItem>
-                    <SelectItem value="dubai">{text.timezones.dubai}</SelectItem>
-                    <SelectItem value="cairo">{text.timezones.cairo}</SelectItem>
-                    <SelectItem value="london">{text.timezones.london}</SelectItem>
-                    <SelectItem value="newyork">{text.timezones.newyork}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="flex justify-end gap-3">
-                <Button variant="outline">{text.profile.cancel}</Button>
-                <Button>{text.profile.saveChanges}</Button>
-              </div>
+                <input type="hidden" name="locale" value={locale} />
+                <input type="hidden" name="userId" value={user?.id} />
+                {
+                  locale === 'ar' && state?.arMessage && (
+                    <p className={`text-base font-bold ${state.success ? "text-primary" : "text-destructive"}`}>{state.arMessage}</p>
+                  )}
+                {locale === 'en' && state?.enMessage && (
+                  <p className={`text-base font-bold ${state.success ? "text-primary" : "text-destructive"}`}>{state.enMessage}</p>)
+                }
+                <div className="flex justify-end gap-3">
+                  <Button variant="outline">{text.profile.cancel}</Button>
+                  <Button disabled={pending}>{pending && <Spinner />}{text.profile.saveChanges}</Button>
+                </div>
+              </form>
             </CardContent>
           </Card>
 
@@ -231,43 +227,6 @@ export default function SettingsClient({ text }: { text: any }) {
             </CardContent>
           </Card>
 
-          <Card className="border-border bg-card">
-            <CardHeader>
-              <CardTitle>{text.platforms.postingPreferences.title}</CardTitle>
-              <CardDescription>{text.platforms.postingPreferences.description}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>{text.platforms.postingPreferences.autoPublish.label}</Label>
-                  <p className="text-sm text-muted-foreground">
-                    {text.platforms.postingPreferences.autoPublish.description}
-                  </p>
-                </div>
-                <Switch defaultChecked />
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>{text.platforms.postingPreferences.watermark.label}</Label>
-                  <p className="text-sm text-muted-foreground">
-                    {text.platforms.postingPreferences.watermark.description}
-                  </p>
-                </div>
-                <Switch />
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>{text.platforms.postingPreferences.crossPost.label}</Label>
-                  <p className="text-sm text-muted-foreground">
-                    {text.platforms.postingPreferences.crossPost.description}
-                  </p>
-                </div>
-                <Switch defaultChecked />
-              </div>
-            </CardContent>
-          </Card>
         </TabsContent>
 
         {/* Notifications Tab */}
@@ -437,6 +396,6 @@ export default function SettingsClient({ text }: { text: any }) {
           </Card>
         </TabsContent>
       </Tabs>
-    </div>
+    </div >
   )
 }

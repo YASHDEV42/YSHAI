@@ -1,5 +1,8 @@
 import { setRequestLocale, getTranslations } from "next-intl/server"
 import SettingsClient from "./components/settings"
+import { usersControllerGetProfile } from "@/api/users/users"
+import { cookies } from "next/headers"
+import { redirect } from "next/navigation"
 
 export default async function SettingsPage({
   params: { locale }
@@ -24,8 +27,7 @@ export default async function SettingsPage({
       description: t("profile.description"),
       changePhoto: t("profile.changePhoto"),
       photoHelp: t("profile.photoHelp"),
-      firstName: t("profile.firstName"),
-      lastName: t("profile.lastName"),
+      name: t("profile.name"),
       email: t("profile.email"),
       bio: t("profile.bio"),
       timezone: t("profile.timezone"),
@@ -127,6 +129,21 @@ export default async function SettingsPage({
       newyork: t("timezones.newyork"),
     },
   }
+  let user = null;
+  try {
+    const cookieStore = await cookies();
+    const allCookies = cookieStore.toString();
+    const response = await usersControllerGetProfile({ headers: { Cookie: allCookies, }, });
+    if (response.status === 200) {
+      user = response.data;
+      console.log('Fetched user:', user);
+    } else {
+      console.log('User fetch failed:', response.status);
+    }
+  } catch (err) {
+    console.log("Error fetching user profile:", err);
+    redirect("/login")
+  }
 
-  return <SettingsClient text={text} />
+  return <SettingsClient user={user} locale={locale} text={text} />
 }
