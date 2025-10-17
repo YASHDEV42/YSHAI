@@ -3,13 +3,12 @@ import {
   Post,
   Get,
   UseGuards,
+  Req,
   Body,
   Query,
   BadRequestException,
   Res,
   UnauthorizedException,
-  Req,
-  Logger,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
@@ -23,20 +22,22 @@ import {
 import { PassportLocalGuard } from './guards/passport-local.guard';
 import { RegisterDto } from './dto/register.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
-import type { Response, Request } from 'express';
+import type { Response } from 'express';
 import { MessageResponseDto } from './dto/message-response.dto';
+import { TokensResponseDto } from './dto/token-response.dto';
 import { LoginDto } from './dto/login.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import type{Request} from'express';
 import {
   ResetPasswordDto,
   ResendVerificationDto,
 } from './dto/reset-password.dto';
-
-const logger = new Logger('AuthController');
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) { }
+  constructor(
+    private authService: AuthService,
+  ) { }
 
   @Post('register')
   @ApiOperation({ summary: 'Register a new user' })
@@ -51,16 +52,15 @@ export class AuthController {
   @ApiOkResponse({ type: MessageResponseDto })
   @ApiBody({ type: LoginDto })
   async login(
-    @Req() req: { user: { id: number; email: string, role: string, ipAddress: string } },
+    @Req() req: { user: { id: number; email: string, role:string } },
     @Body() _body: LoginDto,
     // Use Response to set cookies
     @Res({ passthrough: true }) res: Response,
   ): Promise<MessageResponseDto> {
     const { accessToken, refreshToken } = await this.authService.login(
       req.user.id,
-      req.user.email,
-      req.user.role,
-      req.user.ipAddress
+       req.user.email,
+       req.user.role,
     );
     // Set httpOnly cookies
     res.cookie('accessToken', accessToken, {
@@ -69,7 +69,7 @@ export class AuthController {
       sameSite: 'lax',
       maxAge: 15 * 60 * 1000,
     });
-    res.cookie('refreshToken', refreshToken, {
+    res.cookie('refreshJwt', refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -78,34 +78,6 @@ export class AuthController {
     return { message: 'Login successful' };
   }
 
-  @Post('refresh')
-  @ApiOperation({ summary: 'Refresh access and refresh tokens' })
-  @ApiBody({ type: RefreshTokenDto })
-  @ApiOkResponse({ type: MessageResponseDto })
-  async refresh(@Req() req: Request, @Res({ passthrough: true }) res: Response): Promise<MessageResponseDto> {
-    const refreshTokenCookie = req.cookies['refreshToken'];
-    if (!refreshTokenCookie) throw new UnauthorizedException('Missing refresh token');
-    const { accessToken, refreshToken } = await this.authService.refresh(refreshTokenCookie);
-
-    // Set httpOnly cookies
-    res.clearCookie('accessToken');
-    res.cookie('accessToken', accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 15 * 60 * 1000,
-    });
-    logger.log("new access token: " + accessToken);
-
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
-
-    return { message: 'Tokens refreshed' };
-  }
   @Post('logout')
   @ApiOperation({ summary: 'Logout' })
   @ApiOkResponse({ description: 'User logged out successfully.', type: String })
@@ -119,8 +91,7 @@ export class AuthController {
   @ApiOkResponse({
     description: 'Password reset link sent.',
     type: MessageResponseDto,
-  })
-  @ApiNotFoundResponse({
+  })@ApiNotFoundResponse({
     description: 'Bad request.',
     type: MessageResponseDto,
   })
@@ -210,5 +181,33 @@ export class AuthController {
     );
     await this.authService.sendVerificationEmail(user.email, token);
     return { message: 'Verification email resent.' };
+  }
+  @Post('refresh')
+  @ApiOperation({ summary: 'Refresh access and refresh tokens' })
+  @ApiBody({ type: RefreshTokenDto })
+  @ApiOkResponse({ type: TokensResponseDto })
+  async refresh(@Req() req: Request, 
+    @Res({ passthrough: true }) res: Response,
+) {
+    const refreshToken = req.cookies['refreshToken'];
+    if (!refreshToken) throw new UnauthorizedException('Missing refresh token');
+  console.log('Refresh token from cookie:', refreshToken);
+    const tokens = await this.authService.refresh(refreshToken);
+    res.cookie('accessToken', tokens.accessToken, {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 15 * 60 * 1000, // 15 min
+      path: '/',
+    });
+    res.cookie('refreshToken', tokens.refreshToken, {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      path: '/',
+    });
+
+    return { message: 'Tokens refreshed' };
   }
 }

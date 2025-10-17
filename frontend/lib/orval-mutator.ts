@@ -42,9 +42,10 @@ export async function orvalMutator<T>(
         method: 'POST',
         credentials: 'include',
         headers: {
-          cookie: cookies,
+          Cookie: cookies,
         }
       });
+      console.log('Token refresh successful, retrying original request...');
       return await orvalMutator<T>(url, config, true);
     } catch (refreshError) {
       if (typeof window !== 'undefined') {

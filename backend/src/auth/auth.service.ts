@@ -29,10 +29,11 @@ export class AuthService {
     id: number,
     email: string,
     role: string,
-    ipAddress: string
   ): Promise<{ accessToken: string; refreshToken: string }> {
     const payload = { id, email, role };
     const accessToken = await this.jwtService.signAsync(payload, { expiresIn: '15m' });
+    console.log("successfully generated access token", accessToken);
+    console.log('Generating refresh token...');
     const refreshToken = await this.jwtService.signAsync(payload, { expiresIn: '7d' });
     const tokenHash = await bcrypt.hash(refreshToken, 10);
     const user = await this.em.findOneOrFail(User, { id });
@@ -205,9 +206,9 @@ export class AuthService {
   }
 
   // login User Function
-  async login(id: number, email: string, role: string, ipAddress: string): Promise<{ accessToken: string; refreshToken: string }> {
+  async login(id: number, email: string, role: string,): Promise<{ accessToken: string; refreshToken: string }> {
 
-    return this.generateTokens(id, email, role, ipAddress);
+    return this.generateTokens(id, email, role);
   }
 
   // logout User Function
@@ -231,9 +232,8 @@ export class AuthService {
   // refresh tokens Function
   async refresh(
     refreshToken: string,
-    ipAddress: string = 'unknown'
   ): Promise<{ accessToken: string; refreshToken: string }> {
-    const userPayload = await this.jwtService.verifyAsync(refreshToken);
+    const userPayload =  this.jwtService.decode(refreshToken);
     if (!userPayload) {
       throw new UnauthorizedException('Invalid refresh token');
     }
@@ -267,7 +267,7 @@ export class AuthService {
       if (!user) throw new UnauthorizedException('User not found');
 
       logger.log(`Refresh token valid for user: ${user.email}`);
-      return this.generateTokens(user.id, user.email, user.role, ipAddress);
+      return this.generateTokens(user.id, user.email, user.role);
     }
 
     logger.log(`No matching refresh token found for user ID ${id}`);
