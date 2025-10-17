@@ -3,11 +3,12 @@ import {
   Post,
   Get,
   UseGuards,
-  Request,
   Body,
   Query,
   BadRequestException,
   Res,
+  UnauthorizedException,
+  Req,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
@@ -21,7 +22,7 @@ import {
 import { PassportLocalGuard } from './guards/passport-local.guard';
 import { RegisterDto } from './dto/register.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
-import type { Response } from 'express';
+import type { Response, Request } from 'express';
 import { MessageResponseDto } from './dto/message-response.dto';
 import { TokensResponseDto } from './dto/token-response.dto';
 import { LoginDto } from './dto/login.dto';
@@ -34,7 +35,7 @@ import {
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   @Post('register')
   @ApiOperation({ summary: 'Register a new user' })
@@ -49,13 +50,16 @@ export class AuthController {
   @ApiOkResponse({ type: MessageResponseDto })
   @ApiBody({ type: LoginDto })
   async login(
-    @Request() req: { user: { id?: number; userId?: number; email: string } },
+    @Req() req: { user: { id: number; email: string, role: string, ipAddress: string } },
     @Body() _body: LoginDto,
     // Use Response to set cookies
     @Res({ passthrough: true }) res: Response,
   ): Promise<MessageResponseDto> {
     const { accessToken, refreshToken } = await this.authService.login(
-      req.user,
+      req.user.id,
+      req.user.email,
+      req.user.role,
+      req.user.ipAddress
     );
     // Set httpOnly cookies
     res.cookie('accessToken', accessToken, {
@@ -64,7 +68,7 @@ export class AuthController {
       sameSite: 'lax',
       maxAge: 15 * 60 * 1000,
     });
-    res.cookie('refreshJwt', refreshToken, {
+    res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -73,11 +77,36 @@ export class AuthController {
     return { message: 'Login successful' };
   }
 
+  @Post('refresh')
+  @ApiOperation({ summary: 'Refresh access and refresh tokens' })
+  @ApiBody({ type: RefreshTokenDto })
+  @ApiOkResponse({ type: MessageResponseDto })
+  async refresh(@Req() req: Request, @Res({ passthrough: true }) res: Response): Promise<MessageResponseDto> {
+    const refreshToken = req.cookies['refreshToken'];
+    if (!refreshToken) throw new UnauthorizedException('Missing refresh token');
+    const tokens = await this.authService.refresh(refreshToken);
+
+    // Set httpOnly cookies
+    res.cookie('accessToken', tokens.accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 15 * 60 * 1000,
+    });
+    res.cookie('refreshToken', tokens.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    return { message: 'Tokens refreshed' };
+  }
   @Post('logout')
   @ApiOperation({ summary: 'Logout' })
   @ApiOkResponse({ description: 'User logged out successfully.', type: String })
   @ApiNotFoundResponse({ description: 'Unauthorized.', type: String })
-  async logout(@Request() req: { user: { userId: number } }): Promise<void> {
+  async logout(@Req() req: { user: { id: number } }): Promise<void> {
     return await this.authService.logout(req.user);
   }
 
@@ -140,7 +169,7 @@ export class AuthController {
       throw new BadRequestException('Invalid or expired verification token');
     }
 
-    await this.authService.markEmailAsVerified(payload.userId);
+    await this.authService.markEmailAsVerified(payload.id);
     return { message: 'Your email has been verified! You can now log in.' };
   }
 
@@ -177,10 +206,5 @@ export class AuthController {
     );
     await this.authService.sendVerificationEmail(user.email, token);
     return { message: 'Verification email resent.' };
-  }
-  @Post('refresh')
-  @ApiOkResponse({ type: TokensResponseDto })
-  async refresh(@Body() dto: RefreshTokenDto): Promise<TokensResponseDto> {
-    return this.authService.refresh(dto.userId, dto.refreshToken);
   }
 }

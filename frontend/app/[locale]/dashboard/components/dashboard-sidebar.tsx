@@ -41,11 +41,11 @@ import {
 
 interface DashboardSidebarProps {
   locale?: string
-  text?: Record<string, string>
+  text: any
   user: UserResponseDto | null
 }
 
-export function DashboardSidebar({ locale = "en", text = {}, user }: DashboardSidebarProps) {
+export function DashboardSidebar({ locale = "en", text, user }: DashboardSidebarProps) {
   const pathname = usePathname()
   const [notifications, setNotifications] = useState<NotificationResponseDto[]>([])
   const [showNotifications, setShowNotifications] = useState(false)
@@ -160,7 +160,7 @@ export function DashboardSidebar({ locale = "en", text = {}, user }: DashboardSi
               <Button
                 variant="ghost"
                 size="icon"
-                className="size-8 relative"
+                className="size-8 relative cursor-pointer"
                 onClick={() => setShowNotifications(!showNotifications)}
               >
                 <Bell className="size-4" />

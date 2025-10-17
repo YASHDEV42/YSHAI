@@ -22,27 +22,31 @@ export class AuthService {
     private jwtService: JwtService,
     private readonly em: EntityManager,
     private readonly mailer: MailerService,
-  ) {}
+  ) { }
 
   // generate token
   private async generateTokens(
-    user: User,
+    id: number,
+    email: string,
+    role: string,
+    ipAddress: string
   ): Promise<{ accessToken: string; refreshToken: string }> {
-    const payload = { userId: user.id, email: user.email, role: user.role };
-    const accessToken = this.jwtService.sign(payload, { expiresIn: '15m' });
-    const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
+    const payload = { id, email, role };
+    const accessToken = await this.jwtService.signAsync(payload, { expiresIn: '15m' });
+    const refreshToken = await this.jwtService.signAsync(payload, { expiresIn: '7d' });
     const tokenHash = await bcrypt.hash(refreshToken, 10);
+    const user = await this.em.findOneOrFail(User, { id });
     await this.em.nativeUpdate(
       RefreshToken,
-      { userId: user.id },
+      { userId: id },
       { revoked: true },
     );
     const tokenEntity = this.em.create(RefreshToken, {
       user,
-      userId: user.id,
+      userId: id,
       tokenHash,
       revoked: false,
-      ipAddress: '<user_ip_address>', //TODO: get actual IP
+      ipAddress,
       userAgent: '<user_agent>', //TODO: get actual user agent
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -110,10 +114,10 @@ export class AuthService {
   }
 
   // generate email verification token Function
-  generateEmailVerificationToken(userId: number, email: string): string {
+  generateEmailVerificationToken(id: number, email: string): string {
     //sign and return token
     return this.jwtService.sign(
-      { userId, email },
+      { id, email },
       {
         expiresIn: '1h',
         secret:
@@ -125,19 +129,19 @@ export class AuthService {
   // verify email verification token Function
   verifyEmailVerificationToken(
     token: string,
-  ): { userId: number; email: string } | null {
+  ): { id: number; email: string } | null {
     try {
       const payload: unknown = this.jwtService.verify(token, {
         secret:
           process.env.JWT_VERIFICATION_SECRET || 'strong_secret_hahahah$%',
       });
 
-      const isValid = (p: unknown): p is { userId: number; email: string } => {
+      const isValid = (p: unknown): p is { id: number; email: string } => {
         return (
           typeof p === 'object' &&
           p !== null &&
-          'userId' in p &&
-          typeof (p as { userId: unknown }).userId === 'number' &&
+          'id' in p &&
+          typeof (p as { id: unknown }).id === 'number' &&
           'email' in p &&
           typeof (p as { email: unknown }).email === 'string' &&
           ((p as { email: string }).email?.length ?? 0) > 0
@@ -146,7 +150,7 @@ export class AuthService {
 
       if (isValid(payload)) {
         return {
-          userId: payload.userId,
+          id: payload.id,
           email: payload.email,
         };
       }
@@ -160,9 +164,9 @@ export class AuthService {
   }
 
   // mark email as verified Function
-  async markEmailAsVerified(userId: number): Promise<void> {
+  async markEmailAsVerified(id: number): Promise<void> {
     //find the user
-    const user = await this.em.findOne(User, { id: userId });
+    const user = await this.em.findOne(User, { id });
     if (!user) {
       throw new BadRequestException('User not found');
     }
@@ -201,16 +205,16 @@ export class AuthService {
   }
 
   // login User Function
-  async login(user: unknown) {
-    // assert shape at runtime if needed; here we assume passport-local provides a valid User entity
-    return this.generateTokens(user as User);
+  async login(id: number, email: string, role: string, ipAddress: string): Promise<{ accessToken: string; refreshToken: string }> {
+
+    return this.generateTokens(id, email, role, ipAddress);
   }
 
   // logout User Function
-  async logout(user: { userId: number }): Promise<void> {
+  async logout(user: { id: number }): Promise<void> {
     //find the active token for this user and revoke it
     const token = await this.em.findOne(RefreshToken, {
-      userId: user.userId,
+      userId: user.id,
       revoked: false,
     });
     if (!token) {
@@ -226,14 +230,18 @@ export class AuthService {
 
   // refresh tokens Function
   async refresh(
-    userId: number,
     refreshToken: string,
+    ipAddress: string = 'unknown'
   ): Promise<{ accessToken: string; refreshToken: string }> {
-    //find the token in the database
+    const userPayload = await this.jwtService.verifyAsync(refreshToken);
+    if (!userPayload) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+    const { id } = userPayload as { id: number; email: string; role: string };
     const candidates = await this.em.find(
       RefreshToken,
       {
-        user: userId,
+        user: id,
         revoked: false,
         expiresAt: { $gt: new Date() },
       },
@@ -243,7 +251,7 @@ export class AuthService {
       throw new UnauthorizedException('No valid refresh tokens found');
     }
     logger.log(
-      `Found ${candidates.length} candidate tokens for user ID ${userId}`,
+      `Found ${candidates.length} candidate tokens for user ID ${id}`,
     );
 
     // find the matching token
@@ -255,14 +263,14 @@ export class AuthService {
         throw new UnauthorizedException('Expired refresh token');
       if (t.revoked) throw new UnauthorizedException('Revoked refresh token');
 
-      const user = await this.em.findOne(User, { id: userId });
+      const user = await this.em.findOne(User, { id });
       if (!user) throw new UnauthorizedException('User not found');
 
       logger.log(`Refresh token valid for user: ${user.email}`);
-      return this.generateTokens(user);
+      return this.generateTokens(user.id, user.email, user.role, ipAddress);
     }
 
-    logger.log(`No matching refresh token found for user ID ${userId}`);
+    logger.log(`No matching refresh token found for user ID ${id}`);
     throw new UnauthorizedException('Invalid refresh token');
   }
 

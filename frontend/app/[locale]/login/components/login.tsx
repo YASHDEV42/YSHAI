@@ -12,33 +12,10 @@ import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 // Define the text interface
-export interface LoginPageText {
-  title: string;
-  subtitle: string;
-  googleButton: string;
-  githubButton: string;
-  orDivider: string;
-  emailLabel: string;
-  emailPlaceholder: string;
-  emailRequired: string;
-  emailInvalid: string;
-  passwordLabel: string;
-  passwordPlaceholder: string;
-  passwordRequired: string;
-  forgotPassword: string;
-  noAccount: string;
-  signUpLink: string;
-  signInButton: string;
-  signingInButton: string;
-  termsAgreement: string;
-  termsOfService: string;
-  privacyPolicy: string;
-  needHelp: string;
-  contactSupport: string;
-}
+
 
 interface LoginPageProps {
-  text: LoginPageText;
+  text: any;
   locale: string;
 }
 

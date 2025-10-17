@@ -20,39 +20,9 @@ import { useState } from "react"
 import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 
-export interface SignUpPageText {
-  title: string
-  subtitle: string
-  googleButton: string
-  orDivider: string
-  nameLabel: string
-  namePlaceholder: string
-  nameRequired: string
-  emailLabel: string
-  emailPlaceholder: string
-  emailRequired: string
-  emailInvalid: string
-  passwordLabel: string
-  passwordPlaceholder: string
-  passwordRequired: string
-  passwordTooShort: string
-  passwordHint: string
-  haveAccount: string
-  signInLink: string
-  createAccountButton: string
-  creatingAccountButton: string
-  termsAgreement: string
-  termsOfService: string
-  privacyPolicy: string
-  needHelp: string
-  contactSupport: string
-  verificationTitle: string
-  verificationMessage: string
-  verificationButton: string
-}
 
 interface SignUpPageProps {
-  text: SignUpPageText
+  text: any,
   locale: string
 }
 

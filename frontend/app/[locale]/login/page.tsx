@@ -1,5 +1,5 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
-import LoginPage, { LoginPageText } from "./components/login";
+import LoginPage from "./components/login";
 
 export default async function LoginPageRoute({
   params: { locale }
@@ -10,7 +10,7 @@ export default async function LoginPageRoute({
 
   const t = await getTranslations({ locale, namespace: "LoginPage" });
 
-  const text: LoginPageText = {
+  const text: any = {
     title: t("title"),
     subtitle: t("subtitle"),
     googleButton: t("googleButton"),

@@ -18,7 +18,7 @@ import { UpdatePreferencesDto } from './dto/update-preferences.dto';
 @UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
   // get current user profile using JWT
   @Get('me')
@@ -29,9 +29,9 @@ export class UsersController {
   })
   @ApiNotFoundResponse({ description: 'User not found.' })
   async getProfile(
-    @Req() req: { user: { userId: number } },
+    @Req() req: { user: { id: number } },
   ): Promise<UserResponseDto> {
-    return this.usersService.getProfile(req.user.userId);
+    return this.usersService.getProfile(req.user.id);
   }
 
   // update current user profile using JWT
@@ -43,10 +43,10 @@ export class UsersController {
   })
   @ApiNotFoundResponse({ description: 'User not found.' })
   async updateProfile(
-    @Req() req: { user: { userId: number } },
+    @Req() req: { user: { id: number } },
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<UserResponseDto> {
-    return this.usersService.updateProfile(req.user.userId, updateUserDto);
+    return this.usersService.updateProfile(req.user.id, updateUserDto);
   }
 
   // update current user preferences using JWT
@@ -57,9 +57,9 @@ export class UsersController {
     description: 'Preferences updated successfully.',
   })
   async updatePreferences(
-    @Req() req: { user: { userId: number } },
+    @Req() req: { user: { id: number } },
     @Body() body: UpdatePreferencesDto,
   ): Promise<{ message: string }> {
-    return this.usersService.updatePreferences(req.user.userId, body);
+    return this.usersService.updatePreferences(req.user.id, body);
   }
 }

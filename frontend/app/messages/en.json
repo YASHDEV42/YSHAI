@@ -6,7 +6,8 @@
     "about": "About",
     "login": "Login",
     "register": "Sign Up",
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "logout": "Logout"
   },
   "HeroSection": {
     "heading": "Plan, Execute, and Publish",

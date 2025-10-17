@@ -6,7 +6,8 @@
     "features": "الميزات",
     "pricing": "الأسعار",
     "about": "من نحن",
-    "dashboard": "لوحة التحكم"
+    "dashboard": "لوحة التحكم",
+    "logout": "تسجيل الخروج"
   },
   "HeroSection": {
     "heading": "خطط، نفّذ، وانشر",

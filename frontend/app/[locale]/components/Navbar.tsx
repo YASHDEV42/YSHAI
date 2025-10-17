@@ -5,12 +5,29 @@ import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { UserResponseDto } from "@/api/model";
+import { authControllerLogout, authControllerLogoutResponse } from "@/api/auth/auth";
+import { toast } from "sonner";
 
 export function Navbar({ text, user }: { text: any, user: UserResponseDto | null }) {
   const pathname = usePathname();
 
   if (pathname?.startsWith('/ar/dashboard') || pathname?.startsWith('/en/dashboard')) {
     return null;
+  }
+  const logoutHandler = async (): Promise<void> => {
+    try {
+      const response: authControllerLogoutResponse = await authControllerLogout();
+      if (response.status === 200) {
+        toast.success("Logged out successfully");
+        console.log("Logout successful");
+      }
+      if (response.status === 404) {
+        toast.error("Logout failed");
+        console.error("Logout failed", response.data);
+      }
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   }
 
   return (
@@ -35,10 +52,12 @@ export function Navbar({ text, user }: { text: any, user: UserResponseDto | null
         </nav>
 
         <div className="flex items-center justify-end gap-3 w-[320px]">
-          {user ? (
+          {user ? (<>
             <Button asChild>
               <Link href="/dashboard">{text.dashboard}</Link>
             </Button>
+            <Button onClick={() => logoutHandler()}>{text.logout}</Button>
+          </>
           ) : (
             <> <Button variant="ghost" asChild>
               <Link href="/login">{text.login}</Link>

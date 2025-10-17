@@ -5,13 +5,13 @@ import { User } from 'src/entities/user.entity';
 import { UpdatePreferencesDto } from './dto/update-preferences.dto';
 @Injectable()
 export class UsersService {
-  constructor(private readonly em: EntityManager) {}
-  async getProfile(userId: number) {
-    if (!userId) {
+  constructor(private readonly em: EntityManager) { }
+  async getProfile(id: number) {
+    if (!id) {
       throw new Error('User ID is required');
     }
     //saving the file
-    const user = await this.em.findOne(User, { id: userId });
+    const user = await this.em.findOne(User, { id });
     if (!user) {
       throw new Error('User not found');
     }
@@ -19,10 +19,10 @@ export class UsersService {
     return user;
   }
   async updateProfile(
-    userId: number,
+    id: number,
     updateData: Partial<User>,
   ): Promise<User> {
-    const user = await this.em.findOne(User, { id: userId });
+    const user = await this.em.findOne(User, { id });
     if (!user) {
       throw new Error('User not found');
     }
@@ -32,10 +32,10 @@ export class UsersService {
   }
 
   async updatePreferences(
-    userId: number,
+    id: number,
     prefs: UpdatePreferencesDto,
   ): Promise<{ message: string }> {
-    const user = await this.em.findOne(User, { id: userId });
+    const user = await this.em.findOne(User, { id });
     if (!user) {
       throw new Error('User not found');
     }
