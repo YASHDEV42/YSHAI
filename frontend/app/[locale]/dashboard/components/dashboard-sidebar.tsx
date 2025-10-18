@@ -59,12 +59,14 @@ export function DashboardSidebar({ locale = "en", text, user }: DashboardSidebar
   const unreadCount = notifications.filter((n) => !n.read).length
 
   const menuItems = [
-    { href: "/dashboard", icon: BarChart3, label: text.overview || "Overview" },
-    { href: "/dashboard/create", icon: Sparkles, label: text.createPost || "Create Post" },
-    { href: "/dashboard/calendar", icon: Calendar, label: text.calendar || "Calendar" },
-    { href: "/dashboard/analytics", icon: TrendingUp, label: text.analytics || "Analytics" },
-    { href: "/dashboard/settings", icon: Settings, label: text.settings || "Settings" },
+    { href: "/dashboard", icon: BarChart3, label: text.overview || "Overview", activeHref: "/" + locale + "/dashboard" },
+    { href: "/dashboard/create", icon: Sparkles, label: text.createPost || "Create Post", activeHref: "/" + locale + "/dashboard/create" },
+    { href: "/dashboard/calendar", icon: Calendar, label: text.calendar || "Calendar", activeHref: "/" + locale + "/dashboard/calendar" },
+    { href: "/dashboard/analytics", icon: TrendingUp, label: text.analytics || "Analytics", activeHref: "/" + locale + "/dashboard/analytics" },
+    { href: "/dashboard/settings", icon: Settings, label: text.settings || "Settings", activeHref: "/" + locale + "/dashboard/settings" },
   ]
+  console.log(menuItems)
+  console.log(pathname)
 
   const markAsRead = async (id: number) => {
     try {
@@ -115,10 +117,7 @@ export function DashboardSidebar({ locale = "en", text, user }: DashboardSidebar
       {/* --- Sidebar --- */}
       <Sidebar className="border-r border-border" side={isRTL ? "right" : "left"}>
         <SidebarHeader className="border-b border-border p-6">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="flex size-8 items-center justify-center rounded-lg bg-primary">
-              <Sparkles className="size-5 text-primary-foreground" />
-            </div>
+          <Link href="/" className="flex items-center gap-2 px-2">
             <span className="font-bold text-xl text-foreground">{text.logo}</span>
           </Link>
         </SidebarHeader>
@@ -126,10 +125,10 @@ export function DashboardSidebar({ locale = "en", text, user }: DashboardSidebar
         <SidebarContent className="p-4">
           <SidebarMenu>
             {menuItems.map((item) => (
-              <SidebarMenuItem key={item.href}>
-                <SidebarMenuButton asChild isActive={pathname === item.href}>
-                  <Link href={item.href}>
-                    <item.icon className="size-4" />
+              <SidebarMenuItem key={item.href} className="mb-1">
+                <SidebarMenuButton asChild isActive={pathname === item.activeHref}>
+                  <Link href={item.href} className="py-5">
+                    <item.icon className="size-9" />
                     <span>{item.label}</span>
                   </Link>
                 </SidebarMenuButton>

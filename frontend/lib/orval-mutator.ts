@@ -34,16 +34,12 @@ export async function orvalMutator<T>(
   const isJson = contentType.includes('application/json');
   const data = isJson ? await response.json() : await response.text();
 
-  const cookies = config.headers ? (config.headers as Record<string, string>)['Cookie'] || '' : '';
   if (response.status === 401 && !_retry) {
     console.log('Unauthorized response, attempting token refresh...');
     try {
       await fetch(`${API_BASE_URL}/auth/refresh`, {
         method: 'POST',
         credentials: 'include',
-        headers: {
-          Cookie: cookies,
-        }
       });
       console.log('Token refresh successful, retrying original request...');
       return await orvalMutator<T>(url, config, true);

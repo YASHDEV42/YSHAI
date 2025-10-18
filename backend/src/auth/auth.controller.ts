@@ -27,7 +27,7 @@ import { MessageResponseDto } from './dto/message-response.dto';
 import { TokensResponseDto } from './dto/token-response.dto';
 import { LoginDto } from './dto/login.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
-import type{Request} from'express';
+import type { Request } from 'express';
 import {
   ResetPasswordDto,
   ResendVerificationDto,
@@ -52,15 +52,15 @@ export class AuthController {
   @ApiOkResponse({ type: MessageResponseDto })
   @ApiBody({ type: LoginDto })
   async login(
-    @Req() req: { user: { id: number; email: string, role:string } },
+    @Req() req: { user: { id: number; email: string, role: string } },
     @Body() _body: LoginDto,
     // Use Response to set cookies
     @Res({ passthrough: true }) res: Response,
   ): Promise<MessageResponseDto> {
     const { accessToken, refreshToken } = await this.authService.login(
       req.user.id,
-       req.user.email,
-       req.user.role,
+      req.user.email,
+      req.user.role,
     );
     // Set httpOnly cookies
     res.cookie('accessToken', accessToken, {
@@ -68,16 +68,46 @@ export class AuthController {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       maxAge: 15 * 60 * 1000,
+      path: '/',
     });
-    res.cookie('refreshJwt', refreshToken, {
+    res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: '/',
     });
     return { message: 'Login successful' };
   }
 
+  @Post('refresh')
+  @ApiOperation({ summary: 'Refresh access and refresh tokens' })
+  @ApiBody({ type: RefreshTokenDto })
+  @ApiOkResponse({ type: TokensResponseDto })
+  async refresh(@Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const refreshToken = req.cookies['refreshToken'];
+    if (!refreshToken) throw new UnauthorizedException('Missing refresh token');
+    console.log('Refresh token from cookie:', refreshToken);
+    const tokens = await this.authService.refresh(refreshToken);
+    res.cookie('accessToken', tokens.accessToken, {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 15 * 60 * 1000, // 15 min
+      path: '/',
+    });
+    res.cookie('refreshToken', tokens.refreshToken, {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      path: '/',
+    });
+
+    return { message: 'Tokens refreshed' };
+  }
   @Post('logout')
   @ApiOperation({ summary: 'Logout' })
   @ApiOkResponse({ description: 'User logged out successfully.', type: String })
@@ -91,7 +121,7 @@ export class AuthController {
   @ApiOkResponse({
     description: 'Password reset link sent.',
     type: MessageResponseDto,
-  })@ApiNotFoundResponse({
+  }) @ApiNotFoundResponse({
     description: 'Bad request.',
     type: MessageResponseDto,
   })
@@ -181,33 +211,5 @@ export class AuthController {
     );
     await this.authService.sendVerificationEmail(user.email, token);
     return { message: 'Verification email resent.' };
-  }
-  @Post('refresh')
-  @ApiOperation({ summary: 'Refresh access and refresh tokens' })
-  @ApiBody({ type: RefreshTokenDto })
-  @ApiOkResponse({ type: TokensResponseDto })
-  async refresh(@Req() req: Request, 
-    @Res({ passthrough: true }) res: Response,
-) {
-    const refreshToken = req.cookies['refreshToken'];
-    if (!refreshToken) throw new UnauthorizedException('Missing refresh token');
-  console.log('Refresh token from cookie:', refreshToken);
-    const tokens = await this.authService.refresh(refreshToken);
-    res.cookie('accessToken', tokens.accessToken, {
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 15 * 60 * 1000, // 15 min
-      path: '/',
-    });
-    res.cookie('refreshToken', tokens.refreshToken, {
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      path: '/',
-    });
-
-    return { message: 'Tokens refreshed' };
   }
 }
