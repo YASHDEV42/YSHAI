@@ -41,6 +41,7 @@ export default async function RootLayout({ children, params }: Props) {
     about: t("about"),
     features: t("features"),
     dashboard: t("dashboard"),
+    logout: t("logout"),
   }
   let allCookies = '';
   let user = null;
