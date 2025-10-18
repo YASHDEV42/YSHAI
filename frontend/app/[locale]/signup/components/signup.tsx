@@ -1,20 +1,30 @@
-"use client";
+"use client"
 
-import type React from "react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Field, FieldLabel, FieldError } from "@/components/ui/field";
-import { Separator } from "@/components/ui/separator";
-import Link from "next/link";
-import { useActionState, useState } from "react";
-import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
-import { loginUser } from "@/app/[locale]/actions/userActions";
+import type React from "react"
+import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Field, FieldLabel, FieldDescription, FieldError } from "@/components/ui/field"
+import { Separator } from "@/components/ui/separator"
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogAction,
+} from "../../../../components/ui/alert-dialog"
+import Link from "next/link"
+import { useActionState, useState } from "react"
+import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { registerUser } from "../../(auth)/actions/authActions"
 
 
-interface LoginPageProps {
-  text: any;
-  locale: string;
+interface SignUpPageProps {
+  text: any,
+  locale: string
 }
 
 const initialState = {
@@ -22,31 +32,58 @@ const initialState = {
   enMessage: "",
   success: false,
 }
-export default function LoginPage({ text, locale }: LoginPageProps) {
+export default function SignUpPage({ text, locale }: SignUpPageProps) {
+  const [state, formAction, pending] = useActionState(registerUser, initialState)
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-  });
+    name: "",
+  })
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [showVerificationMessage, setShowVerificationMessage] = useState(false)
+  const router = useRouter()
 
-  const [state, formAction, pending] = useActionState(loginUser, initialState)
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const { name, value } = e.target;
-    setFormData((prev: { email: string, password: string }): { email: string, password: string } => ({ ...prev, [name]: value }));
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const timeFormat = new Intl.DateTimeFormat([], {
+    hour: 'numeric'
+  }).format(new Date(2024, 0, 1, 13, 0)) === '1 PM' ? '12h' : '24h';
+
+
+  const handleVerificationComplete = () => {
+    setShowVerificationMessage(false)
+    router.push("/login")
+  }
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
     if (errors[name]) {
-      setErrors((prev: Record<string, string>): { [x: string]: string } => {
-        const newErrors = { ...prev };
-        delete newErrors[name];
-        return newErrors;
-      });
+      setErrors((prev) => {
+        const newErrors = { ...prev }
+        delete newErrors[name]
+        return newErrors
+      })
     }
-  };
+  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <main className="flex-1 flex items-center justify-center px-4 pb-12 pt-20">
+      <AlertDialog open={showVerificationMessage} onOpenChange={setShowVerificationMessage}>
+        <AlertDialogContent className={locale === 'ar' ? 'direction-rtl' : ''}
+          dir={locale === 'ar' ? 'rtl' : 'ltr'}>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{text.verificationTitle}</AlertDialogTitle>
+            <AlertDialogDescription>{text.verificationMessage}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={handleVerificationComplete}>{text.verificationButton}</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <main className="flex-1 flex items-center justify-center px-4 pt-10 pb-4">
         <div className="w-full max-w-md">
-          <div className="text-center mb-8">
+          <div className="text-center mt-8 mb-6">
             <h1 className="text-3xl font-bold mb-2">{text.title}</h1>
             <p className="text-muted-foreground">{text.subtitle}</p>
           </div>
@@ -84,6 +121,20 @@ export default function LoginPage({ text, locale }: LoginPageProps) {
             </div>
 
             <form action={formAction} className="space-y-4">
+              <Field data-invalid={!!errors.name}>
+                <FieldLabel htmlFor="name">{text.nameLabel}</FieldLabel>
+                <Input
+                  id="name"
+                  name="name"
+                  type="text"
+                  placeholder={text.namePlaceholder}
+                  value={formData.name}
+                  onChange={handleChange}
+                  disabled={pending}
+                />
+                {errors.name && <FieldError>{errors.name}</FieldError>}
+              </Field>
+
               <Field data-invalid={!!errors.email}>
                 <FieldLabel htmlFor="email">{text.emailLabel}</FieldLabel>
                 <Input
@@ -111,22 +162,19 @@ export default function LoginPage({ text, locale }: LoginPageProps) {
                   aria-invalid={!!errors.password}
                   disabled={pending}
                 />
+                <FieldDescription>{text.passwordHint}</FieldDescription>
                 {errors.password && <FieldError>{errors.password}</FieldError>}
               </Field>
 
-              <div className="flex items-center justify-end">
-                <Link href="/forgot-password" className="text-sm text-primary hover:underline">
-                  {text.forgotPassword}
-                </Link>
-              </div>
+              <input type="hidden" name="timezone" value={timezone} />
+              <input type="hidden" name="timeFormat" value={timeFormat} />
 
               <div className="flex items-center justify-center gap-2 text-sm pt-2">
-                <span className="text-muted-foreground">{text.noAccount}</span>
-                <Link href="/signup" className="text-primary hover:underline font-medium">
-                  {text.signUpLink}
+                <span className="text-muted-foreground">{text.haveAccount}</span>
+                <Link href="/login" className="text-primary hover:underline font-medium">
+                  {text.signInLink}
                 </Link>
               </div>
-
 
               {state?.success === false && (
                 <p className="text-red-500 text-sm text-center">
@@ -134,17 +182,22 @@ export default function LoginPage({ text, locale }: LoginPageProps) {
                 </p>
               )}
 
-              <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={pending}>
+              {state?.success === true && (
+                <p className="text-green-500 text-sm text-center">
+                  {locale === "ar" ? "تم إنشاء الحساب! تحقق من بريدك الإلكتروني" : "Account created! Check your email"}
+                </p>
+              )}
 
+              <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={pending}>
                 {pending ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    {text.signingInButton}
+                    {text.creatingAccountButton}
                   </>
                 ) : (
                   <>
-                    {text.signInButton}
-                    {locale === "ar" ? (<ArrowLeft className="mr-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />) : (<ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />)}
+                    {text.createAccountButton}
+                    {locale === "ar" ? <ArrowLeft className="mr-2 w-4 h-4" /> : <ArrowRight className="ml-2 w-4 h-4" />}
                   </>
                 )}
               </Button>
@@ -155,7 +208,7 @@ export default function LoginPage({ text, locale }: LoginPageProps) {
               <Link href="/terms" className="text-primary hover:underline">
                 {text.termsOfService}
               </Link>{" "}
-              و{" "}
+              {locale === "ar" ? "و" : "and"}{" "}
               <Link href="/privacy" className="text-primary hover:underline">
                 {text.privacyPolicy}
               </Link>
@@ -171,6 +224,5 @@ export default function LoginPage({ text, locale }: LoginPageProps) {
         </div>
       </main>
     </div>
-  );
+  )
 }
-

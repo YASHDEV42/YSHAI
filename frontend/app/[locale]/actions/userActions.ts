@@ -16,9 +16,15 @@ const errorResponse = (en: string, ar: string) => ({
   enMessage: en,
   arMessage: ar,
 });
+interface Iresponse {
+  success: boolean;
+  enMessage: string;
+  arMessage: string;
+}
 
 // ✅ REGISTER
-export const registerUser = async (_: any, formData: FormData) => {
+export const registerUser = async (_: any, formData: FormData): Promise<Iresponse> => {
+
   const name = formData.get("name") as string;
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
@@ -45,7 +51,7 @@ export const registerUser = async (_: any, formData: FormData) => {
 };
 
 // ✅ LOGIN
-export const loginUser = async (_: any, formData: FormData) => {
+export const loginUser = async (_: any, formData: FormData): Promise<Iresponse> => {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
