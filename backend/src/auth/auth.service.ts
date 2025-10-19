@@ -32,8 +32,6 @@ export class AuthService {
   ): Promise<{ accessToken: string; refreshToken: string }> {
     const payload = { id, email, role };
     const accessToken = await this.jwtService.signAsync(payload, { expiresIn: '15m' });
-    console.log("successfully generated access token", accessToken);
-    console.log('Generating refresh token...');
     const refreshToken = await this.jwtService.signAsync(payload, { expiresIn: '7d' });
     const tokenHash = await bcrypt.hash(refreshToken, 10);
     const user = await this.em.findOneOrFail(User, { id });
@@ -186,6 +184,7 @@ export class AuthService {
 
   // validate user Function
   async validateUser(email: string, pass: string): Promise<User> {
+    console.log(`Validating user with email: ${email}`);
     const user = await this.em.findOne(User, { email });
     if (!user) {
       throw new UnauthorizedException('User not found');
@@ -230,48 +229,36 @@ export class AuthService {
   }
 
   // refresh tokens Function
-  async refresh(
-    refreshToken: string,
-  ): Promise<{ accessToken: string; refreshToken: string }> {
-    const userPayload =  this.jwtService.decode(refreshToken);
-    if (!userPayload) {
+  async refresh(refreshToken: string): Promise<{ accessToken: string; refreshToken: string }> {
+    let payload: { id: number; email: string; role: string };
+    try {
+      payload = this.jwtService.verify(refreshToken, {
+        secret: process.env.JWT_SECRET || 'default_secret',
+      });
+    } catch (error) {
+      logger.warn('Invalid refresh token signature', error);
       throw new UnauthorizedException('Invalid refresh token');
     }
-    const { id } = userPayload as { id: number; email: string; role: string };
-    const candidates = await this.em.find(
-      RefreshToken,
-      {
-        user: id,
-        revoked: false,
-        expiresAt: { $gt: new Date() },
-      },
-      { orderBy: { createdAt: 'DESC' } },
-    );
-    if (!candidates || candidates.length === 0) {
-      throw new UnauthorizedException('No valid refresh tokens found');
-    }
-    logger.log(
-      `Found ${candidates.length} candidate tokens for user ID ${id}`,
-    );
 
-    // find the matching token
-    for (const t of candidates) {
-      const matches = await bcrypt.compare(refreshToken, t.tokenHash);
-      if (!matches) continue;
+    const { id } = payload;
+    const token = await this.em.findOne(RefreshToken, {
+      userId: id,
+      revoked: false,
+      expiresAt: { $gt: new Date() },
+    });
 
-      if (t.expiresAt < new Date())
-        throw new UnauthorizedException('Expired refresh token');
-      if (t.revoked) throw new UnauthorizedException('Revoked refresh token');
-
-      const user = await this.em.findOne(User, { id });
-      if (!user) throw new UnauthorizedException('User not found');
-
-      logger.log(`Refresh token valid for user: ${user.email}`);
-      return this.generateTokens(user.id, user.email, user.role);
+    if (!token) {
+      throw new UnauthorizedException('No valid refresh token found');
     }
 
-    logger.log(`No matching refresh token found for user ID ${id}`);
-    throw new UnauthorizedException('Invalid refresh token');
+    const matches = await bcrypt.compare(refreshToken, token.tokenHash);
+    if (!matches) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+
+    const user = await this.em.findOneOrFail(User, { id });
+    logger.log(`Refresh token valid for user: ${user.email}`);
+    return this.generateTokens(user.id, user.email, user.role);
   }
 
   // forgot password Function

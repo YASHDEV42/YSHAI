@@ -1,3 +1,5 @@
+import { redirect } from 'next/navigation';
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000';
 
 export async function orvalMutator<T>(
@@ -34,20 +36,22 @@ export async function orvalMutator<T>(
   const isJson = contentType.includes('application/json');
   const data = isJson ? await response.json() : await response.text();
 
+  const cookieHeader = headers.get('Cookie') || '';
   if (response.status === 401 && !_retry) {
     console.log('Unauthorized response, attempting token refresh...');
     try {
       await fetch(`${API_BASE_URL}/auth/refresh`, {
         method: 'POST',
         credentials: 'include',
+        headers: {
+          Cookie: cookieHeader,
+        },
       });
       console.log('Token refresh successful, retrying original request...');
       return await orvalMutator<T>(url, config, true);
     } catch (refreshError) {
-      if (typeof window !== 'undefined') {
-        window.location.href = '/login';
-      }
-      throw new Error('Session expired. Please log in again.');
+      console.error('Token refresh failed:', refreshError);
+      redirect('/login'); // Server-side redirect for Server Actions
     }
   }
 

@@ -1,5 +1,5 @@
 "use server";
-
+import { cookies } from "next/headers";
 import {
   authControllerRegister,
   authControllerLogin,
@@ -10,9 +10,10 @@ import {
   authControllerResendVerification,
   authControllerVerifyEmail,
 } from "@/api/auth/auth";
+import { revalidatePath } from "next/cache";
 
 // ✅ Helper function for safe responses
-const errorResponse = (en: string, ar: string) => ({
+const errorResponse = (en: string, ar: string): { success: boolean, enMessage: string, arMessage: string } => ({
   success: false,
   enMessage: en,
   arMessage: ar,
@@ -49,18 +50,19 @@ export const registerUser = async (_: any, formData: FormData) => {
 export const loginUser = async (_: any, formData: FormData) => {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
+  console.log('Login action called with email:', email);
 
   if (!email || !password) {
     return errorResponse("Email and password are required", "البريد الإلكتروني وكلمة المرور مطلوبان");
   }
 
   try {
-    await authControllerLogin({ email, password });
-    return {
-      success: true,
-      enMessage: "Logged in successfully",
-      arMessage: "تم تسجيل الدخول بنجاح",
-    };
+    const response = await authControllerLogin({ email, password });
+    const cookiesStore = await cookies();
+    console.log('Login response:', response);
+    cookiesStore.set('accessToken', response.data.accessToken, { httpOnly: true, path: '/', sameSite: "lax", maxAge: 60 * 15 });
+    cookiesStore.set('refreshToken', response.data.refreshToken, { httpOnly: true, path: '/', sameSite: "lax", maxAge: 60 * 60 * 24 * 7 });
+    revalidatePath(`/dashboard`);
   } catch {
     return errorResponse(
       "Invalid email or password",
@@ -72,7 +74,9 @@ export const loginUser = async (_: any, formData: FormData) => {
 // ✅ LOGOUT
 export const logoutUser = async () => {
   try {
-    await authControllerLogout();
+    const cookiesStore = await cookies();
+    cookiesStore.delete('accessToken');
+    cookiesStore.delete('refreshToken');
     return {
       success: true,
       enMessage: "Logged out successfully",

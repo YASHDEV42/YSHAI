@@ -8,14 +8,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
-        (request: Request) => { console.log(request.cookies.accessToken); return request?.cookies?.accessToken; },
+        (request: Request): string | null => { return request?.cookies?.accessToken; }
       ]),
       ignoreExpiration: false,
       secretOrKey: process.env.JWT_SECRET || 'default_secret',
     });
   }
 
-  validate(payload: { id: number; email: string; role: string }) {
+  validate(payload: { id: number; email: string; role: string }): { id: number, email: string, role: string } {
     return { id: payload.id, email: payload.email, role: payload.role };
   }
 }

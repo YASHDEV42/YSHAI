@@ -26,7 +26,7 @@ export type authControllerRegisterResponse200 = {
   data: MessageResponseDto
   status: 200
 }
-    
+
 export type authControllerRegisterResponseSuccess = (authControllerRegisterResponse200) & {
   headers: Headers;
 };
@@ -37,32 +37,33 @@ export type authControllerRegisterResponse = (authControllerRegisterResponseSucc
 export const getAuthControllerRegisterUrl = () => {
 
 
-  
+
 
   return `/auth/register`
 }
 
 export const authControllerRegister = async (registerDto: RegisterDto, options?: RequestInit): Promise<authControllerRegisterResponse> => {
-  
+
   return orvalMutator<authControllerRegisterResponse>(getAuthControllerRegisterUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      registerDto,)
-  }
-);}
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(
+        registerDto,)
+    }
+  );
+}
 
 
 /**
  * @summary Login User
  */
 export type authControllerLoginResponse200 = {
-  data: MessageResponseDto
+  data: { accessToken: string, refreshToken: string }
   status: 200
 }
-    
+
 export type authControllerLoginResponseSuccess = (authControllerLoginResponse200) & {
   headers: Headers;
 };
@@ -73,22 +74,24 @@ export type authControllerLoginResponse = (authControllerLoginResponseSuccess)
 export const getAuthControllerLoginUrl = () => {
 
 
-  
+
 
   return `/auth/login`
 }
 
 export const authControllerLogin = async (loginDto: LoginDto, options?: RequestInit): Promise<authControllerLoginResponse> => {
-  
+
   return orvalMutator<authControllerLoginResponse>(getAuthControllerLoginUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      loginDto,)
-  }
-);}
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      credentials: 'include',
+      body: JSON.stringify(
+        loginDto,)
+    }
+  );
+}
 
 
 /**
@@ -103,7 +106,7 @@ export type authControllerLogoutResponse404 = {
   data: string
   status: 404
 }
-    
+
 export type authControllerLogoutResponseSuccess = (authControllerLogoutResponse200) & {
   headers: Headers;
 };
@@ -116,21 +119,22 @@ export type authControllerLogoutResponse = (authControllerLogoutResponseSuccess 
 export const getAuthControllerLogoutUrl = () => {
 
 
-  
+
 
   return `/auth/logout`
 }
 
-export const authControllerLogout = async ( options?: RequestInit): Promise<authControllerLogoutResponse> => {
-  
+export const authControllerLogout = async (options?: RequestInit): Promise<authControllerLogoutResponse> => {
+
   return orvalMutator<authControllerLogoutResponse>(getAuthControllerLogoutUrl(),
-  {      
-    ...options,
-    method: 'POST'
-    
-    
-  }
-);}
+    {
+      ...options,
+      method: 'POST'
+
+
+    }
+  );
+}
 
 
 /**
@@ -145,7 +149,7 @@ export type authControllerForgotPasswordResponse404 = {
   data: MessageResponseDto
   status: 404
 }
-    
+
 export type authControllerForgotPasswordResponseSuccess = (authControllerForgotPasswordResponse200) & {
   headers: Headers;
 };
@@ -158,22 +162,23 @@ export type authControllerForgotPasswordResponse = (authControllerForgotPassword
 export const getAuthControllerForgotPasswordUrl = () => {
 
 
-  
+
 
   return `/auth/forgot-password`
 }
 
 export const authControllerForgotPassword = async (forgotPasswordDto: ForgotPasswordDto, options?: RequestInit): Promise<authControllerForgotPasswordResponse> => {
-  
+
   return orvalMutator<authControllerForgotPasswordResponse>(getAuthControllerForgotPasswordUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      forgotPasswordDto,)
-  }
-);}
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(
+        forgotPasswordDto,)
+    }
+  );
+}
 
 
 /**
@@ -188,7 +193,7 @@ export type authControllerResetPasswordResponse404 = {
   data: MessageResponseDto
   status: 404
 }
-    
+
 export type authControllerResetPasswordResponseSuccess = (authControllerResetPasswordResponse200) & {
   headers: Headers;
 };
@@ -201,22 +206,23 @@ export type authControllerResetPasswordResponse = (authControllerResetPasswordRe
 export const getAuthControllerResetPasswordUrl = () => {
 
 
-  
+
 
   return `/auth/reset-password`
 }
 
 export const authControllerResetPassword = async (resetPasswordDto: ResetPasswordDto, options?: RequestInit): Promise<authControllerResetPasswordResponse> => {
-  
+
   return orvalMutator<authControllerResetPasswordResponse>(getAuthControllerResetPasswordUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      resetPasswordDto,)
-  }
-);}
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(
+        resetPasswordDto,)
+    }
+  );
+}
 
 
 /**
@@ -231,7 +237,7 @@ export type authControllerVerifyEmailResponse404 = {
   data: string
   status: 404
 }
-    
+
 export type authControllerVerifyEmailResponseSuccess = (authControllerVerifyEmailResponse200) & {
   headers: Headers;
 };
@@ -245,7 +251,7 @@ export const getAuthControllerVerifyEmailUrl = (params: AuthControllerVerifyEmai
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
-    
+
     if (value !== undefined) {
       normalizedParams.append(key, value === null ? 'null' : value.toString())
     }
@@ -257,15 +263,16 @@ export const getAuthControllerVerifyEmailUrl = (params: AuthControllerVerifyEmai
 }
 
 export const authControllerVerifyEmail = async (params: AuthControllerVerifyEmailParams, options?: RequestInit): Promise<authControllerVerifyEmailResponse> => {
-  
+
   return orvalMutator<authControllerVerifyEmailResponse>(getAuthControllerVerifyEmailUrl(params),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
+    {
+      ...options,
+      method: 'GET'
+
+
+    }
+  );
+}
 
 
 /**
@@ -280,7 +287,7 @@ export type authControllerResendVerificationResponse404 = {
   data: MessageResponseDto
   status: 404
 }
-    
+
 export type authControllerResendVerificationResponseSuccess = (authControllerResendVerificationResponse200) & {
   headers: Headers;
 };
@@ -293,29 +300,30 @@ export type authControllerResendVerificationResponse = (authControllerResendVeri
 export const getAuthControllerResendVerificationUrl = () => {
 
 
-  
+
 
   return `/auth/resend-verification`
 }
 
 export const authControllerResendVerification = async (resendVerificationDto: ResendVerificationDto, options?: RequestInit): Promise<authControllerResendVerificationResponse> => {
-  
+
   return orvalMutator<authControllerResendVerificationResponse>(getAuthControllerResendVerificationUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      resendVerificationDto,)
-  }
-);}
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(
+        resendVerificationDto,)
+    }
+  );
+}
 
 
 export type authControllerRefreshResponse200 = {
   data: TokensResponseDto
   status: 200
 }
-    
+
 export type authControllerRefreshResponseSuccess = (authControllerRefreshResponse200) & {
   headers: Headers;
 };
@@ -326,21 +334,22 @@ export type authControllerRefreshResponse = (authControllerRefreshResponseSucces
 export const getAuthControllerRefreshUrl = () => {
 
 
-  
+
 
   return `/auth/refresh`
 }
 
 export const authControllerRefresh = async (refreshTokenDto: RefreshTokenDto, options?: RequestInit): Promise<authControllerRefreshResponse> => {
-  
+
   return orvalMutator<authControllerRefreshResponse>(getAuthControllerRefreshUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      refreshTokenDto,)
-  }
-);}
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(
+        refreshTokenDto,)
+    }
+  );
+}
 
 

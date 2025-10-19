@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import { useActionState, useState } from "react";
 import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
-import { loginUser } from "@/app/[locale]/actions/userActions";
+import { loginUser } from "../../actions/authActions";
 
 
 interface LoginPageProps {
@@ -127,6 +127,10 @@ export default function LoginPage({ text, locale }: LoginPageProps) {
                 </Link>
               </div>
 
+              {state?.success === true && (
+                <p className="text-green-500 text-sm text-center">
+                  {locale === "ar" ? state.arMessage : state.enMessage}
+                </p>)}
 
               {state?.success === false && (
                 <p className="text-red-500 text-sm text-center">

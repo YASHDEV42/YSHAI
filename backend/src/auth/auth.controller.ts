@@ -22,12 +22,11 @@ import {
 import { PassportLocalGuard } from './guards/passport-local.guard';
 import { RegisterDto } from './dto/register.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
-import type { Response } from 'express';
 import { MessageResponseDto } from './dto/message-response.dto';
 import { TokensResponseDto } from './dto/token-response.dto';
 import { LoginDto } from './dto/login.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
-import type { Request } from 'express';
+import type { Request, Response } from 'express';
 import {
   ResetPasswordDto,
   ResendVerificationDto,
@@ -49,35 +48,22 @@ export class AuthController {
   @Post('login')
   @UseGuards(PassportLocalGuard)
   @ApiOperation({ summary: 'Login User' })
-  @ApiOkResponse({ type: MessageResponseDto })
   @ApiBody({ type: LoginDto })
   async login(
     @Req() req: { user: { id: number; email: string, role: string } },
     @Body() _body: LoginDto,
-    // Use Response to set cookies
-    @Res({ passthrough: true }) res: Response,
-  ): Promise<MessageResponseDto> {
+  ): Promise<{ accessToken: string, refreshToken: string }> {
+    console.log("step one: hitting the endpoint done!")
+    console.log("user info:", req.user);
     const { accessToken, refreshToken } = await this.authService.login(
       req.user.id,
       req.user.email,
       req.user.role,
     );
-    // Set httpOnly cookies
-    res.cookie('accessToken', accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 15 * 60 * 1000,
-      path: '/',
-    });
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      path: '/',
-    });
-    return { message: 'Login successful' };
+    console.log("step two: tokens generated done!")
+    console.log("accessToken:", accessToken);
+    console.log("refreshToken:", refreshToken);
+    return { accessToken, refreshToken };
   }
 
   @Post('refresh')

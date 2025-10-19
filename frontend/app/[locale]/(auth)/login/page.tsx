@@ -2,9 +2,7 @@ import { setRequestLocale, getTranslations } from "next-intl/server";
 import LoginPage from "./components/login";
 
 export default async function LoginPageRoute(
-  params: any
-) {
-  const locale = await params.locale;
+  { params: { locale } }: { params: { locale: string } }) {
   setRequestLocale(locale);
 
   const t = await getTranslations({ locale, namespace: "LoginPage" });
@@ -33,6 +31,7 @@ export default async function LoginPageRoute(
     needHelp: t("needHelp"),
     contactSupport: t("contactSupport"),
   };
+  console.log("locale in login page:", locale);
 
   return <LoginPage text={text} locale={locale} />;
 }
