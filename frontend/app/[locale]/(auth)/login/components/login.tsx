@@ -1,14 +1,14 @@
 "use client";
-
 import type React from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Field, FieldLabel, FieldError } from "@/components/ui/field";
+import { Field, FieldLabel } from "@/components/ui/field";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
-import { useState } from "react";
-import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Loader } from "lucide-react";
+import { useActionState } from "react";
+import { loginAction } from "../actions";
 
 
 interface LoginPageProps {
@@ -21,26 +21,11 @@ const initialState = {
   enMessage: "",
   success: false,
 }
+
 export default function LoginPage({ text, locale }: LoginPageProps) {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const { name, value } = e.target;
-    setFormData((prev: { email: string, password: string }): { email: string, password: string } => ({ ...prev, [name]: value }));
-    if (errors[name]) {
-      setErrors((prev: Record<string, string>): { [x: string]: string } => {
-        const newErrors = { ...prev };
-        delete newErrors[name];
-        return newErrors;
-      });
-    }
-  };
-
+  const [state, formAction, pending] = useActionState(loginAction, initialState)
   return (
+
     <div className="min-h-screen bg-background flex flex-col">
       <main className="flex-1 flex items-center justify-center px-4 pb-12 pt-20">
         <div className="w-full max-w-md">
@@ -81,33 +66,25 @@ export default function LoginPage({ text, locale }: LoginPageProps) {
               </span>
             </div>
 
-            <form className="space-y-4">
-              <Field data-invalid={!!errors.email}>
+            <form className="space-y-4" action={formAction}>
+              <Field>
                 <FieldLabel htmlFor="email">{text.emailLabel}</FieldLabel>
                 <Input
                   id="email"
                   name="email"
                   type="email"
                   placeholder={text.emailPlaceholder}
-                  value={formData.email}
-                  onChange={handleChange}
-                  aria-invalid={!!errors.email}
                 />
-                {errors.email && <FieldError>{errors.email}</FieldError>}
               </Field>
 
-              <Field data-invalid={!!errors.password}>
+              <Field>
                 <FieldLabel htmlFor="password">{text.passwordLabel}</FieldLabel>
                 <Input
                   id="password"
                   name="password"
                   type="password"
                   placeholder={text.passwordPlaceholder}
-                  value={formData.password}
-                  onChange={handleChange}
-                  aria-invalid={!!errors.password}
                 />
-                {errors.password && <FieldError>{errors.password}</FieldError>}
               </Field>
 
               <div className="flex items-center justify-end">
@@ -122,9 +99,22 @@ export default function LoginPage({ text, locale }: LoginPageProps) {
                   {text.signUpLink}
                 </Link>
               </div>
-              <Button type="submit" className="w-full bg-primary hover:bg-primary/90" >
+              {state && (
+                locale === "ar" ? (
+                  state.arMessage && (
+                    <p className={`text-center text-base ${state.success ? 'text-green-600' : 'text-red-600'}`}>
+                      {state.arMessage}
+                    </p>
+                  ))
+                  : (
+                    state.enMessage && (
+                      <p className={`text-center text-base ${state.success ? 'text-green-600' : 'text-red-600'}`}>
+                        {state.enMessage}
+                      </p>
+                    )))}
+              <Button type="submit" disabled={pending} className="w-full bg-primary hover:bg-primary/90" >
+                {pending && <Loader />}
                 {text.signInButton}
-                {locale === "ar" ? (<ArrowLeft className="mr-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />) : (<ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />)}
               </Button>
             </form>
 

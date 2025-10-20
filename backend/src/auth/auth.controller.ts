@@ -49,6 +49,7 @@ export class AuthController {
   @Post('login')
   @UseGuards(PassportLocalGuard)
   @ApiOperation({ summary: 'Login User' })
+  @ApiOkResponse({ type: TokensResponseDto })
   @ApiBody({ type: LoginDto })
   async login(
     @Req() req: { user: { id: number; email: string, role: string } },

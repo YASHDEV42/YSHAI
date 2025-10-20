@@ -1,12 +1,13 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import DashboardPage from "./components/dashboard";
-import { cookies } from "next/headers";
 
 export default async function DashboardPageRoute({
-  params: { locale }
+  params
 }: {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }) {
+
+  const { locale } = await params
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: "DashboardPage" });
 
@@ -48,6 +49,5 @@ export default async function DashboardPageRoute({
       failed: t("activityStatus.failed"),
     },
   };
-  let user = null;
-  return <DashboardPage text={text} locale={locale} user={user} />;
+  return <DashboardPage text={text} locale={locale} />;
 }

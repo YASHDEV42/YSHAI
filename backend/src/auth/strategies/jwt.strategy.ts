@@ -8,7 +8,18 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
-        (request: Request): string | null => { return request?.cookies?.accessToken; }
+
+        (request: Request): string | null => {
+          console.log('Extracting JWT from request cookies or headers');
+
+          if (request.cookies?.accessToken) {
+            return request.cookies.accessToken;
+          }
+          // 2. Fallback to header
+          const fromHeader = ExtractJwt.fromAuthHeaderAsBearerToken()(request);
+          console.log('JWT extracted from header:', fromHeader);
+          return fromHeader || null;
+        },
       ]),
       ignoreExpiration: false,
       secretOrKey: process.env.JWT_SECRET || 'default_secret',
