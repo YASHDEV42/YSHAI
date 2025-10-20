@@ -3,6 +3,7 @@ import type React from "react"
 import { SidebarProvider } from "@/components/ui/sidebar"
 import { DashboardSidebar } from "./components/dashboard-sidebar"
 import { setRequestLocale, getTranslations } from "next-intl/server";
+import { apiFetch } from "@/lib/api";
 
 export default async function DashboardLayout({ children, params }: LayoutProps<'/[locale]/dashboard'>) {
   const { locale } = await params
@@ -26,6 +27,13 @@ export default async function DashboardLayout({ children, params }: LayoutProps<
   }
 
   let user = null;
+  try {
+
+    user = await apiFetch('/users/me');
+    console.log('Fetched user data:', user);
+  } catch (err) {
+    console.log('Error fetching user data:', err);
+  }
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-background">

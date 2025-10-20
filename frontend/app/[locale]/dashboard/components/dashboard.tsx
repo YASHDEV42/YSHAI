@@ -71,10 +71,9 @@ export interface DashboardPageText {
 interface DashboardPageProps {
   text: DashboardPageText;
   locale: string;
-  user: any | null;
 }
 
-export default function DashboardPage({ text, locale, user }: DashboardPageProps) {
+export default function DashboardPage({ text, locale }: DashboardPageProps) {
   const statsRef = useRef<HTMLDivElement>(null);
   const activityRef = useRef<HTMLDivElement>(null);
   const quickActionsRef = useRef<HTMLDivElement>(null);

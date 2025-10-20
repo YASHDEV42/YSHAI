@@ -58,11 +58,6 @@ export function DashboardSidebar({ locale = "en", text, user }: DashboardSidebar
   const [showNotifications, setShowNotifications] = useState(false)
   const isRTL = locale === "ar"
   const router = useRouter()
-  useEffect(() => {
-    if (!user) {
-      router.replace(`/login`);
-    }
-  }, [])
   const unreadCount = notifications.filter((n) => !n.read).length
 
   const menuItems = [

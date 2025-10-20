@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Req, Put, Body } from '@nestjs/common';
+import { Controller, Get, UseGuards, Req, Put, Body, Logger } from '@nestjs/common';
 import {
   ApiCookieAuth,
   ApiOperation,
@@ -12,6 +12,7 @@ import { UsersService } from './users.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdatePreferencesDto } from './dto/update-preferences.dto';
+const logger = new Logger('UsersController');
 
 @ApiTags('Users')
 @ApiCookieAuth()
@@ -20,7 +21,6 @@ import { UpdatePreferencesDto } from './dto/update-preferences.dto';
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
 
-  // get current user profile using JWT
   @Get('me')
   @ApiOperation({ summary: 'Get current user using JWT' })
   @ApiOkResponse({
@@ -31,6 +31,7 @@ export class UsersController {
   async getProfile(
     @Req() req: { user: { id: number } },
   ): Promise<UserResponseDto> {
+    logger.log(`Fetching profile for user ID: ${req.user.id}`);
     return this.usersService.getProfile(req.user.id);
   }
 

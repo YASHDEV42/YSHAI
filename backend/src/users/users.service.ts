@@ -6,6 +6,7 @@ import { UpdatePreferencesDto } from './dto/update-preferences.dto';
 @Injectable()
 export class UsersService {
   constructor(private readonly em: EntityManager) { }
+
   async getProfile(id: number) {
     if (!id) {
       throw new Error('User ID is required');

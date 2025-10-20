@@ -33,7 +33,7 @@ async function apiFetch(url: string, options: ApiOptions = {}): Promise<any> {
     }
 
     // Call refresh endpoint
-    const refreshResponse = await fetch('http://your-nestjs-backend/api/refresh', {
+    const refreshResponse = await fetch(`${BaseURL}/auth/refresh`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
