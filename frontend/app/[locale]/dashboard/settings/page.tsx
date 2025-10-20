@@ -1,6 +1,7 @@
 import { setRequestLocale, getTranslations } from "next-intl/server"
 import SettingsClient from "./components/settings"
-import { apiFetch } from "@/lib/api"
+import { apiClient } from "@/lib/api"
+import { cookies } from "next/headers"
 
 export default async function SettingsPage({
   params
@@ -129,9 +130,12 @@ export default async function SettingsPage({
     },
   }
   let user = null;
+  const cookiesStore = await cookies();
+  const allCookies = cookiesStore.toString();
+  console.log('sending cookies', allCookies);
   try {
 
-    user = await apiFetch('/users/me');
+    user = await apiClient('/users/me');
     console.log('Fetched user data:', user);
   } catch (err) {
     console.log('Error fetching user data:', err);

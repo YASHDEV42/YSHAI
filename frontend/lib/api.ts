@@ -1,83 +1,32 @@
-'use server';
-const BaseURL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000';
-import { cookies } from 'next/headers';
+"use server";
 
-interface ApiOptions extends RequestInit {
-}
+import { cookies } from "next/headers";
 
-async function apiFetch(url: string, options: ApiOptions = {}): Promise<any> {
+const APP_BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+
+export async function apiClient(path: string, options: RequestInit = {}) {
   const cookieStore = await cookies();
-  let accessToken = cookieStore.get('accessToken')?.value;
 
-  // Helper to make the request with current token
-  const makeRequest = async (token: string | undefined) => {
-    const headers = new Headers(options.headers);
-    if (token) {
-      headers.set('Authorization', `Bearer ${token}`);
-    }
-    return fetch(`${BaseURL}${url}`, {
-      ...options,
-      headers,
-    });
-  };
+  // manually build the cookie header
+  const cookieHeader = [
+    cookieStore.get("accessToken") ? `accessToken=${cookieStore.get("accessToken")?.value}` : null,
+    cookieStore.get("refreshToken") ? `refreshToken=${cookieStore.get("refreshToken")?.value}` : null,
+  ]
+    .filter(Boolean)
+    .join("; ");
 
-  // Initial request
-  let response = await makeRequest(accessToken);
+  const res = await fetch(`${APP_BASE_URL}/api/proxy${path}`, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...(cookieHeader ? { Cookie: cookieHeader } : {}),
+      ...(options.headers || {}),
+    },
+  });
 
-  // If 401, attempt refresh
-  if (response.status === 401) {
-    const refreshToken = cookieStore.get('refreshToken')?.value;
-
-    if (!refreshToken) {
-      throw new Error('No refresh token available. Please log in again.');
-    }
-
-    // Call refresh endpoint
-    const refreshResponse = await fetch(`${BaseURL}/auth/refresh`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ refreshToken }),
-    });
-
-    if (!refreshResponse.ok) {
-      // Refresh failed: Clear cookies and throw (e.g., for logout)
-      cookieStore.delete('accessToken');
-      cookieStore.delete('refreshToken');
-      throw new Error('Session expired. Please log in again.');
-    }
-
-    const { accessToken: newAccessToken, refreshToken: newRefreshToken } = await refreshResponse.json();
-
-    // Update cookies (set options for security)
-    cookieStore.set('accessToken', newAccessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/',
-      maxAge: 15 * 60,
-    });
-
-    if (newRefreshToken) { // If backend provides a new refresh token
-      cookieStore.set('refreshToken', newRefreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        path: '/',
-        maxAge: 7 * 24 * 60 * 60,
-      });
-    }
-
-    // Retry original request with new token
-    response = await makeRequest(newAccessToken);
+  if (!res.ok) {
+    throw new Error(`Request failed: ${res.status}`);
   }
 
-  if (!response.ok) {
-    throw new Error(`API error: ${response.statusText}`);
-  }
-
-  return response.json();
+  return res.json();
 }
-
-export { apiFetch };
