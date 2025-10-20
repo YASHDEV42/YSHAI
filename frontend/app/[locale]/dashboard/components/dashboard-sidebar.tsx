@@ -30,14 +30,21 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils"
 import { ModeToggle } from "../../../components/toggleTheme"
-import {
-  NotificationResponseDto,
-  UserResponseDto,
-} from "@/api/model"
-import {
-  notificationsControllerMarkAllRead,
-  notificationsControllerMarkRead,
-} from "@/api/notifications/notifications"
+type UserResponseDto = {
+  name: string;
+  email: string;
+  role: string;
+  timezone: string;
+  timeFormat: string;
+}
+type NotificationResponseDto = {
+  title: string | null;
+  id: number;
+  type: "approved" | "publish_failed" | "ai_ready";
+  message: string;
+  read: boolean;
+  createdAt: string;
+}
 
 interface DashboardSidebarProps {
   locale?: string
@@ -65,27 +72,11 @@ export function DashboardSidebar({ locale = "en", text, user }: DashboardSidebar
     { href: "/dashboard/analytics", icon: TrendingUp, label: text.analytics || "Analytics", activeHref: "/" + locale + "/dashboard/analytics" },
     { href: "/dashboard/settings", icon: Settings, label: text.settings || "Settings", activeHref: "/" + locale + "/dashboard/settings" },
   ]
-  console.log(menuItems)
-  console.log(pathname)
 
   const markAsRead = async (id: number) => {
-    try {
-      await notificationsControllerMarkRead(id)
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
-      )
-    } catch (error) {
-      console.error("[DashboardSidebar] Error marking as read:", error)
-    }
   }
 
   const markAllAsRead = async () => {
-    try {
-      await notificationsControllerMarkAllRead()
-      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })))
-    } catch (error) {
-      console.error("[DashboardSidebar] Error marking all as read:", error)
-    }
   }
 
   const getNotificationIcon = (type: NotificationResponseDto["type"]) => {

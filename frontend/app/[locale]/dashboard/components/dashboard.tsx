@@ -1,8 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useRef } from "react";
 import Link from "next/link";
 import {
   Calendar,
@@ -21,11 +19,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { UserResponseDto } from "@/api/model";
 
-gsap.registerPlugin(ScrollTrigger);
 
-// Define the text interface
 export interface DashboardPageText {
   welcomeMessage: string;
   welcomeSubtitle: string;
@@ -76,36 +71,14 @@ export interface DashboardPageText {
 interface DashboardPageProps {
   text: DashboardPageText;
   locale: string;
-  user: UserResponseDto | null;
+  user: any | null;
 }
 
 export default function DashboardPage({ text, locale, user }: DashboardPageProps) {
   const statsRef = useRef<HTMLDivElement>(null);
   const activityRef = useRef<HTMLDivElement>(null);
   const quickActionsRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.from(".stat-card", {
-        opacity: 0,
-        y: 30,
-        duration: 0.6,
-        stagger: 0.1,
-        ease: "power2.out",
-      });
 
-      gsap.from(".activity-item", {
-        opacity: 0,
-        x: -20,
-        duration: 0.5,
-        stagger: 0.08,
-        delay: 0.3,
-        ease: "power2.out",
-      });
-    });
-    return () => ctx.revert();
-  }, []);
-
-  // Stats data — only labels are translated
   const stats = [
     {
       title: text.stats.scheduledPosts,
