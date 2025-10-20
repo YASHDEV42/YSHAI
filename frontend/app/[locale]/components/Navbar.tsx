@@ -4,13 +4,9 @@ import { LanguageToggle } from "../../components/LanguageToggle";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { UserResponseDto } from "@/api/model";
 import { LogOut } from "lucide-react";
-import { logoutUser } from "../(auth)/actions/authActions";
-import { useActionState } from "react";
-export function Navbar({ text, user }: { text: any, user: UserResponseDto | null }) {
+export function Navbar({ text, user }: { text: any, user: any | null }) {
   const pathname = usePathname();
-  const [state, formAction, pending] = useActionState(logoutUser, { success: false, enMessage: "", arMessage: "" });
 
   if (pathname?.startsWith('/ar/dashboard') || pathname?.startsWith('/en/dashboard')) {
     return null;
@@ -43,8 +39,8 @@ export function Navbar({ text, user }: { text: any, user: UserResponseDto | null
               <Button asChild>
                 <Link href="/dashboard">{text.dashboard}</Link>
               </Button>
-              <form action={formAction}>
-                <Button variant="ghost" disabled={pending} type="submit" className="cursor-pointer">
+              <form >
+                <Button variant="ghost" type="submit" className="cursor-pointer">
                   {text.logout}
                   <LogOut />
                 </Button>

@@ -7,8 +7,8 @@ import {
   Body,
   Query,
   BadRequestException,
-  Res,
   UnauthorizedException,
+  Logger,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
@@ -26,11 +26,12 @@ import { MessageResponseDto } from './dto/message-response.dto';
 import { TokensResponseDto } from './dto/token-response.dto';
 import { LoginDto } from './dto/login.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
-import type { Request, Response } from 'express';
+import type { Request } from 'express';
 import {
   ResetPasswordDto,
   ResendVerificationDto,
 } from './dto/reset-password.dto';
+const logger = new Logger();
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
@@ -53,16 +54,11 @@ export class AuthController {
     @Req() req: { user: { id: number; email: string, role: string } },
     @Body() _body: LoginDto,
   ): Promise<{ accessToken: string, refreshToken: string }> {
-    console.log("step one: hitting the endpoint done!")
-    console.log("user info:", req.user);
     const { accessToken, refreshToken } = await this.authService.login(
       req.user.id,
       req.user.email,
       req.user.role,
     );
-    console.log("step two: tokens generated done!")
-    console.log("accessToken:", accessToken);
-    console.log("refreshToken:", refreshToken);
     return { accessToken, refreshToken };
   }
 
@@ -71,29 +67,17 @@ export class AuthController {
   @ApiBody({ type: RefreshTokenDto })
   @ApiOkResponse({ type: TokensResponseDto })
   async refresh(@Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
-  ) {
-    const refreshToken = req.cookies['refreshToken'];
-    if (!refreshToken) throw new UnauthorizedException('Missing refresh token');
-    console.log('Refresh token from cookie:', refreshToken);
-    const tokens = await this.authService.refresh(refreshToken);
-    res.cookie('accessToken', tokens.accessToken, {
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 15 * 60 * 1000, // 15 min
-      path: '/',
-    });
-    res.cookie('refreshToken', tokens.refreshToken, {
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      path: '/',
-    });
+    @Body() dto: any,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
 
-    return { message: 'Tokens refreshed' };
+    const oldRefreshToken = dto.refreshToken;
+
+    logger.log(`Received refresh token: ${oldRefreshToken}`);
+    if (!oldRefreshToken) throw new UnauthorizedException('Missing refresh token');
+    const { accessToken, refreshToken } = await this.authService.refresh(oldRefreshToken);
+    return { accessToken, refreshToken };
   }
+
   @Post('logout')
   @ApiOperation({ summary: 'Logout' })
   @ApiOkResponse({ description: 'User logged out successfully.', type: String })

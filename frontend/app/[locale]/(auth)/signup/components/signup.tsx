@@ -37,69 +37,9 @@ export default function SignUpPage({ text, locale }: SignUpPageProps) {
   const [showVerificationMessage, setShowVerificationMessage] = useState(false)
   const router = useRouter()
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setErrors({})
 
-    const newErrors: Record<string, string> = {}
-    if (!formData.name.trim()) {
-      newErrors.name = text.nameRequired
-    }
-    if (!formData.email.trim()) {
-      newErrors.email = text.emailRequired
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = text.emailInvalid
-    }
-    if (!formData.password) {
-      newErrors.password = text.passwordRequired
-    } else if (formData.password.length < 8) {
-      newErrors.password = text.passwordTooShort
-    }
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors)
-      setIsLoading(false)
-      return
-    }
-
-    console.log("[v0] Signup form submitted:", formData)
-    console.log(JSON.stringify(formData))
-    try {
-
-      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      const timeFormat = new Intl.DateTimeFormat([], {
-        hour: 'numeric'
-      }).format(new Date(2024, 0, 1, 13, 0)) === '1 PM' ? '12h' : '24h';
-
-      const signupData = {
-        ...formData,
-        timezone,      // e.g., "Asia/Riyadh"
-        timeFormat,    // "12h" or "24h"
-      };
-
-      const response = await fetch(`${process.env.Backend || "http://localhost:5000"}/auth/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(signupData),
-      })
-      if (!response.ok) {
-        const errorData = await response.json()
-        setErrors({ form: errorData.message || "An error occurred. Please try again." })
-        console.log("Signup failed:", errorData)
-      } else {
-        const data = await response.json()
-        console.log("Signup successful:", data)
-        setShowVerificationMessage(true)
-      }
-    } catch (error) {
-      console.error("Error during signup:", error)
-    } finally {
-      setIsLoading(false)
-    }
-  }
+  console.log("[v0] Signup form submitted:", formData)
+  console.log(JSON.stringify(formData))
 
   const handleVerificationComplete = () => {
     setShowVerificationMessage(false)
@@ -172,7 +112,7 @@ export default function SignUpPage({ text, locale }: SignUpPageProps) {
               </span>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form className="space-y-4">
               <Field data-invalid={!!errors.name}>
                 <FieldLabel htmlFor="name">{text.nameLabel}</FieldLabel>
                 <Input
