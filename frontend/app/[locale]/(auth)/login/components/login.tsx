@@ -7,9 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Field, FieldLabel, FieldError } from "@/components/ui/field";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
-import { useActionState, useState } from "react";
+import { useState } from "react";
 import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
-import { loginUser } from "../../actions/authActions";
 
 
 interface LoginPageProps {
@@ -28,7 +27,6 @@ export default function LoginPage({ text, locale }: LoginPageProps) {
     password: "",
   });
 
-  const [state, formAction, pending] = useActionState(loginUser, initialState)
   const [errors, setErrors] = useState<Record<string, string>>({});
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
@@ -83,7 +81,7 @@ export default function LoginPage({ text, locale }: LoginPageProps) {
               </span>
             </div>
 
-            <form action={formAction} className="space-y-4">
+            <form className="space-y-4">
               <Field data-invalid={!!errors.email}>
                 <FieldLabel htmlFor="email">{text.emailLabel}</FieldLabel>
                 <Input
@@ -94,7 +92,6 @@ export default function LoginPage({ text, locale }: LoginPageProps) {
                   value={formData.email}
                   onChange={handleChange}
                   aria-invalid={!!errors.email}
-                  disabled={pending}
                 />
                 {errors.email && <FieldError>{errors.email}</FieldError>}
               </Field>
@@ -109,7 +106,6 @@ export default function LoginPage({ text, locale }: LoginPageProps) {
                   value={formData.password}
                   onChange={handleChange}
                   aria-invalid={!!errors.password}
-                  disabled={pending}
                 />
                 {errors.password && <FieldError>{errors.password}</FieldError>}
               </Field>
@@ -126,31 +122,9 @@ export default function LoginPage({ text, locale }: LoginPageProps) {
                   {text.signUpLink}
                 </Link>
               </div>
-
-              {state?.success === true && (
-                <p className="text-green-500 text-sm text-center">
-                  {locale === "ar" ? state.arMessage : state.enMessage}
-                </p>)}
-
-              {state?.success === false && (
-                <p className="text-red-500 text-sm text-center">
-                  {locale === "ar" ? state.arMessage : state.enMessage}
-                </p>
-              )}
-
-              <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={pending}>
-
-                {pending ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    {text.signingInButton}
-                  </>
-                ) : (
-                  <>
-                    {text.signInButton}
-                    {locale === "ar" ? (<ArrowLeft className="mr-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />) : (<ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />)}
-                  </>
-                )}
+              <Button type="submit" className="w-full bg-primary hover:bg-primary/90" >
+                {text.signInButton}
+                {locale === "ar" ? (<ArrowLeft className="mr-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />) : (<ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />)}
               </Button>
             </form>
 
