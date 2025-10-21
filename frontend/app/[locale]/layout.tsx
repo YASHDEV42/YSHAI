@@ -4,7 +4,7 @@ import "../globals.css";
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { routing } from '../i18n/routing'
 import { notFound } from "next/navigation";
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { ThemeProvider } from "../components/theme-provider";
 import { Navbar } from "./components/Navbar";
 import { Toaster } from "../../components/ui/sonner"
@@ -30,6 +30,7 @@ export default async function RootLayout({ children, params }: Props) {
   }
   setRequestLocale(locale)
 
+  const messages = await getMessages();
   const t = await getTranslations({ locale, namespace: "Navbar" });
   const text: any = {
     logo: t("logo"),
@@ -48,7 +49,7 @@ export default async function RootLayout({ children, params }: Props) {
         className={`${manrope.className}  ${ibm_Plex_Sans_Arabic.className} antialiased`}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <NextIntlClientProvider locale="en" messages={{}}>
+          <NextIntlClientProvider locale={locale} messages={messages}>
             <Navbar text={text} user={user} />
             {children}
             <Toaster position="bottom-right" />
