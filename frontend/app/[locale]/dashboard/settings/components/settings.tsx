@@ -14,6 +14,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { User, Bell, CreditCard, Twitter, Instagram, Linkedin, Music2, Plus, Trash2, Check } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Spinner } from "@/components/ui/spinner"
+import { changeNameAction } from "../actions"
 const initialState = {
   arMessage: '',
   enMessage: '',
@@ -24,6 +25,7 @@ export default function SettingsClient({ text, user, locale }: { text: any, user
   const [pushNotifications, setPushNotifications] = useState(true)
   const [weeklyReport, setWeeklyReport] = useState(true)
   const [postReminders, setPostReminders] = useState(true)
+  const [state, formAction, pending] = useActionState(changeNameAction, initialState)
   const dir = locale === 'ar' ? 'rtl' : 'ltr';
   const connectedPlatforms = [
     {
@@ -111,7 +113,7 @@ export default function SettingsClient({ text, user, locale }: { text: any, user
               </div>
 
               <Separator />
-              <form className="space-y-4">
+              <form action={formAction} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">{text.profile.name}</Label>
                   <Input id="name" placeholder={user?.name} name="name" defaultValue={user?.name} />
@@ -132,10 +134,16 @@ export default function SettingsClient({ text, user, locale }: { text: any, user
                   </Select>
                 </div>
                 <input type="hidden" name="locale" value={locale} />
-                <input type="hidden" name="userId" value={user?.id} />
+                {
+                  locale === 'ar' && state?.arMessage && (
+                    <p className={`text-base font-bold ${state.success ? "text-primary" : "text-destructive"}`}>{state.arMessage}</p>
+                  )}
+                {locale === 'en' && state?.enMessage && (
+                  <p className={`text-base font-bold ${state.success ? "text-primary" : "text-destructive"}`}>{state.enMessage}</p>)
+                }
                 <div className="flex justify-end gap-3">
                   <Button variant="outline">{text.profile.cancel}</Button>
-                  <Button><Spinner />{text.profile.saveChanges}</Button>
+                  <Button type="submit" disabled={pending}>{pending && <Spinner />}{text.profile.saveChanges}</Button>
                 </div>
               </form>
             </CardContent>
