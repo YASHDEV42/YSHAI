@@ -101,18 +101,6 @@ export default function SettingsClient({ text, user, locale }: { text: any, user
               <CardDescription>{text.profile.description}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="flex items-center gap-6">
-                <Avatar className="size-20">
-                  <AvatarImage src="/placeholder.svg?height=80&width=80" />
-                  <AvatarFallback>JD</AvatarFallback>
-                </Avatar>
-                <div className="space-y-2">
-                  <Button size="sm">{text.profile.changePhoto}</Button>
-                  <p className="text-xs text-muted-foreground">{text.profile.photoHelp}</p>
-                </div>
-              </div>
-
-              <Separator />
               <form action={formAction} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">{text.profile.name}</Label>

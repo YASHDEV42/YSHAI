@@ -126,12 +126,6 @@ export function DashboardSidebar({ locale = "en", text, user }: DashboardSidebar
         <SidebarFooter className="border-t border-border p-4">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3 flex-1 min-w-0">
-              <Avatar className="size-8 shrink-0">
-                <AvatarImage src="/placeholder.svg?height=32&width=32" />
-                <AvatarFallback>
-                  {user?.name?.charAt(0).toUpperCase() || "U"}
-                </AvatarFallback>
-              </Avatar>
               <div className="flex flex-col min-w-0">
                 <span className="text-sm font-medium truncate">
                   {user?.name || "User"}
