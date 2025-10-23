@@ -254,7 +254,7 @@
     "contentEditor": {
       "title": "محتوى المنشور",
       "placeholder": "اكتب محتوى منشورك هنا... يمكنك الكتابة بالعربية أيضاً",
-      "characters": "{count} حرفاً",
+      "characters": " حرفاً",
       "twitterLimitExceeded": "تم تجاوز حد تويتر"
     },
     "media": {

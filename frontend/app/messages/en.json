@@ -254,7 +254,7 @@
     "contentEditor": {
       "title": "Post Content",
       "placeholder": "Write your post content here... You can also write in Arabic",
-      "characters": "{count} characters",
+      "characters": "characters",
       "twitterLimitExceeded": "Twitter limit exceeded"
     },
     "media": {
