@@ -46,7 +46,6 @@ export default async function RootLayout({ children, params }: Props) {
   let user = null;
 
   try {
-
     user = await apiClient('/users/me', { credentials: 'include' });
     console.log('Fetched user data:', user);
   } catch (err) {
