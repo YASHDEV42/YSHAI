@@ -20,6 +20,7 @@ type Props = {
 const manrope = Manrope({
   subsets: ['latin']
 })
+// just for the streak
 const ibm_Plex_Sans_Arabic = IBM_Plex_Sans_Arabic({
   weight: ['100', '200', '300', '400', '500', '600', '700'],
   subsets: ['arabic']
