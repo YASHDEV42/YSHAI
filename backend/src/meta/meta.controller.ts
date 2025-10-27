@@ -1,17 +1,23 @@
-import { Body, Controller, NotFoundException, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Logger, NotFoundException, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { MetaService } from './meta.service';
 import { OauthCallbackDto } from './dto/oauth-callback.dto';
 import { AccountsService } from 'src/accounts/accounts.service';
 import { EntityManager } from '@mikro-orm/core';
 import { SocialAccount } from 'src/entities/social-account.entity';
 import { HttpService } from '@nestjs/axios';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { MediaService } from 'src/media/media.service';
+import { lastValueFrom } from 'rxjs';
 
 @Controller('meta')
+
 export class MetaController {
+  private readonly logger = new Logger(MetaController.name);
   constructor(
     private readonly meta: MetaService,
     private readonly accounts: AccountsService,
     private readonly em: EntityManager,
+    private readonly mediaService: MediaService,
     private readonly httpService: HttpService,
   ) { }
 
@@ -60,42 +66,104 @@ export class MetaController {
   }
 
   @Post('publish')
+  @UseInterceptors(FileInterceptor('file'))
   async publish(
-    @Body() body: { userId: number; caption: string; imageUrl: string },
+    @UploadedFile() file: Express.Multer.File,
+    @Body() body: { userId: number; caption: string },
   ) {
-    // 1️⃣ Find linked account for this user
-    const account = await this.em.findOne(SocialAccount, {
-      user: body.userId,
-      provider: 'instagram',
-    }, { populate: ['tokens'] });
+    try {
+      if (!file) throw new BadRequestException('File is missing');
+      const media = await this.mediaService.upload({ buffer: file.buffer });
 
-    if (!account) throw new NotFoundException('No Instagram account linked');
+      const account = await this.em.findOne(
+        SocialAccount,
+        { user: body.userId, provider: 'instagram' },
+        { populate: ['tokens'] },
+      );
+      if (!account) throw new NotFoundException('Instagram account not linked');
 
-    // 2️⃣ Get valid access token
-    const accessToken = account.tokens.find(t => t.tokenType === 'access')?.tokenEncrypted;
-    if (!accessToken) throw new Error('Missing access token');
+      const accessToken = account.tokens.find(
+        (t) => t.tokenType === 'access',
+      )?.tokenEncrypted;
+      if (!accessToken) throw new BadRequestException('Missing access token');
 
-    const igUserId = account.providerAccountId;
+      const igUserId = account.providerAccountId;
+      const isVideo = media.type === 'video';
+      const uploadField = isVideo ? 'video_url' : 'image_url';
+      const uploadUrl = `https://graph.facebook.com/v21.0/${igUserId}/media`;
 
-    // 3️⃣ Step 1: Create media container
-    const mediaRes = await this.httpService.axiosRef.post(
-      `https://graph.facebook.com/v21.0/${igUserId}/media`,
-      {
-        image_url: body.imageUrl,
+      const mediaRes = await lastValueFrom(
+        this.httpService.post(uploadUrl, {
+          [uploadField]: media.url,
+          caption: body.caption,
+          access_token: accessToken,
+        }),
+      );
+
+      const creationId = mediaRes.data.id;
+      if (!creationId) throw new BadRequestException('Failed to get media creation ID');
+
+      if (isVideo) {
+        await this.waitForMediaReady(igUserId, creationId, accessToken);
+      }
+
+      // small delay to ensure media is ready (avoid 400)
+      await new Promise((r) => setTimeout(r, 3000));
+
+      const publishRes = await lastValueFrom(
+        this.httpService.post(
+          `https://graph.facebook.com/v21.0/${igUserId}/media_publish`,
+          { creation_id: creationId, access_token: accessToken },
+        ),
+      );
+
+      this.logger.log('✅ Instagram publish success:', publishRes.data);
+
+      // ✅ Return a clean JSON-safe object
+      return {
+        success: true,
+        message: 'Post published successfully 🎉',
+        instagramPostId: publishRes.data.id,
+        cloudinaryUrl: media.url,
         caption: body.caption,
-        access_token: accessToken,
-      },
-    );
+      };
+    } catch (error) {
+      // ✅ Log and respond with actual message
+      this.logger.error(
+        `❌ Publish failed: ${error.response?.data
+          ? JSON.stringify(error.response.data)
+          : error.message
+        }`,
+      );
+      throw new BadRequestException(
+        error.response?.data || error.message || 'Internal error',
+      );
+    }
+  }
 
-    // 4️⃣ Step 2: Publish media
-    const publishRes = await this.httpService.axiosRef.post(
-      `https://graph.facebook.com/v21.0/${igUserId}/media_publish`,
-      {
-        creation_id: mediaRes.data.id,
-        access_token: accessToken,
-      },
-    );
+  // Helper function to poll media upload status for videos
+  private async waitForMediaReady(
+    igUserId: string,
+    creationId: string,
+    accessToken: string,
+  ) {
+    this.logger.log('🎥 Waiting for video processing...');
+    const statusUrl = `https://graph.facebook.com/v21.0/${creationId}?fields=status_code&access_token=${accessToken}`;
 
-    return { success: true, result: publishRes.data };
+    for (let attempt = 0; attempt < 10; attempt++) {
+      const statusRes = await lastValueFrom(this.httpService.get(statusUrl));
+      const status = statusRes.data?.status_code;
+
+      if (status === 'FINISHED') {
+        this.logger.log('✅ Video processing complete.');
+        return;
+      } else if (status === 'ERROR') {
+        throw new Error('❌ Video processing failed.');
+      }
+
+      await new Promise((r) => setTimeout(r, 3000)); // wait 3s between checks
+    }
+
+    throw new Error('⏰ Video processing timed out.');
   }
 }
