@@ -107,7 +107,7 @@ export class MetaController {
         await this.waitForMediaReady(igUserId, creationId, accessToken);
       }
 
-      // small delay to ensure media is ready (avoid 400)
+      // small delay for safety
       await new Promise((r) => setTimeout(r, 3000));
 
       const publishRes = await lastValueFrom(
@@ -117,18 +117,37 @@ export class MetaController {
         ),
       );
 
-      this.logger.log('✅ Instagram publish success:', publishRes.data);
+      const postId = publishRes.data.id;
 
-      // ✅ Return a clean JSON-safe object
+      // ✅ fetch post details
+      const detailsRes = await lastValueFrom(
+        this.httpService.get(
+          `https://graph.facebook.com/v21.0/${postId}`,
+          {
+            params: {
+              fields: 'id,permalink,media_type,media_url,caption,timestamp',
+              access_token: accessToken,
+            },
+          },
+        ),
+      );
+
+      const details = detailsRes.data;
+
+      this.logger.log('✅ Instagram publish success:', details);
+
       return {
         success: true,
         message: 'Post published successfully 🎉',
-        instagramPostId: publishRes.data.id,
+        instagramPostId: details.id,
+        permalink: details.permalink,
+        mediaType: details.media_type,
+        mediaUrl: details.media_url,
+        caption: details.caption,
+        timestamp: details.timestamp,
         cloudinaryUrl: media.url,
-        caption: body.caption,
       };
     } catch (error) {
-      // ✅ Log and respond with actual message
       this.logger.error(
         `❌ Publish failed: ${error.response?.data
           ? JSON.stringify(error.response.data)
