@@ -1,13 +1,18 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, NotFoundException, Post } from '@nestjs/common';
 import { MetaService } from './meta.service';
 import { OauthCallbackDto } from './dto/oauth-callback.dto';
 import { AccountsService } from 'src/accounts/accounts.service';
+import { EntityManager } from '@mikro-orm/core';
+import { SocialAccount } from 'src/entities/social-account.entity';
+import { HttpService } from '@nestjs/axios';
 
 @Controller('meta')
 export class MetaController {
   constructor(
     private readonly meta: MetaService,
     private readonly accounts: AccountsService,
+    private readonly em: EntityManager,
+    private readonly httpService: HttpService,
   ) { }
 
   @Post('oauth/callback')
@@ -52,5 +57,45 @@ export class MetaController {
       pageId: page.id,
       pageName: page.name,
     };
+  }
+
+  @Post('publish')
+  async publish(
+    @Body() body: { userId: number; caption: string; imageUrl: string },
+  ) {
+    // 1️⃣ Find linked account for this user
+    const account = await this.em.findOne(SocialAccount, {
+      user: body.userId,
+      provider: 'instagram',
+    }, { populate: ['tokens'] });
+
+    if (!account) throw new NotFoundException('No Instagram account linked');
+
+    // 2️⃣ Get valid access token
+    const accessToken = account.tokens.find(t => t.tokenType === 'access')?.tokenEncrypted;
+    if (!accessToken) throw new Error('Missing access token');
+
+    const igUserId = account.providerAccountId;
+
+    // 3️⃣ Step 1: Create media container
+    const mediaRes = await this.httpService.axiosRef.post(
+      `https://graph.facebook.com/v21.0/${igUserId}/media`,
+      {
+        image_url: body.imageUrl,
+        caption: body.caption,
+        access_token: accessToken,
+      },
+    );
+
+    // 4️⃣ Step 2: Publish media
+    const publishRes = await this.httpService.axiosRef.post(
+      `https://graph.facebook.com/v21.0/${igUserId}/media_publish`,
+      {
+        creation_id: mediaRes.data.id,
+        access_token: accessToken,
+      },
+    );
+
+    return { success: true, result: publishRes.data };
   }
 }
