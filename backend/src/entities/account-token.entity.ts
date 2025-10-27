@@ -12,7 +12,7 @@ export class AccountToken {
   @Property()
   tokenType: 'access' | 'refresh' = 'access';
 
-  @Property()
+  @Property({ type: 'text' })
   tokenEncrypted!: string;
 
   @Property({ nullable: true })

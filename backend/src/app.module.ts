@@ -19,6 +19,7 @@ import { BillingModule } from './billing/billing.module';
 import { AdminModule } from './admin/admin.module';
 import { PublisherModule } from './publisher/publisher.module';
 
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -43,4 +44,4 @@ import { PublisherModule } from './publisher/publisher.module';
     PublisherModule,
   ],
 })
-export class AppModule {}
+export class AppModule { }
