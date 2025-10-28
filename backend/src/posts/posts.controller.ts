@@ -43,7 +43,7 @@ import {
 @UseGuards(JwtAuthGuard)
 @Controller('posts')
 export class PostsController {
-  constructor(private readonly postsService: PostsService) {}
+  constructor(private readonly postsService: PostsService) { }
 
   private toDto(p: PostEntity): PostResponseDto {
     return {
@@ -59,6 +59,11 @@ export class PostsController {
     };
   }
 
+  @Get()
+  @ApiOperation({ summary: 'List all posts' })
+  async findAll() {
+    return await this.postsService.findAll();
+  }
   // endpoint to create
   @Post()
   @ApiOperation({ summary: 'Create a new post' })
@@ -144,11 +149,11 @@ export class PostsController {
         teamId: r.teamId ? Number(r.teamId) : undefined,
         socialAccountIds: r.socialAccountIds
           ? String(r.socialAccountIds)
-              .split(',')
-              .map((s) => s.trim())
-              .filter((s) => s.length > 0)
-              .map((s) => Number(s))
-              .filter((n) => !Number.isNaN(n))
+            .split(',')
+            .map((s) => s.trim())
+            .filter((s) => s.length > 0)
+            .map((s) => Number(s))
+            .filter((n) => !Number.isNaN(n))
           : undefined,
         campaignId: r.campaignId ? Number(r.campaignId) : undefined,
         templateId: r.templateId ? Number(r.templateId) : undefined,

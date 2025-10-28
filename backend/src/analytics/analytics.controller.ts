@@ -24,7 +24,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 @UseGuards(JwtAuthGuard)
 @Controller('analytics')
 export class AnalyticsController {
-  constructor(private readonly analytics: AnalyticsService) {}
+  constructor(private readonly analytics: AnalyticsService) { }
 
   @Get('posts/:postId')
   @ApiOperation({ summary: 'Post Insights' })
@@ -68,5 +68,13 @@ export class AnalyticsController {
   @ApiResponse({ status: 200, schema: { type: 'string', format: 'binary' } })
   exportPdf(): Promise<Buffer> {
     return this.analytics.exportPdf();
+  }
+
+  @Get('sync/meta')
+  @ApiOperation({ summary: 'Sync Meta Insights (Instagram/Facebook)' })
+  @ApiResponse({ status: 200, description: 'Insights updated' })
+  async syncMeta(): Promise<{ message: string }> {
+    await this.analytics.syncInstagramInsights();
+    return { message: 'Meta insights synced successfully' };
   }
 }

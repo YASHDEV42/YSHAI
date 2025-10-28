@@ -20,7 +20,12 @@ import { PostTarget } from 'src/entities/post-target.entity';
 
 @Injectable()
 export class PostsService {
-  constructor(private readonly em: EntityManager) {}
+  constructor(private readonly em: EntityManager) { }
+
+  async findAll(): Promise<Post[]> {
+    const posts = await this.em.find(Post, { deletedAt: null });
+    return posts;
+  }
 
   async create(createPostDto: CreatePostDto): Promise<Post> {
     // Extract and remove relational IDs from DTO

@@ -3,11 +3,52 @@ import { EntityManager } from '@mikro-orm/postgresql';
 import { Post } from 'src/entities/post.entity';
 import { PostAnalytics } from 'src/entities/post-analytics.entity';
 import { PostInsightsDto } from './dto/post-insights.dto';
+import { MetaInsightsService } from 'src/meta/meta-insights.service';
+import { SocialAccount } from 'src/entities/social-account.entity';
+import { PostTarget } from 'src/entities/post-target.entity';
+import { AccountToken } from 'src/entities/account-token.entity';
 
 @Injectable()
 export class AnalyticsService {
-  constructor(private readonly em: EntityManager) {}
+  constructor(
+    private readonly em: EntityManager,
+    private readonly meta: MetaInsightsService,
+  ) { }
+  async syncInstagramInsights(): Promise<void> {
+    const targets = await this.em.find(
+      PostTarget,
+      { externalPostId: { $ne: null }, status: 'success' },
+      { populate: ['socialAccount'] },
+    );
 
+    for (const target of targets) {
+      const account = target.socialAccount as SocialAccount;
+      const token = await this.em.findOne(AccountToken, {
+        account,
+        tokenType: 'access',
+        revoked: false,
+      });
+      if (!token) continue;
+
+      const insights = await this.meta.getPostInsights(target.externalPostId!, token.tokenEncrypted);
+      if (!insights) continue;
+
+      // Parse and store insights
+      const analytics = this.em.create(PostAnalytics, {
+        post: target.post,
+        impressions: insights.find((m) => m.name === 'impressions')?.values?.[0]?.value ?? 0,
+        likes: insights.find((m) => m.name === 'likes')?.values?.[0]?.value ?? 0,
+        comments: insights.find((m) => m.name === 'comments')?.values?.[0]?.value ?? 0,
+        shares: insights.find((m) => m.name === 'shares')?.values?.[0]?.value ?? 0,
+        clicks: insights.find((m) => m.name === 'reach')?.values?.[0]?.value ?? 0,
+        fetchedAt: new Date(),
+      });
+
+      this.em.persist(analytics);
+    }
+
+    await this.em.flush();
+  }
   async getPostInsights(postId: number): Promise<PostInsightsDto> {
     const post = await this.em.findOneOrFail(Post, { id: postId });
     const agg = await this.em.find(

@@ -6,9 +6,12 @@ import { Job } from 'src/entities/job.entity';
 import { PostTarget } from 'src/entities/post-target.entity';
 import { ProviderFactory } from './providers/provider.factory';
 import { WebhooksModule } from 'src/webhooks/webhooks.module';
+import { MediaModule } from 'src/media/media.module';
+import { MetaModule } from 'src/meta/meta.module';
 
 @Module({
-  imports: [MikroOrmModule.forFeature([Post, Job, PostTarget]), WebhooksModule],
+  imports: [MikroOrmModule.forFeature([Post, Job, PostTarget]), WebhooksModule, MediaModule, MetaModule],
   providers: [PublisherService, ProviderFactory],
+  exports: [PublisherService],
 })
-export class PublisherModule {}
+export class PublisherModule { }

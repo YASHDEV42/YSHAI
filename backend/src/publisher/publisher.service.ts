@@ -12,6 +12,8 @@ import { PostTarget } from 'src/entities/post-target.entity';
 import { SocialAccount } from 'src/entities/social-account.entity';
 import { AccountToken } from 'src/entities/account-token.entity';
 import { ProviderFactory } from './providers/provider.factory';
+import { Media } from 'src/entities/media.entity';
+import { MediaService } from 'src/media/media.service';
 
 @Injectable()
 export class PublisherService implements OnModuleInit {
@@ -29,7 +31,8 @@ export class PublisherService implements OnModuleInit {
     private readonly em: EntityManager,
     private readonly webhooks: WebhooksService,
     private readonly providers: ProviderFactory,
-  ) {}
+    private readonly mediaService: MediaService,
+  ) { }
 
   // When Nest starts this module, it starts a loop (tick()) every 5 seconds.
   // tick() is where pending jobs are checked and processed.
@@ -117,11 +120,17 @@ export class PublisherService implements OnModuleInit {
           .join('\n');
         const publisher = this.providers.get(account.provider);
 
-        // Call provider (real implementation to be added in adapters)
+        const mediaList = await em.find(Media, { post: post.id });
+
+        const mediaUrls = mediaList.map((m) => m.url);
+
+        if (!mediaUrls.length) {
+          this.log.warn(`⚠️ Post ${post.id} has no media; publishing text only`);
+        }
+
         const result = await publisher.publish({
           text,
-          mediaUrls: undefined, // TODO: pre-upload media and pass provider IDs/URLs
-          scheduledAt: undefined,
+          mediaUrls,
           accessToken,
           providerAccountId: account.providerAccountId,
         });
