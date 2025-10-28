@@ -189,8 +189,8 @@ export class MetaService {
     const creationId = createRes?.data?.id;
     if (!creationId) throw new BadRequestException('Failed to create media');
 
-    // 🕓 Wait until media is ready
-    await this.waitForMediaReady(providerAccountId, creationId, accessToken);
+    // Wait until media is ready
+    await this.waitForMediaReady(creationId, accessToken);
 
     // 2) Publish container
     const publishRes = await lastValueFrom(
@@ -332,7 +332,7 @@ export class MetaService {
     return (res.data?.instagram_business_account?.id as string) ?? null;
   }
 
-  private async waitForMediaReady(igUserId: string, creationId: string, accessToken: string) {
+  private async waitForMediaReady(creationId: string, accessToken: string) {
     let status = 'IN_PROGRESS';
     while (status === 'IN_PROGRESS') {
       await new Promise((r) => setTimeout(r, 2000));

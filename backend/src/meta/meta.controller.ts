@@ -2,7 +2,6 @@ import {
   BadRequestException,
   Body,
   Controller,
-  Logger,
   Post,
   UploadedFile,
   UseInterceptors,
@@ -17,7 +16,6 @@ type OauthCallbackBody = {
 
 @Controller('meta')
 export class MetaController {
-  private readonly logger = new Logger(MetaController.name);
 
   constructor(private readonly meta: MetaService) { }
 
