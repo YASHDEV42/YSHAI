@@ -10,7 +10,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { User, Bell, CreditCard, Twitter, Instagram, Linkedin, Music2, Plus, Trash2, Check } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Spinner } from "@/components/ui/spinner"
@@ -20,48 +19,22 @@ const initialState = {
   enMessage: '',
   success: false,
 }
+type connectedPlatformType = {
+  id: number;
+  name: string;
+  username: string;
+  followers: string;
+  connected: boolean;
+  icon: typeof Twitter | typeof Instagram | typeof Linkedin | typeof Music2;
+}
 export default function SettingsClient({ text, user, locale }: { text: any, user: any | null, locale: string }) {
   const [emailNotifications, setEmailNotifications] = useState(true)
   const [pushNotifications, setPushNotifications] = useState(true)
   const [weeklyReport, setWeeklyReport] = useState(true)
   const [postReminders, setPostReminders] = useState(true)
   const [state, formAction, pending] = useActionState(changeNameAction, initialState)
+  const [connectedPlatforms, setConnectedPlatforms] = useState<connectedPlatformType[] | []>([]);
   const dir = locale === 'ar' ? 'rtl' : 'ltr';
-  const connectedPlatforms = [
-    {
-      id: "twitter",
-      name: text.platformsNames.twitter,
-      icon: Twitter,
-      connected: true,
-      username: "@yshai_official",
-      followers: "12.5K",
-    },
-    {
-      id: "instagram",
-      name: text.platformsNames.instagram,
-      icon: Instagram,
-      connected: true,
-      username: "@yshai.official",
-      followers: "24.8K",
-    },
-    {
-      id: "linkedin",
-      name: text.platformsNames.linkedin,
-      icon: Linkedin,
-      connected: true,
-      username: "YSHAI",
-      followers: "8.2K",
-    },
-    {
-      id: "tiktok",
-      name: text.platformsNames.tiktok,
-      icon: Music2,
-      connected: true,
-      username: "@yshai",
-      followers: "45.3K",
-    },
-  ]
-
   return (
     <div className="container mx-auto p-8">
       {/* Header */}
@@ -170,7 +143,8 @@ export default function SettingsClient({ text, user, locale }: { text: any, user
               <CardDescription>{text.platforms.description}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {connectedPlatforms.map((platform) => (
+
+              {connectedPlatforms.length !== 0 ? connectedPlatforms.map((platform) => (
                 <div
                   key={platform.id}
                   className="flex items-center justify-between p-4 rounded-lg border border-border bg-card"
@@ -204,7 +178,9 @@ export default function SettingsClient({ text, user, locale }: { text: any, user
                     </Button>
                   </div>
                 </div>
-              ))}
+              )) : (
+                <p className="text-sm text-muted-foreground">{text.platforms.noConnected}</p>
+              )}
 
               <Button variant="outline" className="w-full bg-transparent">
                 <Plus className="mr-2 size-4" />

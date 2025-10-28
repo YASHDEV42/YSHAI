@@ -409,6 +409,7 @@
       "reconnect": "إعادة الاتصال",
       "disconnect": "فصل",
       "connectNew": "ربط منصة جديدة",
+      "noConnected": "لا توجد منصات متصلة",
       "postingPreferences": {
         "title": "تفضيلات النشر",
         "description": "تكوين الإعدادات الافتراضية لمنشوراتك",

@@ -409,6 +409,7 @@
       "reconnect": "Reconnect",
       "disconnect": "Disconnect",
       "connectNew": "Connect New Platform",
+      "noConnected": "No platforms connected yet",
       "postingPreferences": {
         "title": "Posting Preferences",
         "description": "Configure default settings for your posts",

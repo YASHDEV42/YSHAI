@@ -30,6 +30,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils"
 import { ModeToggle } from "../../../components/toggleTheme"
+import { LanguageToggle } from "@/app/components/LanguageToggle"
 type UserResponseDto = {
   name: string;
   email: string;
@@ -102,10 +103,11 @@ export function DashboardSidebar({ locale = "en", text, user }: DashboardSidebar
     <>
       {/* --- Sidebar --- */}
       <Sidebar className="border-r border-border" side={isRTL ? "right" : "left"}>
-        <SidebarHeader className="border-b border-border p-6">
+        <SidebarHeader className="border-b border-border p-6 flex items-center justify-between flex-row">
           <Link href="/" className="flex items-center gap-2 px-2">
             <span className="font-bold text-xl text-foreground">{text.logo}</span>
           </Link>
+          <LanguageToggle />
         </SidebarHeader>
 
         <SidebarContent className="p-4">

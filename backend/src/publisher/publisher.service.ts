@@ -31,7 +31,6 @@ export class PublisherService implements OnModuleInit {
     private readonly em: EntityManager,
     private readonly webhooks: WebhooksService,
     private readonly providers: ProviderFactory,
-    private readonly mediaService: MediaService,
   ) { }
 
   // When Nest starts this module, it starts a loop (tick()) every 5 seconds.
