@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   Param,
   ParseIntPipe,
   Post,
@@ -66,5 +67,13 @@ export class AccountsController {
     @Param('accountId', ParseIntPipe) accountId: number,
   ): Promise<{ message: string }> {
     return this.accounts.unlink(req.user.userId, accountId);
+  }
+
+  @Get('me')
+  @ApiOperation({
+    summary: 'List connected accounts for the authenticated user',
+  })
+  async getMyAccounts(@Req() req: { user: { userId: number } }) {
+    return this.accounts.listForUser(req.user.userId);
   }
 }

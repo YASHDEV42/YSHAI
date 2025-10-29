@@ -46,6 +46,7 @@ export class AccountsService {
       access.expiresAt = tokens.expiresAt;
       this.em.persist(access);
     }
+
     if (tokens?.refreshToken) {
       const refresh = new AccountToken();
       refresh.account = account;
@@ -53,6 +54,7 @@ export class AccountsService {
       refresh.tokenEncrypted = tokens.refreshToken;
       this.em.persist(refresh);
     }
+
     if (tokens?.accessToken || tokens?.refreshToken) {
       await this.em.flush();
     }
@@ -76,5 +78,25 @@ export class AccountsService {
     account.disconnectedAt = new Date();
     await this.em.flush();
     return { message: 'Account unlinked' };
+  }
+
+  async listForUser(userId: number) {
+    const accounts = await this.em.find(
+      SocialAccount,
+      { user: userId },
+      { populate: ['tokens'] },
+    );
+
+    return accounts.map((acc) => ({
+      id: acc.id,
+      provider: acc.provider,
+      providerAccountId: acc.providerAccountId,
+      active: acc.active,
+      disconnectedAt: acc.disconnectedAt,
+      tokens: acc.tokens.getItems().map((t) => ({
+        tokenType: t.tokenType,
+        expiresAt: t.expiresAt,
+      })),
+    }));
   }
 }

@@ -1,56 +1,84 @@
-'use server';
+"use server";
 
 import { apiClient } from "@/lib/api";
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 
-const BaseURL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000';
+const BaseURL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
 type initialStateType = {
-  arMessage: string,
-  enMessage: string,
-  success: boolean,
-}
+  arMessage: string;
+  enMessage: string;
+  success: boolean;
+};
 
-export const changeNameAction = async (_: initialStateType, formData: FormData) => {
-  const name = formData.get('name') as string;
-  const timezone = formData.get('timezone') as string;
-
-  console.log('Form Data Received:', { name, timezone });
+export const changeNameAction = async (
+  _: initialStateType,
+  formData: FormData,
+) => {
+  const name = formData.get("name") as string;
+  const timezone = formData.get("timezone") as string;
+  console.log("Form Data Received:", { name, timezone });
   if (!name || !timezone) {
     return {
-      arMessage: 'الاسم والمنطقة الزمنية مطلوبان!',
-      enMessage: 'Name and timezone are required!',
-      success: false
+      arMessage: "الاسم والمنطقة الزمنية مطلوبان!",
+      enMessage: "Name and timezone are required!",
+      success: false,
     };
   }
   if (name.length < 3 || name.length > 15) {
     return {
-      arMessage: 'يجب أن يكون الاسم بين 3 و 15 حرفًا.',
-      enMessage: 'Name must be between 3 and 15 characters.',
-      success: false
-    }
+      arMessage: "يجب أن يكون الاسم بين 3 و 15 حرفًا.",
+      enMessage: "Name must be between 3 and 15 characters.",
+      success: false,
+    };
   }
   try {
-    const response = await apiClient('/users/me', {
-      method: 'PUT',
-      credentials: 'include',
+    const response = await apiClient("/users/me", {
+      method: "PUT",
+      credentials: "include",
       body: JSON.stringify({ name, timezone }),
     });
-    console.log('Change name response:', response);
+    console.log("Change name response:", response);
     revalidatePath("/dashboard/settings");
     return {
-      arMessage: 'تم تغيير الاسم بنجاح',
-      enMessage: 'Name changed successfully',
+      arMessage: "تم تغيير الاسم بنجاح",
+      enMessage: "Name changed successfully",
       success: true,
-
-    }
-
+    };
   } catch (error) {
-    console.error('Error changing name:', error);
+    console.error("Error changing name:", error);
 
     return {
-      arMessage: 'فشل تغيير الاسم',
-      enMessage: 'Failed to change name',
+      arMessage: "فشل تغيير الاسم",
+      enMessage: "Failed to change name",
       success: false,
-    }
+    };
   }
+};
+export async function connectInstagram(shortToken: string) {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("accessToken")?.value;
+
+  if (!accessToken) {
+    throw new Error("Not authenticated");
+  }
+
+  const res = await fetch(`${BaseURL}/meta/oauth/callback`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({
+      shortToken,
+      userId: "1",
+    }),
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    throw new Error(`Meta connect failed: ${res.status}`);
+  }
+
+  return res.json();
 }

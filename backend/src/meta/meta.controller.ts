@@ -16,15 +16,16 @@ type OauthCallbackBody = {
 
 @Controller('meta')
 export class MetaController {
-
-  constructor(private readonly meta: MetaService) { }
+  constructor(private readonly meta: MetaService) {}
 
   @Post('oauth/callback')
   async oauthCallback(@Body() body: OauthCallbackBody) {
     const { shortToken } = body;
     const userIdNum = Number(body.userId);
     if (!shortToken || Number.isNaN(userIdNum)) {
-      throw new BadRequestException('shortToken and numeric userId are required');
+      throw new BadRequestException(
+        'shortToken and numeric userId are required',
+      );
     }
     return this.meta.handleOauthCallback(shortToken, String(userIdNum));
   }
@@ -41,6 +42,10 @@ export class MetaController {
       throw new BadRequestException('userId (number) is required');
     }
     const caption = body.caption ?? '';
-    return this.meta.publishWithAutoRefresh({ file, userId: userIdNum, caption });
+    return this.meta.publishWithAutoRefresh({
+      file,
+      userId: userIdNum,
+      caption,
+    });
   }
 }

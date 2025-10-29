@@ -2,12 +2,11 @@ import { setRequestLocale, getTranslations } from "next-intl/server";
 import DashboardPage from "./components/dashboard";
 
 export default async function DashboardPageRoute({
-  params
+  params,
 }: {
   params: Promise<{ locale: string }>;
 }) {
-
-  const { locale } = await params
+  const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: "DashboardPage" });
 

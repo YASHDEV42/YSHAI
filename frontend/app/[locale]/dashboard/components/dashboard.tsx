@@ -17,9 +17,14 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-
 
 export interface DashboardPageText {
   welcomeMessage: string;
@@ -66,7 +71,6 @@ export interface DashboardPageText {
     failed: string;
   };
 }
-
 
 interface DashboardPageProps {
   text: DashboardPageText;
@@ -147,18 +151,33 @@ export default function DashboardPage({ text, locale }: DashboardPageProps) {
 
   const connectedPlatforms = [
     { name: "Twitter", icon: Twitter, connected: true, color: "text-blue-400" },
-    { name: "Instagram", icon: Instagram, connected: true, color: "text-pink-400" },
-    { name: "LinkedIn", icon: Linkedin, connected: true, color: "text-blue-600" },
+    {
+      name: "Instagram",
+      icon: Instagram,
+      connected: true,
+      color: "text-pink-400",
+    },
+    {
+      name: "LinkedIn",
+      icon: Linkedin,
+      connected: true,
+      color: "text-blue-600",
+    },
     { name: "TikTok", icon: Music2, connected: true, color: "text-gray-400" },
   ];
 
   const getPlatformIcon = (platform: string) => {
     switch (platform) {
-      case "twitter": return <Twitter className="size-4" />;
-      case "instagram": return <Instagram className="size-4" />;
-      case "linkedin": return <Linkedin className="size-4" />;
-      case "tiktok": return <Music2 className="size-4" />;
-      default: return <FileText className="size-4" />;
+      case "twitter":
+        return <Twitter className="size-4" />;
+      case "instagram":
+        return <Instagram className="size-4" />;
+      case "linkedin":
+        return <Linkedin className="size-4" />;
+      case "tiktok":
+        return <Music2 className="size-4" />;
+      default:
+        return <FileText className="size-4" />;
     }
   };
 
@@ -172,16 +191,22 @@ export default function DashboardPage({ text, locale }: DashboardPageProps) {
         );
       case "pending":
         return (
-          <Badge variant="secondary" className="bg-gold-500/20 dark:bg-gold-500/80 text-gold-400">
+          <Badge
+            variant="secondary"
+            className="bg-gold-500/20 dark:bg-gold-500/80 text-gold-400"
+          >
             {text.activityStatus.scheduled}
           </Badge>
         );
       case "scheduled":
         return (
-          <Badge variant="secondary" className="bg-amber-500/20 dark:bg-amber-500/80 text-gold-400">
+          <Badge
+            variant="secondary"
+            className="bg-amber-500/20 dark:bg-amber-500/80 text-gold-400"
+          >
             {text.activityStatus.scheduled}
           </Badge>
-        )
+        );
       case "error":
         return (
           <Badge variant="destructive" className="bg-red-500">
@@ -195,33 +220,39 @@ export default function DashboardPage({ text, locale }: DashboardPageProps) {
 
   return (
     <div className="container mx-auto p-8">
-
-      < div ref={statsRef} className="mb-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4" >
-        {
-          stats.map((stat, index) => (
-            < Card key={index} className="stat-card border-border bg-card" >
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">{stat.title}</p>
-                    <p className="mt-2 font-bold text-3xl text-foreground">{stat.value}</p>
-                    <p className="mt-1 text-sm text-primary">{stat.change} {text.stats.changeFromLastWeek}</p>
-                  </div>
-                  <div className="flex size-12 items-center justify-center rounded-lg bg-primary/20">
-                    <stat.icon className="size-6 text-primary" />
-                  </div>
+      <div
+        ref={statsRef}
+        className="mb-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4"
+      >
+        {stats.map((stat, index) => (
+          <Card key={index} className="stat-card border-border bg-card">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">{stat.title}</p>
+                  <p className="mt-2 font-bold text-3xl text-foreground">
+                    {stat.value}
+                  </p>
+                  <p className="mt-1 text-sm text-primary">
+                    {stat.change} {text.stats.changeFromLastWeek}
+                  </p>
                 </div>
-              </CardContent>
-            </Card>
-          ))
-        }
-      </div >
+                <div className="flex size-12 items-center justify-center rounded-lg bg-primary/20">
+                  <stat.icon className="size-6 text-primary" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Recent Activity */}
         <Card className="border-border bg-card lg:col-span-2">
           <CardHeader>
-            <CardTitle className="text-foreground">{text.recentActivity.title}</CardTitle>
+            <CardTitle className="text-foreground">
+              {text.recentActivity.title}
+            </CardTitle>
             <CardDescription className="text-muted-foreground">
               {text.recentActivity.description}
             </CardDescription>
@@ -238,10 +269,14 @@ export default function DashboardPage({ text, locale }: DashboardPageProps) {
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
-                      <p className="font-medium text-sm text-foreground">{activity.content}</p>
+                      <p className="font-medium text-sm text-foreground">
+                        {activity.content}
+                      </p>
                       {getStatusBadge(activity.status)}
                     </div>
-                    <p className="mt-1 text-xs text-muted-foreground">{activity.time}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {activity.time}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -263,7 +298,9 @@ export default function DashboardPage({ text, locale }: DashboardPageProps) {
           {/* Quick Actions */}
           <Card className="border-border bg-card">
             <CardHeader>
-              <CardTitle className="text-foreground">{text.quickActions.title}</CardTitle>
+              <CardTitle className="text-foreground">
+                {text.quickActions.title}
+              </CardTitle>
             </CardHeader>
             <CardContent ref={quickActionsRef} className="space-y-3">
               <Button
@@ -301,7 +338,9 @@ export default function DashboardPage({ text, locale }: DashboardPageProps) {
           {/* Connected Platforms */}
           <Card className="border-border bg-card">
             <CardHeader>
-              <CardTitle className="text-foreground">{text.connectedPlatforms.title}</CardTitle>
+              <CardTitle className="text-foreground">
+                {text.connectedPlatforms.title}
+              </CardTitle>
               <CardDescription className="text-muted-foreground">
                 {text.connectedPlatforms.description}
               </CardDescription>
@@ -316,10 +355,15 @@ export default function DashboardPage({ text, locale }: DashboardPageProps) {
                     <div className="flex size-8 items-center justify-center rounded-lg bg-muted">
                       <platform.icon className="size-4 text-foreground" />
                     </div>
-                    <span className="text-sm text-foreground">{platform.name}</span>
+                    <span className="text-sm text-foreground">
+                      {platform.name}
+                    </span>
                   </div>
                   {platform.connected ? (
-                    <Badge variant="default" className="bg-primary/20 text-primary">
+                    <Badge
+                      variant="default"
+                      className="bg-primary/20 text-primary"
+                    >
                       {text.connectedPlatforms.connected}
                     </Badge>
                   ) : (
@@ -344,6 +388,5 @@ export default function DashboardPage({ text, locale }: DashboardPageProps) {
         </div>
       </div>
     </div>
-
   );
 }
