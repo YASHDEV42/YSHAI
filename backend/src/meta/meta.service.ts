@@ -24,7 +24,7 @@ export class MetaService {
     private readonly http: HttpService,
     private readonly media: MediaService,
     private readonly accounts: AccountsService,
-  ) { }
+  ) {}
 
   /**
    * Step 1: OAuth callback → link Instagram Business account and store tokens.
@@ -39,7 +39,9 @@ export class MetaService {
     try {
       longUser = await this.exchangeShortToLong(shortToken);
     } catch {
-      this.logger.warn('exchangeShortToLong failed—using short token as fallback');
+      this.logger.warn(
+        'exchangeShortToLong failed—using short token as fallback',
+      );
       longUser = { access_token: shortToken, expires_in: 60 * 24 * 60 * 60 }; // ~60d (seconds)
     }
 
@@ -63,8 +65,8 @@ export class MetaService {
       Number(userId),
       { provider: 'instagram', providerAccountId: igUserId },
       {
-        accessToken: page.access_token,       // PAGE token → posting
-        refreshToken: longUser.access_token,  // USER long-lived → to mint fresh PAGE token
+        accessToken: page.access_token, // PAGE token → posting
+        refreshToken: longUser.access_token, // USER long-lived → to mint fresh PAGE token
         expiresAt,
       },
     );
@@ -119,7 +121,10 @@ export class MetaService {
     }
     if (!pageAccessToken) {
       // No page token stored yet? mint one now from user token
-      pageAccessToken = await this.mintPageAccessTokenFromUser(account, userLongLived);
+      pageAccessToken = await this.mintPageAccessTokenFromUser(
+        account,
+        userLongLived,
+      );
     }
 
     // Try publish
@@ -138,7 +143,8 @@ export class MetaService {
     } catch (err: any) {
       const fbErr = err?.response?.data?.error;
       const expired =
-        fbErr?.code === 190 && (fbErr?.error_subcode === 463 || fbErr?.error_subcode === 490);
+        fbErr?.code === 190 &&
+        (fbErr?.error_subcode === 463 || fbErr?.error_subcode === 490);
       if (!expired) {
         // rethrow non-expiration errors
         throw new BadRequestException(
@@ -146,9 +152,14 @@ export class MetaService {
         );
       }
 
-      this.logger.warn('Page access token expired—minting a fresh one and retrying once…');
+      this.logger.warn(
+        'Page access token expired—minting a fresh one and retrying once…',
+      );
       // Mint new PAGE token from USER long-lived
-      const freshPageToken = await this.mintPageAccessTokenFromUser(account, userLongLived);
+      const freshPageToken = await this.mintPageAccessTokenFromUser(
+        account,
+        userLongLived,
+      );
 
       // Retry once
       const res = await this.publishToInstagram({
@@ -225,14 +236,20 @@ export class MetaService {
    * Mint a fresh PAGE access token from a long-lived USER token
    * and persist it as the current 'access' token.
    */
-  private async mintPageAccessTokenFromUser(account: SocialAccount, userLongLived: string) {
+  private async mintPageAccessTokenFromUser(
+    account: SocialAccount,
+    userLongLived: string,
+  ) {
     // You can request a page token via: GET /{page-id}?fields=access_token&access_token={USER_TOKEN}
     // We need a page-id; we can fetch it through /me/accounts using the user token,
     // then find the page that owns the IG user id.
     const pagesResp = await lastValueFrom(
-      this.http.get(G('/me/accounts'), { params: { access_token: userLongLived } }),
+      this.http.get(G('/me/accounts'), {
+        params: { access_token: userLongLived },
+      }),
     );
-    const pages: Array<{ id: string; access_token: string }> = pagesResp.data?.data ?? [];
+    const pages: Array<{ id: string; access_token: string }> =
+      pagesResp.data?.data ?? [];
 
     // Find the page that has this IG business account
     let pageAccessToken: string | null = null;
@@ -260,7 +277,8 @@ export class MetaService {
       // Fallback: ask for page access_token directly with user token on the first page
       // (rarely needed if above loop finds it)
       const p = pages[0];
-      if (!p) throw new BadRequestException('No pages available to mint page token');
+      if (!p)
+        throw new BadRequestException('No pages available to mint page token');
       const pageDetail = await lastValueFrom(
         this.http.get(G(`/${p.id}`), {
           params: { fields: 'access_token', access_token: userLongLived },
@@ -309,7 +327,11 @@ export class MetaService {
         },
       }),
     );
-    return res.data as { access_token: string; token_type: string; expires_in: number };
+    return res.data as {
+      access_token: string;
+      token_type: string;
+      expires_in: number;
+    };
   }
 
   private async listPages(longUserToken: string) {
@@ -326,7 +348,10 @@ export class MetaService {
   private async getIgUserId(pageId: string, pageToken: string) {
     const res = await lastValueFrom(
       this.http.get(G(`/${pageId}`), {
-        params: { fields: 'instagram_business_account', access_token: pageToken },
+        params: {
+          fields: 'instagram_business_account',
+          access_token: pageToken,
+        },
       }),
     );
     return (res.data?.instagram_business_account?.id as string) ?? null;

@@ -1,17 +1,18 @@
-import { setRequestLocale, getTranslations } from "next-intl/server"
-import SettingsClient from "./components/settings"
-import { apiClient } from "@/lib/api"
-import { cookies } from "next/headers"
+import { setRequestLocale, getTranslations } from "next-intl/server";
+import SettingsClient from "./components/settings";
+import { apiClient } from "@/lib/api";
+import { cookies } from "next/headers";
+import { ConnectedAccount, getConnectedAccounts } from "../actions";
 
 export default async function SettingsPage({
-  params
+  params,
 }: {
-  params: Promise<{ locale: string }>
+  params: Promise<{ locale: string }>;
 }) {
-  const { locale } = await params
-  setRequestLocale(locale)
+  const { locale } = await params;
+  setRequestLocale(locale);
 
-  const t = await getTranslations({ locale, namespace: "SettingsPage" })
+  const t = await getTranslations({ locale, namespace: "SettingsPage" });
 
   const text: any = {
     title: t("title"),
@@ -55,7 +56,9 @@ export default async function SettingsPage({
         description: t("platforms.postingPreferences.description"),
         autoPublish: {
           label: t("platforms.postingPreferences.autoPublish.label"),
-          description: t("platforms.postingPreferences.autoPublish.description"),
+          description: t(
+            "platforms.postingPreferences.autoPublish.description",
+          ),
         },
         watermark: {
           label: t("platforms.postingPreferences.watermark.label"),
@@ -128,17 +131,26 @@ export default async function SettingsPage({
       london: t("timezones.london"),
       newyork: t("timezones.newyork"),
     },
-  }
+  };
   let user = null;
+  let accounts: ConnectedAccount[] = [];
   const cookiesStore = await cookies();
   const allCookies = cookiesStore.toString();
-  console.log('sending cookies', allCookies);
+  console.log("sending cookies", allCookies);
   try {
-
-    user = await apiClient('/users/me');
-    console.log('Fetched user data:', user);
+    user = await apiClient("/users/me");
+    accounts = await getConnectedAccounts();
+    console.log("Fetched user data:", user);
+    console.log("Fetched connected accounts:", accounts);
   } catch (err) {
-    console.log('Error fetching user data:', err);
+    console.log("Error fetching user data:", err);
   }
-  return <SettingsClient user={user} locale={locale} text={text} />
+  return (
+    <SettingsClient
+      user={user}
+      locale={locale}
+      text={text}
+      accounts={accounts}
+    />
+  );
 }
