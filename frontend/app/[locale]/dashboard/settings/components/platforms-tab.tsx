@@ -13,7 +13,6 @@ import {
   Twitter,
   Instagram,
   Linkedin,
-  Music2,
   Plus,
   Trash2,
   Check,
@@ -31,12 +30,8 @@ interface PlatformsTabProps {
 export function PlatformsTab({ text, locale, accounts }: PlatformsTabProps) {
   const [connectedPlatforms, setConnectedPlatforms] =
     useState<ConnectedAccount[]>(accounts);
-  const [isPending, startTransition] = useTransition();
   const [dialogOpen, setDialogOpen] = useState(false);
-
-  const handleAccountConnected = (accountDetails: any) => {};
-
-  const handleDisconnect = async (platformId: number) => {};
+  const handleAccountConnected = () => {};
 
   return (
     <>
@@ -88,7 +83,6 @@ export function PlatformsTab({ text, locale, accounts }: PlatformsTabProps) {
                     variant="ghost"
                     size="sm"
                     className="text-destructive hover:text-destructive"
-                    onClick={() => handleDisconnect(platform.id)}
                   >
                     <Trash2 className="size-4" />
                     <span className="sr-only">{text.platforms.disconnect}</span>

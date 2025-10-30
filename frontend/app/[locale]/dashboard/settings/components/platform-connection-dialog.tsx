@@ -115,9 +115,9 @@ export function PlatformConnectionDialog({
       const redirectUri = encodeURIComponent(
         `${window.location.origin}/auth/meta/callback`,
       );
-      const clientId = process.env.META_APP_ID;
+      const clientId = process.env.NEXT_PUBLIC_META_APP_ID;
       const scope =
-        "instagram_basic,pages_show_list,pages_read_engagement,pages_manage_posts";
+        "instagram_basic,instagram_manage_comments,instagram_manage_insights,instagram_content_publish,instagram_manage_messages,pages_read_engagement, pages_show_list,business_management";
       const authUrl = `https://www.facebook.com/v24.0/dialog/oauth?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&response_type=token`;
 
       window.location.href = authUrl;
