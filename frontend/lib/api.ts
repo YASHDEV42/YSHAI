@@ -9,8 +9,12 @@ export async function apiClient(path: string, options: RequestInit = {}) {
 
   // manually build the cookie header
   const cookieHeader = [
-    cookieStore.get("accessToken") ? `accessToken=${cookieStore.get("accessToken")?.value}` : null,
-    cookieStore.get("refreshToken") ? `refreshToken=${cookieStore.get("refreshToken")?.value}` : null,
+    cookieStore.get("accessToken")
+      ? `accessToken=${cookieStore.get("accessToken")?.value}`
+      : null,
+    cookieStore.get("refreshToken")
+      ? `refreshToken=${cookieStore.get("refreshToken")?.value}`
+      : null,
   ]
     .filter(Boolean)
     .join("; ");

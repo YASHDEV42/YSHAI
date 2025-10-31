@@ -28,31 +28,36 @@ export class MetaService {
 
   /**
    * Step 1: OAuth callback → link Instagram Business account and store tokens.
-   * - Exchange short → long-lived USER token
-   * - Get Pages with that user token
-   * - Pick first Page (MVP) and get its IG Business account id
-   * - Store PAGE access token (access) and USER long-lived token (refresh)
    */
   async handleOauthCallback(shortToken: string, userId: string) {
     // 1) Exchange short → long-lived user token
     let longUser: { access_token: string; expires_in: number };
     try {
+      this.logger.log('Exchanging short-lived token for long-lived token...');
       longUser = await this.exchangeShortToLong(shortToken);
     } catch {
       this.logger.warn(
         'exchangeShortToLong failed—using short token as fallback',
       );
       longUser = { access_token: shortToken, expires_in: 60 * 24 * 60 * 60 }; // ~60d (seconds)
+      this.logger.log(
+        'exchangeShortToLong successfully completed',
+        longUser.access_token,
+      );
     }
 
     // 2) Get Pages for that user
+    let page: { id: string; name: string; access_token: string } | null = null;
+
+    this.logger.log('Listing Facebook Pages for user...');
     const pagesResp = await this.listPages(longUser.access_token);
     const pages = pagesResp?.data ?? [];
     if (!pages.length) throw new BadRequestException('No Facebook Pages found');
-    const page = pages[0];
+    page = pages[0];
+    this.logger.log('successfully listed Facebook Pages:', pages);
 
-    // 3) Get connected IG business account id
-    const igUserId = await this.getIgUserId(page.id, page.access_token);
+    // 3) Get connected IG business account id.id, page?.access_token);
+    const igUserId = await this.getIgUserId(page?.id, page?.access_token);
     if (!igUserId) {
       throw new BadRequestException(
         'No Instagram Business account connected to the selected Page',

@@ -11,7 +11,7 @@ import { MetaService } from './meta.service';
 
 type OauthCallbackBody = {
   shortToken: string;
-  userId: string | number; // we accept both, cast later
+  userId: string;
 };
 
 @Controller('meta')
@@ -20,14 +20,15 @@ export class MetaController {
 
   @Post('oauth/callback')
   async oauthCallback(@Body() body: OauthCallbackBody) {
-    const { shortToken } = body;
-    const userIdNum = Number(body.userId);
-    if (!shortToken || Number.isNaN(userIdNum)) {
+    const { shortToken, userId } = body;
+    console.log('Received OAuth callback with :', shortToken, userId);
+
+    if (!shortToken || !userId) {
       throw new BadRequestException(
         'shortToken and numeric userId are required',
       );
     }
-    return this.meta.handleOauthCallback(shortToken, String(userIdNum));
+    return this.meta.handleOauthCallback(shortToken, userId);
   }
 
   @Post('publish')

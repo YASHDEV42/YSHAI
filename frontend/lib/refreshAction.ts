@@ -2,10 +2,11 @@
 
 import { cookies } from "next/headers";
 
-const BaseURL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000';
-export const refreshAction = async (refreshToken: string): Promise<{ accessToken: string, newRefreshToken: string }> => {
-  console.log("In refreshAction with refreshToken:", refreshToken);
-  const cookieStore = await cookies();
+const BaseURL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
+
+export const refreshAction = async (
+  refreshToken: string,
+): Promise<{ accessToken: string }> => {
   const response = await fetch(`${BaseURL}/auth/refresh`, {
     method: "POST",
     headers: {
@@ -19,6 +20,22 @@ export const refreshAction = async (refreshToken: string): Promise<{ accessToken
   }
 
   const { accessToken, newRefreshToken } = await response.json();
-  console.log("Received new accessToken:", accessToken);
-  return { accessToken, newRefreshToken };
-}
+
+  let cookiesStore = await cookies();
+  cookiesStore.delete("accessToken");
+  cookiesStore.set("accessToken", accessToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    sameSite: "lax",
+    expires: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes
+  });
+  cookiesStore.set("refreshToken", newRefreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    sameSite: "lax",
+    expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+  });
+  return { accessToken };
+};

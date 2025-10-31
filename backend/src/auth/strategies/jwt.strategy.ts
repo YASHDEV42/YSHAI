@@ -8,16 +8,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
-
         (request: Request): string | null => {
-          console.log('Extracting JWT from request cookies or headers');
-
           if (request.cookies?.accessToken) {
             return request.cookies.accessToken;
           }
           // 2. Fallback to header
           const fromHeader = ExtractJwt.fromAuthHeaderAsBearerToken()(request);
-          console.log('JWT extracted from header:', fromHeader);
           return fromHeader || null;
         },
       ]),
@@ -26,7 +22,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  validate(payload: { id: number; email: string; role: string }): { id: number, email: string, role: string } {
+  validate(payload: { id: number; email: string; role: string }): {
+    id: number;
+    email: string;
+    role: string;
+  } {
     return { id: payload.id, email: payload.email, role: payload.role };
   }
 }
