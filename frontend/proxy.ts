@@ -88,7 +88,6 @@ export default async function proxy(req: NextRequest) {
       const data = await safeJson(retryRes);
       const response = NextResponse.json(data, { status: retryRes.status });
 
-      // Set the refreshed tokens in cookies
       response.cookies.set("accessToken", newAccessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
@@ -124,7 +123,6 @@ export default async function proxy(req: NextRequest) {
     }
   }
 
-  // Return normal response
   const data = await safeJson(res);
   return NextResponse.json(data, { status: res.status });
 }

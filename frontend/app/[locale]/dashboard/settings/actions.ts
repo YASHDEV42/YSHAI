@@ -1,5 +1,4 @@
 "use server";
-
 import { apiClient } from "@/lib/api";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
@@ -55,30 +54,34 @@ export const changeNameAction = async (
     };
   }
 };
+
 export async function connectInstagram(shortToken: string) {
   const cookieStore = await cookies();
-  const accessToken = cookieStore.get("accessToken")?.value;
+  const accessToken = cookieStore.get("accessToken");
 
   if (!accessToken) {
     throw new Error("Not authenticated");
   }
 
-  const res = await fetch(`${BaseURL}/meta/oauth/callback`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
-    body: JSON.stringify({
-      shortToken,
-      userId: "1",
-    }),
-    cache: "no-store",
-  });
+  console.log("🔑 Using access token from cookies:", accessToken);
+  console.log("🔖 Short token received:", shortToken);
 
-  if (!res.ok) {
-    throw new Error(`Meta connect failed: ${res.status}`);
+  try {
+    const res = await fetch(`${BaseURL}/meta/oauth/callback`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({
+        shortToken,
+        userId: "1",
+      }),
+      cache: "no-store",
+    });
+    return await res.json();
+  } catch (error) {
+    console.error("Error during fetch:", error);
+    return { error: "Failed to connect Instagram account" };
   }
-
-  return res.json();
 }

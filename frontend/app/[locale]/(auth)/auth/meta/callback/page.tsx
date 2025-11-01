@@ -1,14 +1,10 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { connectInstagram } from "@/app/[locale]/dashboard/settings/actions";
 
-export default function MetaCallbackPage() {
-  const router = useRouter();
-
+export default function MetaCallbackClient() {
   useEffect(() => {
-    // Meta redirects with access_token in URL hash
     const hash = window.location.hash.substring(1);
     const params = new URLSearchParams(hash);
     const token = params.get("access_token");
@@ -18,17 +14,17 @@ export default function MetaCallbackPage() {
       return;
     }
 
+    console.log("🔑 Meta access token:", token);
+
+    // Call the server action
     connectInstagram(token)
-      .then((res) => {
-        console.log("✅ Connected Instagram:", res);
-        alert("Instagram connected successfully!");
-        router.push("/dashboard/settings");
+      .then(() => {
+        console.log("✅ Instagram connected successfully!");
       })
       .catch((err) => {
-        console.error("❌ Meta connect failed:", err);
-        alert("Failed to connect account");
+        console.error("❌ Failed to connect Instagram:", err);
       });
-  }, [router]);
+  }, []);
 
   return (
     <div className="h-screen flex items-center justify-center">

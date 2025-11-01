@@ -15,19 +15,31 @@ import { BillingTab } from "./billing-tab";
 import { NotificationsTab } from "./notifications-tab";
 import { PlatformsTab } from "./platforms-tab";
 import { ProfileTab } from "./profile-tab";
-import { ConnectedAccount } from "../../actions";
+import { useEffect, useState } from "react";
+import { apiClient } from "@/lib/api";
 export default function SettingsClient({
   text,
-  user,
   locale,
-  accounts,
 }: {
   text: any;
-  user: any | null;
   locale: string;
-  accounts: ConnectedAccount[];
 }) {
+  const [user, setUser] = useState(null);
+  const [accounts, setAccounts] = useState([]);
+  const getUser = async () => {
+    try {
+      const res = await apiClient("/users/me");
+      const data = await res.json();
+      setUser(data);
+      console.log("User data:", data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
   const dir = locale === "ar" ? "rtl" : "ltr";
+  useEffect(() => {
+    getUser();
+  }, []);
   return (
     <div className="container mx-auto p-8">
       {/* Header */}
