@@ -21,21 +21,5 @@ export const refreshAction = async (
 
   const { accessToken, newRefreshToken } = await response.json();
 
-  let cookiesStore = await cookies();
-  cookiesStore.delete("accessToken");
-  cookiesStore.set("accessToken", accessToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    sameSite: "lax",
-    expires: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes
-  });
-  cookiesStore.set("refreshToken", newRefreshToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    sameSite: "lax",
-    expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-  });
   return { accessToken };
 };
