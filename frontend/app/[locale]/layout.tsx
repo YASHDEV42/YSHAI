@@ -12,7 +12,6 @@ import {
 import { ThemeProvider } from "../components/theme-provider";
 import { Navbar } from "./components/Navbar";
 import { Toaster } from "../../components/ui/sonner";
-import { apiClient } from "@/lib/api";
 import { cookies } from "next/headers";
 export const metadata: Metadata = {
   title: "YSHAI",
@@ -64,7 +63,7 @@ export default async function RootLayout({ children, params }: Props) {
           disableTransitionOnChange
         >
           <NextIntlClientProvider locale={locale} messages={messages}>
-            <Navbar text={text} />
+            <Navbar text={text} user={user} />
             {children}
             <Toaster position="bottom-right" />
           </NextIntlClientProvider>

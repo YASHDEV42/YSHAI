@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
   Calendar,
   TrendingUp,
@@ -14,7 +14,6 @@ import {
   CheckCircle2,
   AlertCircle,
   Info,
-  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -31,14 +30,6 @@ import {
 import { cn } from "@/lib/utils";
 import { ModeToggle } from "../../../components/toggleTheme";
 import { LanguageToggle } from "@/app/components/LanguageToggle";
-import { useUser } from "@/hooks/useUser";
-type UserResponseDto = {
-  name: string;
-  email: string;
-  role: string;
-  timezone: string;
-  timeFormat: string;
-};
 type NotificationResponseDto = {
   title: string | null;
   id: number;
@@ -51,20 +42,20 @@ type NotificationResponseDto = {
 interface DashboardSidebarProps {
   locale?: string;
   text: any;
+  user: any;
 }
 
 export function DashboardSidebar({
   locale = "en",
   text,
+  user,
 }: DashboardSidebarProps) {
-  const { user, loading, error } = useUser();
   const pathname = usePathname();
   const [notifications, setNotifications] = useState<NotificationResponseDto[]>(
     [],
   );
   const [showNotifications, setShowNotifications] = useState(false);
   const isRTL = locale === "ar";
-  const router = useRouter();
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   const menuItems = [
@@ -170,11 +161,9 @@ export function DashboardSidebar({
             <div className="flex items-center gap-3 flex-1 min-w-0">
               <div className="flex flex-col min-w-0">
                 <span className="text-sm font-medium truncate">
-                  {loading && <Loader2 />}
                   {user?.name || "User"}
                 </span>
                 <span className="text-xs text-muted-foreground truncate">
-                  {loading && <Loader2 />}
                   {user?.email || "user@example.com"}
                 </span>
               </div>

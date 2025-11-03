@@ -25,11 +25,11 @@ export default async function DashboardLayout({
     hoursAgo: t("hoursAgo"),
     daysAgo: t("daysAgo"),
   };
-
+  let user = null;
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-background">
-        <DashboardSidebar locale={locale} text={text} />
+        <DashboardSidebar locale={locale} text={text} user={user} />
         <main className="flex-1 overflow-auto">{children}</main>
       </div>
     </SidebarProvider>
