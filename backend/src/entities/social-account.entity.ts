@@ -20,10 +20,17 @@ export class SocialAccount {
 
   @Property()
   providerAccountId!: string;
-
   @ManyToOne(() => User)
   user!: User;
 
+  @Property({ nullable: true })
+  username?: string;
+
+  @Property({ nullable: true })
+  followersCount?: number;
+
+  @Property({ nullable: true })
+  profilePictureUrl?: string;
   @Property()
   active = true;
 
@@ -32,19 +39,6 @@ export class SocialAccount {
 
   @Property({ nullable: true })
   disconnectedAt?: Date;
-
-  // ✅ New profile fields
-  @Property({ nullable: true })
-  username?: string;
-
-  @Property({ nullable: true })
-  profilePicture?: string;
-
-  @Property({ nullable: true })
-  accountType?: string;
-
-  @Property({ nullable: true })
-  followers?: number;
 
   @OneToMany(() => AccountToken, (token) => token.account)
   tokens = new Collection<AccountToken>(this);

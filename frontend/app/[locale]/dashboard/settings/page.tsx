@@ -50,6 +50,7 @@ export default async function SettingsPage({
       reconnect: t("platforms.reconnect"),
       disconnect: t("platforms.disconnect"),
       connectNew: t("platforms.connectNew"),
+      disconnected: t("platforms.disconnected"),
       postingPreferences: {
         title: t("platforms.postingPreferences.title"),
         description: t("platforms.postingPreferences.description"),

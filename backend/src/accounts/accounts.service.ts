@@ -3,10 +3,15 @@ import { EntityManager } from '@mikro-orm/core';
 import { User } from 'src/entities/user.entity';
 import { SocialAccount } from 'src/entities/social-account.entity';
 import { AccountToken } from 'src/entities/account-token.entity';
+import { HttpService } from '@nestjs/axios';
+import { lastValueFrom } from 'rxjs';
 
 @Injectable()
 export class AccountsService {
-  constructor(private readonly em: EntityManager) {}
+  constructor(
+    private readonly em: EntityManager,
+    private readonly http: HttpService,
+  ) {}
 
   async link(
     userId: number,
@@ -38,6 +43,33 @@ export class AccountsService {
       await this.em.flush();
     }
 
+    // ✅ If Instagram, fetch username and followers_count
+    if (payload.provider === 'instagram' && tokens?.accessToken) {
+      try {
+        const res = await lastValueFrom(
+          this.http.get(
+            `https://graph.facebook.com/v24.0/${payload.providerAccountId}`,
+            {
+              params: {
+                fields: 'username,followers_count,profile_picture_url',
+                access_token: tokens.accessToken,
+              },
+            },
+          ),
+        );
+        const data = res.data;
+        account.username = data.username;
+        account.followersCount = data.followers_count;
+        account.profilePictureUrl = data.profile_picture_url;
+      } catch (err) {
+        console.warn(
+          '⚠️ Could not fetch Instagram profile metadata:',
+          err?.response?.data || err.message,
+        );
+      }
+    }
+
+    // ✅ Store tokens
     if (tokens?.accessToken) {
       const access = new AccountToken();
       access.account = account;
@@ -86,13 +118,15 @@ export class AccountsService {
       { user: userId },
       { populate: ['tokens'] },
     );
-    console.log(accounts);
 
     return accounts.map((acc) => ({
       id: acc.id,
       provider: acc.provider,
       providerAccountId: acc.providerAccountId,
       active: acc.active,
+      followersCount: acc.followersCount,
+      username: acc.username,
+      profilePictureUrl: acc.profilePictureUrl,
       disconnectedAt: acc.disconnectedAt,
       tokens: acc.tokens.getItems().map((t) => ({
         tokenType: t.tokenType,

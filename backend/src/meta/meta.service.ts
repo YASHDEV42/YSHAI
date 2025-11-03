@@ -389,4 +389,85 @@ export class MetaService {
       throw new BadRequestException(`Media upload failed: ${status}`);
     }
   }
+  /**
+   * Get the connected Instagram Business account details
+   * - username
+   * - followers_count
+   * - profile_picture_url
+   */
+  async getInstagramProfile(pageId: string, pageAccessToken: string) {
+    // Step 1: Get IG user ID for this Page
+    const igUserId = await this.getIgUserId(pageId, pageAccessToken);
+    if (!igUserId) {
+      throw new BadRequestException(
+        `No Instagram Business account connected to Page ${pageId}`,
+      );
+    }
+
+    // Step 2: Fetch IG profile details
+    this.logger.log(`Fetching Instagram profile for IG user ID: ${igUserId}`);
+
+    const res = await lastValueFrom(
+      this.http.get(G(`/${igUserId}`), {
+        params: {
+          fields: 'id,username,followers_count,profile_picture_url',
+          access_token: pageAccessToken,
+        },
+      }),
+    );
+
+    const data = res.data;
+    return {
+      igUserId: data.id,
+      username: data.username,
+      followersCount: data.followers_count,
+      profilePicture: data.profile_picture_url,
+    };
+  }
+
+  /**
+   * Get Page ID for a linked Instagram account
+   * (useful for debugging or verifying linkage)
+   */
+  async getPageIdFromIgAccount(
+    igUserId: string,
+    userLongLivedToken: string,
+  ): Promise<{ pageId: string; pageName: string } | null> {
+    this.logger.log(`Resolving Page ID for IG Business account ${igUserId}...`);
+
+    // Use the user's long-lived token to list pages
+    const res = await lastValueFrom(
+      this.http.get(G('/me/accounts'), {
+        params: { access_token: userLongLivedToken },
+      }),
+    );
+
+    const pages: Array<{ id: string; name: string; access_token: string }> =
+      res.data?.data ?? [];
+
+    for (const p of pages) {
+      try {
+        const igResp = await lastValueFrom(
+          this.http.get(G(`/${p.id}`), {
+            params: {
+              fields: 'instagram_business_account',
+              access_token: p.access_token,
+            },
+          }),
+        );
+        const foundIg = igResp.data?.instagram_business_account?.id;
+        if (foundIg && foundIg === igUserId) {
+          this.logger.log(
+            `✅ Found Page ${p.name} (${p.id}) linked to IG account ${igUserId}`,
+          );
+          return { pageId: p.id, pageName: p.name };
+        }
+      } catch {
+        continue;
+      }
+    }
+
+    this.logger.warn(`⚠️ No page found linked to IG account ${igUserId}`);
+    return null;
+  }
 }

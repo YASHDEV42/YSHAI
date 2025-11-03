@@ -21,8 +21,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { connectInstagram } from "../actions";
-import { ConnectedAccount } from "../../actions";
+import { TConnectedAccount } from "@/types";
 
 type Platform = "facebook" | "x" | "instagram" | "linkedin" | "tiktok";
 
@@ -89,7 +88,6 @@ interface ConnectedAccountDetails {
 interface PlatformConnectionDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onAccountConnected: (account: ConnectedAccountDetails) => void;
   text: any;
   locale: string;
 }
@@ -97,7 +95,6 @@ interface PlatformConnectionDialogProps {
 export function PlatformConnectionDialog({
   open,
   onOpenChange,
-  onAccountConnected,
   text,
 }: PlatformConnectionDialogProps) {
   const [step, setStep] = useState<"select" | "connecting" | "details">(
@@ -126,22 +123,6 @@ export function PlatformConnectionDialog({
       setSelectedPlatform(platform);
       setStep("connecting");
     }
-  };
-
-  const handleInstagramLinked = async (data: ConnectedAccount) => {
-    setAccountDetails({
-      username: data.username || "Instagram User",
-      profilePicture: data.profilePicture,
-      accountType: data.accountType,
-      followers: data.followers,
-      provider: "instagram",
-    });
-    setStep("details");
-  };
-
-  const handleDone = () => {
-    if (accountDetails) onAccountConnected(accountDetails);
-    handleClose();
   };
 
   const handleClose = () => {
@@ -268,7 +249,6 @@ export function PlatformConnectionDialog({
               <Button variant="outline" onClick={handleBack}>
                 {text.platforms.connectAnother}
               </Button>
-              <Button onClick={handleDone}>{text.common.done}</Button>
             </div>
           </>
         )}

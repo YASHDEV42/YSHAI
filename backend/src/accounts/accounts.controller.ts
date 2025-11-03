@@ -32,7 +32,7 @@ export class AccountsController {
   @ApiOperation({ summary: 'Link Account' })
   @ApiResponse({ status: 201, type: LinkAccountResponseDto })
   link(
-    @Req() req: { user: { userId: number } },
+    @Req() req: { user: { id: number } },
     @Body() dto: LinkAccountWithTokensDto,
   ): Promise<{ id: number; message: string }> {
     type LinkBody = {
@@ -53,7 +53,7 @@ export class AccountsController {
         : undefined;
 
     return this.accounts.link(
-      req.user.userId,
+      req.user.id,
       { provider: body.provider, providerAccountId: body.providerAccountId },
       tokenPayload,
     );
@@ -63,10 +63,10 @@ export class AccountsController {
   @ApiOperation({ summary: 'Unlink Account' })
   @ApiResponse({ status: 200, type: MessageDto })
   unlink(
-    @Req() req: { user: { userId: number } },
+    @Req() req: { user: { id: number } },
     @Param('accountId', ParseIntPipe) accountId: number,
   ): Promise<{ message: string }> {
-    return this.accounts.unlink(req.user.userId, accountId);
+    return this.accounts.unlink(req.user.id, accountId);
   }
 
   @Get('me')

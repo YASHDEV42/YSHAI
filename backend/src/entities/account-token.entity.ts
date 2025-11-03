@@ -21,6 +21,15 @@ export class AccountToken {
   @Property({ default: false })
   revoked = false;
 
+  @Property({ nullable: true })
+  username?: string;
+
+  @Property({ nullable: true })
+  followersCount?: number;
+
+  @Property({ nullable: true })
+  profilePictureUrl?: string;
+
   @Property({ onCreate: () => new Date() })
   createdAt = new Date();
 }

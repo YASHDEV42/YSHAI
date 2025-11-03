@@ -14,7 +14,7 @@ export default function MetaCallbackClient() {
 
     if (!token) {
       alert("Missing access token from Meta");
-      router.push("/dashboard/settings"); // go back even if no token
+      router.push("/dashboard/settings");
       return;
     }
 

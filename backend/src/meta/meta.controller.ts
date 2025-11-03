@@ -2,7 +2,9 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   Post,
+  Query,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -48,5 +50,35 @@ export class MetaController {
       userId: userIdNum,
       caption,
     });
+  }
+
+  /**
+   * 🔹 GET /meta/instagram/profile?pageId=...&pageToken=...
+   * Returns IG profile (username, followers, profile picture)
+   */
+  @Get('instagram/profile')
+  async getInstagramProfile(
+    @Query('pageId') pageId: string,
+    @Query('pageToken') pageToken: string,
+  ) {
+    if (!pageId || !pageToken) {
+      throw new BadRequestException('pageId and pageToken are required');
+    }
+    return this.meta.getInstagramProfile(pageId, pageToken);
+  }
+
+  /**
+   * 🔹 GET /meta/instagram/page?igUserId=...&userToken=...
+   * Finds which Page is linked to a given IG business account
+   */
+  @Get('instagram/page')
+  async getPageIdFromIgAccount(
+    @Query('igUserId') igUserId: string,
+    @Query('userToken') userToken: string,
+  ) {
+    if (!igUserId || !userToken) {
+      throw new BadRequestException('igUserId and userToken are required');
+    }
+    return this.meta.getPageIdFromIgAccount(igUserId, userToken);
   }
 }

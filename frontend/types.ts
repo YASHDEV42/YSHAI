@@ -21,7 +21,7 @@ export type TConnectedAccount = {
   active: boolean;
   disconnectedAt?: string | null;
   username?: string;
-  followers?: number;
+  followersCount?: number;
   accountType?: string;
   profilePicture?: string;
 };

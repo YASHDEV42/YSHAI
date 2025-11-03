@@ -316,15 +316,7 @@
     "status": {
       "scheduled": "Scheduled"
     },
-    "weekDays": [
-      "Sun",
-      "Mon",
-      "Tue",
-      "Wed",
-      "Thu",
-      "Fri",
-      "Sat"
-    ],
+    "weekDays": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
     "allScheduledPosts": "All Scheduled Posts"
   },
   "AnalyticsPage": {
@@ -410,6 +402,7 @@
       "disconnect": "Disconnect",
       "connectNew": "Connect New Platform",
       "noConnected": "No platforms connected yet",
+      "disconnected": "Inactive",
       "postingPreferences": {
         "title": "Posting Preferences",
         "description": "Configure default settings for your posts",
