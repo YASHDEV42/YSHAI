@@ -23,7 +23,7 @@ export default async function Home({ params }: { params: { locale: string } }) {
     subHeading: tHero("subHeading"),
     primaryButton: tHero("primaryButton"),
     secondaryButton: tHero("secondaryButton"),
-    highlight: tHero("highlight")
+    highlight: tHero("highlight"),
   };
 
   const featureText = {
@@ -55,7 +55,7 @@ export default async function Home({ params }: { params: { locale: string } }) {
         title: tFeature("features.rtl.title"),
         description: tFeature("features.rtl.description"),
       },
-    }
+    },
   };
   const pricingText = {
     badge: tPricing("badge"),
@@ -90,7 +90,7 @@ export default async function Home({ params }: { params: { locale: string } }) {
     heading: tCta("heading"),
     subHeading: tCta("subHeading"),
     primaryButton: tCta("primaryButton"),
-    secondaryButton: tCta("secondaryButton")
+    secondaryButton: tCta("secondaryButton"),
   };
   const footerText = {
     description: tFooter("description"),

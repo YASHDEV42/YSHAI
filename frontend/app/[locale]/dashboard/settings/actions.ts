@@ -1,4 +1,5 @@
 "use server";
+import { updateTag } from "next/cache";
 import { cookies } from "next/headers";
 
 const BaseURL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
@@ -32,7 +33,7 @@ export const changeNameAction = async (
   const cookiesStore = await cookies();
   try {
     const response = await fetch(
-      `${process.env.Next_PUBLIC_PROTECTED_API_KEY}/users/me`,
+      `${process.env.NEXT_PUBLIC_PROTECTED_API_KEY}/users/me`,
       {
         method: "PUT",
         credentials: "include",
@@ -42,6 +43,7 @@ export const changeNameAction = async (
         body: JSON.stringify({ name, timezone }),
       },
     );
+    updateTag("current-user");
     return {
       arMessage: "تم تغيير الاسم بنجاح",
       enMessage: "Name changed successfully",

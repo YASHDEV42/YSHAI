@@ -1,6 +1,7 @@
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "./components/dashboard-sidebar";
 import { setRequestLocale, getTranslations } from "next-intl/server";
+import { getUser } from "@/lib/helper";
 
 export default async function DashboardLayout({
   children,
@@ -26,6 +27,8 @@ export default async function DashboardLayout({
     daysAgo: t("daysAgo"),
   };
   let user = null;
+  const data = await getUser();
+  user = data.user ? data.user : null;
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-background">

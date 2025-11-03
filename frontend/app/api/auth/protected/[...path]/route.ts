@@ -12,6 +12,7 @@ export async function handler(
   const url = new URL(request.url);
   const queryString = url.search;
   const targetUrl = `${API_BASE_URL.replace(/\/+$/, "")}/${originalPath}${queryString}`;
+  console.log("Proxying request to:", targetUrl);
   const cookieStore = await cookies();
 
   const accessToken = cookieStore.get("accessToken")?.value;

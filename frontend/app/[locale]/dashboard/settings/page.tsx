@@ -1,5 +1,6 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import SettingsClient from "./components/settings";
+import { getUser } from "@/lib/helper";
 
 export default async function SettingsPage({
   params,
@@ -129,6 +130,7 @@ export default async function SettingsPage({
       newyork: t("timezones.newyork"),
     },
   };
+  const { user } = await getUser();
 
-  return <SettingsClient locale={locale} text={text} />;
+  return <SettingsClient locale={locale} text={text} user={user} />;
 }

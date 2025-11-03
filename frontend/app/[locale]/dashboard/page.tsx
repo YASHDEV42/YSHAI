@@ -48,5 +48,6 @@ export default async function DashboardPageRoute({
       failed: t("activityStatus.failed"),
     },
   };
+
   return <DashboardPage text={text} locale={locale} />;
 }
