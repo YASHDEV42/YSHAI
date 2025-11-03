@@ -65,14 +65,25 @@ export class MetaService {
     }
 
     // 4) Persist: access = page token, refresh = user long-lived token
-    const expiresAt = new Date(Date.now() + longUser.expires_in * 1000);
+    const expiresInSeconds =
+      typeof longUser.expires_in === 'number' && !isNaN(longUser.expires_in)
+        ? longUser.expires_in
+        : 60 * 24 * 60 * 60; // 60 days fallback
+
+    const expiresAt = new Date(Date.now() + expiresInSeconds * 1000);
+
+    if (isNaN(expiresAt.getTime())) {
+      // still invalid → don’t persist the field
+      this.logger.warn('⚠️ Invalid expiresAt, skipping timestamp persist');
+    }
+
     const link = await this.accounts.link(
       Number(userId),
       { provider: 'instagram', providerAccountId: igUserId },
       {
-        accessToken: page.access_token, // PAGE token → posting
-        refreshToken: longUser.access_token, // USER long-lived → to mint fresh PAGE token
-        expiresAt,
+        accessToken: page.access_token,
+        refreshToken: longUser.access_token,
+        expiresAt: isNaN(expiresAt.getTime()) ? undefined : expiresAt,
       },
     );
 

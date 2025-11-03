@@ -73,7 +73,7 @@ export class AccountsController {
   @ApiOperation({
     summary: 'List connected accounts for the authenticated user',
   })
-  async getMyAccounts(@Req() req: { user: { userId: number } }) {
-    return this.accounts.listForUser(req.user.userId);
+  async getMyAccounts(@Req() req: { user: { id: number } }) {
+    return this.accounts.listForUser(req.user.id);
   }
 }

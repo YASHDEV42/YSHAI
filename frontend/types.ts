@@ -14,3 +14,14 @@ export type TUser = {
   updatedAt: string;
   deletedAt?: string;
 };
+export type TConnectedAccount = {
+  id: number;
+  provider: "instagram" | "facebook" | "x" | "linkedin" | "tiktok";
+  providerAccountId: string;
+  active: boolean;
+  disconnectedAt?: string | null;
+  username?: string;
+  followers?: number;
+  accountType?: string;
+  profilePicture?: string;
+};

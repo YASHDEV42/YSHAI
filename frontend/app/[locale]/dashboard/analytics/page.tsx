@@ -1,14 +1,15 @@
-import { setRequestLocale, getTranslations } from "next-intl/server"
-import AnalyticsClient, { AnalyticsPageText } from "./components/analytics"
+import { setRequestLocale, getTranslations } from "next-intl/server";
+import AnalyticsClient, { AnalyticsPageText } from "./components/analytics";
 
 export default async function AnalyticsPage({
-  params: { locale }
+  params,
 }: {
-  params: { locale: string }
+  params: Promise<{ locale: string }>;
 }) {
-  setRequestLocale(locale)
+  const { locale } = await params;
+  setRequestLocale(locale);
 
-  const t = await getTranslations({ locale, namespace: "AnalyticsPage" })
+  const t = await getTranslations({ locale, namespace: "AnalyticsPage" });
 
   const text: AnalyticsPageText = {
     title: t("title"),
@@ -54,7 +55,7 @@ export default async function AnalyticsPage({
       views: t("metrics.views"),
       engagement: t("metrics.engagement"),
     },
-  }
+  };
 
-  return <AnalyticsClient text={text} />
+  return <AnalyticsClient text={text} />;
 }

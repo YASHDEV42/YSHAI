@@ -1,6 +1,7 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import SettingsClient from "./components/settings";
-import { getUser } from "@/lib/helper";
+import { getUser, getUserSocialMediaAccounts } from "@/lib/helper";
+import { TConnectedAccount, TUser } from "@/types";
 
 export default async function SettingsPage({
   params,
@@ -130,7 +131,18 @@ export default async function SettingsPage({
       newyork: t("timezones.newyork"),
     },
   };
-  const { user } = await getUser();
-
-  return <SettingsClient locale={locale} text={text} user={user} />;
+  const data: { user?: TUser | undefined; message: string } = await getUser();
+  const dataAccounts: {
+    socialAccounts?: TConnectedAccount[];
+    message: string;
+  } = await getUserSocialMediaAccounts();
+  console.log("dataAccounts:", dataAccounts);
+  return (
+    <SettingsClient
+      locale={locale}
+      text={text}
+      user={data.user}
+      accounts={dataAccounts.socialAccounts || []}
+    />
+  );
 }

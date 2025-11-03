@@ -10,23 +10,24 @@ import {
   Linkedin,
   Music2,
   CircleFadingPlus,
-  Loader,
 } from "lucide-react";
 import { BillingTab } from "./billing-tab";
 import { NotificationsTab } from "./notifications-tab";
 import { PlatformsTab } from "./platforms-tab";
 import { ProfileTab } from "./profile-tab";
-import { useState } from "react";
+import { TConnectedAccount, TUser } from "@/types";
 export default function SettingsClient({
   text,
   locale,
   user,
+  accounts,
 }: {
   text: any;
   locale: string;
-  user: any;
+  user: TUser | undefined;
+  accounts: TConnectedAccount[];
 }) {
-  const [accounts, setAccounts] = useState([]);
+  console.log("accounts in SettingsClient:", accounts);
   const dir = locale === "ar" ? "rtl" : "ltr";
   return (
     <div className="container mx-auto p-8">

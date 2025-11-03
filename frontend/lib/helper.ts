@@ -24,4 +24,27 @@ const getUser = async (): Promise<{ user?: TUser; message: string }> => {
   const data = await response.json();
   return { user: data, message: "Success" };
 };
-export { getUser };
+const getUserSocialMediaAccounts = async () => {
+  const cookieStore = await cookies();
+  if (!cookieStore.has("accessToken")) {
+    return { message: "No access token found" };
+  }
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_PROTECTED_API_KEY}/accounts/me`,
+    {
+      method: "GET",
+      credentials: "include",
+      next: { tags: ["current-user"] },
+      headers: {
+        Cookie: `accessToken=${cookieStore.get("accessToken")?.value}`,
+        "content-type": "application/json",
+      },
+    },
+  );
+  if (!response.ok) {
+    return { message: "Failed to fetch user social media accounts" };
+  }
+  const data = await response.json();
+  return { socialAccounts: data, message: "Success" };
+};
+export { getUser, getUserSocialMediaAccounts };

@@ -86,6 +86,7 @@ export class AccountsService {
       { user: userId },
       { populate: ['tokens'] },
     );
+    console.log(accounts);
 
     return accounts.map((acc) => ({
       id: acc.id,

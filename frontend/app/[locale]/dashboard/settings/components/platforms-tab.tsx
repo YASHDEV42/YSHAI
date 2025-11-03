@@ -19,17 +19,17 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { PlatformConnectionDialog } from "./platform-connection-dialog";
-import { ConnectedAccount } from "../../actions";
+import { TConnectedAccount } from "@/types";
 
 interface PlatformsTabProps {
   text: any;
   locale: string;
-  accounts: ConnectedAccount[];
+  accounts: TConnectedAccount[];
 }
 
 export function PlatformsTab({ text, locale, accounts }: PlatformsTabProps) {
-  const [connectedPlatforms, setConnectedPlatforms] =
-    useState<ConnectedAccount[]>(accounts);
+  console.log("Accounts:", accounts);
+  const connectedPlatforms = accounts;
   const [dialogOpen, setDialogOpen] = useState(false);
   const handleAccountConnected = () => {};
 

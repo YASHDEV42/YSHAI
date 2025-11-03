@@ -30,7 +30,7 @@ export const changeNameAction = async (
       success: false,
     };
   }
-  const cookiesStore = await cookies();
+  const cookieStore = await cookies();
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_PROTECTED_API_KEY}/users/me`,
@@ -38,7 +38,7 @@ export const changeNameAction = async (
         method: "PUT",
         credentials: "include",
         headers: {
-          Cookie: cookiesStore.toString(),
+          Cookie: cookieStore.toString(),
         },
         body: JSON.stringify({ name, timezone }),
       },
@@ -68,22 +68,21 @@ export async function connectInstagram(shortToken: string) {
     throw new Error("Not authenticated");
   }
 
-  console.log("🔑 Using access token from cookies:", accessToken);
-  console.log("🔖 Short token received:", shortToken);
-
   try {
-    const res = await fetch(`${BaseURL}/meta/oauth/callback`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_PROTECTED_API_KEY}/meta/oauth/callback`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: cookieStore.toString(),
+        },
+        body: JSON.stringify({
+          shortToken,
+          userId: "1",
+        }),
       },
-      body: JSON.stringify({
-        shortToken,
-        userId: "1",
-      }),
-      cache: "no-store",
-    });
+    );
     return await res.json();
   } catch (error) {
     console.error("Error during fetch:", error);

@@ -53,7 +53,7 @@ export default async function RootLayout({ children, params }: Props) {
   let user: TUser | null = null;
   const data = await getUser();
   user = data.user ? data.user : null;
-  console.log("User in root layout:", data);
+
   return (
     <html lang={locale} dir={locale === "ar" ? "rtl" : "ltr"}>
       <body
