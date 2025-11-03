@@ -15,6 +15,7 @@ export default async function DashboardLayout({
     logo: t("logo"),
     createPost: t("createPost"),
     calendar: t("calendar"),
+    platforms: t("platforms"),
     analytics: t("analytics"),
     settings: t("settings"),
     notifications: t("notifications"),

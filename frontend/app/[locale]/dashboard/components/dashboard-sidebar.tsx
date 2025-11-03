@@ -14,6 +14,7 @@ import {
   CheckCircle2,
   AlertCircle,
   Info,
+  Share2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -30,6 +31,7 @@ import {
 import { cn } from "@/lib/utils";
 import { ModeToggle } from "../../../components/toggleTheme";
 import { LanguageToggle } from "@/app/components/LanguageToggle";
+
 type NotificationResponseDto = {
   title: string | null;
   id: number;
@@ -76,6 +78,12 @@ export function DashboardSidebar({
       icon: Calendar,
       label: text.calendar || "Calendar",
       activeHref: "/" + locale + "/dashboard/calendar",
+    },
+    {
+      href: "/dashboard/platforms",
+      icon: Share2,
+      label: text.platforms || "Platforms",
+      activeHref: "/" + locale + "/dashboard/platforms",
     },
     {
       href: "/dashboard/analytics",

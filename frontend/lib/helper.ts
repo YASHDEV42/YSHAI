@@ -1,10 +1,11 @@
 "use server";
-import { TUser } from "@/types";
+import type { TUser } from "@/types";
 import { cookies } from "next/headers";
 import { updateTag } from "next/cache";
+
 const getUser = async (): Promise<{ user?: TUser; message: string }> => {
-  const cookieSotre = await cookies();
-  if (!cookieSotre.has("accessToken")) {
+  const cookieStore = await cookies();
+  if (!cookieStore.has("accessToken")) {
     return { message: "No access token found" };
   }
   const response = await fetch(
@@ -14,7 +15,7 @@ const getUser = async (): Promise<{ user?: TUser; message: string }> => {
       credentials: "include",
       next: { tags: ["current-user"] },
       headers: {
-        Cookie: `accessToken=${cookieSotre.get("accessToken")?.value}`,
+        Cookie: `accessToken=${cookieStore.get("accessToken")?.value}`,
         "content-type": "application/json",
       },
     },
@@ -25,6 +26,7 @@ const getUser = async (): Promise<{ user?: TUser; message: string }> => {
   const data = await response.json();
   return { user: data, message: "Success" };
 };
+
 const getUserSocialMediaAccounts = async () => {
   const cookieStore = await cookies();
   if (!cookieStore.has("accessToken")) {
@@ -47,6 +49,30 @@ const getUserSocialMediaAccounts = async () => {
   }
   const data = await response.json();
   return { socialAccounts: data, message: "Success" };
+};
+
+const getConnectedAccounts = async () => {
+  const cookieStore = await cookies();
+  if (!cookieStore.has("accessToken")) {
+    return { accounts: [], message: "No access token found" };
+  }
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_PROTECTED_API_KEY}/accounts/me`,
+    {
+      method: "GET",
+      credentials: "include",
+      next: { tags: ["user-socialMedia"] },
+      headers: {
+        Cookie: `accessToken=${cookieStore.get("accessToken")?.value}`,
+        "content-type": "application/json",
+      },
+    },
+  );
+  if (!response.ok) {
+    return { accounts: [], message: "Failed to fetch connected accounts" };
+  }
+  const data = await response.json();
+  return { accounts: data, message: "Success" };
 };
 
 const disconnectAccount = async (
@@ -78,6 +104,7 @@ const disconnectAccount = async (
   const data = await response.json();
   return { success: true, message: data.message ?? "Account disconnected" };
 };
+
 export async function reconnectAccount({
   provider,
   providerAccountId,
@@ -130,6 +157,7 @@ export async function reconnectAccount({
     return { success: false, message: "Unexpected error while reconnecting" };
   }
 }
+
 export async function getInstagramProfileAction(
   pageId: string,
   pageToken: string,
@@ -170,4 +198,10 @@ export async function getPageFromIgAccountAction(
   const data = await res.json();
   return { success: true, page: data };
 }
-export { getUser, getUserSocialMediaAccounts, disconnectAccount };
+
+export {
+  getUser,
+  getUserSocialMediaAccounts,
+  getConnectedAccounts,
+  disconnectAccount,
+};
