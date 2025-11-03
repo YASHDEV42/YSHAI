@@ -39,8 +39,15 @@ const TwitterIcon = ({ className }: { className?: string }) => (
 );
 
 const InstagramIcon = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.057-1.645.069-4.849.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-14.4z" />
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.057-1.645.069-4.849.069-3.205 0-3.584-.012-4.849-.069-3.225-.149-4.771-1.664-4.919-4.919C2.164 15.585 2.152 15.205 2.152 12c0-3.204.012-3.584.07-4.849.148-3.225 1.691-4.771 4.919-4.919C8.416 2.175 8.796 2.163 12 2.163zM12 0C8.741 0 8.333.014 7.052.072 2.694.272.272 2.694.072 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.667-.014 4.948-.072 4.358-.2 6.78-2.618 6.98-6.98.058-1.281.072-1.689.072-4.948 0-3.259-.014-3.667-.072-4.948-.2-4.358-2.618-6.78-6.98-6.98C15.668.014 15.259 0 12 0z" />
+    <path d="M12 5.838A6.162 6.162 0 1 0 12 18.162 6.162 6.162 0 1 0 12 5.838zm0 10.162a4 4 0 1 1 0-8 4 4 0 0 1 0 8z" />
+    <circle cx="18.406" cy="5.594" r="1.44" />
   </svg>
 );
 
@@ -197,7 +204,11 @@ export function PlatformDetail({ text, locale, account }: PlatformDetailProps) {
 
       {/* Main Content */}
       <main className="flex-1 p-6">
-        <Tabs defaultValue="overview" className="space-y-6">
+        <Tabs
+          defaultValue="overview"
+          className="space-y-6"
+          dir={locale === "ar" ? "rtl" : "ltr"}
+        >
           <TabsList>
             <TabsTrigger value="overview">
               {text.tabs?.overview || text.overview}
@@ -514,7 +525,7 @@ export function PlatformDetail({ text, locale, account }: PlatformDetailProps) {
                   </div>
 
                   {/* Input Area */}
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 justify-center items-center">
                     <Textarea
                       placeholder={
                         text.aiAdvisor?.inputPlaceholder || "Ask me anything..."
@@ -527,13 +538,13 @@ export function PlatformDetail({ text, locale, account }: PlatformDetailProps) {
                           handleSendMessage();
                         }
                       }}
-                      className="min-h-[60px] resize-none"
+                      className=" resize-none"
                     />
                     <Button
                       onClick={handleSendMessage}
                       disabled={!input.trim() || isLoading}
                       size="icon"
-                      className="shrink-0"
+                      className="shrink-0 "
                     >
                       <Send className="size-4" />
                     </Button>

@@ -65,15 +65,6 @@ export default async function PlatformDetailPage({
       maleAudience: t("analytics.maleAudience"),
       femaleAudience: t("analytics.femaleAudience"),
     },
-    aiInsights: {
-      title: t("aiInsights.title"),
-      description: t("aiInsights.description"),
-      bestTimeToPost: t("aiInsights.bestTimeToPost"),
-      topPerformingContent: t("aiInsights.topPerformingContent"),
-      audienceGrowth: t("aiInsights.audienceGrowth"),
-      contentSuggestions: t("aiInsights.contentSuggestions"),
-      generateInsights: t("aiInsights.generateInsights"),
-    },
     aiAdvisor: {
       title: t("aiAdvisor.title"),
       description: t("aiAdvisor.description"),
