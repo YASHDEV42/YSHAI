@@ -22,24 +22,24 @@ export class AuthService {
     private jwtService: JwtService,
     private readonly em: EntityManager,
     private readonly mailer: MailerService,
-  ) { }
+  ) {}
 
   // generate token
   private async generateTokens(
     id: number,
     email: string,
     role: string,
-  ): Promise<{ accessToken: string; refreshToken: string }> {
+  ): Promise<{ accessToken: string }> {
     const payload = { id, email, role };
-    const accessToken = await this.jwtService.signAsync(payload, { expiresIn: '15m' });
-    const refreshToken = await this.jwtService.signAsync(payload, { expiresIn: '7d' });
+    const accessToken = await this.jwtService.signAsync(payload, {
+      expiresIn: '7d',
+    });
+    const refreshToken = await this.jwtService.signAsync(payload, {
+      expiresIn: '7d',
+    });
     const tokenHash = await bcrypt.hash(refreshToken, 10);
     const user = await this.em.findOneOrFail(User, { id });
-    await this.em.nativeUpdate(
-      RefreshToken,
-      { userId: id },
-      { revoked: true },
-    );
+    await this.em.nativeUpdate(RefreshToken, { userId: id }, { revoked: true });
     const tokenEntity = this.em.create(RefreshToken, {
       user,
       userId: id,
@@ -54,7 +54,7 @@ export class AuthService {
 
     await this.em.persistAndFlush(tokenEntity);
 
-    return { accessToken, refreshToken };
+    return { accessToken };
   }
 
   // find user by email Function
@@ -205,8 +205,11 @@ export class AuthService {
   }
 
   // login User Function
-  async login(id: number, email: string, role: string,): Promise<{ accessToken: string; refreshToken: string }> {
-
+  async login(
+    id: number,
+    email: string,
+    role: string,
+  ): Promise<{ accessToken: string }> {
     return this.generateTokens(id, email, role);
   }
 
@@ -229,7 +232,7 @@ export class AuthService {
   }
 
   // refresh tokens Function
-  async refresh(refreshToken: string): Promise<{ accessToken: string; refreshToken: string }> {
+  async refresh(refreshToken: string): Promise<{ accessToken: string }> {
     let payload: { id: number; email: string; role: string };
     try {
       payload = this.jwtService.verify(refreshToken, {

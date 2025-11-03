@@ -35,9 +35,7 @@ const logger = new Logger();
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private authService: AuthService,
-  ) { }
+  constructor(private authService: AuthService) {}
 
   @Post('register')
   @ApiOperation({ summary: 'Register a new user' })
@@ -52,32 +50,34 @@ export class AuthController {
   @ApiOkResponse({ type: TokensResponseDto })
   @ApiBody({ type: LoginDto })
   async login(
-    @Req() req: { user: { id: number; email: string, role: string } },
+    @Req() req: { user: { id: number; email: string; role: string } },
     @Body() _body: LoginDto,
-  ): Promise<{ accessToken: string, refreshToken: string }> {
-    const { accessToken, refreshToken } = await this.authService.login(
+  ): Promise<{ accessToken: string }> {
+    const { accessToken } = await this.authService.login(
       req.user.id,
       req.user.email,
       req.user.role,
     );
-    return { accessToken, refreshToken };
+    return { accessToken };
   }
 
-  @Post('refresh')
-  @ApiOperation({ summary: 'Refresh access and refresh tokens' })
-  @ApiBody({ type: RefreshTokenDto })
-  @ApiOkResponse({ type: TokensResponseDto })
-  async refresh(@Req() req: Request,
-    @Body() dto: any,
-  ): Promise<{ accessToken: string; refreshToken: string }> {
-
-    const oldRefreshToken = dto.refreshToken;
-
-    logger.log(`Received refresh token: ${oldRefreshToken}`);
-    if (!oldRefreshToken) throw new UnauthorizedException('Missing refresh token');
-    const { accessToken, refreshToken } = await this.authService.refresh(oldRefreshToken);
-    return { accessToken, refreshToken };
-  }
+  // @Post('refresh')
+  // @ApiOperation({ summary: 'Refresh access and refresh tokens' })
+  // @ApiBody({ type: RefreshTokenDto })
+  // @ApiOkResponse({ type: TokensResponseDto })
+  // async refresh(
+  //   @Req() req: Request,
+  //   @Body() dto: any,
+  // ): Promise<{ accessToken: string; refreshToken: string }> {
+  //   const oldRefreshToken = dto.refreshToken;
+  //
+  //   logger.log(`Received refresh token: ${oldRefreshToken}`);
+  //   if (!oldRefreshToken)
+  //     throw new UnauthorizedException('Missing refresh token');
+  //   const { accessToken  } =
+  //     await this.authService.refresh(oldRefreshToken);
+  //   return { accessToken, refreshToken };
+  // }
 
   @Post('logout')
   @ApiOperation({ summary: 'Logout' })
@@ -92,7 +92,8 @@ export class AuthController {
   @ApiOkResponse({
     description: 'Password reset link sent.',
     type: MessageResponseDto,
-  }) @ApiNotFoundResponse({
+  })
+  @ApiNotFoundResponse({
     description: 'Bad request.',
     type: MessageResponseDto,
   })

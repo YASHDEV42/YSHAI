@@ -1,6 +1,4 @@
 "use server";
-import { apiClient } from "@/lib/api";
-import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
 const BaseURL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
@@ -33,16 +31,17 @@ export const changeNameAction = async (
   }
   const cookiesStore = await cookies();
   try {
-    const response = await fetch(`${BaseURL}/api/auth/refresh/users/me`, {
-      method: "PUT",
-      credentials: "include",
-      headers: {
-        Cookie: cookiesStore.toString(),
+    const response = await fetch(
+      `${process.env.Next_PUBLIC_PROTECTED_API_KEY}/users/me`,
+      {
+        method: "PUT",
+        credentials: "include",
+        headers: {
+          Cookie: cookiesStore.toString(),
+        },
+        body: JSON.stringify({ name, timezone }),
       },
-      body: JSON.stringify({ name, timezone }),
-    });
-    console.log("Change name response:", response);
-    revalidatePath("/dashboard/settings");
+    );
     return {
       arMessage: "تم تغيير الاسم بنجاح",
       enMessage: "Name changed successfully",

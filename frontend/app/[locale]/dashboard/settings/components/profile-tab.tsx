@@ -18,9 +18,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
-import { useActionState } from "react";
+import { useActionState, useEffect, useTransition } from "react";
 
 import { changeNameAction } from "../actions";
+import { useRouter } from "next/navigation";
 interface ProfileTabProps {
   text: any;
   user: any;
@@ -34,11 +35,19 @@ const initialState = {
 };
 
 export function ProfileTab({ text, user, locale }: ProfileTabProps) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
   const [state, formAction, pending] = useActionState(
     changeNameAction,
     initialState,
   );
-
+  useEffect(() => {
+    if (state.success) {
+      startTransition(() => {
+        router.refresh(); // now runs as a background transition
+      });
+    }
+  }, [state.success]);
   return (
     <>
       <Card className="border-border bg-card">
@@ -117,9 +126,8 @@ export function ProfileTab({ text, user, locale }: ProfileTabProps) {
             <Input id="currentPassword" type="password" />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="newPassword">
-              {text.profile.security.newPassword}
-            </Label>
+            {text.profile.security.newPassword}
+            <Label htmlFor="newPassword"></Label>
             <Input id="newPassword" type="password" />
           </div>
           <div className="space-y-2">

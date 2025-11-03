@@ -28,7 +28,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { ModeToggle } from "../../../components/toggleTheme";
 import { LanguageToggle } from "@/app/components/LanguageToggle";

@@ -10,21 +10,22 @@ import {
   Linkedin,
   Music2,
   CircleFadingPlus,
+  Loader,
 } from "lucide-react";
 import { BillingTab } from "./billing-tab";
 import { NotificationsTab } from "./notifications-tab";
 import { PlatformsTab } from "./platforms-tab";
 import { ProfileTab } from "./profile-tab";
-import { useUser } from "@/hooks/useUser";
 import { useState } from "react";
 export default function SettingsClient({
   text,
   locale,
+  user,
 }: {
   text: any;
   locale: string;
+  user: any;
 }) {
-  const { user, loading, error } = useUser();
   const [accounts, setAccounts] = useState([]);
   const dir = locale === "ar" ? "rtl" : "ltr";
   return (

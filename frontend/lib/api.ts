@@ -1,34 +1,7 @@
-import { cookies } from "next/headers";
-
-const APP_BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-
-export async function apiClient(path: string, options: RequestInit = {}) {
-  const cookieStore = await cookies();
-
-  // manually build the cookie header
-  const cookieHeader = [
-    cookieStore.get("accessToken")
-      ? `accessToken=${cookieStore.get("accessToken")?.value}`
-      : null,
-    cookieStore.get("refreshToken")
-      ? `refreshToken=${cookieStore.get("refreshToken")?.value}`
-      : null,
-  ]
-    .filter(Boolean)
-    .join("; ");
-
-  const res = await fetch(`${APP_BASE_URL}/api/auth/refresh{path}`, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...(cookieHeader ? { Cookie: cookieHeader } : {}),
-      ...(options.headers || {}),
-    },
-  });
-
+export const fetcher = async (url: string) => {
+  const res = await fetch(url, { credentials: "include" });
   if (!res.ok) {
-    throw new Error(`Request failed: ${res.status}`);
+    throw new Error("Failed to fetch data");
   }
-
   return res.json();
-}
+};

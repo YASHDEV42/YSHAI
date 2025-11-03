@@ -52,17 +52,6 @@ export default async function RootLayout({ children, params }: Props) {
   let user = null;
   const cookieStore = await cookies();
 
-  const userPromise = fetch("http://localhost:3000/api/auth/refresh/users/me", {
-    credentials: "include",
-    headers: {
-      Cookie: cookieStore.toString(),
-    },
-  })
-    .then(async (res) => {
-      if (!res.ok) return null;
-      return res.json();
-    })
-    .catch(() => null);
   return (
     <html lang={locale} dir={locale === "ar" ? "rtl" : "ltr"}>
       <body
