@@ -1,14 +1,17 @@
-'use client';
+"use client";
 import { ModeToggle } from "../../components/toggleTheme";
 import { LanguageToggle } from "../../components/LanguageToggle";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { LogOut } from "lucide-react";
-export function Navbar({ text, user }: { text: any, user: any | null }) {
+export function Navbar({ text, user }: { text: any; user: any | null }) {
   const pathname = usePathname();
 
-  if (pathname?.startsWith('/ar/dashboard') || pathname?.startsWith('/en/dashboard')) {
+  if (
+    pathname?.startsWith("/ar/dashboard") ||
+    pathname?.startsWith("/en/dashboard")
+  ) {
     return null;
   }
 
@@ -22,13 +25,22 @@ export function Navbar({ text, user }: { text: any, user: any | null }) {
         </div>
 
         <nav className="hidden md:flex items-center gap-6">
-          <Link href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+          <Link
+            href="#features"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
             {text.features}
           </Link>
-          <Link href="#pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+          <Link
+            href="#pricing"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
             {text.pricing}
           </Link>
-          <Link href="#about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+          <Link
+            href="#about"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
             {text.about}
           </Link>
         </nav>
@@ -39,8 +51,12 @@ export function Navbar({ text, user }: { text: any, user: any | null }) {
               <Button asChild>
                 <Link href="/dashboard">{text.dashboard}</Link>
               </Button>
-              <form >
-                <Button variant="ghost" type="submit" className="cursor-pointer">
+              <form>
+                <Button
+                  variant="ghost"
+                  type="submit"
+                  className="cursor-pointer"
+                >
                   {text.logout}
                   <LogOut />
                 </Button>
@@ -55,12 +71,11 @@ export function Navbar({ text, user }: { text: any, user: any | null }) {
                 <Link href="/signup">{text.register}</Link>
               </Button>
             </>
-          )
-          }
+          )}
           <LanguageToggle />
           <ModeToggle />
         </div>
       </div>
-    </nav >
+    </nav>
   );
 }

@@ -1,5 +1,3 @@
-"use server";
-
 import { cookies } from "next/headers";
 
 const APP_BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
@@ -19,7 +17,7 @@ export async function apiClient(path: string, options: RequestInit = {}) {
     .filter(Boolean)
     .join("; ");
 
-  const res = await fetch(`${APP_BASE_URL}/api/proxy${path}`, {
+  const res = await fetch(`${APP_BASE_URL}/api/auth/refresh{path}`, {
     ...options,
     headers: {
       "Content-Type": "application/json",

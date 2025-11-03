@@ -1,12 +1,10 @@
 "use server";
 
-import { cookies } from "next/headers";
-
 const BaseURL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
 
 export const refreshAction = async (
   refreshToken: string,
-): Promise<{ accessToken: string }> => {
+): Promise<{ accessToken: string; newRefreshToken: string }> => {
   const response = await fetch(`${BaseURL}/auth/refresh`, {
     method: "POST",
     headers: {
@@ -21,5 +19,5 @@ export const refreshAction = async (
 
   const { accessToken, newRefreshToken } = await response.json();
 
-  return { accessToken };
+  return { accessToken, newRefreshToken };
 };
