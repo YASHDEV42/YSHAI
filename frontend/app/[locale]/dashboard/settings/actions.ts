@@ -3,7 +3,7 @@ import { apiClient } from "@/lib/api";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
-const BaseURL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
+const BaseURL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
 type initialStateType = {
   arMessage: string;
   enMessage: string;
@@ -31,10 +31,14 @@ export const changeNameAction = async (
       success: false,
     };
   }
+  const cookiesStore = await cookies();
   try {
-    const response = await apiClient("/users/me", {
+    const response = await fetch(`${BaseURL}/api/auth/refresh/users/me`, {
       method: "PUT",
       credentials: "include",
+      headers: {
+        Cookie: cookiesStore.toString(),
+      },
       body: JSON.stringify({ name, timezone }),
     });
     console.log("Change name response:", response);

@@ -52,19 +52,17 @@ export default async function RootLayout({ children, params }: Props) {
   let user = null;
   const cookieStore = await cookies();
 
-  try {
-    user = await fetch("http://localhost:3000/api/auth/refresh/users/me", {
-      credentials: "include",
-      headers: {
-        Cookie: cookieStore.toString(),
-      },
-    });
-    const data = await user.json();
-    user = data;
-    console.log("User data fetched successfully:", user);
-  } catch (err) {
-    console.log("Error fetching user data:", err);
-  }
+  const userPromise = fetch("http://localhost:3000/api/auth/refresh/users/me", {
+    credentials: "include",
+    headers: {
+      Cookie: cookieStore.toString(),
+    },
+  })
+    .then(async (res) => {
+      if (!res.ok) return null;
+      return res.json();
+    })
+    .catch(() => null);
   return (
     <html lang={locale} dir={locale === "ar" ? "rtl" : "ltr"}>
       <body
@@ -77,7 +75,7 @@ export default async function RootLayout({ children, params }: Props) {
           disableTransitionOnChange
         >
           <NextIntlClientProvider locale={locale} messages={messages}>
-            <Navbar text={text} user={user} />
+            <Navbar text={text} />
             {children}
             <Toaster position="bottom-right" />
           </NextIntlClientProvider>

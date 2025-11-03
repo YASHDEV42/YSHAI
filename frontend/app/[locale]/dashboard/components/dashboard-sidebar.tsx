@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Calendar,
   TrendingUp,
@@ -14,10 +14,11 @@ import {
   CheckCircle2,
   AlertCircle,
   Info,
-} from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { ScrollArea } from "@/components/ui/scroll-area"
+  Loader2,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Sidebar,
   SidebarContent,
@@ -26,18 +27,19 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { cn } from "@/lib/utils"
-import { ModeToggle } from "../../../components/toggleTheme"
-import { LanguageToggle } from "@/app/components/LanguageToggle"
+} from "@/components/ui/sidebar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { cn } from "@/lib/utils";
+import { ModeToggle } from "../../../components/toggleTheme";
+import { LanguageToggle } from "@/app/components/LanguageToggle";
+import { useUser } from "@/hooks/useUser";
 type UserResponseDto = {
   name: string;
   email: string;
   role: string;
   timezone: string;
   timeFormat: string;
-}
+};
 type NotificationResponseDto = {
   title: string | null;
   id: number;
@@ -45,67 +47,103 @@ type NotificationResponseDto = {
   message: string;
   read: boolean;
   createdAt: string;
-}
+};
 
 interface DashboardSidebarProps {
-  locale?: string
-  text: any
-  user: UserResponseDto | null
+  locale?: string;
+  text: any;
 }
 
-export function DashboardSidebar({ locale = "en", text, user }: DashboardSidebarProps) {
-  const pathname = usePathname()
-  const [notifications, setNotifications] = useState<NotificationResponseDto[]>([])
-  const [showNotifications, setShowNotifications] = useState(false)
-  const isRTL = locale === "ar"
-  const router = useRouter()
-  const unreadCount = notifications.filter((n) => !n.read).length
+export function DashboardSidebar({
+  locale = "en",
+  text,
+}: DashboardSidebarProps) {
+  const { user, loading, error } = useUser();
+  const pathname = usePathname();
+  const [notifications, setNotifications] = useState<NotificationResponseDto[]>(
+    [],
+  );
+  const [showNotifications, setShowNotifications] = useState(false);
+  const isRTL = locale === "ar";
+  const router = useRouter();
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
   const menuItems = [
-    { href: "/dashboard", icon: BarChart3, label: text.overview || "Overview", activeHref: "/" + locale + "/dashboard" },
-    { href: "/dashboard/create", icon: Sparkles, label: text.createPost || "Create Post", activeHref: "/" + locale + "/dashboard/create" },
-    { href: "/dashboard/calendar", icon: Calendar, label: text.calendar || "Calendar", activeHref: "/" + locale + "/dashboard/calendar" },
-    { href: "/dashboard/analytics", icon: TrendingUp, label: text.analytics || "Analytics", activeHref: "/" + locale + "/dashboard/analytics" },
-    { href: "/dashboard/settings", icon: Settings, label: text.settings || "Settings", activeHref: "/" + locale + "/dashboard/settings" },
-  ]
+    {
+      href: "/dashboard",
+      icon: BarChart3,
+      label: text.overview || "Overview",
+      activeHref: "/" + locale + "/dashboard",
+    },
+    {
+      href: "/dashboard/create",
+      icon: Sparkles,
+      label: text.createPost || "Create Post",
+      activeHref: "/" + locale + "/dashboard/create",
+    },
+    {
+      href: "/dashboard/calendar",
+      icon: Calendar,
+      label: text.calendar || "Calendar",
+      activeHref: "/" + locale + "/dashboard/calendar",
+    },
+    {
+      href: "/dashboard/analytics",
+      icon: TrendingUp,
+      label: text.analytics || "Analytics",
+      activeHref: "/" + locale + "/dashboard/analytics",
+    },
+    {
+      href: "/dashboard/settings",
+      icon: Settings,
+      label: text.settings || "Settings",
+      activeHref: "/" + locale + "/dashboard/settings",
+    },
+  ];
 
-  const markAsRead = async (id: number) => {
-  }
+  const markAsRead = async (id: number) => {};
 
-  const markAllAsRead = async () => {
-  }
+  const markAllAsRead = async () => {};
 
   const getNotificationIcon = (type: NotificationResponseDto["type"]) => {
     switch (type) {
       case "approved":
       case "ai_ready":
-        return <CheckCircle2 className="size-4 text-green-500" />
+        return <CheckCircle2 className="size-4 text-green-500" />;
       case "publish_failed":
-        return <AlertCircle className="size-4 text-red-500" />
+        return <AlertCircle className="size-4 text-red-500" />;
       default:
-        return <Info className="size-4 text-blue-500" />
+        return <Info className="size-4 text-blue-500" />;
     }
-  }
+  };
 
   const getTimeAgo = (date: string): string => {
-    const now = new Date()
-    const notifDate = new Date(date)
-    const diffInMinutes = Math.floor((now.getTime() - notifDate.getTime()) / (1000 * 60))
+    const now = new Date();
+    const notifDate = new Date(date);
+    const diffInMinutes = Math.floor(
+      (now.getTime() - notifDate.getTime()) / (1000 * 60),
+    );
 
-    if (diffInMinutes < 1) return text.justNow || "just now"
-    if (diffInMinutes < 60) return `${diffInMinutes} ${text.minutesAgo || "min ago"}`
+    if (diffInMinutes < 1) return text.justNow || "just now";
+    if (diffInMinutes < 60)
+      return `${diffInMinutes} ${text.minutesAgo || "min ago"}`;
     if (diffInMinutes < 1440)
-      return `${Math.floor(diffInMinutes / 60)} ${text.hoursAgo || "hours ago"}`
-    return `${Math.floor(diffInMinutes / 1440)} ${text.daysAgo || "days ago"}`
-  }
+      return `${Math.floor(diffInMinutes / 60)} ${text.hoursAgo || "hours ago"}`;
+    return `${Math.floor(diffInMinutes / 1440)} ${text.daysAgo || "days ago"}`;
+  };
 
   return (
     <>
       {/* --- Sidebar --- */}
-      <Sidebar className="border-r border-border" side={isRTL ? "right" : "left"}>
+      <Sidebar
+        className="border-r border-border"
+        side={isRTL ? "right" : "left"}
+      >
         <SidebarHeader className="border-b border-border p-6 flex items-center justify-between flex-row">
           <Link href="/" className="flex items-center gap-2 px-2">
-            <span className="font-bold text-xl text-foreground">{text.logo}</span>
+            <span className="font-bold text-xl text-foreground">
+              {text.logo}
+            </span>
           </Link>
           <LanguageToggle />
         </SidebarHeader>
@@ -114,7 +152,10 @@ export function DashboardSidebar({ locale = "en", text, user }: DashboardSidebar
           <SidebarMenu>
             {menuItems.map((item) => (
               <SidebarMenuItem key={item.href} className="mb-1">
-                <SidebarMenuButton asChild isActive={pathname === item.activeHref}>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === item.activeHref}
+                >
                   <Link href={item.href} className="py-5">
                     <item.icon className="size-9" />
                     <span>{item.label}</span>
@@ -130,9 +171,11 @@ export function DashboardSidebar({ locale = "en", text, user }: DashboardSidebar
             <div className="flex items-center gap-3 flex-1 min-w-0">
               <div className="flex flex-col min-w-0">
                 <span className="text-sm font-medium truncate">
+                  {loading && <Loader2 />}
                   {user?.name || "User"}
                 </span>
                 <span className="text-xs text-muted-foreground truncate">
+                  {loading && <Loader2 />}
                   {user?.email || "user@example.com"}
                 </span>
               </div>
@@ -181,14 +224,23 @@ export function DashboardSidebar({ locale = "en", text, user }: DashboardSidebar
                   </Badge>
                 )}
               </div>
-              <Button variant="ghost" size="icon" onClick={() => setShowNotifications(false)}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowNotifications(false)}
+              >
                 <X className="size-4" />
               </Button>
             </div>
 
             {notifications.length > 0 && unreadCount > 0 && (
               <div className="p-4 border-b border-border">
-                <Button variant="ghost" size="sm" className="w-full" onClick={markAllAsRead}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full"
+                  onClick={markAllAsRead}
+                >
                   {text.markAll || "Mark all as read"}
                 </Button>
               </div>
@@ -200,7 +252,8 @@ export function DashboardSidebar({ locale = "en", text, user }: DashboardSidebar
                   <div className="text-center py-12">
                     <Bell className="size-12 mx-auto mb-3 text-muted-foreground" />
                     <p className="text-sm text-muted-foreground">
-                      {text.noNotificationsDescription || "No notifications yet"}
+                      {text.noNotificationsDescription ||
+                        "No notifications yet"}
                     </p>
                   </div>
                 ) : (
@@ -214,15 +267,21 @@ export function DashboardSidebar({ locale = "en", text, user }: DashboardSidebar
                       onClick={() => markAsRead(n.id)}
                     >
                       <div className="flex items-start gap-3">
-                        <div className="mt-0.5">{getNotificationIcon(n.type)}</div>
+                        <div className="mt-0.5">
+                          {getNotificationIcon(n.type)}
+                        </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-2 mb-1">
-                            <h3 className="font-medium text-sm">{n.title as any}</h3>
+                            <h3 className="font-medium text-sm">
+                              {n.title as any}
+                            </h3>
                             {!n.read && (
                               <div className="size-2 rounded-full bg-primary shrink-0" />
                             )}
                           </div>
-                          <p className="text-sm text-muted-foreground mb-1">{n.message as any}</p>
+                          <p className="text-sm text-muted-foreground mb-1">
+                            {n.message as any}
+                          </p>
                           <p className="text-xs text-muted-foreground">
                             {getTimeAgo(n.createdAt)}
                           </p>
@@ -237,5 +296,5 @@ export function DashboardSidebar({ locale = "en", text, user }: DashboardSidebar
         </div>
       )}
     </>
-  )
+  );
 }

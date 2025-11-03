@@ -5,9 +5,13 @@ import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { LogOut } from "lucide-react";
-export function Navbar({ text, user }: { text: any; user: any | null }) {
+import { useUser } from "@/hooks/useUser";
+export function Navbar({ text }: { text: any }) {
+  const { user, loading, error } = useUser();
+  if (error) {
+    console.log(error);
+  }
   const pathname = usePathname();
-
   if (
     pathname?.startsWith("/ar/dashboard") ||
     pathname?.startsWith("/en/dashboard")
@@ -46,6 +50,7 @@ export function Navbar({ text, user }: { text: any; user: any | null }) {
         </nav>
 
         <div className="flex items-center justify-end gap-3 w-[320px]">
+          {loading && <p>Loading...</p>}
           {user ? (
             <>
               <Button asChild>
