@@ -120,11 +120,9 @@ export function Platforms({ text, locale, accounts }: PlatformsProps) {
                   <p className="text-sm text-muted-foreground mb-6 max-w-md">
                     {text.noPlatformsDescription}
                   </p>
-                  <Button asChild>
-                    <Link href={`/${locale}/dashboard/settings?tab=platforms`}>
-                      <Plus className="mr-2 size-4" />
-                      {text.connectPlatform}
-                    </Link>
+                  <Button variant="default" onClick={() => setDialogOpen(true)}>
+                    <Plus className="mr-2 size-4" />
+                    {text.connectPlatform}
                   </Button>
                 </div>
               ) : (
@@ -204,14 +202,16 @@ export function Platforms({ text, locale, accounts }: PlatformsProps) {
                   })}
                 </div>
               )}
-              <Button
-                variant="outline"
-                className="w-full bg-transparent mt-4"
-                onClick={() => setDialogOpen(true)}
-              >
-                <Plus className="mr-2 size-4" />
-                {text.connectPlatform}
-              </Button>
+              {accounts.length > 0 && (
+                <Button
+                  variant="outline"
+                  className="w-full bg-transparent mt-4"
+                  onClick={() => setDialogOpen(true)}
+                >
+                  <Plus className="mr-2 size-4" />
+                  {text.connectPlatform}
+                </Button>
+              )}
             </CardContent>
           </Card>
         </main>

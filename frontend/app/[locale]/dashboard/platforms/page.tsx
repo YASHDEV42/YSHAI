@@ -1,6 +1,10 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { Platforms } from "./components/platforms";
-import { getConnectedAccounts } from "@/lib/helper";
+import {
+  getConnectedAccounts,
+  getInstagramPostsAction,
+  getInstagramProfileAction,
+} from "@/lib/helper";
 
 export default async function PlatformsPage({
   params,
@@ -64,5 +68,36 @@ export default async function PlatformsPage({
   const accountsData = await getConnectedAccounts();
   const accounts = accountsData.accounts || [];
 
-  return <Platforms text={text} locale={locale} accounts={accounts} />;
+  console.log("📦 Connected accounts:", JSON.stringify(accounts, null, 2));
+
+  const enrichedAccounts = await Promise.all(
+    accounts.map(async (acc: any) => {
+      if (acc.provider === "instagram" && acc.tokens?.length) {
+        const pageToken = acc.tokens.find(
+          (t: any) => t.tokenType === "access",
+        )?.tokenEncrypted;
+        const pageId = acc.pageId;
+
+        if (pageId && pageToken) {
+          const profileRes = await getInstagramProfileAction(pageId, pageToken);
+          const postsRes = await getInstagramPostsAction(
+            acc.providerAccountId,
+            pageToken,
+          );
+
+          return {
+            ...acc,
+            profile: profileRes.success ? profileRes.profile : null,
+            posts: postsRes.success ? (postsRes.posts.data ?? []) : [],
+          };
+        }
+      }
+      return acc;
+    }),
+  );
+  console.log(
+    "✅ Enriched accounts:",
+    JSON.stringify(enrichedAccounts, null, 2),
+  );
+  return <Platforms text={text} locale={locale} accounts={enrichedAccounts} />;
 }

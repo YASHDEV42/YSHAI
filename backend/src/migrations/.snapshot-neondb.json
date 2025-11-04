@@ -900,25 +900,25 @@
           "length": 255,
           "mappedType": "string"
         },
-        "active": {
-          "name": "active",
-          "type": "boolean",
+        "page_id": {
+          "name": "page_id",
+          "type": "varchar(255)",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
-          "nullable": false,
-          "default": "true",
-          "mappedType": "boolean"
+          "nullable": true,
+          "length": 255,
+          "mappedType": "string"
         },
-        "connected_at": {
-          "name": "connected_at",
-          "type": "timestamptz",
+        "page_name": {
+          "name": "page_name",
+          "type": "varchar(255)",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
-          "nullable": false,
-          "length": 6,
-          "mappedType": "datetime"
+          "nullable": true,
+          "length": 255,
+          "mappedType": "string"
         },
         "disconnected_at": {
           "name": "disconnected_at",

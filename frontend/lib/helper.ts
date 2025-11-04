@@ -177,9 +177,6 @@ export async function getInstagramProfileAction(
   return { success: true, profile: data };
 }
 
-/**
- * 3️⃣ Resolve Page ID from IG account — GET /meta/instagram/page
- */
 export async function getPageFromIgAccountAction(
   igUserId: string,
   userToken: string,
@@ -199,6 +196,79 @@ export async function getPageFromIgAccountAction(
   return { success: true, page: data };
 }
 
+export async function getInstagramPostsAction(
+  igUserId: string,
+  accessToken: string,
+) {
+  console.log("Fetching Instagram posts for IG User ID:", igUserId);
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_PROTECTED_API_KEY}/meta/instagram/posts?igUserId=${igUserId}&accessToken=${accessToken}`,
+    { cache: "no-store" },
+  );
+  console.log("Response data:", await res.clone().text());
+
+  if (!res.ok) {
+    const text = await res.text();
+    console.error("❌ Failed to fetch Instagram posts:", text);
+    return { success: false, message: "Failed to fetch Instagram posts" };
+  }
+
+  const data = await res.json();
+  return { success: true, posts: data };
+}
+
+export async function publishInstagramPostAction(
+  userId: number,
+  caption: string,
+  file: File,
+) {
+  const formData = new FormData();
+  formData.append("userId", String(userId));
+  formData.append("caption", caption);
+  formData.append("file", file);
+
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_PROTECTED_API_KEY}/meta/publish`,
+    {
+      method: "POST",
+      body: formData,
+      cache: "no-store",
+    },
+  );
+
+  if (!res.ok) {
+    const text = await res.text();
+    console.error("❌ Failed to publish Instagram post:", text);
+    return { success: false, message: "Failed to publish Instagram post" };
+  }
+
+  const data = await res.json();
+  return { success: true, post: data };
+}
+
+export async function handleMetaOAuthCallbackAction(
+  shortToken: string,
+  userId: string,
+) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_PROTECTED_API_KEY}/meta/oauth/callback`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ shortToken, userId }),
+      cache: "no-store",
+    },
+  );
+
+  if (!res.ok) {
+    const text = await res.text();
+    console.error("❌ OAuth callback failed:", text);
+    return { success: false, message: "Failed to handle Meta OAuth callback" };
+  }
+
+  const data = await res.json();
+  return { success: true, linked: data };
+}
 export {
   getUser,
   getUserSocialMediaAccounts,

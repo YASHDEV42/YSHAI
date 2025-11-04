@@ -26,16 +26,23 @@ export class SocialAccount {
   @Property({ nullable: true })
   username?: string;
 
-  @Property({ nullable: true })
-  followersCount?: number;
-
-  @Property({ nullable: true })
-  profilePictureUrl?: string;
   @Property()
   active = true;
 
-  @Property({ onCreate: () => new Date() })
+  @Property({ nullable: true })
+  followersCount?: number;
+
+  @Property()
   connectedAt = new Date();
+
+  @Property({ nullable: true })
+  profilePictureUrl?: string;
+
+  @Property({ nullable: true })
+  pageId?: string;
+
+  @Property({ nullable: true })
+  pageName?: string;
 
   @Property({ nullable: true })
   disconnectedAt?: Date;
