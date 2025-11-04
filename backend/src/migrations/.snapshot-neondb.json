@@ -881,6 +881,16 @@
           "length": 255,
           "mappedType": "string"
         },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "default": "true",
+          "mappedType": "boolean"
+        },
         "followers_count": {
           "name": "followers_count",
           "type": "int",
@@ -889,6 +899,16 @@
           "primary": false,
           "nullable": true,
           "mappedType": "integer"
+        },
+        "connected_at": {
+          "name": "connected_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "mappedType": "datetime"
         },
         "profile_picture_url": {
           "name": "profile_picture_url",

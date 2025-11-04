@@ -1,4 +1,12 @@
-import { Controller, Get, UseGuards, Req, Put, Body, Logger } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  UseGuards,
+  Req,
+  Put,
+  Body,
+  Logger,
+} from '@nestjs/common';
 import {
   ApiCookieAuth,
   ApiOperation,
@@ -19,7 +27,7 @@ const logger = new Logger('UsersController');
 @UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService) {}
 
   @Get('me')
   @ApiOperation({ summary: 'Get current user using JWT' })
@@ -31,7 +39,6 @@ export class UsersController {
   async getProfile(
     @Req() req: { user: { id: number } },
   ): Promise<UserResponseDto> {
-    logger.log(`Fetching profile for user ID: ${req.user.id}`);
     return this.usersService.getProfile(req.user.id);
   }
 

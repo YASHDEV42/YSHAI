@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
+import crypto from 'crypto';
 import { EntityManager } from '@mikro-orm/core';
 import { MediaService } from 'src/media/media.service';
 import { AccountsService } from 'src/accounts/accounts.service';
@@ -26,34 +27,94 @@ export class MetaService {
     private readonly accounts: AccountsService,
   ) {}
 
-  /**
-   * =======================================
-   * STEP 1: OAuth → Link Instagram Account
-   * =======================================
-   */
-  async handleOauthCallback(shortToken: string, userId: number) {
-    let longUser: { access_token: string; expires_in: number };
+  // ========= Utilities =========
 
-    try {
-      this.logger.log('Exchanging short-lived token for long-lived token...');
-      longUser = await this.exchangeShortToLong(shortToken);
-    } catch {
-      this.logger.warn('Exchange failed — using short token as fallback');
-      longUser = { access_token: shortToken, expires_in: 60 * 24 * 60 * 60 };
+  private maskToken(t?: string) {
+    if (!t) return '';
+    return `${t.slice(0, 4)}...${t.slice(-4)}`;
+  }
+
+  private appSecretProof(token: string) {
+    const secret =
+      process.env.META_CLIENT_SECRET || process.env.META_APP_SECRET || '';
+    return crypto.createHmac('sha256', secret).update(token).digest('hex');
+  }
+
+  private handleGraphError(err: any): never {
+    const fbErr = err?.response?.data?.error;
+    if (fbErr) {
+      const payload = {
+        code: fbErr.code,
+        subcode: fbErr.error_subcode,
+        type: fbErr.type,
+        message: fbErr.message,
+      };
+      throw new BadRequestException(payload);
     }
+    throw new BadRequestException(err?.message ?? 'Meta Graph error');
+  }
 
-    this.logger.log('Listing Facebook Pages for user...');
+  private async graphGet<T>(
+    path: string,
+    params: Record<string, any>,
+  ): Promise<T> {
+    try {
+      const token = params.access_token as string | undefined;
+      if (token) params.appsecret_proof = this.appSecretProof(token);
+      const res = await lastValueFrom(
+        this.http.get(G(path), { params, timeout: 15000 }),
+      );
+      return res.data as T;
+    } catch (err) {
+      this.handleGraphError(err);
+    }
+  }
+
+  private async graphPost<T>(
+    path: string,
+    data: Record<string, any>,
+  ): Promise<T> {
+    try {
+      const token = data.access_token as string | undefined;
+      const params: any = {};
+      if (token) params.appsecret_proof = this.appSecretProof(token);
+      const res = await lastValueFrom(
+        this.http.post(G(path), data, { params, timeout: 15000 }),
+      );
+      return res.data as T;
+    } catch (err) {
+      this.handleGraphError(err);
+    }
+  }
+
+  // ========= OAuth & Linking =========
+
+  async handleOauthCallback(shortToken: string, userId: number) {
+    // 1) Exchange short-lived token -> long-lived user token
+    const longUser = await this.exchangeShortToLong(shortToken);
+
+    // 2) List pages for this user
     const pagesResp = await this.listPages(longUser.access_token);
     const pages = pagesResp?.data ?? [];
-    if (!pages.length) throw new BadRequestException('No Facebook Pages found');
+    if (!pages.length)
+      throw new BadRequestException('No Facebook Pages found for this user');
 
-    const page = pages[0];
-    this.logger.log('✅ Found pages:', pages);
+    // 3) Auto-pick a page that has an IG Business account (we’ll still let user change later in UI)
+    let chosen: { id: string; name: string; access_token: string } | null =
+      null;
+    let igUserId: string | null = null;
 
-    const igUserId = await this.getIgUserId(page.id, page.access_token);
-    if (!igUserId) {
+    for (const p of pages) {
+      const found = await this.getIgUserId(p.id, p.access_token);
+      if (found) {
+        chosen = p;
+        igUserId = found;
+        break;
+      }
+    }
+    if (!chosen || !igUserId) {
       throw new BadRequestException(
-        'No Instagram Business account connected to the selected Page',
+        'No Page with a connected Instagram Business account was found.',
       );
     }
 
@@ -61,45 +122,75 @@ export class MetaService {
       Date.now() + (longUser.expires_in || 5184000) * 1000,
     );
 
+    // 4) Link account & persist tokens
     const link = await this.accounts.link(
-      userId,
+      Number(userId),
+      { provider: 'instagram', providerAccountId: igUserId },
       {
-        provider: 'instagram',
-        providerAccountId: igUserId,
-      },
-      {
-        accessToken: page.access_token,
-        refreshToken: longUser.access_token,
+        accessToken: chosen.access_token, // Page access token
+        refreshToken: longUser.access_token, // Long-lived user token
         expiresAt: isNaN(expiresAt.getTime()) ? undefined : expiresAt,
       },
     );
 
-    // Update the linked account with its Page info
+    // Persist page metadata
     const accountEntity = await this.em.findOne(SocialAccount, { id: link.id });
     if (accountEntity) {
-      (accountEntity as any).pageId = page.id;
-      (accountEntity as any).pageName = page.name;
+      (accountEntity as any).pageId = chosen.id;
+      (accountEntity as any).pageName = chosen.name;
       await this.em.flush();
     }
 
     this.logger.log(
-      `Linked IG account ${igUserId} for user ${userId} (page: ${page.name})`,
+      `Linked IG ${igUserId} for user ${userId} (page: ${chosen.name})`,
     );
-
     return {
       id: link.id,
-      message: 'Account linked',
       providerAccountId: igUserId,
-      pageId: page.id,
-      pageName: page.name,
+      pageId: chosen.id,
+      pageName: chosen.name,
+      expiresAt,
     };
   }
 
-  /**
-   * =======================================
-   * STEP 2: Publish with Auto Token Refresh
-   * =======================================
-   */
+  private async exchangeShortToLong(shortToken: string) {
+    try {
+      const data = await this.graphGet<{
+        access_token: string;
+        token_type: string;
+        expires_in: number;
+      }>('/oauth/access_token', {
+        grant_type: 'fb_exchange_token',
+        client_id: process.env.META_CLIENT_ID || process.env.META_APP_ID,
+        client_secret:
+          process.env.META_CLIENT_SECRET || process.env.META_APP_SECRET,
+        fb_exchange_token: shortToken,
+      });
+      return data;
+    } catch (err) {
+      this.logger.error('Token exchange failed');
+      throw err;
+    }
+  }
+
+  private async listPages(longUserToken: string) {
+    return this.graphGet<{
+      data: Array<{ id: string; name: string; access_token: string }>;
+    }>('/me/accounts', { access_token: longUserToken });
+  }
+
+  private async getIgUserId(pageId: string, pageToken: string) {
+    const data = await this.graphGet<{
+      instagram_business_account?: { id: string };
+    }>(`/${pageId}`, {
+      fields: 'instagram_business_account',
+      access_token: pageToken,
+    });
+    return data?.instagram_business_account?.id ?? null;
+  }
+
+  // ========= Publishing =========
+
   async publishWithAutoRefresh(params: {
     file: Express.Multer.File;
     userId: number;
@@ -107,8 +198,10 @@ export class MetaService {
   }) {
     const { file, userId, caption } = params;
 
+    // Upload to your media store (S3/Cloudinary/etc.)
     const media = await this.media.upload({ buffer: file.buffer });
 
+    // Get the linked IG account for this user
     const account = await this.em.findOne(
       SocialAccount,
       { user: userId, provider: 'instagram' },
@@ -116,6 +209,7 @@ export class MetaService {
     );
     if (!account) throw new NotFoundException('Instagram account not linked');
 
+    // Tokens
     let pageAccessToken =
       account.tokens.getItems().find((t) => t.tokenType === 'access')
         ?.tokenEncrypted ?? null;
@@ -140,19 +234,18 @@ export class MetaService {
         mediaUrl: media.url,
         providerAccountId: account.providerAccountId,
       });
-      return { success: true, ...res, cloudinaryUrl: media.url };
+      return { ...res, cloudinaryUrl: media.url };
     } catch (err: any) {
       const fbErr = err?.response?.data?.error;
+      const sub = fbErr?.error_subcode;
       const expired =
-        fbErr?.code === 190 &&
-        (fbErr?.error_subcode === 463 || fbErr?.error_subcode === 490);
+        fbErr?.code === 190 && [458, 459, 463, 490, 492].includes(sub);
 
-      if (!expired)
-        throw new BadRequestException(
-          fbErr ?? err?.message ?? 'Publish failed',
-        );
+      if (!expired) this.handleGraphError(err);
 
-      this.logger.warn('Access token expired — refreshing...');
+      this.logger.warn(
+        'Access token expired — refreshing page token and retrying...',
+      );
       const freshPageToken = await this.mintPageAccessTokenFromUser(
         account,
         userLongLived,
@@ -164,7 +257,7 @@ export class MetaService {
         mediaUrl: media.url,
         providerAccountId: account.providerAccountId,
       });
-      return { success: true, ...res, refreshed: true };
+      return { ...res, refreshed: true, cloudinaryUrl: media.url };
     }
   }
 
@@ -172,278 +265,291 @@ export class MetaService {
     accessToken: string;
     caption: string;
     mediaUrl: string;
-    providerAccountId: string;
+    providerAccountId: string; // ig_user_id
   }) {
     const { accessToken, caption, mediaUrl, providerAccountId } = params;
 
-    const createRes = await lastValueFrom(
-      this.http.post(G(`/${providerAccountId}/media`), {
+    // 1) Create media container
+    const createRes = await this.graphPost<{ id: string }>(
+      `/${providerAccountId}/media`,
+      {
         image_url: mediaUrl,
         caption,
         access_token: accessToken,
-      }),
+      },
     );
 
-    const creationId = createRes?.data?.id;
-    if (!creationId) throw new BadRequestException('Failed to create media');
+    const creationId = createRes?.id;
+    if (!creationId)
+      throw new BadRequestException('Failed to create media container');
 
+    // 2) Wait for media to be ready
     await this.waitForMediaReady(creationId, accessToken);
 
-    const publishRes = await lastValueFrom(
-      this.http.post(G(`/${providerAccountId}/media_publish`), {
+    // 3) Publish
+    const publishRes = await this.graphPost<{ id: string }>(
+      `/${providerAccountId}/media_publish`,
+      {
         creation_id: creationId,
         access_token: accessToken,
-      }),
+      },
     );
 
-    const igPostId = publishRes?.data?.id;
+    const igPostId = publishRes?.id;
+    if (!igPostId) throw new BadRequestException('Failed to publish media');
 
-    const details = await lastValueFrom(
-      this.http.get(G(`/${igPostId}`), {
-        params: {
-          fields: 'id,permalink,timestamp,media_type,media_url,caption',
-          access_token: accessToken,
-        },
-      }),
-    );
+    // 4) Fetch details
+    const details = await this.graphGet<{
+      id: string;
+      permalink: string;
+      timestamp: string;
+      media_type: string;
+      media_url?: string;
+      thumbnail_url?: string;
+      caption?: string;
+    }>(`/${igPostId}`, {
+      fields:
+        'id,permalink,timestamp,media_type,media_url,thumbnail_url,caption',
+      access_token: accessToken,
+    });
 
     return {
-      externalPostId: details.data.id,
-      externalUrl: details.data.permalink,
-      publishedAt: new Date(details.data.timestamp),
-      mediaType: details.data.media_type,
-      mediaUrl: details.data.media_url,
-      caption: details.data.caption,
+      externalPostId: details.id,
+      externalUrl: details.permalink,
+      publishedAt: new Date(details.timestamp),
+      mediaType: details.media_type,
+      mediaUrl: details.media_url ?? details.thumbnail_url,
+      caption: details.caption ?? '',
     };
   }
 
-  /**
-   * =======================================
-   * NEW ✨: Get Instagram Posts
-   * =======================================
-   */
-  async getInstagramPosts(igUserId: string, accessToken: string) {
-    this.logger.log(`Fetching Instagram posts for IG user ID: ${igUserId}`);
+  private async waitForMediaReady(creationId: string, accessToken: string) {
+    let attempts = 0;
+    let status = 'IN_PROGRESS';
 
-    const res = await lastValueFrom(
-      this.http.get(G(`/${igUserId}/media`), {
-        params: {
-          fields:
-            'id,caption,media_type,media_url,permalink,timestamp,like_count,comments_count,thumbnail_url',
+    while (status === 'IN_PROGRESS' && attempts < 10) {
+      const delay = Math.round(2000 * Math.pow(1.5, attempts));
+      await new Promise((r) => setTimeout(r, delay));
+      attempts++;
+
+      const check = await this.graphGet<{ status_code: string }>(
+        `/${creationId}`,
+        {
+          fields: 'status_code',
           access_token: accessToken,
         },
-      }),
-    );
+      );
+      status = check.status_code;
+    }
 
-    const posts = res.data?.data ?? [];
-    if (!posts.length) this.logger.warn('No posts found for this account');
-
-    return posts.map((p: any) => ({
-      id: p.id,
-      caption: p.caption || '',
-      mediaUrl: p.media_url || p.thumbnail_url,
-      permalink: p.permalink,
-      timestamp: p.timestamp,
-      likeCount: p.like_count ?? 0,
-      commentsCount: p.comments_count ?? 0,
-      mediaType: p.media_type,
-    }));
+    if (status !== 'FINISHED') {
+      throw new BadRequestException(
+        `Media processing did not finish (status=${status})`,
+      );
+    }
   }
 
-  /**
-   * =======================================
-   * Instagram Profile & Page Resolution
-   * =======================================
-   */
-  async getInstagramProfile(pageId: string, pageAccessToken: string) {
-    const igUserId = await this.getIgUserId(pageId, pageAccessToken);
+  private async mintPageAccessTokenFromUser(
+    account: SocialAccount,
+    userLongLived: string,
+  ): Promise<string> {
+    const pagesResp = await this.listPages(userLongLived);
+    const pages = pagesResp?.data ?? [];
+
+    let pageAccessToken: string | null = null;
+
+    for (const p of pages) {
+      const foundIg = await this.getIgUserId(p.id, p.access_token);
+      if (foundIg && foundIg === account.providerAccountId) {
+        pageAccessToken = p.access_token;
+        break;
+      }
+    }
+
+    if (!pageAccessToken) {
+      throw new BadRequestException(
+        'Matching page for IG account not found for this user',
+      );
+    }
+
+    // Persist (transactional)
+    const em = this.em.fork();
+    await em.transactional(async (tx) => {
+      const acc = await tx.findOne(
+        SocialAccount,
+        { id: account.id },
+        { populate: ['tokens'] },
+      );
+      if (!acc)
+        throw new NotFoundException(
+          'Account not found while minting page token',
+        );
+
+      const existing = acc.tokens
+        .getItems()
+        .find((t) => t.tokenType === 'access');
+      if (existing) {
+        existing.tokenEncrypted = pageAccessToken;
+        existing.expiresAt = undefined;
+      } else {
+        const newTok = tx.create(AccountToken, {
+          account: tx.getReference(SocialAccount, account.id),
+          tokenType: 'access',
+          tokenEncrypted: pageAccessToken,
+          revoked: false,
+          createdAt: new Date(),
+        });
+        tx.persist(newTok);
+        acc.tokens.add(newTok);
+      }
+    });
+
+    return pageAccessToken;
+  }
+
+  // ========= Profiles / Page resolution (server-resolved tokens) =========
+
+  async getInstagramProfileForUser(pageId: string, userId: number) {
+    // Get user’s long-lived token and mint page token for that page
+    const account = await this.em.findOne(
+      SocialAccount,
+      { user: userId, provider: 'instagram' },
+      { populate: ['tokens'] },
+    );
+    if (!account) throw new NotFoundException('Instagram account not linked');
+
+    const userLongLived =
+      account.tokens.getItems().find((t) => t.tokenType === 'refresh')
+        ?.tokenEncrypted ?? null;
+    if (!userLongLived)
+      throw new BadRequestException('Missing long-lived user token');
+
+    // Ensure page token for requested pageId
+    const pages = (await this.listPages(userLongLived))?.data ?? [];
+    const targetPage = pages.find((p) => p.id === pageId);
+    if (!targetPage)
+      throw new BadRequestException(
+        'Requested Page not available for this user',
+      );
+
+    const igUserId = await this.getIgUserId(pageId, targetPage.access_token);
     if (!igUserId) {
       throw new BadRequestException(
         `No Instagram Business account connected to Page ${pageId}`,
       );
     }
 
-    const res = await lastValueFrom(
-      this.http.get(G(`/${igUserId}`), {
-        params: {
-          fields: 'id,username,followers_count,profile_picture_url',
-          access_token: pageAccessToken,
-        },
-      }),
-    );
+    const res = await this.graphGet<{
+      id: string;
+      username: string;
+      followers_count: number;
+      profile_picture_url?: string;
+    }>(`/${igUserId}`, {
+      fields: 'id,username,followers_count,profile_picture_url',
+      access_token: targetPage.access_token,
+    });
 
     return {
-      igUserId: res.data.id,
-      username: res.data.username,
-      followersCount: res.data.followers_count,
-      profilePicture: res.data.profile_picture_url,
+      igUserId: res.id,
+      username: res.username,
+      followersCount: res.followers_count,
+      profilePicture: res.profile_picture_url ?? null,
     };
   }
 
-  async getPageIdFromIgAccount(
-    igUserId: string,
-    userLongLivedToken: string,
-  ): Promise<{ pageId: string; pageName: string } | null> {
-    this.logger.log(`Resolving Page ID for IG account ${igUserId}...`);
-    const res = await lastValueFrom(
-      this.http.get(G('/me/accounts'), {
-        params: { access_token: userLongLivedToken },
-      }),
+  async getPageIdFromIgAccountForUser(igUserId: string, userId: number) {
+    const account = await this.em.findOne(
+      SocialAccount,
+      { user: userId, provider: 'instagram' },
+      { populate: ['tokens'] },
     );
+    if (!account) throw new NotFoundException('Instagram account not linked');
 
-    const pages: Array<{ id: string; name: string; access_token: string }> =
-      res.data?.data ?? [];
+    const userLongLived =
+      account.tokens.getItems().find((t) => t.tokenType === 'refresh')
+        ?.tokenEncrypted ?? null;
+    if (!userLongLived)
+      throw new BadRequestException('Missing long-lived user token');
+
+    const res = await this.listPages(userLongLived);
+    const pages = res?.data ?? [];
 
     for (const p of pages) {
-      try {
-        const igResp = await lastValueFrom(
-          this.http.get(G(`/${p.id}`), {
-            params: {
-              fields: 'instagram_business_account',
-              access_token: p.access_token,
-            },
-          }),
-        );
-        const foundIg = igResp.data?.instagram_business_account?.id;
-        if (foundIg && foundIg === igUserId)
-          return { pageId: p.id, pageName: p.name };
-      } catch {
-        continue;
+      const foundIg = await this.getIgUserId(p.id, p.access_token);
+      if (foundIg && foundIg === igUserId) {
+        return { pageId: p.id, pageName: p.name };
       }
     }
-
     return null;
   }
 
-  /**
-   * =======================================
-   * Internal Helpers
-   * =======================================
-   */
-  private async exchangeShortToLong(shortToken: string) {
-    const res = await lastValueFrom(
-      this.http.get(G('/oauth/access_token'), {
-        params: {
-          grant_type: 'fb_exchange_token',
-          client_id: process.env.META_CLIENT_ID || process.env.META_APP_ID,
-          client_secret:
-            process.env.META_CLIENT_SECRET || process.env.META_APP_SECRET,
-          fb_exchange_token: shortToken,
-        },
-      }),
+  async getInstagramPostsForUser(params: {
+    igUserId: string;
+    userId: number;
+    limit?: number;
+    after?: string;
+  }) {
+    const { igUserId, userId, limit, after } = params;
+
+    const account = await this.em.findOne(
+      SocialAccount,
+      { user: userId, provider: 'instagram' },
+      { populate: ['tokens'] },
     );
-    return res.data as {
-      access_token: string;
-      token_type: string;
-      expires_in: number;
+    if (!account) throw new NotFoundException('Instagram account not linked');
+
+    const userLongLived =
+      account.tokens.getItems().find((t) => t.tokenType === 'refresh')
+        ?.tokenEncrypted ?? null;
+    if (!userLongLived)
+      throw new BadRequestException('Missing long-lived user token');
+
+    // get page token for the page that owns this igUserId
+    const pageAccessToken = await this.mintPageAccessTokenFromUser(
+      account,
+      userLongLived,
+    );
+
+    const data = await this.graphGet<{
+      data: Array<{
+        id: string;
+        caption?: string;
+        media_type: string;
+        media_url?: string;
+        thumbnail_url?: string;
+        permalink: string;
+        timestamp: string;
+        like_count?: number;
+        comments_count?: number;
+      }>;
+      paging?: {
+        next?: string;
+        previous?: string;
+        cursors?: { before?: string; after?: string };
+      };
+    }>(`/${igUserId}/media`, {
+      fields:
+        'id,caption,media_type,media_url,permalink,timestamp,like_count,comments_count,thumbnail_url',
+      access_token: pageAccessToken,
+      limit: limit ?? 20,
+      after,
+    });
+
+    const items = (data.data ?? []).map((p) => ({
+      id: p.id,
+      caption: p.caption ?? '',
+      mediaUrl: p.media_url ?? p.thumbnail_url ?? null,
+      permalink: p.permalink,
+      timestamp: p.timestamp,
+      likeCount: p.like_count ?? 0,
+      commentsCount: p.comments_count ?? 0,
+      mediaType: p.media_type,
+    }));
+
+    return {
+      success: true,
+      data: items,
+      paging: data.paging ?? {},
     };
-  }
-
-  private async listPages(longUserToken: string) {
-    const res = await lastValueFrom(
-      this.http.get(G('/me/accounts'), {
-        params: { access_token: longUserToken },
-      }),
-    );
-    return res.data as {
-      data: Array<{ id: string; name: string; access_token: string }>;
-    };
-  }
-
-  private async getIgUserId(pageId: string, pageToken: string) {
-    const res = await lastValueFrom(
-      this.http.get(G(`/${pageId}`), {
-        params: {
-          fields: 'instagram_business_account',
-          access_token: pageToken,
-        },
-      }),
-    );
-    return res.data?.instagram_business_account?.id ?? null;
-  }
-
-  private async waitForMediaReady(creationId: string, accessToken: string) {
-    let status = 'IN_PROGRESS';
-    while (status === 'IN_PROGRESS') {
-      await new Promise((r) => setTimeout(r, 2000));
-      const checkRes = await lastValueFrom(
-        this.http.get(G(`/${creationId}`), {
-          params: { fields: 'status_code', access_token: accessToken },
-        }),
-      );
-      status = checkRes.data.status_code;
-    }
-    if (status !== 'FINISHED')
-      throw new BadRequestException(`Media upload failed: ${status}`);
-  }
-  private async mintPageAccessTokenFromUser(
-    account: SocialAccount,
-    userLongLived: string,
-  ): Promise<string> {
-    const pagesResp = await lastValueFrom(
-      this.http.get(G('/me/accounts'), {
-        params: { access_token: userLongLived },
-      }),
-    );
-
-    const pages: Array<{ id: string; access_token: string }> =
-      pagesResp.data?.data ?? [];
-
-    let pageAccessToken: string | null = null;
-    for (const p of pages) {
-      try {
-        const igResp = await lastValueFrom(
-          this.http.get(G(`/${p.id}`), {
-            params: {
-              fields: 'instagram_business_account',
-              access_token: p.access_token,
-            },
-          }),
-        );
-        const foundIg = igResp.data?.instagram_business_account?.id;
-        if (foundIg && foundIg === account.providerAccountId) {
-          pageAccessToken = p.access_token;
-          break;
-        }
-      } catch {
-        continue;
-      }
-    }
-
-    if (!pageAccessToken) {
-      const p = pages[0];
-      if (!p)
-        throw new BadRequestException('No pages available to mint page token');
-      const pageDetail = await lastValueFrom(
-        this.http.get(G(`/${p.id}`), {
-          params: { fields: 'access_token', access_token: userLongLived },
-        }),
-      );
-      pageAccessToken = pageDetail.data?.access_token;
-    }
-
-    if (!pageAccessToken)
-      throw new BadRequestException('Failed to mint page access token');
-
-    // Persist the new token
-    const em = this.em.fork();
-    const old = account.tokens.getItems().find((t) => t.tokenType === 'access');
-    if (old) {
-      old.tokenEncrypted = pageAccessToken;
-      old.expiresAt = undefined;
-    } else {
-      const newTok = em.create(AccountToken, {
-        account: em.getReference(SocialAccount, account.id),
-        tokenType: 'access',
-        tokenEncrypted: pageAccessToken,
-        revoked: false,
-        createdAt: new Date(),
-      });
-      em.persist(newTok);
-      account.tokens.add(newTok);
-    }
-    await em.flush();
-
-    return pageAccessToken;
   }
 }

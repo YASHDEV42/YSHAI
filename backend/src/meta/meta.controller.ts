@@ -7,7 +7,10 @@ import {
   Query,
   Req,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
@@ -18,85 +21,85 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { MetaService } from './meta.service';
+import { OauthCallbackDto } from './dto/oauth-callback.dto';
+import { PublishDto } from './dto/publish-media.dto';
+import { IgProfileQueryDto } from './dto/ig-profile.dto';
+import { IgPageQueryDto } from './dto/ig-page.dto';
+import { IgPostsQueryDto } from './dto/ig-posts.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @ApiTags('Meta')
 @Controller('meta')
+@UseGuards(JwtAuthGuard)
+@UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
 export class MetaController {
   constructor(private readonly meta: MetaService) {}
 
   /**
-   * 🔹 POST /meta/oauth/callback
-   * Handles OAuth callback from Meta after user connects Instagram.
+   * POST /meta/oauth/callback
+   * Exchanges short-lived user token -> long-lived; stores linkage for the current user.
    */
   @Post('oauth/callback')
   @ApiOperation({ summary: 'Handle OAuth callback (Instagram connect)' })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        shortToken: {
-          type: 'string',
-          description: 'Short-lived user token from Meta OAuth',
-        },
-      },
-      required: ['shortToken', 'userId'],
-    },
-  })
+  @ApiBody({ type: OauthCallbackDto })
   @ApiResponse({ status: 201, description: 'Account linked successfully' })
   async oauthCallback(
     @Req() req: { user: { id: number } },
-    @Body() body: { shortToken: string },
+    @Body() body: OauthCallbackDto,
   ) {
+    console.log('request', req);
     const { shortToken } = body;
-    if (!shortToken || !req.user.id) {
-      throw new BadRequestException('shortToken and userId are required');
-    }
-    //here we cast the user id to string because in the dto its string
-    return this.meta.handleOauthCallback(shortToken, req.user.id);
+    console.log('Received shortToken:', shortToken);
+    const userId = req.user?.id;
+    console.log('OAuth callback received for user:', userId);
+    if (!shortToken || !userId)
+      throw new BadRequestException(
+        'shortToken and authenticated user are required',
+      );
+
+    const res = await this.meta.handleOauthCallback(shortToken, userId);
+    return { success: true, data: res };
   }
 
   /**
-   * 🔹 POST /meta/publish
-   * Publishes an image with a caption to the connected Instagram Business account.
+   * POST /meta/publish
+   * Publishes an image to the linked IG Business account for the current user.
    */
   @Post('publish')
   @UseInterceptors(
-    FileInterceptor('file', { limits: { fileSize: 5 * 1024 * 1024 } }),
+    FileInterceptor('file', {
+      limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+      fileFilter: (_req, file, cb) => {
+        if (!file.mimetype?.startsWith('image/')) {
+          return cb(new Error('Only image files are allowed'), false);
+        }
+        cb(null, true);
+      },
+    }),
   )
   @ApiOperation({ summary: 'Publish a photo to Instagram Business' })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        caption: { type: 'string', description: 'Caption for the post' },
-        file: {
-          type: 'string',
-          format: 'binary',
-          description: 'Image file to upload',
-        },
-      },
-      required: ['file', 'userId'],
-    },
-  })
+  @ApiBody({ type: PublishDto })
   @ApiResponse({ status: 201, description: 'Post published successfully' })
   async publish(
     @UploadedFile() file: Express.Multer.File | undefined,
-    @Req() req: { user: { id: number } },
-    @Body() body: { caption?: string },
+    @Req() req: any,
+    @Body() body: PublishDto,
   ) {
     if (!file) throw new BadRequestException('file is required');
+    const userId = req.user?.id;
+    if (!userId) throw new BadRequestException('Missing authenticated user');
 
-    const caption = body.caption ?? '';
-    return this.meta.publishWithAutoRefresh({
+    const res = await this.meta.publishWithAutoRefresh({
       file,
-      userId: req.user.id,
-      caption,
+      userId,
+      caption: body.caption ?? '',
     });
+    return { success: true, data: res };
   }
 
   /**
-   * 🔹 GET /meta/instagram/profile?pageId=...&pageToken=...
-   * Retrieves Instagram Business profile details (username, followers, avatar).
+   * GET /meta/instagram/profile?pageId=...
+   * Retrieves IG Business profile info. Tokens resolved server-side.
    */
   @Get('instagram/profile')
   @ApiOperation({ summary: 'Get Instagram Business profile info' })
@@ -104,11 +107,6 @@ export class MetaController {
     name: 'pageId',
     required: true,
     description: 'Facebook Page ID linked to IG account',
-  })
-  @ApiQuery({
-    name: 'pageToken',
-    required: true,
-    description: 'Page access token',
   })
   @ApiResponse({
     status: 200,
@@ -123,98 +121,58 @@ export class MetaController {
     },
   })
   async getInstagramProfile(
-    @Query('pageId') pageId: string,
-    @Query('pageToken') pageToken: string,
+    @Req() req: { user: { id: number } },
+    @Query() q: IgProfileQueryDto,
   ) {
-    if (!pageId || !pageToken) {
-      throw new BadRequestException('pageId and pageToken are required');
-    }
-    return this.meta.getInstagramProfile(pageId, pageToken);
+    const userId = req.user.id;
+    if (!userId) throw new BadRequestException('Missing authenticated user');
+    if (!q.pageId) throw new BadRequestException('pageId is required');
+
+    const res = await this.meta.getInstagramProfileForUser(q.pageId, userId);
+    return { success: true, data: res };
   }
 
   /**
-   * 🔹 GET /meta/instagram/page?igUserId=...&userToken=...
-   * Finds which Facebook Page is linked to a given IG Business account.
+   * GET /meta/instagram/page?igUserId=...
+   * Resolves which Page is linked to a specific IG Business account for the current user.
    */
   @Get('instagram/page')
   @ApiOperation({
     summary: 'Find Page linked to an Instagram Business account',
   })
-  @ApiQuery({
-    name: 'igUserId',
-    required: true,
-    description: 'Instagram Business account ID',
-  })
-  @ApiQuery({
-    name: 'userToken',
-    required: true,
-    description: 'Long-lived user access token',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Linked Facebook Page found',
-    schema: {
-      example: {
-        pageId: '817552788113650',
-        pageName: 'YSHAI',
-      },
-    },
-  })
-  async getPageIdFromIgAccount(
-    @Query('igUserId') igUserId: string,
-    @Query('userToken') userToken: string,
-  ) {
-    if (!igUserId || !userToken) {
-      throw new BadRequestException('igUserId and userToken are required');
-    }
-    return this.meta.getPageIdFromIgAccount(igUserId, userToken);
+  @ApiQuery({ name: 'igUserId', required: true })
+  async getPageIdFromIgAccount(@Req() req: any, @Query() q: IgPageQueryDto) {
+    const userId = req.user?.id;
+    if (!userId) throw new BadRequestException('Missing authenticated user');
+    if (!q.igUserId) throw new BadRequestException('igUserId is required');
+
+    const res = await this.meta.getPageIdFromIgAccountForUser(
+      q.igUserId,
+      userId,
+    );
+    return { success: true, data: res };
   }
 
   /**
-   * 🔹 GET /meta/instagram/posts?igUserId=...&accessToken=...
-   * Retrieves all recent posts from the connected Instagram Business account.
+   * GET /meta/instagram/posts?igUserId=...&limit=...&after=...
+   * Lists IG posts with pagination cursors.
    */
   @Get('instagram/posts')
-  @ApiOperation({
-    summary: 'Get posts from connected Instagram Business account',
-  })
-  @ApiQuery({
-    name: 'igUserId',
-    required: true,
-    description: 'Instagram Business account ID',
-  })
-  @ApiQuery({
-    name: 'accessToken',
-    required: true,
-    description: 'Page access token',
-  })
+  @ApiOperation({ summary: 'Get posts for IG Business account (paginated)' })
+  @ApiQuery({ name: 'igUserId', required: true })
   @ApiQuery({ name: 'limit', required: false })
   @ApiQuery({ name: 'after', required: false })
-  @ApiResponse({
-    status: 200,
-    description: 'List of posts retrieved successfully',
-    schema: {
-      example: [
-        {
-          id: '1234567890',
-          caption: 'AI makes social media easy 🚀',
-          mediaUrl: 'https://instagram.example.com/image.jpg',
-          permalink: 'https://www.instagram.com/p/xyz/',
-          timestamp: '2025-11-03T14:35:21+0000',
-          likeCount: 45,
-          commentsCount: 12,
-          mediaType: 'IMAGE',
-        },
-      ],
-    },
-  })
-  async getInstagramPosts(
-    @Query('igUserId') igUserId: string,
-    @Query('accessToken') accessToken: string,
-  ) {
-    if (!igUserId || !accessToken) {
-      throw new BadRequestException('igUserId and accessToken are required');
-    }
-    return this.meta.getInstagramPosts(igUserId, accessToken);
+  async getInstagramPosts(@Req() req: any, @Query() q: IgPostsQueryDto) {
+    const userId = req.user?.id;
+    if (!userId) throw new BadRequestException('Missing authenticated user');
+    if (!q.igUserId) throw new BadRequestException('igUserId is required');
+
+    const res = await this.meta.getInstagramPostsForUser({
+      igUserId: q.igUserId,
+      userId,
+      limit: q.limit,
+      after: q.after,
+    });
+    return { ...res };
   }
 }

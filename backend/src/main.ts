@@ -48,18 +48,18 @@ async function bootstrap() {
     .setVersion('1.0')
     .addTag('Auth')
     .addTag('Users')
-    .addTag('Teams')
+    .addTag('Meta')
+    .addTag('Accounts')
     .addTag('Posts')
     .addTag('Media')
     .addTag('AI')
     .addTag('Admin')
-    .addTag('Accounts')
     .addTag('Notifications')
     .addTag('Analytics')
     .addTag('Billing')
     .addTag('Webhooks')
-    .addTag('Meta')
     .addTag('Moderation')
+    .addTag('Teams')
     .addCookieAuth('accessToken', {
       type: 'apiKey',
       in: 'cookie',

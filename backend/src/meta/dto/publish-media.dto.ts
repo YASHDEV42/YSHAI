@@ -1,17 +1,10 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { IsOptional, IsString, MaxLength } from 'class-validator';
 
-import { IsString, IsOptional } from 'class-validator';
-
-export class PublishMediaDto {
-  @IsString()
-  igUserId: string;
-
-  @IsString()
-  pageToken: string;
-
-  @IsString()
-  imageUrl: string;
-
+export class PublishDto {
+  @ApiProperty()
   @IsOptional()
   @IsString()
+  @MaxLength(2200)
   caption?: string;
 }

@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
 
-export class OauthCallbackDto {
+export class IgProfileQueryDto {
   @ApiProperty()
   @IsString()
-  shortToken!: string;
+  pageId!: string; // facebook Page ID linked to IG Business account
 }
