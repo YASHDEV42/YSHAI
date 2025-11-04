@@ -1,11 +1,12 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
-import CreatePage, { CreatePageText } from "./components/create"
+import CreatePage, { CreatePageText } from "./components/create";
 
 export default async function CreatePageRoute({
-  params: { locale }
+  params,
 }: {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }) {
+  const { locale } = await params;
   setRequestLocale(locale);
 
   const t = await getTranslations({ locale, namespace: "CreatePage" });

@@ -483,30 +483,15 @@
       "newyork": "America/New_York (GMT-5)"
     }
   },
-  "PlatformsPage": {
-    "title": "Connected Platforms",
-    "subtitle": "Manage your social media accounts and view platform-specific insights",
-    "noPlatforms": "No platforms connected yet",
-    "noPlatformsDescription": "Connect your social media accounts to start managing your content across multiple platforms.",
-    "connectPlatform": "Connect Platform",
-    "viewPlatform": "View",
-    "connected": "Connected",
-    "disconnected": "Disconnected",
-    "followers": "followers",
-    "posts": "posts",
-    "engagement": "engagement rate",
-    "stats": {
-      "totalAccounts": "Total Accounts",
-      "totalFollowers": "Total Followers",
-      "totalPosts": "Total Posts",
-      "avgEngagement": "Avg. Engagement"
-    }
-  },
   "PlatformDetailPage": {
     "back": "Back to Platforms",
     "connected": "Connected",
     "disconnected": "Disconnected",
     "createPost": "Create Post",
+    "analytic": "Analytics",
+    "insights": "Insights",
+    "content": "Content",
+    "overview": "Overview",
     "tabs": {
       "overview": "Overview",
       "content": "Content",
@@ -522,13 +507,30 @@
       "fromLastWeek": "from last week",
       "thisMonth": "this month"
     },
-    "recentPosts": "Recent Posts",
-    "recentPostsDescription": "Your latest content on this platform",
+    "recentPosts": {
+      "title": "Recent Posts",
+      "description": "Your latest content on this platform",
+      "viewAll": "View All Posts",
+      "noPosts": "No posts yet",
+      "noPostsDescription": "Create your first post on this platform using the 'Create Post' button above."
+    },
     "contentLibrary": "Content Library",
     "contentLibraryDescription": "All your posts on this platform",
-    "engagement": "engagement",
+    "engagement": "Engagement",
     "edit": "Edit",
     "repost": "Repost",
+    "backToPlatforms": "Back to Platforms",
+    "performanceChart": {
+      "title": "Post Performance Over Time",
+      "description": "Monthly engagement metrics for your posts on this platform"
+    },
+    "quickActions": {
+      "createPost": "Create Post",
+      "title": "Quick Actions",
+      "viewAnalytics": "View Analytics",
+      "schedulePost": "Schedule Post",
+      "manageAccount": "Manage Account"
+    },
     "analytics": {
       "performanceOverview": "Performance Overview",
       "avgLikes": "Average Likes",
@@ -541,9 +543,10 @@
       "maleAudience": "Male Audience",
       "femaleAudience": "Female Audience"
     },
+    "description": "Get personalized recommendations and insights to improve your content strategy",
     "aiAdvisor": {
       "title": "AI Content Advisor",
-      "description": "Get personalized recommendations and insights to improve your content strategy",
+      "description": "Get personalized recommendations and insights to improve your content strategy based on your audience and past performance.",
       "welcomeMessage": "Hello! I'm your AI content advisor. I can help you optimize your content strategy, suggest the best times to post, analyze your audience, and provide creative content ideas. How can I assist you today?",
       "inputPlaceholder": "Ask me anything about your content strategy...",
       "quickAction1": "What's the best time to post?",
