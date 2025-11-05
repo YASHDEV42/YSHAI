@@ -82,11 +82,11 @@ export class MetaController {
   @ApiResponse({ status: 201, description: 'Post published successfully' })
   async publish(
     @UploadedFile() file: Express.Multer.File | undefined,
-    @Req() req: any,
+    @Req() req: { user: { id: number } },
     @Body() body: PublishDto,
   ) {
     if (!file) throw new BadRequestException('file is required');
-    const userId = req.user?.id;
+    const userId = req.user.id;
     if (!userId) throw new BadRequestException('Missing authenticated user');
 
     const res = await this.meta.publishWithAutoRefresh({

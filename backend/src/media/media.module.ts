@@ -11,4 +11,4 @@ import { Post } from 'src/entities/post.entity';
   providers: [MediaService],
   exports: [MediaService],
 })
-export class MediaModule { }
+export class MediaModule {}

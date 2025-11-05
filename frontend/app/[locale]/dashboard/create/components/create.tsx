@@ -1,93 +1,60 @@
 "use client";
 
 import type React from "react";
-import { useState } from "react";
+import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, Clock, X, ImageIcon, Video, Loader2, Send, Save } from "lucide-react";
+import {
+  Sparkles,
+  Clock,
+  X,
+  ImageIcon,
+  Video,
+  Loader2,
+  Send,
+  Save,
+} from "lucide-react";
 import Link from "next/link";
-
-// Define text interface
-export interface CreatePageText {
-  header: {
-    saveDraft: string;
-    schedule: string;
-    publishNow: string;
-  };
-  aiGenerator: {
-    title: string;
-    promptLabel: string;
-    placeholder: string;
-    generateButton: string;
-    generating: string;
-  };
-  platforms: {
-    title: string;
-    twitter: string;
-    instagram: string;
-    linkedin: string;
-    tiktok: string;
-  };
-  contentEditor: {
-    title: string;
-    placeholder: string;
-    characters: string;
-    twitterLimitExceeded: string;
-  };
-  media: {
-    title: string;
-    uploadImage: string;
-    uploadVideo: string;
-  };
-  schedule: {
-    title: string;
-    publishNowTab: string;
-    scheduleLaterTab: string;
-    publishNowDescription: string;
-    dateLabel: string;
-    timeLabel: string;
-    timezoneLabel: string;
-    timezones: {
-      riyadh: string;
-      dubai: string;
-      cairo: string;
-    };
-  };
-  preview: {
-    title: string;
-    noContent: string;
-    captionPlaceholder: string;
-    likes: string;
-    comments: string;
-    reposts: string;
-    shares: string;
-    send: string;
-  };
-}
+import { publishInstagramPostAction } from "@/lib/helper";
 
 interface CreatePageProps {
-  text: CreatePageText;
+  text: any;
   locale: string;
 }
+const initialState = {
+  success: false,
+  post: null,
+};
 
 export default function CreatePage({ text, locale }: CreatePageProps) {
   const [content, setContent] = useState("");
-  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(["twitter"]);
+  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([
+    "twitter",
+  ]);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [uploadedMedia, setUploadedMedia] = useState<string[]>([]);
+  const [uploadedMedia, setUploadedMedia] = useState<string[]>([]); // just URLs
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [scheduleType, setScheduleType] = useState<"now" | "later">("now");
   const [aiPrompt, setAiPrompt] = useState("");
 
   const handlePlatformToggle = (platformId: string) => {
     setSelectedPlatforms((prev) =>
-      prev.includes(platformId) ? prev.filter((id) => id !== platformId) : [...prev, platformId],
+      prev.includes(platformId)
+        ? prev.filter((id) => id !== platformId)
+        : [...prev, platformId],
     );
   };
 
@@ -97,7 +64,7 @@ export default function CreatePage({ text, locale }: CreatePageProps) {
       setContent(
         locale === "ar"
           ? `🚀 اكتشف قوة الذكاء الاصطناعي في إدارة وسائل التواصل الاجتماعي!\n\nمع YSHAI، يمكنك:\n✨ إنشاء محتوى عربي احترافي\n📅 جدولة المنشورات تلقائياً\n📊 تحليل الأداء بذكاء\n\n#YSHAI #SocialMedia #AI`
-          : `🚀 Discover the power of AI in social media management!\n\nWith YSHAI, you can:\n✨ Create professional Arabic content\n📅 Auto-schedule posts\n📊 Analyze performance intelligently\n\n#YSHAI #SocialMedia #AI`
+          : `🚀 Discover the power of AI in social media management!\n\nWith YSHAI, you can:\n✨ Create professional Arabic content\n📅 Auto-schedule posts\n📊 Analyze performance intelligently\n\n#YSHAI #SocialMedia #AI`,
       );
       setIsGenerating(false);
     }, 2000);
@@ -106,8 +73,11 @@ export default function CreatePage({ text, locale }: CreatePageProps) {
   const handleMediaUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files) {
-      const newMedia = Array.from(files).map((file) => URL.createObjectURL(file));
-      setUploadedMedia((prev) => [...prev, ...newMedia]);
+      const newFiles = Array.from(files);
+      const newMedia = newFiles.map((file) => URL.createObjectURL(file));
+
+      setUploadedFiles((prev) => [...prev, ...newFiles]); // store files
+      setUploadedMedia((prev) => [...prev, ...newMedia]); // store URLs
     }
   };
 
@@ -117,10 +87,30 @@ export default function CreatePage({ text, locale }: CreatePageProps) {
 
   // Platform config with localized names
   const platforms = [
-    { id: "twitter", name: text.platforms.twitter, icon: "𝕏", color: "text-foreground" },
-    { id: "instagram", name: text.platforms.instagram, icon: "📷", color: "text-pink-500" },
-    { id: "linkedin", name: text.platforms.linkedin, icon: "💼", color: "text-blue-500" },
-    { id: "tiktok", name: text.platforms.tiktok, icon: "🎵", color: "text-cyan-500" },
+    {
+      id: "twitter",
+      name: text.platforms.twitter,
+      icon: "𝕏",
+      color: "text-foreground",
+    },
+    {
+      id: "instagram",
+      name: text.platforms.instagram,
+      icon: "📷",
+      color: "text-pink-500",
+    },
+    {
+      id: "linkedin",
+      name: text.platforms.linkedin,
+      icon: "💼",
+      color: "text-blue-500",
+    },
+    {
+      id: "tiktok",
+      name: text.platforms.tiktok,
+      icon: "🎵",
+      color: "text-cyan-500",
+    },
   ];
 
   return (
@@ -130,7 +120,9 @@ export default function CreatePage({ text, locale }: CreatePageProps) {
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/dashboard" className="flex items-center gap-2">
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-lg">Y</span>
+              <span className="text-primary-foreground font-bold text-lg">
+                Y
+              </span>
             </div>
             <span className="text-xl font-bold">YSHAI</span>
           </Link>
@@ -144,7 +136,27 @@ export default function CreatePage({ text, locale }: CreatePageProps) {
               <Clock className="w-4 h-4 mr-2" />
               {text.header.schedule}
             </Button>
-            <Button size="sm" className="bg-primary hover:bg-primary/90">
+            <Button
+              size="sm"
+              className="bg-primary hover:bg-primary/90"
+              onClick={async () => {
+                if (!uploadedFiles.length) {
+                  alert("Please upload an image first");
+                  return;
+                }
+
+                const res = await publishInstagramPostAction(
+                  content,
+                  uploadedFiles[0],
+                );
+
+                if (res.success) {
+                  alert("✅ Post published successfully!");
+                } else {
+                  alert("❌ Failed to publish post: " + res.message);
+                }
+              }}
+            >
               <Send className="w-4 h-4 mr-2" />
               {text.header.publishNow}
             </Button>
@@ -167,7 +179,10 @@ export default function CreatePage({ text, locale }: CreatePageProps) {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="ai-prompt" className="text-sm text-muted-foreground">
+                  <Label
+                    htmlFor="ai-prompt"
+                    className="text-sm text-muted-foreground"
+                  >
                     {text.aiGenerator.promptLabel}
                   </Label>
                   <Textarea
@@ -201,24 +216,31 @@ export default function CreatePage({ text, locale }: CreatePageProps) {
             {/* Platform Selection */}
             <Card className="bg-card border-border">
               <CardHeader>
-                <CardTitle className="text-lg">{text.platforms.title}</CardTitle>
+                <CardTitle className="text-lg">
+                  {text.platforms.title}
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 gap-3">
                   {platforms.map((platform) => (
                     <label
                       key={platform.id}
-                      className={`flex items-center gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all ${selectedPlatforms.includes(platform.id)
-                        ? "border-primary bg-primary/10"
-                        : "border-border bg-muted hover:border-muted-foreground/50"
-                        }`}
+                      className={`flex items-center gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                        selectedPlatforms.includes(platform.id)
+                          ? "border-primary bg-primary/10"
+                          : "border-border bg-muted hover:border-muted-foreground/50"
+                      }`}
                     >
                       <Checkbox
                         checked={selectedPlatforms.includes(platform.id)}
-                        onCheckedChange={() => handlePlatformToggle(platform.id)}
+                        onCheckedChange={() =>
+                          handlePlatformToggle(platform.id)
+                        }
                       />
                       <span className="text-2xl">{platform.icon}</span>
-                      <span className="text-sm font-medium">{platform.name}</span>
+                      <span className="text-sm font-medium">
+                        {platform.name}
+                      </span>
                     </label>
                   ))}
                 </div>
@@ -228,7 +250,9 @@ export default function CreatePage({ text, locale }: CreatePageProps) {
             {/* Content Editor */}
             <Card className="bg-card border-border">
               <CardHeader>
-                <CardTitle className="text-lg">{text.contentEditor.title}</CardTitle>
+                <CardTitle className="text-lg">
+                  {text.contentEditor.title}
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <Textarea
@@ -238,11 +262,19 @@ export default function CreatePage({ text, locale }: CreatePageProps) {
                   className="min-h-[200px] bg-muted border-border text-base"
                 />
                 <div className="flex items-center justify-between text-sm text-muted-foreground">
-                  <span>{text.contentEditor.characters.replace("{count}", content.length.toString())}</span>
                   <span>
-                    {selectedPlatforms.includes("twitter") && content.length > 280 && (
-                      <Badge variant="destructive">{text.contentEditor.twitterLimitExceeded}</Badge>
+                    {text.contentEditor.characters.replace(
+                      "{count}",
+                      content.length.toString(),
                     )}
+                  </span>
+                  <span>
+                    {selectedPlatforms.includes("twitter") &&
+                      content.length > 280 && (
+                        <Badge variant="destructive">
+                          {text.contentEditor.twitterLimitExceeded}
+                        </Badge>
+                      )}
                   </span>
                 </div>
               </CardContent>
@@ -257,13 +289,28 @@ export default function CreatePage({ text, locale }: CreatePageProps) {
                 <div className="grid grid-cols-2 gap-3">
                   <label className="flex flex-col items-center justify-center gap-2 p-6 rounded-lg border-2 border-dashed border-border hover:border-primary/50 cursor-pointer transition-colors bg-muted">
                     <ImageIcon className="w-6 h-6 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">{text.media.uploadImage}</span>
-                    <input type="file" accept="image/*" multiple onChange={handleMediaUpload} className="hidden" />
+                    <span className="text-sm text-muted-foreground">
+                      {text.media.uploadImage}
+                    </span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleMediaUpload}
+                      className="hidden"
+                    />
                   </label>
                   <label className="flex flex-col items-center justify-center gap-2 p-6 rounded-lg border-2 border-dashed border-border hover:border-primary/50 cursor-pointer transition-colors bg-muted">
                     <Video className="w-6 h-6 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">{text.media.uploadVideo}</span>
-                    <input type="file" accept="video/*" onChange={handleMediaUpload} className="hidden" />
+                    <span className="text-sm text-muted-foreground">
+                      {text.media.uploadVideo}
+                    </span>
+                    <input
+                      type="file"
+                      accept="video/*"
+                      onChange={handleMediaUpload}
+                      className="hidden"
+                    />
                   </label>
                 </div>
 
@@ -295,10 +342,17 @@ export default function CreatePage({ text, locale }: CreatePageProps) {
                 <CardTitle className="text-lg">{text.schedule.title}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <Tabs value={scheduleType} onValueChange={(v) => setScheduleType(v as "now" | "later")}>
+                <Tabs
+                  value={scheduleType}
+                  onValueChange={(v) => setScheduleType(v as "now" | "later")}
+                >
                   <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="now">{text.schedule.publishNowTab}</TabsTrigger>
-                    <TabsTrigger value="later">{text.schedule.scheduleLaterTab}</TabsTrigger>
+                    <TabsTrigger value="now">
+                      {text.schedule.publishNowTab}
+                    </TabsTrigger>
+                    <TabsTrigger value="later">
+                      {text.schedule.scheduleLaterTab}
+                    </TabsTrigger>
                   </TabsList>
                   <TabsContent value="now" className="space-y-4">
                     <p className="text-sm text-muted-foreground">
@@ -311,13 +365,21 @@ export default function CreatePage({ text, locale }: CreatePageProps) {
                         <Label htmlFor="schedule-date" className="text-sm">
                           {text.schedule.dateLabel}
                         </Label>
-                        <Input id="schedule-date" type="date" className="mt-2 bg-muted border-border" />
+                        <Input
+                          id="schedule-date"
+                          type="date"
+                          className="mt-2 bg-muted border-border"
+                        />
                       </div>
                       <div>
                         <Label htmlFor="schedule-time" className="text-sm">
                           {text.schedule.timeLabel}
                         </Label>
-                        <Input id="schedule-time" type="time" className="mt-2 bg-muted border-border" />
+                        <Input
+                          id="schedule-time"
+                          type="time"
+                          className="mt-2 bg-muted border-border"
+                        />
                       </div>
                     </div>
                     <div>
@@ -325,13 +387,22 @@ export default function CreatePage({ text, locale }: CreatePageProps) {
                         {text.schedule.timezoneLabel}
                       </Label>
                       <Select defaultValue="riyadh">
-                        <SelectTrigger id="timezone" className="mt-2 bg-muted border-border">
+                        <SelectTrigger
+                          id="timezone"
+                          className="mt-2 bg-muted border-border"
+                        >
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="riyadh">{text.schedule.timezones.riyadh}</SelectItem>
-                          <SelectItem value="dubai">{text.schedule.timezones.dubai}</SelectItem>
-                          <SelectItem value="cairo">{text.schedule.timezones.cairo}</SelectItem>
+                          <SelectItem value="riyadh">
+                            {text.schedule.timezones.riyadh}
+                          </SelectItem>
+                          <SelectItem value="dubai">
+                            {text.schedule.timezones.dubai}
+                          </SelectItem>
+                          <SelectItem value="cairo">
+                            {text.schedule.timezones.cairo}
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -368,13 +439,19 @@ export default function CreatePage({ text, locale }: CreatePageProps) {
                     <div className="bg-background border border-border rounded-xl p-4">
                       <div className="flex gap-3">
                         <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center shrink-0">
-                          <span className="text-primary-foreground font-bold">Y</span>
+                          <span className="text-primary-foreground font-bold">
+                            Y
+                          </span>
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-2">
                             <span className="font-bold">YSHAI</span>
-                            <span className="text-muted-foreground text-sm">@yshai</span>
-                            <span className="text-muted-foreground text-sm">· now</span>
+                            <span className="text-muted-foreground text-sm">
+                              @yshai
+                            </span>
+                            <span className="text-muted-foreground text-sm">
+                              · now
+                            </span>
                           </div>
                           <p className="whitespace-pre-wrap text-sm leading-relaxed">
                             {content || text.preview.noContent}
@@ -392,10 +469,18 @@ export default function CreatePage({ text, locale }: CreatePageProps) {
                             </div>
                           )}
                           <div className="flex items-center gap-6 mt-3 text-muted-foreground">
-                            <button className="hover:text-primary transition-colors">💬 0</button>
-                            <button className="hover:text-green-500 transition-colors">🔄 0</button>
-                            <button className="hover:text-red-500 transition-colors">❤️ 0</button>
-                            <button className="hover:text-primary transition-colors">📊 0</button>
+                            <button className="hover:text-primary transition-colors">
+                              💬 0
+                            </button>
+                            <button className="hover:text-green-500 transition-colors">
+                              🔄 0
+                            </button>
+                            <button className="hover:text-red-500 transition-colors">
+                              ❤️ 0
+                            </button>
+                            <button className="hover:text-primary transition-colors">
+                              📊 0
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -407,7 +492,9 @@ export default function CreatePage({ text, locale }: CreatePageProps) {
                     <div className="bg-background border border-border rounded-xl overflow-hidden">
                       <div className="p-3 flex items-center gap-3 border-b border-border">
                         <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                          <span className="text-white font-bold text-sm">Y</span>
+                          <span className="text-white font-bold text-sm">
+                            Y
+                          </span>
                         </div>
                         <span className="font-semibold text-sm">yshai</span>
                       </div>
@@ -425,7 +512,8 @@ export default function CreatePage({ text, locale }: CreatePageProps) {
                           <button>📤</button>
                         </div>
                         <p className="text-sm">
-                          <span className="font-semibold">yshai</span> {content || text.preview.captionPlaceholder}
+                          <span className="font-semibold">yshai</span>{" "}
+                          {content || text.preview.captionPlaceholder}
                         </p>
                       </div>
                     </div>
@@ -440,8 +528,12 @@ export default function CreatePage({ text, locale }: CreatePageProps) {
                         </div>
                         <div>
                           <div className="font-semibold">YSHAI</div>
-                          <div className="text-xs text-muted-foreground">AI-Powered Social Media Scheduler</div>
-                          <div className="text-xs text-muted-foreground">now</div>
+                          <div className="text-xs text-muted-foreground">
+                            AI-Powered Social Media Scheduler
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            now
+                          </div>
                         </div>
                       </div>
                       <p className="text-sm whitespace-pre-wrap mb-3">
@@ -483,11 +575,15 @@ export default function CreatePage({ text, locale }: CreatePageProps) {
                       <div className="mt-3">
                         <div className="flex items-center gap-2 mb-2">
                           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-pink-500 flex items-center justify-center">
-                            <span className="text-white font-bold text-xs">Y</span>
+                            <span className="text-white font-bold text-xs">
+                              Y
+                            </span>
                           </div>
                           <span className="font-semibold text-sm">@yshai</span>
                         </div>
-                        <p className="text-sm">{content || text.preview.captionPlaceholder}</p>
+                        <p className="text-sm">
+                          {content || text.preview.captionPlaceholder}
+                        </p>
                       </div>
                     </div>
                   </TabsContent>

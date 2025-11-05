@@ -231,15 +231,12 @@ export async function getInstagramPostsAction(
   return { success: true, posts: data };
 }
 
-export async function publishInstagramPostAction(
-  userId: number,
-  caption: string,
-  file: File,
-) {
+export async function publishInstagramPostAction(caption: string, file: File) {
   const formData = new FormData();
-  formData.append("userId", String(userId));
   formData.append("caption", caption);
   formData.append("file", file);
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("accessToken")?.value;
 
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_PROTECTED_API_KEY}/meta/publish`,
@@ -247,6 +244,9 @@ export async function publishInstagramPostAction(
       method: "POST",
       body: formData,
       cache: "no-store",
+      headers: {
+        Cookie: `accessToken=${cookieStore.get("accessToken")?.value}`,
+      },
     },
   );
 
