@@ -42,7 +42,7 @@ export class AccountsController {
       refreshToken?: string;
       expiresAt?: string;
     };
-    const body = dto as unknown as LinkBody;
+    const body: LinkBody = dto;
     const tokenPayload =
       body.accessToken || body.refreshToken || body.expiresAt
         ? {

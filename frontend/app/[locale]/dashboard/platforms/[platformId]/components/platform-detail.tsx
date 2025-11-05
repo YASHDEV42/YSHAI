@@ -1,7 +1,21 @@
 "use client";
 
 import { useState } from "react";
-
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import {
   Card,
   CardContent,
@@ -26,12 +40,14 @@ import {
   Heart,
   MessageCircle,
   Share2,
+  ExternalLink,
 } from "lucide-react";
 import Link from "next/link";
 import type { TConnectedAccount } from "@/types";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getPlatformIcon } from "@/components/icons/platforms-icons";
+import Image from "next/image";
 
 interface Message {
   role: "user" | "assistant";
@@ -42,11 +58,22 @@ interface PlatformDetailProps {
   text: any;
   locale: string;
   account: TConnectedAccount;
+  posts?: any[];
 }
 
-export function PlatformDetail({ text, locale, account }: PlatformDetailProps) {
+export function PlatformDetail({
+  text,
+  locale,
+  account,
+  posts = [],
+}: PlatformDetailProps) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const postsPerPage = 6;
+  const totalPages = Math.ceil(posts.length / postsPerPage);
+  const startIndex = (currentPage - 1) * postsPerPage;
+  const endIndex = startIndex + postsPerPage;
+  const currentPosts = posts.slice(startIndex, endIndex);
   const PlatformIcon = getPlatformIcon(account.provider);
-  const [posts, setPosts] = useState<any[]>([]);
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
@@ -57,7 +84,14 @@ export function PlatformDetail({ text, locale, account }: PlatformDetailProps) {
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString(locale, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
   return (
     <div className="flex flex-col min-h-screen bg-background">
       {/* Header */}
@@ -143,7 +177,8 @@ export function PlatformDetail({ text, locale, account }: PlatformDetailProps) {
                     {(account.followersCount || 0).toLocaleString()}
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    +12% {text.stats?.fromLastMonth || ""}
+                    {/*TODO:*/}
+                    0% {text.stats?.fromLastMonth || ""}
                   </p>
                 </CardContent>
               </Card>
@@ -171,9 +206,9 @@ export function PlatformDetail({ text, locale, account }: PlatformDetailProps) {
                   <TrendingUp className="size-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">4.2%</div>
+                  <div className="text-2xl font-bold">0%</div>
                   <p className="text-xs text-muted-foreground">
-                    +0.5% {text.stats?.fromLastWeek || ""}
+                    +0% {text.stats?.fromLastWeek || ""}
                   </p>
                 </CardContent>
               </Card>
@@ -186,14 +221,13 @@ export function PlatformDetail({ text, locale, account }: PlatformDetailProps) {
                   <Eye className="size-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">12.5K</div>
+                  <div className="text-2xl font-bold">0</div>
                   <p className="text-xs text-muted-foreground">
-                    +8% {text.stats?.fromLastWeek || ""}
+                    +0% {text.stats?.fromLastWeek || ""}
                   </p>
                 </CardContent>
               </Card>
             </div>
-
             {/* Recent Posts */}
             <Card>
               <CardHeader>
@@ -205,43 +239,73 @@ export function PlatformDetail({ text, locale, account }: PlatformDetailProps) {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {posts.map((post) => (
-                    <div
-                      key={post.id}
-                      className="flex gap-4 p-4 rounded-lg border border-border hover:bg-accent/50 transition-colors"
-                    >
-                      <Avatar className="size-12">
-                        <AvatarImage
-                          src={account.profilePicture || "/placeholder.svg"}
-                        />
-                        <AvatarFallback>
-                          {account.username?.[0]?.toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 space-y-2">
-                        <p className="text-sm">{post.content}</p>
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                          <span className="flex items-center gap-1">
-                            <Heart className="size-4" />
-                            {post.likes}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <MessageCircle className="size-4" />
-                            {post.comments}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Share2 className="size-4" />
-                            {post.shares}
-                          </span>
-                          <span className="ml-auto">{post.date}</span>
+                {posts.length === 0 ? (
+                  <div className="text-center py-12">
+                    <FileText className="size-12 mx-auto text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-semibold mb-2">
+                      {text.recentPosts?.noPosts || "No posts yet"}
+                    </h3>
+                    <p className="text-muted-foreground mb-4">
+                      {text.recentPosts?.noPostsDescription ||
+                        "Start creating content to see it here"}
+                    </p>
+                    <Button asChild>
+                      <Link href={`/${locale}/dashboard/create`}>
+                        <Plus className="mr-2 size-4" />
+                        {text.createPost || "Create Post"}
+                      </Link>
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {posts.slice(0, 3).map((post) => (
+                      <div
+                        key={post.id}
+                        className="flex gap-4 p-4 rounded-lg border border-border hover:bg-accent/50 transition-colors"
+                      >
+                        {post.mediaUrl && (
+                          <div className="relative size-20 rounded-lg overflow-hidden shrink-0">
+                            <Image
+                              src={post.mediaUrl || "/placeholder.svg"}
+                              alt={post.caption || "Post image"}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                        )}
+                        <div className="flex-1 space-y-2">
+                          <p className="text-sm line-clamp-2">{post.caption}</p>
+                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                            <span className="flex items-center gap-1">
+                              <Heart className="size-4" />
+                              {post.likeCount || 0}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <MessageCircle className="size-4" />
+                              {post.commentsCount || 0}
+                            </span>
+                            <span className="ml-auto">
+                              {formatDate(post.timestamp)}
+                            </span>
+                          </div>
                         </div>
+                        {post.permalink && (
+                          <Button variant="ghost" size="icon" asChild>
+                            <a
+                              href={post.permalink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <ExternalLink className="size-4" />
+                            </a>
+                          </Button>
+                        )}
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
-            </Card>
+            </Card>{" "}
           </TabsContent>
 
           <TabsContent value="content" className="space-y-6">
@@ -251,45 +315,155 @@ export function PlatformDetail({ text, locale, account }: PlatformDetailProps) {
                   {text.contentLibrary || "Content Library"}
                 </CardTitle>
                 <CardDescription>
-                  {text.contentLibraryDescription || "All your posts"}
+                  {text.contentLibraryDescription || "All your posts"} (
+                  {posts.length} {text.stats?.posts || "posts"})
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {posts.map((post) => (
-                    <Card key={post.id} className="overflow-hidden">
-                      <CardContent className="p-4 space-y-3">
-                        <p className="text-sm line-clamp-3">{post.content}</p>
-                        <div className="flex items-center justify-between text-xs text-muted-foreground">
-                          <span>{post.date}</span>
-                          <Badge variant="secondary">
-                            {post.engagement}% {text.engagement || "engagement"}
-                          </Badge>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="flex-1 bg-transparent"
-                          >
-                            {text.edit || "Edit"}
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="flex-1 bg-transparent"
-                          >
-                            {text.repost || "Repost"}
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
+                {posts.length === 0 ? (
+                  <div className="text-center py-12">
+                    <FileText className="size-12 mx-auto text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-semibold mb-2">
+                      {text.recentPosts?.noPosts || "No posts yet"}
+                    </h3>
+                    <p className="text-muted-foreground mb-4">
+                      {text.recentPosts?.noPostsDescription ||
+                        "Start creating content to see it here"}
+                    </p>
+                    <Button asChild>
+                      <Link href={`/${locale}/dashboard/create`}>
+                        <Plus className="mr-2 size-4" />
+                        {text.createPost || "Create Post"}
+                      </Link>
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                      {currentPosts.map((post) => (
+                        <Card key={post.id} className="overflow-hidden">
+                          <CardContent className="p-0">
+                            {post.mediaUrl && (
+                              <Carousel className="w-full">
+                                <CarouselContent>
+                                  <CarouselItem>
+                                    <div className="relative aspect-square w-full">
+                                      <Image
+                                        src={
+                                          post.mediaUrl || "/placeholder.svg"
+                                        }
+                                        alt={post.caption || "Post image"}
+                                        fill
+                                        className="object-cover"
+                                      />
+                                    </div>
+                                  </CarouselItem>
+                                </CarouselContent>
+                                <CarouselPrevious className="left-2" />
+                                <CarouselNext className="right-2" />
+                              </Carousel>
+                            )}
+                            <div className="p-4 space-y-3">
+                              <p className="text-sm line-clamp-3">
+                                {post.caption}
+                              </p>
+                              <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                                <span className="flex items-center gap-1">
+                                  <Heart className="size-4" />
+                                  {post.likeCount || 0}
+                                </span>
+                                <span className="flex items-center gap-1">
+                                  <MessageCircle className="size-4" />
+                                  {post.commentsCount || 0}
+                                </span>
+                                <span className="ml-auto">
+                                  {formatDate(post.timestamp)}
+                                </span>
+                              </div>
+                              <div className="flex gap-2">
+                                {post.permalink && (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="flex-1 bg-transparent"
+                                    asChild
+                                  >
+                                    <a
+                                      href={post.permalink}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                    >
+                                      <ExternalLink className="mr-2 size-3" />
+                                      View
+                                    </a>
+                                  </Button>
+                                )}
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="flex-1 bg-transparent"
+                                >
+                                  {text.repost || "Repost"}
+                                </Button>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+
+                    {/* Pagination */}
+                    {totalPages > 1 && (
+                      <Pagination>
+                        <PaginationContent>
+                          <PaginationItem>
+                            <PaginationPrevious
+                              onClick={() =>
+                                setCurrentPage((prev) => Math.max(1, prev - 1))
+                              }
+                              className={
+                                currentPage === 1
+                                  ? "pointer-events-none opacity-50"
+                                  : "cursor-pointer"
+                              }
+                            />
+                          </PaginationItem>
+                          {Array.from(
+                            { length: totalPages },
+                            (_, i) => i + 1,
+                          ).map((page) => (
+                            <PaginationItem key={page}>
+                              <PaginationLink
+                                onClick={() => setCurrentPage(page)}
+                                isActive={currentPage === page}
+                                className="cursor-pointer"
+                              >
+                                {page}
+                              </PaginationLink>
+                            </PaginationItem>
+                          ))}
+                          <PaginationItem>
+                            <PaginationNext
+                              onClick={() =>
+                                setCurrentPage((prev) =>
+                                  Math.min(totalPages, prev + 1),
+                                )
+                              }
+                              className={
+                                currentPage === totalPages
+                                  ? "pointer-events-none opacity-50"
+                                  : "cursor-pointer"
+                              }
+                            />
+                          </PaginationItem>
+                        </PaginationContent>
+                      </Pagination>
+                    )}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
-
           <TabsContent value="analytics" className="space-y-6">
             <div className="grid gap-4 md:grid-cols-2">
               <Card>

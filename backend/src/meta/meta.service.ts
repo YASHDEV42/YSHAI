@@ -29,11 +29,6 @@ export class MetaService {
 
   // ========= Utilities =========
 
-  private maskToken(t?: string) {
-    if (!t) return '';
-    return `${t.slice(0, 4)}...${t.slice(-4)}`;
-  }
-
   private appSecretProof(token: string) {
     const secret =
       process.env.META_CLIENT_SECRET || process.env.META_APP_SECRET || '';
@@ -90,7 +85,7 @@ export class MetaService {
   // ========= OAuth & Linking =========
 
   async handleOauthCallback(shortToken: string, userId: number) {
-    // 1) Exchange short-lived token -> long-lived user token
+    // 1) Exchange short-lived token for long-lived user token
     const longUser = await this.exchangeShortToLong(shortToken);
 
     // 2) List pages for this user
@@ -99,7 +94,7 @@ export class MetaService {
     if (!pages.length)
       throw new BadRequestException('No Facebook Pages found for this user');
 
-    // 3) Auto-pick a page that has an IG Business account (we’ll still let user change later in UI)
+    // 3) Auto-pick a page that has an IG Business account
     let chosen: { id: string; name: string; access_token: string } | null =
       null;
     let igUserId: string | null = null;
@@ -124,7 +119,7 @@ export class MetaService {
 
     // 4) Link account & persist tokens
     const link = await this.accounts.link(
-      Number(userId),
+      userId,
       { provider: 'instagram', providerAccountId: igUserId },
       {
         accessToken: chosen.access_token, // Page access token

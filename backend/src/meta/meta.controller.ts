@@ -162,8 +162,11 @@ export class MetaController {
   @ApiQuery({ name: 'igUserId', required: true })
   @ApiQuery({ name: 'limit', required: false })
   @ApiQuery({ name: 'after', required: false })
-  async getInstagramPosts(@Req() req: any, @Query() q: IgPostsQueryDto) {
-    const userId = req.user?.id;
+  async getInstagramPosts(
+    @Req() req: { user: { id: number } },
+    @Query() q: IgPostsQueryDto,
+  ) {
+    const userId = req.user.id;
     if (!userId) throw new BadRequestException('Missing authenticated user');
     if (!q.igUserId) throw new BadRequestException('igUserId is required');
 

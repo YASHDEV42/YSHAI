@@ -198,13 +198,27 @@ export async function getPageFromIgAccountAction(
 
 export async function getInstagramPostsAction(
   igUserId: string,
-  accessToken: string,
+  limit?: number,
+  after?: string,
 ) {
-  console.log("Fetching Instagram posts for IG User ID:", igUserId);
+  const params = new URLSearchParams({ igUserId });
+  if (limit) params.append("limit", limit.toString());
+  if (after) params.append("after", after);
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("accessToken")?.value;
+
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_PROTECTED_API_KEY}/meta/instagram/posts?igUserId=${igUserId}&accessToken=${accessToken}`,
-    { cache: "no-store" },
+    `${process.env.NEXT_PUBLIC_PROTECTED_API_KEY}/meta/instagram/posts?${params.toString()}`,
+    {
+      credentials: "include",
+      cache: "no-store",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: `accessToken=${accessToken}`,
+      },
+    },
   );
+
   console.log("Response data:", await res.clone().text());
 
   if (!res.ok) {

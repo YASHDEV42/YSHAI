@@ -1,6 +1,6 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { PlatformDetail } from "./components/platform-detail";
-import { getConnectedAccounts } from "@/lib/helper";
+import { getConnectedAccounts, getInstagramPostsAction } from "@/lib/helper";
 import { notFound } from "next/navigation";
 
 export default async function PlatformDetailPage({
@@ -95,6 +95,18 @@ export default async function PlatformDetailPage({
   if (!account) {
     notFound();
   }
+  console.log("Rendering PlatformDetailPage for account:", account);
+  const postsResponse = await getInstagramPostsAction(
+    account.providerAccountId,
+  );
+  const posts = postsResponse?.posts?.data || [];
 
-  return <PlatformDetail text={text} locale={locale} account={account} />;
+  return (
+    <PlatformDetail
+      text={text}
+      locale={locale}
+      account={account}
+      posts={posts}
+    />
+  );
 }
