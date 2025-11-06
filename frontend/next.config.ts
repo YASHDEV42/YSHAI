@@ -3,11 +3,14 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 const nextConfig: NextConfig = {
   images: {
-    domains: [
-      "images.unsplash.com",
-      "cdn.sanity.io",
-      "lh3.googleusercontent.com",
-      "scontent.cdninstagram.com",
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "scontent.cdninstagram.com",
+        port: "",
+        pathname: "/**",
+        search: "",
+      },
     ],
   },
 };

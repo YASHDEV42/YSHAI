@@ -10,7 +10,6 @@ import { ArrowLeft, ArrowRight, Loader } from "lucide-react";
 import { useActionState } from "react";
 import { loginAction } from "../actions";
 
-
 interface LoginPageProps {
   text: any;
   locale: string;
@@ -20,12 +19,14 @@ const initialState = {
   arMessage: "",
   enMessage: "",
   success: false,
-}
+};
 
 export default function LoginPage({ text, locale }: LoginPageProps) {
-  const [state, formAction, pending] = useActionState(loginAction, initialState)
+  const [state, formAction, pending] = useActionState(
+    loginAction,
+    initialState,
+  );
   return (
-
     <div className="min-h-screen bg-background flex flex-col">
       <main className="flex-1 flex items-center justify-center px-4 pb-12 pt-20">
         <div className="w-full max-w-md">
@@ -36,7 +37,11 @@ export default function LoginPage({ text, locale }: LoginPageProps) {
 
           <Card className="p-8 bg-card backdrop-blur-sm border-border">
             <div className="space-y-3 mb-2">
-              <Button variant="outline" className="w-full bg-transparent" type="button">
+              <Button
+                variant="outline"
+                className="w-full bg-transparent"
+                type="button"
+              >
                 <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                   <path
                     fill="currentColor"
@@ -88,31 +93,44 @@ export default function LoginPage({ text, locale }: LoginPageProps) {
               </Field>
 
               <div className="flex items-center justify-end">
-                <Link href="/forgot-password" className="text-sm text-primary hover:underline">
+                <Link
+                  href="/forgot-password"
+                  className="text-sm text-primary hover:underline"
+                >
                   {text.forgotPassword}
                 </Link>
               </div>
 
               <div className="flex items-center justify-center gap-2 text-sm pt-2">
                 <span className="text-muted-foreground">{text.noAccount}</span>
-                <Link href="/signup" className="text-primary hover:underline font-medium">
+                <Link
+                  href="/signup"
+                  className="text-primary hover:underline font-medium"
+                >
                   {text.signUpLink}
                 </Link>
               </div>
-              {state && (
-                locale === "ar" ? (
-                  state.arMessage && (
-                    <p className={`text-center text-base ${state.success ? 'text-green-600' : 'text-red-600'}`}>
-                      {state.arMessage}
-                    </p>
-                  ))
-                  : (
-                    state.enMessage && (
-                      <p className={`text-center text-base ${state.success ? 'text-green-600' : 'text-red-600'}`}>
+              {state &&
+                (locale === "ar"
+                  ? state.arMessage && (
+                      <p
+                        className={`text-center text-base ${state.success ? "text-green-600" : "text-red-600"}`}
+                      >
+                        {state.arMessage}
+                      </p>
+                    )
+                  : state.enMessage && (
+                      <p
+                        className={`text-center text-base ${state.success ? "text-green-600" : "text-red-600"}`}
+                      >
                         {state.enMessage}
                       </p>
-                    )))}
-              <Button type="submit" disabled={pending} className="w-full bg-primary hover:bg-primary/90" >
+                    ))}
+              <Button
+                type="submit"
+                disabled={pending}
+                className="w-full bg-primary hover:bg-primary/90"
+              >
                 {pending && <Loader />}
                 {text.signInButton}
               </Button>
@@ -141,4 +159,3 @@ export default function LoginPage({ text, locale }: LoginPageProps) {
     </div>
   );
 }
-
