@@ -5,16 +5,8 @@ import type { LucideIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 
-interface EmptyStateProps {
-  icon: LucideIcon
-  title: string
-  description: string
-  actionLabel?: string
-  actionHref?: string
-  onAction?: () => void
-}
 
-export function EmptyState({ icon: Icon, title, description, actionLabel, actionHref, onAction }: EmptyStateProps) {
+export function EmptyState({ icon: Icon, title, description, actionLabel, actionHref, onAction }: any) {
   return (
     <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
       <div className="mb-4 rounded-full bg-muted p-6">
