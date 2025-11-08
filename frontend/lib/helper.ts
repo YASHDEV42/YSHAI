@@ -105,58 +105,7 @@ const disconnectAccount = async (
   return { success: true, message: data.message ?? "Account disconnected" };
 };
 
-export async function reconnectAccount({
-  provider,
-  providerAccountId,
-  accessToken,
-  refreshToken,
-  expiresAt,
-}: {
-  provider: "x" | "instagram" | "linkedin" | "tiktok";
-  providerAccountId: string;
-  accessToken?: string;
-  refreshToken?: string;
-  expiresAt?: string;
-}) {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("accessToken")?.value;
 
-  if (!token) {
-    throw new Error("Unauthorized");
-  }
-
-  try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_PROTECTED_API_KEY}/accounts`,
-      {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          Cookie: `accessToken=${token}`,
-        },
-        body: JSON.stringify({
-          provider,
-          providerAccountId,
-          accessToken,
-          refreshToken,
-          expiresAt,
-        }),
-      },
-    );
-
-    if (!res.ok) {
-      const text = await res.text();
-      console.error(text);
-      return { success: false, message: "Failed to reconnect account" };
-    }
-
-    const data = await res.json();
-    return { success: true, message: data.message, id: data.id };
-  } catch (err) {
-    return { success: false, message: "Unexpected error while reconnecting" };
-  }
-}
 
 export async function getInstagramProfileAction(
   pageId: string,
