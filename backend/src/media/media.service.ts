@@ -125,8 +125,7 @@ export class MediaService {
   }
 
   private extractPublicId(url: string): string {
-    // Cloudinary URLs look like: https://res.cloudinary.com/<cloud>/image/upload/v123/folder/name.ext
-    // Extract the path after '/upload/' (or '/video/upload/') then drop version prefix and file extension
+
     const match = url.match(/\/upload\/(.*)$/);
     const afterUpload = match ? match[1] : url;
     const withoutVersion = afterUpload.replace(/^v\d+\//, '');
