@@ -187,26 +187,37 @@ export async function publishInstagramPostAction(caption: string, file: File) {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("accessToken")?.value;
 
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_PROTECTED_API_KEY}/meta/publish`,
-    {
-      method: "POST",
-      body: formData,
-      cache: "no-store",
-      headers: {
-        Cookie: `accessToken=${cookieStore.get("accessToken")?.value}`,
-      },
-    },
-  );
-
-  if (!res.ok) {
-    const text = await res.text();
-    console.error("❌ Failed to publish Instagram post:", text);
-    return { success: false, message: "Failed to publish Instagram post" };
+  if (!accessToken) {
+    return {
+      success: false,
+      message: "No access token found. Please log in again.",
+    };
   }
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_PROTECTED_API_KEY}/meta/publish`,
+      {
+        method: "POST",
+        body: formData,
+        cache: "no-store",
+        headers: {
+          Cookie: `accessToken=${accessToken}`,
+        },
+      },
+    );
 
-  const data = await res.json();
-  return { success: true, post: data };
+    if (!res.ok) {
+      const text = await res.text();
+      console.error("❌ Failed to publish Instagram post:", text);
+      return { success: false, message: "Failed to publish Instagram post" };
+    }
+
+    const data = await res.json();
+    return { success: true, post: data };
+  } catch (error) {
+    console.error("❌ Error publishing Instagram post:", error);
+    return { success: false, message: "Error publishing Instagram post" };
+  }
 }
 
 export async function handleMetaOAuthCallbackAction(

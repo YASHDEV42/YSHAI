@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  Logger,
+  BadRequestException,
+} from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/core';
 import { Media } from 'src/entities/media.entity';
 import { Post } from 'src/entities/post.entity';
@@ -22,6 +27,7 @@ export class MediaService {
     file: { path?: string; buffer?: Buffer },
     postId?: number,
   ): Promise<MediaResponseDto> {
+    this.logger.log('uploading media file to Cloudinary');
     let post: Post | null = null;
     if (postId !== undefined) {
       post = await this.em.findOne(Post, { id: postId });
@@ -30,15 +36,14 @@ export class MediaService {
       }
     }
     try {
-      if (!file.path && !file.buffer) {
-        throw new Error('No file provided for upload');
+      if (!(file?.path || file?.buffer)) {
+        throw new BadRequestException('No valid file provided for upload');
       }
       const uploadResult = await this.uploadToCloudinary(file);
 
       const media = this.em.create(Media, {
         url: uploadResult.secure_url,
         type: uploadResult.resource_type === 'video' ? 'video' : 'image',
-        // Only set post if provided
         ...(post ? { post } : {}),
         orderIndex: 0,
         createdAt: new Date(),
@@ -61,7 +66,10 @@ export class MediaService {
     }
   }
 
-  private async uploadToCloudinary(file: { path?: string; buffer?: Buffer }) {
+  private async uploadToCloudinary(file: {
+    path?: string;
+    buffer?: Buffer;
+  }): Promise<cloudinary.UploadApiResponse> {
     const options = { resource_type: 'auto', folder: 'yshai/media' } as const;
     if (file.path) {
       return cloudinary.v2.uploader.upload(file.path, options);

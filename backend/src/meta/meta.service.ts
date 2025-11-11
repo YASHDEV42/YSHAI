@@ -192,8 +192,13 @@ export class MetaService {
     caption: string;
   }) {
     const { file, userId, caption } = params;
-
-    // Upload to your media store (S3/Cloudinary/etc.)
+    this.logger.log(
+      'publishWithAutoRefresh called with: ',
+      file.size,
+      caption,
+      userId,
+    );
+    // Upload to your media store
     const media = await this.media.upload({ buffer: file.buffer });
 
     // Get the linked IG account for this user

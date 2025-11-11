@@ -77,6 +77,7 @@ export class MetaController {
       },
     }),
   )
+  @UsePipes(new ValidationPipe({ transform: false, whitelist: false }))
   @ApiOperation({ summary: 'Publish a photo to Instagram Business' })
   @ApiBody({ type: PublishDto })
   @ApiResponse({ status: 201, description: 'Post published successfully' })

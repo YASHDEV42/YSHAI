@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -113,6 +113,11 @@ export default function CreatePage({ text, locale }: CreatePageProps) {
     },
   ];
 
+  useEffect(() => {
+    return () => {
+      uploadedMedia.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [uploadedMedia]);
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Header */}

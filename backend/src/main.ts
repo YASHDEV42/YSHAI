@@ -32,6 +32,19 @@ async function bootstrap() {
       transform: true,
       whitelist: true,
       forbidNonWhitelisted: true,
+      stopAtFirstError: true,
+      skipUndefinedProperties: true,
+      exceptionFactory: (errors) => {
+        if (
+          errors.length &&
+          errors[0].target instanceof Object &&
+          'file' in errors[0].target
+        ) {
+          // Skip file-based validation
+          return [];
+        }
+        return errors;
+      },
     }),
   );
 
