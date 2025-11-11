@@ -1,9 +1,21 @@
-
 "use client";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, Sparkles } from "lucide-react";
+import { Fragment } from "react/jsx-runtime";
 
-export function HeroSection({ locale, text }: { locale: string, text: { heading: string, subHeading: string, primaryButton: string, secondaryButton: string, highlight: string } }) {
+export function HeroSection({
+  locale,
+  text,
+}: {
+  locale: string;
+  text: {
+    heading: string;
+    subHeading: string;
+    primaryButton: string;
+    secondaryButton: string;
+    highlight: string;
+  };
+}) {
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-background px-4 py-20">
       <div className="absolute inset-0 dark:bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[linear-gradient(to_right,#00000018_1px,transparent_1px),linear-gradient(to_bottom,#00000018_1px,transparent_1px)] bg-[size:4rem_4rem]" />
@@ -14,8 +26,17 @@ export function HeroSection({ locale, text }: { locale: string, text: { heading:
           <span>{text.highlight}</span>
         </div>
 
-        <h1 className="text-5xl md:text-7xl font-bold">
-          {text.heading}
+        <h1 className="text-2xl md:text-4xl font-bold">
+          {text.heading.split(" ").map((word, index) =>
+            index === 8 ? (
+              <Fragment key={index}>
+                <br />
+                {word}{" "}
+              </Fragment>
+            ) : (
+              `${word} `
+            ),
+          )}
         </h1>
 
         <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
@@ -23,10 +44,12 @@ export function HeroSection({ locale, text }: { locale: string, text: { heading:
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 pt-4 justify-center">
-          <Button size="lg" className="text-base px-8 group flex items-center justify-center">
+          <Button
+            size="lg"
+            className="text-base px-8 group flex items-center justify-center"
+          >
             {locale === "ar" ? (
               <>
-
                 {text.primaryButton}
                 <ArrowLeft className="ml-2 w-4 h-4 group-hover:-translate-x-1 transition-transform" />
               </>
@@ -38,7 +61,11 @@ export function HeroSection({ locale, text }: { locale: string, text: { heading:
             )}
           </Button>
 
-          <Button size="lg" variant="outline" className="text-base px-8 bg-transparent">
+          <Button
+            size="lg"
+            variant="outline"
+            className="text-base px-8 bg-transparent"
+          >
             {text.secondaryButton}
           </Button>
         </div>
@@ -46,4 +73,3 @@ export function HeroSection({ locale, text }: { locale: string, text: { heading:
     </section>
   );
 }
-
