@@ -13,8 +13,8 @@ import { Plus, Trash2, Check, AlertCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { PlatformConnectionDialog } from "./platform-connection-dialog";
 import type { TConnectedAccount } from "@/types";
-import { disconnectAccount, reconnectAccount } from "@/lib/helper";
 import { getPlatformIcon } from "@/components/icons/platforms-icons";
+import { disconnectAccount } from "@/lib/accounts-helper";
 
 interface PlatformsTabProps {
   text: any;
@@ -27,12 +27,12 @@ export function PlatformsTab({ text, locale, accounts }: PlatformsTabProps) {
   const connectedPlatforms = accounts;
 
   const [dialogOpen, setDialogOpen] = useState(false);
-  const handleReConnect = async (
-    provider: "x" | "instagram" | "linkedin" | "tiktok",
-    providerAccountId: string,
-  ) => {
-    const res = await reconnectAccount({ provider, providerAccountId });
-  };
+  // const handleReConnect = async (
+  //   provider: "x" | "instagram" | "linkedin" | "tiktok",
+  //   providerAccountId: string,
+  // ) => {
+  //   const res = await reconnectAccount({ provider, providerAccountId });
+  // };
   const handleDisconnect = async (accountId: number) => {
     await disconnectAccount(accountId);
   };

@@ -7,36 +7,52 @@ import { connectInstagram } from "@/app/[locale]/dashboard/settings/actions";
 export default function MetaCallbackClient() {
   const router = useRouter();
 
-  useEffect(() => {
-    const hash = window.location.hash.substring(1);
-    const params = new URLSearchParams(hash);
-    const token = params.get("access_token");
+  const connectInstagramHandler = async (
+    token: string,
+    expiry: string | null,
+  ) => {
+    try {
+      const result = await connectInstagram(token, expiry);
 
-    if (!token) {
-      alert("Missing access token from Meta");
-      router.push("/dashboard/settings");
-      return;
+      if (result?.success) {
+        console.log("✅ Instagram connected successfully:", result.data);
+        router.replace("/dashboard/settings?connected=instagram");
+      } else {
+        console.error("❌ Failed to connect Instagram:", result?.error);
+        router.replace("/dashboard/settings?error=connection_failed");
+      }
+    } catch (err) {
+      console.error("⚠️ Error connecting Instagram:", err);
+      router.replace("/dashboard/settings?error=unexpected");
     }
+  };
 
-    console.log("🔑 Meta access token:", token);
+  useEffect(() => {
+    (async () => {
+      // Extract hash parameters from redirect
+      const hash = window.location.hash.substring(1);
+      const params = new URLSearchParams(hash);
+      const token = params.get("access_token");
+      const expiry = params.get("expires_in");
 
-    connectInstagram(token)
-      .then(() => {
-        console.log("✅ Instagram connected successfully!");
-        // ✅ redirect user to the dashboard
-        router.push("/dashboard");
-      })
-      .catch((err) => {
-        console.error("❌ Failed to connect Instagram:", err);
-        // optional: show error and still return to settings
-        alert("Failed to connect Instagram account.");
-        router.push("/dashboard/settings");
-      });
+      if (!token) {
+        console.warn("⚠️ Missing access token from Meta redirect.");
+        router.replace("/dashboard/settings?error=missing_token");
+        return;
+      }
+
+      console.log("🔑 Meta short-lived access token:", token);
+      console.log("⏳ Token expiry (seconds):", expiry);
+
+      await connectInstagramHandler(token, expiry);
+    })();
   }, [router]);
 
   return (
-    <div className="h-screen flex items-center justify-center">
-      <p>Connecting your Instagram account...</p>
+    <div className="h-screen flex items-center justify-center bg-background">
+      <p className="text-lg text-muted-foreground animate-pulse">
+        Connecting your Instagram account…
+      </p>
     </div>
   );
 }

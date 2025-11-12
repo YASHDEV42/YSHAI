@@ -12,8 +12,7 @@ import {
 import { ThemeProvider } from "../components/theme-provider";
 import { Navbar } from "./components/Navbar";
 import { Toaster } from "../../components/ui/sonner";
-import { cookies } from "next/headers";
-import { getUser } from "@/lib/helper";
+import { getUser } from "@/lib/auth-helper";
 import { TUser } from "@/types";
 export const metadata: Metadata = {
   title: "YSHAI",

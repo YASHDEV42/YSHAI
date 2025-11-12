@@ -1,7 +1,7 @@
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "./components/dashboard-sidebar";
 import { setRequestLocale, getTranslations } from "next-intl/server";
-import { getUser } from "@/lib/helper";
+import { getUser } from "@/lib/auth-helper";
 
 export default async function DashboardLayout({
   children,

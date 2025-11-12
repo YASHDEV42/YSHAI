@@ -8,7 +8,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import {
   Twitter,
   Instagram,
@@ -19,9 +18,6 @@ import {
   ArrowLeft,
   X,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { TConnectedAccount } from "@/types";
 
 type Platform = "facebook" | "x" | "instagram" | "linkedin" | "tiktok";
 
@@ -101,7 +97,6 @@ export function PlatformConnectionDialog({
 
   const handlePlatformSelect = (platform: PlatformOption) => {
     if (platform.id === "instagram") {
-      // Redirect to Meta OAuth dialog handled by your backend
       const redirectUri = encodeURIComponent(
         `${window.location.origin}/auth/meta/callback`,
       );

@@ -47,7 +47,6 @@ export class MetaController {
     @Req() req: { user: { id: number } },
     @Body() body: OauthCallbackDto,
   ) {
-    console.log('request', req);
     const { shortToken } = body;
     console.log('Received shortToken:', shortToken);
     const userId = req.user?.id;

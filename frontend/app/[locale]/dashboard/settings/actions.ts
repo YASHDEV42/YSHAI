@@ -60,7 +60,7 @@ export const changeNameAction = async (
   }
 };
 
-export async function connectInstagram(shortToken: string) {
+export async function connectInstagram(shortToken: string, expiry?: any) {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("accessToken");
 
@@ -79,7 +79,6 @@ export async function connectInstagram(shortToken: string) {
         },
         body: JSON.stringify({
           shortToken,
-          userId: "1",
         }),
       },
     );

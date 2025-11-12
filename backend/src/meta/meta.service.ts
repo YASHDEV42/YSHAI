@@ -87,9 +87,11 @@ export class MetaService {
   async handleOauthCallback(shortToken: string, userId: number) {
     // 1) Exchange short-lived token for long-lived user token
     const longUser = await this.exchangeShortToLong(shortToken);
+    console.log('Exchanged long-lived token:', longUser);
 
     // 2) List pages for this user
     const pagesResp = await this.listPages(longUser.access_token);
+    console.log('Fetched pages:', pagesResp);
     const pages = pagesResp?.data ?? [];
     if (!pages.length)
       throw new BadRequestException('No Facebook Pages found for this user');
@@ -112,6 +114,7 @@ export class MetaService {
         'No Page with a connected Instagram Business account was found.',
       );
     }
+    console.log('chosen page:', chosen, 'igUserId:', igUserId);
 
     const expiresAt = new Date(
       Date.now() + (longUser.expires_in || 5184000) * 1000,
@@ -127,6 +130,7 @@ export class MetaService {
         expiresAt: isNaN(expiresAt.getTime()) ? undefined : expiresAt,
       },
     );
+    console.log('Linked account');
 
     // Persist page metadata
     const accountEntity = await this.em.findOne(SocialAccount, { id: link.id });

@@ -1,10 +1,10 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { Platforms } from "./components/platforms";
 import {
-  getConnectedAccounts,
   getInstagramPostsAction,
   getInstagramProfileAction,
-} from "@/lib/helper";
+  getUserSocialMediaAccounts,
+} from "@/lib/accounts-helper";
 
 export default async function PlatformsPage({
   params,
@@ -65,8 +65,8 @@ export default async function PlatformsPage({
     },
   };
 
-  const accountsData = await getConnectedAccounts();
-  const accounts = accountsData.accounts || [];
+  const accountsData = await getUserSocialMediaAccounts();
+  const accounts = accountsData.socialAccounts || [];
 
   console.log("📦 Connected accounts:", JSON.stringify(accounts, null, 2));
 

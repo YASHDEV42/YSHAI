@@ -13,23 +13,28 @@ export class AccountsService {
     private readonly http: HttpService,
   ) {}
 
+  // link the the social account to the user by storing the provider info and tokens in the social_accounts and account_tokens tables
+
   async link(
-    userId: number,
+    id: number,
     payload: {
       provider: 'x' | 'instagram' | 'linkedin' | 'tiktok';
       providerAccountId: string;
     },
     tokens?: { accessToken?: string; refreshToken?: string; expiresAt?: Date },
   ): Promise<{ id: number; message: string }> {
-    const user = await this.em.findOne(User, { id: userId });
+    //first find the user by the id extracted from the jwt access-token stored in the cookie
+    const user = await this.em.findOne(User, { id });
     if (!user) throw new NotFoundException('User not found');
 
+    //then find if the social account already exists for the user with the given provider and providerAccountId
     let account = await this.em.findOne(SocialAccount, {
       user,
       provider: payload.provider,
       providerAccountId: payload.providerAccountId,
     });
 
+    // if not create a new social account entry, else update the existing one to be active
     if (!account) {
       account = new SocialAccount();
       account.user = user;

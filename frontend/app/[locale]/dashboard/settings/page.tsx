@@ -1,7 +1,8 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import SettingsClient from "./components/settings";
-import { getUser, getUserSocialMediaAccounts } from "@/lib/helper";
 import { TConnectedAccount, TUser } from "@/types";
+import { getUser } from "@/lib/auth-helper";
+import { getUserSocialMediaAccounts } from "@/lib/accounts-helper";
 
 export default async function SettingsPage({
   params,
