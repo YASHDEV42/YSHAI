@@ -1,9 +1,21 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { SidebarTrigger } from "@/components/ui/sidebar"
+import { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import {
   TrendingUp,
   TrendingDown,
@@ -16,60 +28,27 @@ import {
   Instagram,
   Linkedin,
   Music2,
-} from "lucide-react"
-import { Bar, BarChart, Line, LineChart, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Legend } from "recharts"
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+} from "lucide-react";
+import {
+  Bar,
+  BarChart,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Legend,
+} from "recharts";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 
-// Define the shape of the translation object
-export type AnalyticsPageText = {
-  title: string
-  subtitle: string
-  timeRangeLabel: string
-  timeRanges: {
-    "7d": string
-    "30d": string
-    "90d": string
-    "1y": string
-  }
-  stats: {
-    totalEngagement: string
-    totalReach: string
-    newFollowers: string
-    avgEngagementRate: string
-  }
-  charts: {
-    engagementOverTime: string
-    engagementOverTimeDesc: string
-    platformPerformance: string
-    platformPerformanceDesc: string
-  }
-  platformBreakdown: {
-    title: string
-    description: string
-    posts: string
-  }
-  topPosts: {
-    title: string
-    description: string
-  }
-  platforms: {
-    twitter: string
-    instagram: string
-    linkedin: string
-    tiktok: string
-  }
-  metrics: {
-    likes: string
-    comments: string
-    shares: string
-    views: string
-    engagement: string
-  }
-}
-
-export default function AnalyticsClient({ text }: { text: AnalyticsPageText }) {
-  const [timeRange, setTimeRange] = useState("7d")
-  const [selectedPlatform, setSelectedPlatform] = useState("all")
+export default function AnalyticsClient({ text }: { text: any }) {
+  const [timeRange, setTimeRange] = useState("7d");
+  const [selectedPlatform, setSelectedPlatform] = useState("all");
 
   // Mock data — in real app, this would come from API
   const engagementData = [
@@ -80,14 +59,14 @@ export default function AnalyticsClient({ text }: { text: AnalyticsPageText }) {
     { date: "Fri", likes: 378, comments: 121, shares: 56, views: 1750 },
     { date: "Sat", likes: 456, comments: 156, shares: 78, views: 2100 },
     { date: "Sun", likes: 423, comments: 142, shares: 71, views: 1980 },
-  ]
+  ];
 
   const platformData = [
     { platform: "twitter", posts: 24, engagement: 3420, growth: 12.5 },
     { platform: "instagram", posts: 18, engagement: 5680, growth: 18.3 },
     { platform: "linkedin", posts: 12, engagement: 2340, growth: 8.7 },
     { platform: "tiktok", posts: 15, engagement: 8920, growth: 24.1 },
-  ]
+  ];
 
   const topPosts = [
     {
@@ -126,7 +105,7 @@ export default function AnalyticsClient({ text }: { text: AnalyticsPageText }) {
       shares: 234,
       date: "1 week ago",
     },
-  ]
+  ];
 
   const stats = [
     {
@@ -157,37 +136,37 @@ export default function AnalyticsClient({ text }: { text: AnalyticsPageText }) {
       trend: "down" as const,
       icon: TrendingUp,
     },
-  ]
+  ];
 
   const getPlatformIcon = (platform: string) => {
     switch (platform) {
       case "twitter":
-        return <Twitter className="size-4" />
+        return <Twitter className="size-4" />;
       case "instagram":
-        return <Instagram className="size-4" />
+        return <Instagram className="size-4" />;
       case "linkedin":
-        return <Linkedin className="size-4" />
+        return <Linkedin className="size-4" />;
       case "tiktok":
-        return <Music2 className="size-4" />
+        return <Music2 className="size-4" />;
       default:
-        return null
+        return null;
     }
-  }
+  };
 
   const getPlatformName = (platform: string) => {
     switch (platform) {
       case "twitter":
-        return text.platforms.twitter
+        return text.platforms.twitter;
       case "instagram":
-        return text.platforms.instagram
+        return text.platforms.instagram;
       case "linkedin":
-        return text.platforms.linkedin
+        return text.platforms.linkedin;
       case "tiktok":
-        return text.platforms.tiktok
+        return text.platforms.tiktok;
       default:
-        return platform
+        return platform;
     }
-  }
+  };
 
   return (
     <div className="container mx-auto p-8">
@@ -221,14 +200,18 @@ export default function AnalyticsClient({ text }: { text: AnalyticsPageText }) {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">{stat.title}</p>
-                  <p className="mt-2 font-bold text-3xl text-foreground">{stat.value}</p>
+                  <p className="mt-2 font-bold text-3xl text-foreground">
+                    {stat.value}
+                  </p>
                   <div className="mt-1 flex items-center gap-1">
                     {stat.trend === "up" ? (
                       <TrendingUp className="size-4 text-green-500" />
                     ) : (
                       <TrendingDown className="size-4 text-red-500" />
                     )}
-                    <p className={`text-sm ${stat.trend === "up" ? "text-green-500" : "text-red-500"}`}>
+                    <p
+                      className={`text-sm ${stat.trend === "up" ? "text-green-500" : "text-red-500"}`}
+                    >
                       {stat.change}
                     </p>
                   </div>
@@ -248,7 +231,9 @@ export default function AnalyticsClient({ text }: { text: AnalyticsPageText }) {
         <Card className="border-border bg-card">
           <CardHeader>
             <CardTitle>{text.charts.engagementOverTime}</CardTitle>
-            <CardDescription>{text.charts.engagementOverTimeDesc}</CardDescription>
+            <CardDescription>
+              {text.charts.engagementOverTimeDesc}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <ChartContainer
@@ -270,14 +255,32 @@ export default function AnalyticsClient({ text }: { text: AnalyticsPageText }) {
             >
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={engagementData}>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    className="stroke-muted"
+                  />
                   <XAxis dataKey="date" className="text-xs" />
                   <YAxis className="text-xs" />
                   <ChartTooltip content={<ChartTooltipContent />} />
                   <Legend />
-                  <Line type="monotone" dataKey="likes" stroke="hsl(var(--chart-1))" strokeWidth={2} />
-                  <Line type="monotone" dataKey="comments" stroke="hsl(var(--chart-2))" strokeWidth={2} />
-                  <Line type="monotone" dataKey="shares" stroke="hsl(var(--chart-3))" strokeWidth={2} />
+                  <Line
+                    type="monotone"
+                    dataKey="likes"
+                    stroke="hsl(var(--chart-1))"
+                    strokeWidth={2}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="comments"
+                    stroke="hsl(var(--chart-2))"
+                    strokeWidth={2}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="shares"
+                    stroke="hsl(var(--chart-3))"
+                    strokeWidth={2}
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </ChartContainer>
@@ -288,7 +291,9 @@ export default function AnalyticsClient({ text }: { text: AnalyticsPageText }) {
         <Card className="border-border bg-card">
           <CardHeader>
             <CardTitle>{text.charts.platformPerformance}</CardTitle>
-            <CardDescription>{text.charts.platformPerformanceDesc}</CardDescription>
+            <CardDescription>
+              {text.charts.platformPerformanceDesc}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <ChartContainer
@@ -302,15 +307,24 @@ export default function AnalyticsClient({ text }: { text: AnalyticsPageText }) {
             >
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={platformData}>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    className="stroke-muted"
+                  />
                   <XAxis
                     dataKey="platform"
-                    tickFormatter={(value) => getPlatformName(value.toLowerCase())}
+                    tickFormatter={(value) =>
+                      getPlatformName(value.toLowerCase())
+                    }
                     className="text-xs"
                   />
                   <YAxis className="text-xs" />
                   <ChartTooltip content={<ChartTooltipContent />} />
-                  <Bar dataKey="engagement" fill="hsl(var(--chart-1))" radius={[8, 8, 0, 0]} />
+                  <Bar
+                    dataKey="engagement"
+                    fill="hsl(var(--chart-1))"
+                    radius={[8, 8, 0, 0]}
+                  />
                 </BarChart>
               </ResponsiveContainer>
             </ChartContainer>
@@ -324,7 +338,9 @@ export default function AnalyticsClient({ text }: { text: AnalyticsPageText }) {
         <Card className="border-border bg-card">
           <CardHeader>
             <CardTitle>{text.platformBreakdown.title}</CardTitle>
-            <CardDescription>{text.platformBreakdown.description}</CardDescription>
+            <CardDescription>
+              {text.platformBreakdown.description}
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {platformData.map((item) => (
@@ -337,14 +353,18 @@ export default function AnalyticsClient({ text }: { text: AnalyticsPageText }) {
                     {getPlatformIcon(item.platform.toLowerCase())}
                   </div>
                   <div>
-                    <p className="font-medium text-sm">{getPlatformName(item.platform.toLowerCase())}</p>
+                    <p className="font-medium text-sm">
+                      {getPlatformName(item.platform.toLowerCase())}
+                    </p>
                     <p className="text-xs text-muted-foreground">
                       {item.posts} {text.platformBreakdown.posts}
                     </p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="font-semibold text-sm">{item.engagement.toLocaleString()}</p>
+                  <p className="font-semibold text-sm">
+                    {item.engagement.toLocaleString()}
+                  </p>
                   <div className="flex items-center gap-1">
                     <TrendingUp className="size-3 text-green-500" />
                     <p className="text-xs text-green-500">+{item.growth}%</p>
@@ -394,5 +414,5 @@ export default function AnalyticsClient({ text }: { text: AnalyticsPageText }) {
         </Card>
       </div>
     </div>
-  )
+  );
 }

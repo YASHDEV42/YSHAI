@@ -1,5 +1,6 @@
-import { setRequestLocale, getTranslations } from "next-intl/server";
+import { setRequestLocale } from "next-intl/server";
 import DashboardPage from "./components/dashboard";
+import { extractDashboardText } from "@/app/i18n/extractTexts";
 
 export default async function DashboardPageRoute({
   params,
@@ -8,46 +9,6 @@ export default async function DashboardPageRoute({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const t = await getTranslations({ locale, namespace: "DashboardPage" });
-
-  const text: any = {
-    welcomeMessage: t("welcomeMessage"),
-    welcomeSubtitle: t("welcomeSubtitle"),
-    stats: {
-      scheduledPosts: t("stats.scheduledPosts"),
-      publishedThisWeek: t("stats.publishedThisWeek"),
-      connectedAccounts: t("stats.connectedAccounts"),
-      avgEngagement: t("stats.avgEngagement"),
-      changeFromLastWeek: t("stats.changeFromLastWeek"),
-    },
-    recentActivity: {
-      title: t("recentActivity.title"),
-      description: t("recentActivity.description"),
-      viewAll: t("recentActivity.viewAll"),
-    },
-    quickActions: {
-      title: t("quickActions.title"),
-      createPost: t("quickActions.createPost"),
-      viewCalendar: t("quickActions.viewCalendar"),
-      viewAnalytics: t("quickActions.viewAnalytics"),
-    },
-    connectedPlatforms: {
-      title: t("connectedPlatforms.title"),
-      description: t("connectedPlatforms.description"),
-      connected: t("connectedPlatforms.connected"),
-      connect: t("connectedPlatforms.connect"),
-      addPlatform: t("connectedPlatforms.addPlatform"),
-    },
-    user: {
-      name: t("user.name"),
-      email: t("user.email"),
-    },
-    activityStatus: {
-      published: t("activityStatus.published"),
-      scheduled: t("activityStatus.scheduled"),
-      failed: t("activityStatus.failed"),
-    },
-  };
-
+  const text = await extractDashboardText(locale);
   return <DashboardPage text={text} locale={locale} />;
 }
