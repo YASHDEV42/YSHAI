@@ -109,8 +109,24 @@ export function PlatformDetail({
         {/* Platform Header */}
         <div className="px-6 py-6 border-b border-border">
           <div className="flex items-center gap-4">
-            <div className="flex size-16 items-center justify-center rounded-lg bg-muted">
-              <PlatformIcon className="size-8 text-foreground" />
+            <div className="flex size-16 items-center justify-center rounded-full bg-muted ">
+              <Avatar className="w-16 h-16 border-2 border-primary">
+                {account.profilePictureUrl ? (
+                  <AvatarImage
+                    src={account.profilePictureUrl}
+                    alt={account.provider}
+                    className="rounded-full object-cover"
+                    width={64}
+                    height={64}
+                  />
+                ) : (
+                  <AvatarFallback className="bg-muted text-muted-foreground">
+                    {account.provider
+                      ? account.provider.slice(0, 2).toUpperCase()
+                      : "??"}
+                  </AvatarFallback>
+                )}
+              </Avatar>
             </div>
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">

@@ -35,7 +35,7 @@ export class SocialAccount {
   @Property()
   connectedAt = new Date();
 
-  @Property({ nullable: true })
+  @Property({ type: 'text', nullable: true })
   profilePictureUrl?: string;
 
   @Property({ nullable: true })

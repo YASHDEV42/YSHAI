@@ -23,5 +23,5 @@ export type TConnectedAccount = {
   username?: string;
   followersCount?: number;
   accountType?: string;
-  profilePicture?: string;
+  profilePictureUrl?: string;
 };

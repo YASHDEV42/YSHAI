@@ -11,6 +11,12 @@ const nextConfig: NextConfig = {
         pathname: "/**",
         search: "",
       },
+      {
+        protocol: "https",
+        hostname: "scontent.fist20-2.fna.fbcdn.net",
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
 };

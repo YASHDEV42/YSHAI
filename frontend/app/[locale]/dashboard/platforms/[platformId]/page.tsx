@@ -1,6 +1,9 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { PlatformDetail } from "./components/platform-detail";
-import { getConnectedAccounts, getInstagramPostsAction } from "@/lib/helper";
+import {
+  getInstagramPostsAction,
+  getUserSocialMediaAccounts,
+} from "@/lib/accounts-helper";
 import { notFound } from "next/navigation";
 
 export default async function PlatformDetailPage({
@@ -85,8 +88,8 @@ export default async function PlatformDetailPage({
     },
   };
 
-  const accountsData = await getConnectedAccounts();
-  const accounts = accountsData.accounts || [];
+  const accountsData = await getUserSocialMediaAccounts();
+  const accounts = accountsData.socialAccounts || [];
 
   // Extract the account ID from platformId (format: "provider-id")
   const accountId = Number.parseInt(platformId.split("-").pop() || "0");

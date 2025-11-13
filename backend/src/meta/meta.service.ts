@@ -15,6 +15,7 @@ import { AccountToken } from 'src/entities/account-token.entity';
 
 const GRAPH_VERSION = process.env.META_GRAPH_VERSION ?? 'v24.0';
 const G = (p: string) => `https://graph.facebook.com/${GRAPH_VERSION}${p}`;
+const logger = new Logger('mets.service');
 
 @Injectable()
 export class MetaService {
@@ -121,6 +122,19 @@ export class MetaService {
     );
 
     // 4) Link account & persist tokens
+    logger.log(
+      'Linking Instagram account for ',
+      userId,
+      'igUserId:',
+      igUserId,
+      'chosen page:',
+      chosen.access_token,
+      'longUser token:',
+      longUser.access_token,
+      'longUser expiresAt:',
+      expiresAt,
+    );
+
     const link = await this.accounts.link(
       userId,
       { provider: 'instagram', providerAccountId: igUserId },

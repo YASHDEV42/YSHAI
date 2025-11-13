@@ -1,10 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/core';
 import { User } from 'src/entities/user.entity';
 import { SocialAccount } from 'src/entities/social-account.entity';
 import { AccountToken } from 'src/entities/account-token.entity';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
+const logger = new Logger('account.service');
 
 @Injectable()
 export class AccountsService {
@@ -63,11 +64,12 @@ export class AccountsService {
           ),
         );
         const data = res.data;
+        logger.log('Instagram profile data fetched:', data);
         account.username = data.username;
         account.followersCount = data.followers_count;
         account.profilePictureUrl = data.profile_picture_url;
       } catch (err) {
-        console.warn(
+        logger.warn(
           '⚠️ Could not fetch Instagram profile metadata:',
           err?.response?.data || err.message,
         );
