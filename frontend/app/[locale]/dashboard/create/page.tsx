@@ -1,5 +1,5 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
-import CreatePage, { CreatePageText } from "./components/create";
+import CreatePage from "./components/create";
 
 export default async function CreatePageRoute({
   params,
@@ -11,7 +11,7 @@ export default async function CreatePageRoute({
 
   const t = await getTranslations({ locale, namespace: "CreatePage" });
 
-  const text: CreatePageText = {
+  const text: any = {
     header: {
       saveDraft: t("header.saveDraft"),
       schedule: t("header.schedule"),
