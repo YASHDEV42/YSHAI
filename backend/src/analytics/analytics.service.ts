@@ -13,7 +13,7 @@ export class AnalyticsService {
   constructor(
     private readonly em: EntityManager,
     private readonly meta: MetaInsightsService,
-  ) { }
+  ) {}
   async syncInstagramInsights(): Promise<void> {
     const targets = await this.em.find(
       PostTarget,
@@ -30,17 +30,27 @@ export class AnalyticsService {
       });
       if (!token) continue;
 
-      const insights = await this.meta.getPostInsights(target.externalPostId!, token.tokenEncrypted);
+      const insights = await this.meta.getPostInsights(
+        target.externalPostId!,
+        token.tokenEncrypted,
+      );
       if (!insights) continue;
 
       // Parse and store insights
       const analytics = this.em.create(PostAnalytics, {
         post: target.post,
-        impressions: insights.find((m) => m.name === 'impressions')?.values?.[0]?.value ?? 0,
-        likes: insights.find((m) => m.name === 'likes')?.values?.[0]?.value ?? 0,
-        comments: insights.find((m) => m.name === 'comments')?.values?.[0]?.value ?? 0,
-        shares: insights.find((m) => m.name === 'shares')?.values?.[0]?.value ?? 0,
-        clicks: insights.find((m) => m.name === 'reach')?.values?.[0]?.value ?? 0,
+        socialAccount: account,
+        impressions:
+          insights.find((m) => m.name === 'impressions')?.values?.[0]?.value ??
+          0,
+        likes:
+          insights.find((m) => m.name === 'likes')?.values?.[0]?.value ?? 0,
+        comments:
+          insights.find((m) => m.name === 'comments')?.values?.[0]?.value ?? 0,
+        shares:
+          insights.find((m) => m.name === 'shares')?.values?.[0]?.value ?? 0,
+        clicks:
+          insights.find((m) => m.name === 'reach')?.values?.[0]?.value ?? 0,
         fetchedAt: new Date(),
       });
 

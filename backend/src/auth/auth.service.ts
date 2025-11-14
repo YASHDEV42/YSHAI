@@ -39,10 +39,9 @@ export class AuthService {
     });
     const tokenHash = await bcrypt.hash(refreshToken, 10);
     const user = await this.em.findOneOrFail(User, { id });
-    await this.em.nativeUpdate(RefreshToken, { userId: id }, { revoked: true });
+    await this.em.nativeUpdate(RefreshToken, { user: id }, { revoked: true });
     const tokenEntity = this.em.create(RefreshToken, {
       user,
-      userId: id,
       tokenHash,
       revoked: false,
       ipAddress: '<ip_address>', //TODO: get actual ip address
@@ -217,7 +216,7 @@ export class AuthService {
   async logout(user: { id: number }): Promise<void> {
     //find the active token for this user and revoke it
     const token = await this.em.findOne(RefreshToken, {
-      userId: user.id,
+      user: user.id,
       revoked: false,
     });
     if (!token) {
@@ -245,7 +244,7 @@ export class AuthService {
 
     const { id } = payload;
     const token = await this.em.findOne(RefreshToken, {
-      userId: id,
+      user: id,
       revoked: false,
       expiresAt: { $gt: new Date() },
     });

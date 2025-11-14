@@ -24,8 +24,23 @@ export class PlanResponseDto {
 export class SubscriptionResponseDto {
   @ApiProperty()
   id: number;
-  @ApiProperty({ enum: ['active', 'canceled', 'past_due', 'trialing'] })
-  status: 'active' | 'canceled' | 'past_due' | 'trialing';
+  @ApiProperty({
+    enum: [
+      'active',
+      'canceled',
+      'past_due',
+      'trialing',
+      'incomplete',
+      'incomplete_expired',
+    ],
+  })
+  status:
+    | 'active'
+    | 'canceled'
+    | 'past_due'
+    | 'trialing'
+    | 'incomplete'
+    | 'incomplete_expired';
   @ApiProperty()
   periodStartsAt: Date;
   @ApiProperty()

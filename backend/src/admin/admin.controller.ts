@@ -86,7 +86,7 @@ export class AdminController {
       action: l.action,
       entityType: l.entityType ?? '',
       entityId: l.entityId ?? '',
-      timestamp: l.timestamp,
+      createdAt: l.createdAt,
     }));
   }
 }

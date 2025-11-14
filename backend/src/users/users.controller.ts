@@ -5,7 +5,9 @@ import {
   Req,
   Put,
   Body,
-  Logger,
+  Delete,
+  Post,
+  UploadedFile,
 } from '@nestjs/common';
 import {
   ApiCookieAuth,
@@ -14,13 +16,17 @@ import {
   ApiTags,
   ApiOkResponse,
   ApiNotFoundResponse,
+  ApiConsumes,
+  ApiBody,
 } from '@nestjs/swagger';
 import { UserResponseDto } from './dto/user-response.dto';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdatePreferencesDto } from './dto/update-preferences.dto';
-const logger = new Logger('UsersController');
+import { ChangePasswordDto } from './dto/change-password.dto';
+import { ChangeEmailDto } from './dto/change-email.dto';
+import { DeleteAccountDto } from './dto/delete-account.dto';
 
 @ApiTags('Users')
 @ApiCookieAuth()
@@ -42,7 +48,36 @@ export class UsersController {
     return this.usersService.getProfile(req.user.id);
   }
 
-  // update current user profile using JWT
+  @Put('me/password')
+  @ApiOperation({ summary: 'Change current user password' })
+  @ApiResponse({ status: 200, description: 'Password changed successfully.' })
+  async changePassword(
+    @Req() req: { user: { id: number } },
+    @Body() body: ChangePasswordDto,
+  ): Promise<{ message: string }> {
+    return this.usersService.changePassword(req.user.id, body);
+  }
+
+  @Put('me/email')
+  @ApiOperation({ summary: 'Change current user email' })
+  @ApiResponse({ status: 200, description: 'Email change requested.' })
+  async changeEmail(
+    @Req() req: { user: { id: number } },
+    @Body() body: ChangeEmailDto,
+  ): Promise<{ message: string }> {
+    return this.usersService.changeEmail(req.user.id, body);
+  }
+
+  @Delete('me')
+  @ApiOperation({ summary: 'Delete current user account' })
+  @ApiResponse({ status: 200, description: 'Account deleted.' })
+  async deleteAccount(
+    @Req() req: { user: { id: number } },
+    @Body() body: DeleteAccountDto,
+  ): Promise<{ message: string }> {
+    return this.usersService.deleteAccount(req.user.id, body);
+  }
+
   @Put('me')
   @ApiOperation({ summary: 'Update current user using JWT' })
   @ApiOkResponse({
@@ -57,7 +92,6 @@ export class UsersController {
     return this.usersService.updateProfile(req.user.id, updateUserDto);
   }
 
-  // update current user preferences using JWT
   @Put('me/preferences')
   @ApiOperation({ summary: 'Update current user preferences using JWT' })
   @ApiResponse({
@@ -69,5 +103,44 @@ export class UsersController {
     @Body() body: UpdatePreferencesDto,
   ): Promise<{ message: string }> {
     return this.usersService.updatePreferences(req.user.id, body);
+  }
+
+  @Post('me/avatar')
+  @ApiOperation({ summary: 'Upload or update current user avatar' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'Avatar image file (PNG or JPEG)',
+        },
+      },
+      required: ['file'],
+    },
+  })
+  @ApiOkResponse({
+    description: 'Avatar uploaded successfully.',
+    type: UserResponseDto,
+  })
+  async uploadAvatar(
+    @Req() req: { user: { id: number } },
+    @UploadedFile() file: { path?: string; buffer?: Buffer },
+  ): Promise<UserResponseDto> {
+    return await this.usersService.uploadAvatarFromFile(req.user.id, file);
+  }
+
+  @Delete('me/avatar')
+  @ApiOperation({ summary: 'Remove current user avatar' })
+  @ApiOkResponse({
+    description: 'Avatar removed successfully.',
+    type: UserResponseDto,
+  })
+  async removeAvatar(
+    @Req() req: { user: { id: number } },
+  ): Promise<UserResponseDto> {
+    return this.usersService.updateAvatarUrl(req.user.id, null);
   }
 }

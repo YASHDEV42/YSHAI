@@ -14,5 +14,5 @@ export class AdminAuditLogResponseDto {
   entityId!: string;
 
   @ApiProperty()
-  timestamp!: Date;
+  createdAt!: Date;
 }

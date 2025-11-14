@@ -35,7 +35,7 @@ export class AdminService {
       AuditLog,
       {},
       {
-        orderBy: { timestamp: 'DESC' },
+        orderBy: { createdAt: 'DESC' },
         limit: 200,
       },
     );
