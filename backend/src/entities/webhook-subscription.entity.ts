@@ -25,13 +25,7 @@ export class WebhookSubscription {
 
   @Index()
   @Property()
-  event!:
-    | 'post.published'
-    | 'post.failed'
-    | 'post.scheduled'
-    | 'analytics.updated'
-    | 'account.disconnected'
-    | 'campaign.completed';
+  event!: 'post.published' | 'post.failed' | 'account.disconnected'; // FIXED: restrict events to Swagger CreateWebhookDto.event enum values
 
   @Property({ default: true })
   active = true;

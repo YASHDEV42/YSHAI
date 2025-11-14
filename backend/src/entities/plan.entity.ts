@@ -7,11 +7,11 @@ export class Plan {
   id!: number;
 
   @Property()
-  name!: string; // "Free", "Pro", "Business", "Enterprise"
+  name!: 'Free' | 'Pro' | 'Business'; // FIXED: restrict to Swagger plan names "Free" | "Pro" | "Business"
 
   @Property()
   slug!: string;
-  // "free", "pro", "business", "enterprise"
+  // "free", "pro", "business", "enterprise" (Swagger currently exposes only Free/Pro/Business plans)
   // Used in URLs, APIs, and plan lookups
 
   @Property()

@@ -44,11 +44,11 @@ export class UpdatePostDto {
   })
   @IsDateString()
   @IsOptional()
-  scheduleAt?: string;
+  scheduledAt?: string;
 
   @ApiProperty({
     description: 'Status',
-    enum: PostStatus,
+    enum: ['draft', 'scheduled', 'published', 'failed', 'pending_approval'], // FIXED: align enum literals with Swagger UpdatePostDto schema
     required: false,
     type: String,
   })

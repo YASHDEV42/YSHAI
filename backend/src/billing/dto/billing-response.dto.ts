@@ -5,20 +5,54 @@ export class PlanResponseDto {
   id: number;
   @ApiProperty({ enum: ['Free', 'Pro', 'Business'] })
   name: 'Free' | 'Pro' | 'Business';
+
+  @ApiProperty({
+    description:
+      'Slug used in URLs/APIs (e.g. free, pro, business, enterprise)',
+  })
+  slug: string;
+
   @ApiProperty()
   priceMonthly: number;
+
+  @ApiProperty({ required: false, nullable: true })
+  priceYearly?: number | null;
+
   @ApiProperty()
   maxAccounts: number;
+
   @ApiProperty()
   aiCreditsUnlimited: boolean;
+
   @ApiProperty({ required: false, nullable: true })
   aiCreditsLimit?: number | null;
+
+  @ApiProperty()
+  maxPostsPerMonth: number;
+
+  @ApiProperty()
+  maxScheduledPosts: number;
+
   @ApiProperty()
   teamCollaboration: boolean;
+
   @ApiProperty()
   analyticsExport: boolean;
+
   @ApiProperty()
-  createdAt: Date;
+  prioritySupport: boolean;
+
+  @ApiProperty({ required: false, nullable: true })
+  metadata?: Record<string, any> | null;
+
+  @ApiProperty()
+  isActive: boolean;
+
+  @ApiProperty()
+  createdAt: string;
+
+  @ApiProperty()
+  updatedAt: string;
 }
 
 export class SubscriptionResponseDto {
@@ -42,17 +76,17 @@ export class SubscriptionResponseDto {
     | 'incomplete'
     | 'incomplete_expired';
   @ApiProperty()
-  periodStartsAt: Date;
+  periodStartsAt: string; // FIXED: use ISO date-time string to match Swagger SubscriptionResponseDto.periodStartsAt
   @ApiProperty()
-  periodEndsAt: Date;
+  periodEndsAt: string; // FIXED: use ISO date-time string to match Swagger SubscriptionResponseDto.periodEndsAt
   @ApiProperty({ required: false, nullable: true })
   canceledAt?: Date | null;
   @ApiProperty({ required: false, nullable: true })
   paymentGatewaySubscriptionId?: string | null;
   @ApiProperty()
-  createdAt: Date;
+  createdAt: string; // FIXED: use ISO date-time string to match Swagger SubscriptionResponseDto.createdAt
   @ApiProperty()
-  updatedAt: Date;
+  updatedAt: string; // FIXED: use ISO date-time string to match Swagger SubscriptionResponseDto.updatedAt
   @ApiProperty()
   planId: number;
 }
@@ -71,11 +105,11 @@ export class InvoiceResponseDto {
   @ApiProperty({ required: false, nullable: true })
   paymentMethod?: string | null;
   @ApiProperty()
-  issuedAt: Date;
+  issuedAt: string; // FIXED: use ISO date-time string to match Swagger InvoiceResponseDto.issuedAt
   @ApiProperty({ required: false, nullable: true })
-  paidAt?: Date | null;
+  paidAt?: string | null; // FIXED: use ISO date-time string (nullable) for Swagger InvoiceResponseDto.paidAt
   @ApiProperty({ required: false, nullable: true })
-  downloadedAt?: Date | null;
+  downloadedAt?: string | null; // FIXED: use ISO date-time string (nullable) for Swagger InvoiceResponseDto.downloadedAt
   @ApiProperty({ required: false, nullable: true })
   pdfUrl?: string | null;
   @ApiProperty({ required: false, type: Object, nullable: true })

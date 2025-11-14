@@ -51,7 +51,7 @@ export class AuthController {
   @ApiBody({ type: LoginDto })
   async login(
     @Req() req: { user: { id: number; email: string; role: string } },
-    @Body() _body: LoginDto,
+    @Body() _body: LoginDto, // kept for Swagger docs
   ): Promise<{ accessToken: string }> {
     const { accessToken } = await this.authService.login(
       req.user.id,
@@ -61,23 +61,21 @@ export class AuthController {
     return { accessToken };
   }
 
-  // @Post('refresh')
-  // @ApiOperation({ summary: 'Refresh access and refresh tokens' })
-  // @ApiBody({ type: RefreshTokenDto })
-  // @ApiOkResponse({ type: TokensResponseDto })
-  // async refresh(
-  //   @Req() req: Request,
-  //   @Body() dto: any,
-  // ): Promise<{ accessToken: string; refreshToken: string }> {
-  //   const oldRefreshToken = dto.refreshToken;
-  //
-  //   logger.log(`Received refresh token: ${oldRefreshToken}`);
-  //   if (!oldRefreshToken)
-  //     throw new UnauthorizedException('Missing refresh token');
-  //   const { accessToken  } =
-  //     await this.authService.refresh(oldRefreshToken);
-  //   return { accessToken, refreshToken };
-  // }
+  @Post('refresh')
+  @ApiOperation({ summary: 'Refresh access token using a refresh token' })
+  @ApiBody({ type: RefreshTokenDto })
+  @ApiOkResponse({ type: TokensResponseDto })
+  async refresh(
+    @Body() dto: RefreshTokenDto,
+  ): Promise<{ accessToken: string }> {
+    const oldRefreshToken = dto.refreshToken;
+    logger.log(`Received refresh token`);
+    if (!oldRefreshToken) {
+      throw new UnauthorizedException('Missing refresh token');
+    }
+    const { accessToken } = await this.authService.refresh(oldRefreshToken);
+    return { accessToken };
+  }
 
   @Post('logout')
   @ApiOperation({ summary: 'Logout' })

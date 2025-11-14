@@ -28,7 +28,7 @@ export class DraftPostDto {
     format: 'date-time',
   })
   @IsDateString()
-  scheduleAt!: string;
+  scheduleAt!: string; // FIXED: keep name scheduleAt to match Swagger DraftPostDto
 
   @ApiProperty({ description: 'Author ID', type: Number })
   @IsNumber()

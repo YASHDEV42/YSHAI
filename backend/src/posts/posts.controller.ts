@@ -10,6 +10,8 @@ import {
   Get,
   UploadedFile,
   UseInterceptors,
+  Query,
+  NotFoundException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -43,7 +45,7 @@ import {
 @UseGuards(JwtAuthGuard)
 @Controller('posts')
 export class PostsController {
-  constructor(private readonly postsService: PostsService) { }
+  constructor(private readonly postsService: PostsService) {}
 
   private toDto(p: PostEntity): PostResponseDto {
     return {
@@ -52,17 +54,62 @@ export class PostsController {
       contentEn: p.contentEn,
       status: p.status,
       isRecurring: p.isRecurring,
-      publishedAt: p.publishedAt ?? null,
-      createdAt: p.createdAt,
-      updatedAt: p.updatedAt,
-      scheduleAt: p.scheduleAt,
+      publishedAt: p.publishedAt ? p.publishedAt.toISOString() : null,
+      createdAt: p.createdAt.toISOString(), // FIXED: DTO expects string
+      updatedAt: p.updatedAt.toISOString(), // FIXED: DTO expects string
+      scheduledAt: p.scheduledAt ? p.scheduledAt.toISOString() : null,
+      authorId: p.author.id,
+      teamId: p.team ? p.team.id : null,
+      campaignId: p.campaign ? p.campaign.id : null,
+      templateId: p.template ? p.template.id : null,
+      targets: p.targets?.getItems().map((t) => ({
+        id: t.id,
+        provider: t.socialAccount.provider,
+        status: t.status,
+        externalPostId: t.externalPostId ?? null,
+        externalUrl: t.externalUrl ?? null,
+        lastError: t.lastError ?? null,
+      })),
+      media: p.media?.getItems().map((m) => ({
+        id: m.id,
+        url: m.url,
+        type: m.type,
+      })),
     };
   }
 
   @Get()
-  @ApiOperation({ summary: 'List all posts' })
-  async findAll() {
-    return await this.postsService.findAll();
+  @ApiOperation({ summary: 'List posts with optional filters' })
+  @ApiResponse({ status: 200, type: [PostResponseDto] })
+  async findAll(
+    @Query('status') status?: PostEntity['status'],
+    @Query('teamId') teamId?: string,
+    @Query('campaignId') campaignId?: string,
+    @Query('scheduledFrom') scheduledFrom?: string,
+    @Query('scheduledTo') scheduledTo?: string,
+  ) {
+    const filters = {
+      status,
+      teamId: teamId ? parseInt(teamId, 10) : undefined,
+      campaignId: campaignId ? parseInt(campaignId, 10) : undefined,
+      scheduledFrom: scheduledFrom ? new Date(scheduledFrom) : undefined,
+      scheduledTo: scheduledTo ? new Date(scheduledTo) : undefined,
+    };
+
+    const posts = await this.postsService.findAll(filters);
+    return posts.map((p) => this.toDto(p));
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get a single post by id' })
+  @ApiResponse({ status: 200, type: PostResponseDto })
+  @ApiResponse({ status: 404, description: 'Post not found' })
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    const post = await this.postsService.findOne(id);
+    if (!post) {
+      throw new NotFoundException(`Post with ID "${id}" not found`);
+    }
+    return this.toDto(post);
   }
   // endpoint to create
   @Post()
@@ -103,7 +150,7 @@ export class PostsController {
           type: 'string',
           format: 'binary',
           description:
-            'CSV with headers: contentAr,contentEn?,scheduleAt,authorId,teamId?,socialAccountIds?(comma-separated),campaignId?,templateId?,status?,isRecurring?',
+            'CSV with headers: contentAr,contentEn?,scheduledAt,authorId,teamId?,socialAccountIds?(comma-separated),campaignId?,templateId?,status?,isRecurring?',
         },
       },
       required: ['file'],
@@ -142,18 +189,18 @@ export class PostsController {
       const obj: CreatePostDto = {
         contentAr: String(r.contentAr ?? ''),
         contentEn: r.contentEn ? String(r.contentEn) : undefined,
-        scheduleAt: String(r.scheduleAt),
+        scheduledAt: String(r.scheduledAt ?? r.scheduleAt),
         status,
         isRecurring: r.isRecurring ? r.isRecurring === 'true' : undefined,
         authorId: Number(r.authorId),
         teamId: r.teamId ? Number(r.teamId) : undefined,
         socialAccountIds: r.socialAccountIds
           ? String(r.socialAccountIds)
-            .split(',')
-            .map((s) => s.trim())
-            .filter((s) => s.length > 0)
-            .map((s) => Number(s))
-            .filter((n) => !Number.isNaN(n))
+              .split(',')
+              .map((s) => s.trim())
+              .filter((s) => s.length > 0)
+              .map((s) => Number(s))
+              .filter((n) => !Number.isNaN(n))
           : undefined,
         campaignId: r.campaignId ? Number(r.campaignId) : undefined,
         templateId: r.templateId ? Number(r.templateId) : undefined,
@@ -216,7 +263,7 @@ export class PostsController {
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: ReschedulePostDto,
   ) {
-    const p = await this.postsService.reschedule(id, dto.scheduleAt);
+    const p = await this.postsService.reschedule(id, dto.scheduledAt);
     return this.toDto(p);
   }
 
@@ -241,7 +288,11 @@ export class PostsController {
   })
   async statusGet(@Param('id', ParseIntPipe) id: number) {
     const s = await this.postsService.getStatus(id);
-    return s as PostStatusResponseDto;
+    return {
+      id: s.id,
+      status: s.status,
+      scheduledAt: s.scheduledAt.toISOString(),
+    } satisfies PostStatusResponseDto; // FIXED: ensure scheduledAt is string
   }
 
   @Delete(':id')

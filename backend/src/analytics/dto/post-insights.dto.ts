@@ -19,6 +19,12 @@ export class PostInsightsDto {
   @ApiProperty()
   shares!: number;
 
-  @ApiProperty()
-  fetchedAt!: Date;
+  @ApiProperty({ enum: ['x', 'instagram', 'linkedin', 'tiktok'] })
+  provider!: 'x' | 'instagram' | 'linkedin' | 'tiktok';
+
+  @ApiProperty({ required: false, nullable: true })
+  socialAccountId?: number | null;
+
+  @ApiProperty({ type: String, format: 'date-time' })
+  fetchedAt!: string;
 }

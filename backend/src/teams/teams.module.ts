@@ -4,9 +4,10 @@ import { TeamsController } from './teams.controller';
 import { TeamsService } from './teams.service';
 import { Team } from 'src/entities/team.entity';
 import { User } from 'src/entities/user.entity';
+import { MediaModule } from 'src/media/media.module';
 
 @Module({
-  imports: [MikroOrmModule.forFeature({ entities: [Team, User] })],
+  imports: [MikroOrmModule.forFeature({ entities: [Team, User] }), MediaModule],
   controllers: [TeamsController],
   providers: [TeamsService],
   exports: [TeamsService],

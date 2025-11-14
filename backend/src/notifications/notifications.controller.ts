@@ -4,8 +4,10 @@ import {
   Param,
   ParseIntPipe,
   Patch,
+  Delete,
   UseGuards,
   Req,
+  Query,
 } from '@nestjs/common';
 import {
   ApiCookieAuth,
@@ -24,10 +26,7 @@ import {
   AiReadyPayloadDto,
   ApprovedPayloadDto,
 } from './dto/notification-response.dto';
-import {
-  Notification,
-  NotificationType,
-} from 'src/entities/notification.entity';
+import { Notification } from 'src/entities/notification.entity';
 import { MessageDto } from 'src/common/dto/message.dto';
 import { CountDto } from 'src/common/dto/count.dto';
 
@@ -43,8 +42,16 @@ export class NotificationsController {
   @ApiOkResponse({ type: [NotificationResponseDto] })
   async list(
     @Req() req: { user: { id: number } },
+    @Query('limit') limit?: string,
+    @Query('offset') offset?: string,
   ): Promise<NotificationResponseDto[]> {
-    const items = await this.notifications.list(req.user.id);
+    const parsedLimit = Math.min(100, Math.max(1, Number(limit) || 50));
+    const parsedOffset = Math.max(0, Number(offset) || 0);
+
+    const items = await this.notifications.list(req.user.id, {
+      limit: parsedLimit,
+      offset: parsedOffset,
+    });
     return items.map((n) => this.toDto(n));
   }
 
@@ -77,11 +84,30 @@ export class NotificationsController {
     return this.notifications.markAllRead(req.user.id);
   }
 
+  @Delete(':notificationId')
+  @ApiOperation({ summary: 'Soft-delete a notification' })
+  @ApiParam({ name: 'notificationId', type: Number })
+  @ApiResponse({ status: 200, type: MessageDto })
+  @ApiResponse({ status: 404, description: 'Notification not found' })
+  async deleteOne(
+    @Req() req: { user: { id: number } },
+    @Param('notificationId', ParseIntPipe) notificationId: number,
+  ): Promise<MessageDto> {
+    return this.notifications.delete(req.user.id, notificationId);
+  }
+
+  @Delete()
+  @ApiOperation({ summary: 'Soft-delete all notifications for current user' })
+  @ApiResponse({ status: 200, type: MessageDto })
+  async deleteAll(@Req() req: { user: { id: number } }): Promise<MessageDto> {
+    return this.notifications.deleteAll(req.user.id);
+  }
+
   private toDto(n: Notification): NotificationResponseDto {
     let data: NotificationResponseDto['data'] = null;
     if (n.data) {
       switch (n.type) {
-        case NotificationType.POST_SCHEDULED: {
+        case 'post.published': {
           if (
             typeof n.data.postId === 'number' &&
             typeof n.data.platform === 'string' &&
@@ -95,7 +121,7 @@ export class NotificationsController {
           }
           break;
         }
-        case NotificationType.PUBLISH_FAILED: {
+        case 'post.failed': {
           if (
             typeof n.data.postId === 'number' &&
             typeof n.data.error === 'string'
@@ -107,7 +133,7 @@ export class NotificationsController {
           }
           break;
         }
-        case NotificationType.AI_READY: {
+        case 'analytics.updated': {
           const d = n.data as Record<string, unknown>;
           const artifact = d.artifact;
           if (
@@ -123,7 +149,7 @@ export class NotificationsController {
           }
           break;
         }
-        case NotificationType.APPROVED: {
+        case 'subscription.ending': {
           if (typeof n.data.postId === 'number') {
             data = { postId: n.data.postId } as ApprovedPayloadDto;
           }
@@ -133,8 +159,8 @@ export class NotificationsController {
           data = null;
       }
     }
-    const title = n.title;
-    const message = n.message;
+    const title = { value: n.title };
+    const message = { value: n.message };
     return {
       id: n.id,
       type: n.type,
@@ -142,7 +168,8 @@ export class NotificationsController {
       message,
       data,
       read: n.read,
-      createdAt: n.createdAt,
+      createdAt: n.createdAt.toISOString(),
+      readAt: n.readAt ? n.readAt.toISOString() : null,
       link: n.link ?? null,
     };
   }

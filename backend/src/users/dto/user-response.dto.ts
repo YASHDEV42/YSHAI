@@ -30,10 +30,13 @@ export class UserResponseDto {
   timeFormat?: '12h' | '24h';
 
   @ApiProperty()
-  createdAt: Date;
+  createdAt: string; // FIXED: use ISO date-time string to match Swagger UserResponseDto.createdAt
 
   @ApiProperty()
-  updatedAt: Date;
+  updatedAt: string; // FIXED: use ISO date-time string to match Swagger UserResponseDto.updatedAt
+
+  @ApiProperty({ required: false, nullable: true })
+  avatarUrl?: string | null;
 
   static fromEntity(user: User): UserResponseDto {
     const dto = new UserResponseDto();
@@ -46,8 +49,9 @@ export class UserResponseDto {
     dto.language = user.language;
     dto.locale = user.locale;
     dto.timeFormat = user.timeFormat;
-    dto.createdAt = user.createdAt;
-    dto.updatedAt = user.updatedAt;
+    dto.createdAt = user.createdAt.toISOString(); // FIXED: serialize Date to ISO string for Swagger UserResponseDto.createdAt
+    dto.updatedAt = user.updatedAt.toISOString(); // FIXED: serialize Date to ISO string for Swagger UserResponseDto.updatedAt
+    dto.avatarUrl = user.avatarUrl ?? null;
     return dto;
   }
 }

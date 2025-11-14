@@ -4,8 +4,8 @@ export class ModerationResultResponseDto {
   @ApiProperty()
   id: number;
 
-  @ApiProperty({ enum: ['gemini', 'custom'] })
-  provider: 'gemini' | 'custom';
+  @ApiProperty({ enum: ['openai', 'meta', 'tiktok', 'internal'] })
+  provider: 'openai' | 'meta' | 'tiktok' | 'internal';
 
   @ApiProperty({ enum: ['allowed', 'flagged', 'blocked'] })
   verdict: 'allowed' | 'flagged' | 'blocked';
@@ -13,9 +13,11 @@ export class ModerationResultResponseDto {
   @ApiProperty({ type: Object, required: false, nullable: true })
   details?: Record<string, unknown> | null;
 
-  @ApiProperty()
-  checkedAt: Date;
+  @ApiProperty({ type: String, format: 'date-time' })
+  createdAt: string;
+  @ApiProperty({ required: false, nullable: true })
+  postId?: number | null;
 
-  @ApiProperty()
-  postId: number;
+  @ApiProperty({ required: false, nullable: true })
+  generationId?: number | null;
 }

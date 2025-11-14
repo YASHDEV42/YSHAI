@@ -54,8 +54,6 @@ export class BillingService {
       status: 'paid',
       paymentGatewayId: `sim_pi_${Date.now()}`,
       paymentMethod,
-      issuedAt: now,
-      paidAt: now,
       user: this.em.getReference(User, userId),
       subscription: sub,
       metadata: {
@@ -64,6 +62,10 @@ export class BillingService {
         planName: plan.name,
         aiCredits: plan.aiCreditsUnlimited ? -1 : (plan.aiCreditsLimit ?? 0),
       },
+      issuedAt: now,
+      paidAt: now,
+      createdAt: now,
+      updatedAt: now,
     });
     await this.em.persistAndFlush(inv);
 

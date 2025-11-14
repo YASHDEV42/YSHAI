@@ -6,13 +6,16 @@ export class WebhookSubscriptionResponseDto {
   @ApiProperty()
   url: string;
   @ApiProperty({
-    enum: ['post.published', 'post.failed', 'account.disconnected'],
+    enum: ['post.published', 'post.failed', 'account.disconnected'], // FIXED: restrict to Swagger CreateWebhookDto.event values
   })
-  event: 'post.published' | 'post.failed' | 'account.disconnected';
+  event: 'post.published' | 'post.failed' | 'account.disconnected'; // FIXED: sync WebhookSubscriptionResponseDto.event with Swagger
   @ApiProperty()
   active: boolean;
   @ApiProperty()
-  createdAt: Date;
+  createdAt: string; // ISO date-time string
+
+  @ApiProperty()
+  updatedAt: string; // ISO date-time string
 }
 
 export class WebhookDeliveryAttemptResponseDto {
@@ -21,9 +24,9 @@ export class WebhookDeliveryAttemptResponseDto {
   @ApiProperty()
   url: string;
   @ApiProperty({
-    enum: ['post.published', 'post.failed', 'account.disconnected'],
+    enum: ['post.published', 'post.failed', 'account.disconnected'], // FIXED: restrict to Swagger CreateWebhookDto.event values
   })
-  event: 'post.published' | 'post.failed' | 'account.disconnected';
+  event: 'post.published' | 'post.failed' | 'account.disconnected'; // FIXED: sync WebhookDeliveryAttemptResponseDto.event with Swagger
   @ApiProperty()
   attemptNumber: number;
   @ApiProperty({ enum: ['delivered', 'failed'] })
@@ -35,7 +38,22 @@ export class WebhookDeliveryAttemptResponseDto {
   @ApiProperty({ required: false, nullable: true })
   durationMs?: number | null;
   @ApiProperty()
-  createdAt: Date;
+  createdAt: string; // FIXED: use ISO date-time string for webhook delivery createdAt
+
+  @ApiProperty({ description: 'When this delivery attempt actually ran' })
+  attemptedAt: string; // FIXED: use ISO date-time string for webhook delivery attemptedAt
+
+  @ApiProperty({
+    description: 'Hash of the webhook payload for integrity/debugging',
+  })
+  payloadHash: string;
+
+  @ApiProperty({
+    required: false,
+    nullable: true,
+    description: 'Truncated response body from the receiver, if logged',
+  })
+  responseBody?: string | null;
 }
 
 export class PaginatedDeliveryAttemptsDto {

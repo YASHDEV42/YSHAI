@@ -67,7 +67,8 @@ export class WebhooksController {
       url: s.url,
       event: s.event,
       active: s.active,
-      createdAt: s.createdAt,
+      createdAt: s.createdAt.toISOString(),
+      updatedAt: s.updatedAt.toISOString(),
     }));
   }
 
@@ -117,7 +118,10 @@ export class WebhooksController {
         responseCode: d.responseCode ?? null,
         errorMessage: d.errorMessage ?? null,
         durationMs: d.durationMs ?? null,
-        createdAt: d.createdAt,
+        createdAt: d.createdAt.toISOString(),
+        attemptedAt: d.attemptedAt.toISOString(),
+        payloadHash: d.payloadHash,
+        responseBody: d.responseBody ?? null,
       })),
       meta: result.meta,
     };

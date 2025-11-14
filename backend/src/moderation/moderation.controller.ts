@@ -18,7 +18,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 @UseGuards(JwtAuthGuard)
 @Controller('moderation')
 export class ModerationController {
-  constructor(private readonly moderationService: ModerationService) { }
+  constructor(private readonly moderationService: ModerationService) {}
 
   @Post('text')
   @ApiOperation({ summary: 'Moderate Arabic text' })
@@ -37,8 +37,8 @@ export class ModerationController {
       provider: r.provider,
       verdict: r.verdict,
       details: r.details ?? null,
-      checkedAt: r.checkedAt,
-      postId: r.post.id,
+      createdAt: r.createdAt.toISOString(),
+      postId: r.post?.id ?? null,
     };
   }
 
@@ -59,8 +59,8 @@ export class ModerationController {
       provider: r.provider,
       details: r.details ?? null,
       verdict: r.verdict,
-      checkedAt: r.checkedAt,
-      postId: r.post.id,
+      createdAt: r.createdAt.toISOString(),
+      postId: r.post?.id ?? null,
     };
   }
 
@@ -81,8 +81,8 @@ export class ModerationController {
       provider: r.provider,
       verdict: r.verdict,
       details: r.details ?? null,
-      checkedAt: r.checkedAt,
-      postId: r.post.id,
+      createdAt: r.createdAt.toISOString(),
+      postId: r.post?.id ?? null,
     };
   }
 
@@ -100,8 +100,8 @@ export class ModerationController {
       provider: r.provider,
       verdict: r.verdict,
       details: r.details ?? null,
-      checkedAt: r.checkedAt,
-      postId: r.post.id,
+      createdAt: r.createdAt.toISOString(),
+      postId: r.post?.id ?? null,
     }));
   }
 }

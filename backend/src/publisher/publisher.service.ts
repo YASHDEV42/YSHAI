@@ -2,10 +2,7 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/core';
 import { Job } from 'src/entities/job.entity';
 import { Post } from 'src/entities/post.entity';
-import {
-  Notification,
-  NotificationType,
-} from 'src/entities/notification.entity';
+import { Notification } from 'src/entities/notification.entity';
 import { AuditLog } from 'src/entities/audit-log.entity';
 import { WebhooksService } from 'src/webhooks/webhooks.service';
 import { PostTarget } from 'src/entities/post-target.entity';
@@ -13,7 +10,6 @@ import { SocialAccount } from 'src/entities/social-account.entity';
 import { AccountToken } from 'src/entities/account-token.entity';
 import { ProviderFactory } from './providers/provider.factory';
 import { Media } from 'src/entities/media.entity';
-import { MediaService } from 'src/media/media.service';
 
 @Injectable()
 export class PublisherService implements OnModuleInit {
@@ -180,7 +176,7 @@ export class PublisherService implements OnModuleInit {
           if (job.status === 'failed') {
             const notif = em.create(Notification, {
               user: post.author,
-              type: NotificationType.PUBLISH_FAILED,
+              type: 'post.failed',
               title: {
                 en: 'Publish Failed',
                 ar: 'فشل النشر',
@@ -202,7 +198,7 @@ export class PublisherService implements OnModuleInit {
               entityType: 'post',
               entityId: String(post.id),
               details: { error: job.lastError },
-              timestamp: new Date(),
+              createdAt: new Date(),
             });
             em.persist(log);
             await em.flush();

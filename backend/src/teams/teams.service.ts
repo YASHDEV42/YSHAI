@@ -3,6 +3,7 @@ import {
   Injectable,
   NotFoundException,
   ForbiddenException,
+  BadRequestException,
 } from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/core';
 import { Team } from 'src/entities/team.entity';
@@ -15,10 +16,15 @@ import { Plan } from 'src/entities/plan.entity';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { InviteMemberDto } from './dto/invite-member.dto';
 import { UpdateMemberRoleDto } from './dto/update-member-role.dto';
+import { TeamResponseDto } from './dto/team-response.dto';
+import { MediaService } from 'src/media/media.service';
 
 @Injectable()
 export class TeamsService {
-  constructor(private readonly em: EntityManager) {}
+  constructor(
+    private readonly em: EntityManager,
+    private readonly mediaService: MediaService,
+  ) {}
 
   async create(createTeamDto: CreateTeamDto, ownerId: number): Promise<Team> {
     const owner = await this.em.findOne(User, { id: ownerId });
@@ -44,6 +50,58 @@ export class TeamsService {
     return team;
   }
 
+  async listForUser(userId: number): Promise<TeamResponseDto[]> {
+    const memberships = await this.em.find(
+      Membership,
+      { user: userId, leftAt: null },
+      { populate: ['team', 'team.owner'] },
+    );
+
+    return memberships
+      .filter((m) => !m.team.deletedAt)
+      .map((m) => ({
+        id: m.team.id,
+        name: m.team.name,
+        description: m.team.description ?? null,
+        avatarUrl: m.team.avatarUrl ?? null,
+        ownerId: m.team.owner.id,
+        role: (m.role === 'admin' && m.team.owner.id === userId
+          ? 'owner'
+          : m.role) as TeamResponseDto['role'],
+        createdAt: m.team.createdAt.toISOString(),
+        updatedAt: m.team.updatedAt.toISOString(),
+      }));
+  }
+
+  async findOneForUser(
+    teamId: number,
+    userId: number,
+  ): Promise<TeamResponseDto> {
+    const membership = await this.em.findOne(
+      Membership,
+      { user: userId, team: teamId, leftAt: null },
+      { populate: ['team', 'team.owner'] },
+    );
+
+    if (!membership || membership.team.deletedAt) {
+      throw new NotFoundException('Team not found or not accessible');
+    }
+
+    const team = membership.team;
+    return {
+      id: team.id,
+      name: team.name,
+      description: team.description ?? null,
+      avatarUrl: team.avatarUrl ?? null,
+      ownerId: team.owner.id,
+      role: (membership.role === 'admin' && team.owner.id === userId
+        ? 'owner'
+        : membership.role) as TeamResponseDto['role'],
+      createdAt: team.createdAt.toISOString(),
+      updatedAt: team.updatedAt.toISOString(),
+    };
+  }
+
   async inviteMember(
     teamId: number,
     dto: InviteMemberDto,
@@ -52,7 +110,7 @@ export class TeamsService {
     const team = await this.em.findOne(
       Team,
       { id: teamId },
-      { populate: ['memberships', 'owner'] },
+      { populate: ['members', 'owner'] },
     );
     if (!team) {
       throw new NotFoundException(`Team with ID ${teamId} not found`);
@@ -180,6 +238,88 @@ export class TeamsService {
     await this.em.removeAndFlush(membership);
   }
 
+  async leaveTeam(teamId: number, userId: number): Promise<void> {
+    const membership = await this.em.findOne(Membership, {
+      user: userId,
+      team: teamId,
+      leftAt: null,
+    });
+    if (!membership) {
+      throw new NotFoundException('Membership not found');
+    }
+
+    if (membership.role === 'owner') {
+      throw new ForbiddenException('Owner cannot leave their own team');
+    }
+
+    membership.leftAt = new Date();
+    await this.em.flush();
+  }
+
+  async deleteTeam(teamId: number, ownerId: number): Promise<void> {
+    const team = await this.em.findOne(
+      Team,
+      { id: teamId },
+      {
+        populate: ['owner'],
+      },
+    );
+    if (!team) {
+      throw new NotFoundException(`Team with ID ${teamId} not found`);
+    }
+    if (team.owner.id !== ownerId) {
+      throw new ForbiddenException('Only the owner can delete the team');
+    }
+
+    team.deletedAt = new Date();
+    await this.em.flush();
+  }
+
+  async updateAvatarUrl(
+    teamId: number,
+    ownerId: number,
+    avatarUrl: string | null,
+  ): Promise<TeamResponseDto> {
+    const team = await this.em.findOne(
+      Team,
+      { id: teamId },
+      { populate: ['owner'] },
+    );
+    if (!team) {
+      throw new NotFoundException(`Team with ID ${teamId} not found`);
+    }
+    if (team.owner.id !== ownerId) {
+      throw new ForbiddenException('Only the owner can update team avatar');
+    }
+
+    team.avatarUrl = avatarUrl ?? undefined;
+    await this.em.flush();
+
+    return {
+      id: team.id,
+      name: team.name,
+      description: team.description ?? null,
+      avatarUrl: team.avatarUrl ?? null,
+      ownerId: team.owner.id,
+      role: 'owner',
+      createdAt: team.createdAt.toISOString(),
+      updatedAt: team.updatedAt.toISOString(),
+    };
+  }
+
+  async uploadAvatarFromFile(
+    teamId: number,
+    ownerId: number,
+    file: { path?: string; buffer?: Buffer },
+  ): Promise<TeamResponseDto> {
+    if (!file?.path && !file?.buffer) {
+      throw new BadRequestException('No valid file provided');
+    }
+
+    const media = await this.mediaService.upload(file);
+    return this.updateAvatarUrl(teamId, ownerId, media.url);
+  }
+
   private async assertAdminOrOwner(
     teamId: number,
     userId: number,
@@ -220,7 +360,7 @@ export class TeamsService {
         action: 'post.approved',
         entityType: 'post',
         entityId: String(postId),
-        timestamp: new Date(),
+        createdAt: new Date(),
       }),
     );
     await this.em.flush();
@@ -244,7 +384,7 @@ export class TeamsService {
         action: 'post.rejected',
         entityType: 'post',
         entityId: String(postId),
-        timestamp: new Date(),
+        createdAt: new Date(),
       }),
     );
     await this.em.flush();
@@ -259,7 +399,7 @@ export class TeamsService {
       action: string;
       entityType?: string;
       entityId?: string;
-      timestamp: Date;
+      createdAt: Date;
     }>
   > {
     await this.assertAdminOrOwner(teamId, userId);
@@ -271,7 +411,7 @@ export class TeamsService {
     const logs = await this.em.find(
       AuditLog,
       {},
-      { orderBy: { timestamp: 'DESC' }, limit: 200 },
+      { orderBy: { createdAt: 'DESC' }, limit: 200 },
     );
 
     const postIds = logs
@@ -303,7 +443,7 @@ export class TeamsService {
       action: l.action,
       entityType: l.entityType,
       entityId: l.entityId,
-      timestamp: l.timestamp,
+      createdAt: l.createdAt,
     }));
   }
 

@@ -20,11 +20,52 @@ import { PostTarget } from 'src/entities/post-target.entity';
 
 @Injectable()
 export class PostsService {
-  constructor(private readonly em: EntityManager) { }
+  constructor(private readonly em: EntityManager) {}
 
-  async findAll(): Promise<Post[]> {
-    const posts = await this.em.find(Post, { deletedAt: null });
+  async findAll(filters?: {
+    status?: Post['status'];
+    teamId?: number;
+    campaignId?: number;
+    scheduledFrom?: Date;
+    scheduledTo?: Date;
+  }): Promise<Post[]> {
+    const where: Record<string, any> = { deletedAt: null };
+
+    if (filters?.status) {
+      where.status = filters.status;
+    }
+
+    if (filters?.teamId) {
+      where.team = filters.teamId;
+    }
+
+    if (filters?.campaignId) {
+      where.campaign = filters.campaignId;
+    }
+
+    if (filters?.scheduledFrom || filters?.scheduledTo) {
+      const range: Record<string, Date> = {};
+      if (filters.scheduledFrom) {
+        range.$gte = filters.scheduledFrom;
+      }
+      if (filters.scheduledTo) {
+        range.$lte = filters.scheduledTo;
+      }
+      where.scheduledAt = range;
+    }
+
+    const posts = await this.em.find(Post, where, {
+      populate: ['campaign', 'template', 'targets.socialAccount', 'media'],
+    });
     return posts;
+  }
+
+  async findOne(id: number): Promise<Post | null> {
+    return await this.em.findOne(
+      Post,
+      { id, deletedAt: null },
+      { populate: ['campaign', 'template', 'targets.socialAccount', 'media'] },
+    );
   }
 
   async create(createPostDto: CreatePostDto): Promise<Post> {
@@ -35,8 +76,9 @@ export class PostsService {
       socialAccountIds,
       campaignId,
       templateId,
+      scheduledAt,
       ...data
-    } = createPostDto;
+    } = createPostDto as CreatePostDto & { scheduledAt?: string };
     // Validate required relations
     if (!authorId) {
       throw new NotFoundException('Author ID is required');
@@ -57,11 +99,12 @@ export class PostsService {
       throw new NotFoundException(`Author with ID "${authorId}" not found`);
     }
 
-    // Validate and parse scheduleAt
+    // Validate and parse scheduleAt (API field) and map to entity.scheduledAt
     const now = new Date();
-    const scheduleAtDate = new Date(data.scheduleAt);
-    if (Number.isNaN(scheduleAtDate.getTime())) {
-      throw new BadRequestException('Invalid scheduleAt');
+    const scheduledAtRaw = scheduledAt ?? (data as any).scheduledAt;
+    const scheduledAtDate = new Date(scheduledAtRaw);
+    if (Number.isNaN(scheduledAtDate.getTime())) {
+      throw new BadRequestException('Invalid scheduledAt');
     }
 
     // Create the Post entity
@@ -71,7 +114,7 @@ export class PostsService {
       team,
       campaign,
       template,
-      scheduleAt: scheduleAtDate,
+      scheduledAt: scheduledAtDate,
       status: data.status ?? 'draft',
       isRecurring: data.isRecurring ?? false,
       createdAt: now,
@@ -96,7 +139,7 @@ export class PostsService {
           socialAccount: acc,
           status: post.status === 'scheduled' ? 'scheduled' : 'pending',
           scheduledAt:
-            post.status === 'scheduled' ? post.scheduleAt : undefined,
+            post.status === 'scheduled' ? post.scheduledAt : undefined,
           attempt: 0,
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -116,7 +159,9 @@ export class PostsService {
             provider: t.socialAccount.provider,
             attempt: 0,
             status: 'pending',
-            scheduledAt: post.scheduleAt,
+            scheduledAt: post.scheduledAt ?? new Date(),
+            createdAt: new Date(),
+            updatedAt: new Date(),
           });
           this.em.persist(job);
         }
@@ -136,11 +181,26 @@ export class PostsService {
   }
 
   async createRecurring(dto: RecurringPostDto): Promise<Post> {
-    return await this.create({ ...dto, isRecurring: true });
+    const { scheduleAt, ...rest } = dto as unknown as {
+      scheduleAt: string;
+      [key: string]: any;
+    };
+    return await this.create({
+      ...(rest as Omit<CreatePostDto, 'scheduledAt'>),
+      scheduledAt: scheduleAt,
+      isRecurring: true,
+    });
   }
 
   async createDraft(dto: DraftPostDto): Promise<Post> {
-    return await this.create({ ...dto });
+    const { scheduleAt, ...rest } = dto as unknown as {
+      scheduleAt: string;
+      [key: string]: any;
+    };
+    return await this.create({
+      ...(rest as Omit<CreatePostDto, 'scheduledAt'>),
+      scheduledAt: scheduleAt,
+    });
   }
 
   async update(id: number, updatePostDto: UpdatePostDto): Promise<Post> {
@@ -149,8 +209,14 @@ export class PostsService {
       throw new NotFoundException(`Post with ID "${id}" not found`);
     }
 
-    const { teamId, socialAccountIds, campaignId, templateId, ...updateData } =
-      updatePostDto;
+    const {
+      teamId,
+      socialAccountIds,
+      campaignId,
+      templateId,
+      scheduledAt,
+      ...updateData
+    } = updatePostDto as UpdatePostDto & { scheduledAt?: string };
 
     // Update scalar fields
     if (updateData.contentAr !== undefined)
@@ -160,12 +226,12 @@ export class PostsService {
     if (updateData.status !== undefined) post.status = updateData.status;
     if (updateData.isRecurring !== undefined)
       post.isRecurring = updateData.isRecurring;
-    if (updateData.scheduleAt !== undefined) {
-      const dt = new Date(updateData.scheduleAt);
+    if (scheduledAt !== undefined) {
+      const dt = new Date(scheduledAt);
       if (Number.isNaN(dt.getTime())) {
-        throw new BadRequestException('Invalid scheduleAt');
+        throw new BadRequestException('Invalid scheduledAt');
       }
-      post.scheduleAt = dt;
+      post.scheduledAt = dt;
     }
 
     // ✅ Update relationships: use `?? undefined` to convert `null` → `undefined`
@@ -195,7 +261,9 @@ export class PostsService {
             socialAccount: acc,
             status: post.status === 'scheduled' ? 'scheduled' : 'pending',
             scheduledAt:
-              post.status === 'scheduled' ? post.scheduleAt : undefined,
+              post.status === 'scheduled'
+                ? (post.scheduledAt ?? new Date())
+                : undefined,
             attempt: 0,
             createdAt: new Date(),
             updatedAt: new Date(),
@@ -229,7 +297,7 @@ export class PostsService {
         if (job) {
           job.status = 'pending';
           job.attempt = 0;
-          job.scheduledAt = post.scheduleAt;
+          job.scheduledAt = post.scheduledAt ?? new Date();
         } else {
           const newJob = this.em.create(Job, {
             post,
@@ -237,7 +305,9 @@ export class PostsService {
             provider: t.socialAccount.provider,
             attempt: 0,
             status: 'pending',
-            scheduledAt: post.scheduleAt,
+            scheduledAt: post.scheduledAt ?? new Date(),
+            createdAt: new Date(),
+            updatedAt: new Date(),
           });
           this.em.persist(newJob);
         }
@@ -256,7 +326,7 @@ export class PostsService {
     if (Number.isNaN(newDt.getTime())) {
       throw new BadRequestException('Invalid scheduleAt');
     }
-    post.scheduleAt = newDt;
+    post.scheduledAt = newDt;
     post.status = 'scheduled';
     // Update targets and (re)create or reschedule jobs for not-yet-success targets
     const targets = await this.em.find(PostTarget, { post: post.id });
@@ -279,6 +349,8 @@ export class PostsService {
             attempt: 0,
             status: 'pending',
             scheduledAt: newDt,
+            createdAt: new Date(),
+            updatedAt: new Date(),
           });
           this.em.persist(newJob);
         }
@@ -309,6 +381,8 @@ export class PostsService {
         attempt: 0,
         status: 'pending',
         scheduledAt: new Date(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       });
       this.em.persist(job);
       t.status = 'scheduled';
@@ -333,7 +407,7 @@ export class PostsService {
     return {
       id: post.id,
       status: post.status,
-      scheduledAt: post.scheduleAt,
+      scheduledAt: post.scheduledAt ?? new Date(),
       publishedAt: post.publishedAt,
     };
   }

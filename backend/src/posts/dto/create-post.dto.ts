@@ -44,7 +44,7 @@ export class CreatePostDto {
     format: 'date-time',
   })
   @IsDateString()
-  scheduleAt: string;
+  scheduledAt: string;
 
   @ApiProperty({
     description: 'Status of the post',

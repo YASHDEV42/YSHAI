@@ -8,5 +8,5 @@ export class ReschedulePostDto {
     format: 'date-time',
   })
   @IsDateString()
-  scheduleAt!: string;
+  scheduledAt!: string;
 }

@@ -71,10 +71,10 @@ export class ModerationService {
     const post = await this.em.findOneOrFail(Post, { id: postId });
     const moderation = this.em.create(ModerationResult, {
       post,
-      provider: 'gemini',
+      provider: 'internal',
       verdict,
       details,
-      checkedAt: new Date(),
+      createdAt: new Date(),
     });
 
     await this.em.persistAndFlush(moderation);
@@ -85,10 +85,10 @@ export class ModerationService {
     const post = await this.em.findOneOrFail(Post, { id: postId });
     const moderation = this.em.create(ModerationResult, {
       post,
-      provider: 'custom',
+      provider: 'internal',
       verdict: 'flagged',
       details: { message: 'Image moderation placeholder', imageUrl },
-      checkedAt: new Date(),
+      createdAt: new Date(),
     });
 
     await this.em.persistAndFlush(moderation);
@@ -99,10 +99,10 @@ export class ModerationService {
     const post = await this.em.findOneOrFail(Post, { id: postId });
     const moderation = this.em.create(ModerationResult, {
       post,
-      provider: 'custom',
+      provider: 'internal',
       verdict: 'flagged',
       details: { message: 'Video moderation placeholder', videoUrl },
-      checkedAt: new Date(),
+      createdAt: new Date(),
     });
 
     await this.em.persistAndFlush(moderation);
@@ -113,7 +113,7 @@ export class ModerationService {
     return this.em.find(
       ModerationResult,
       {},
-      { orderBy: { checkedAt: 'DESC' } },
+      { orderBy: { createdAt: 'DESC' } },
     );
   }
 }

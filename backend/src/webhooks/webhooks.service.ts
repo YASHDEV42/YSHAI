@@ -192,6 +192,7 @@ export class WebhooksService {
           .update(JSON.stringify(input.payload))
           .digest('hex'),
       createdAt: new Date(),
+      attemptedAt: new Date(),
     });
     await this.em.persistAndFlush(attempt);
   }

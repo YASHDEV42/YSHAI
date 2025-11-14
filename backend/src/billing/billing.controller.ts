@@ -40,14 +40,23 @@ export class BillingController {
     const plans = await this.billing.listPlans();
     return plans.map((p) => ({
       id: p.id,
-      name: p.name,
+      name: p.name as 'Free' | 'Pro' | 'Business',
+      slug: p.slug,
       priceMonthly: p.priceMonthly,
+      priceYearly: p.priceYearly ?? null,
       maxAccounts: p.maxAccounts,
       aiCreditsUnlimited: p.aiCreditsUnlimited,
       aiCreditsLimit: p.aiCreditsLimit ?? null,
+      maxPostsPerMonth: p.maxPostsPerMonth,
+      maxScheduledPosts: p.maxScheduledPosts,
       teamCollaboration: p.teamCollaboration,
       analyticsExport: p.analyticsExport,
-      createdAt: p.createdAt,
+      prioritySupport: p.prioritySupport,
+      metadata:
+        (p as unknown as { metadata?: Record<string, any> }).metadata ?? null,
+      isActive: p.isActive,
+      createdAt: p.createdAt.toISOString(),
+      updatedAt: p.updatedAt.toISOString(),
     }));
   }
 
@@ -69,12 +78,12 @@ export class BillingController {
       subscription: {
         id: s.id,
         status: s.status,
-        periodStartsAt: s.periodStartsAt,
-        periodEndsAt: s.periodEndsAt,
+        periodStartsAt: s.periodStartsAt.toISOString(), // FIXED: DTO expects string
+        periodEndsAt: s.periodEndsAt.toISOString(), // FIXED: DTO expects string
         canceledAt: s.canceledAt ?? null,
         paymentGatewaySubscriptionId: s.paymentGatewaySubscriptionId ?? null,
-        createdAt: s.createdAt,
-        updatedAt: s.updatedAt,
+        createdAt: s.createdAt.toISOString(), // FIXED: DTO expects string
+        updatedAt: s.updatedAt.toISOString(), // FIXED: DTO expects string
         planId:
           (s as unknown as { plan?: { id: number } }).plan?.id ??
           (s as unknown as { planId?: number }).planId ??
@@ -110,9 +119,9 @@ export class BillingController {
       status: i.status,
       paymentGatewayId: i.paymentGatewayId ?? null,
       paymentMethod: i.paymentMethod ?? null,
-      issuedAt: i.issuedAt,
-      paidAt: i.paidAt ?? null,
-      downloadedAt: i.downloadedAt ?? null,
+      issuedAt: i.issuedAt.toISOString(), // FIXED: DTO expects string
+      paidAt: i.paidAt ? i.paidAt.toISOString() : null, // FIXED: DTO expects string | null
+      downloadedAt: i.downloadedAt ? i.downloadedAt.toISOString() : null, // FIXED: DTO expects string | null
       pdfUrl: i.pdfUrl ?? null,
       metadata:
         (i as unknown as { metadata?: Record<string, any> }).metadata ?? null,

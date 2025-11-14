@@ -41,6 +41,9 @@ export class User {
   role: 'user' | 'admin' = 'user';
 
   @Property({ nullable: true })
+  avatarUrl?: string;
+
+  @Property({ nullable: true })
   timezone?: string;
 
   @Property({ default: false })

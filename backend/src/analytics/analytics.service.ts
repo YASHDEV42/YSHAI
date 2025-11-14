@@ -30,16 +30,20 @@ export class AnalyticsService {
       });
       if (!token) continue;
 
-      const insights = await this.meta.getPostInsights(
+      const insights = (await this.meta.getPostInsights(
         target.externalPostId!,
         token.tokenEncrypted,
-      );
+      )) as Array<{
+        name: string;
+        values?: Array<{ value: number }>;
+      }>;
       if (!insights) continue;
 
       // Parse and store insights
       const analytics = this.em.create(PostAnalytics, {
         post: target.post,
         socialAccount: account,
+        provider: account.provider,
         impressions:
           insights.find((m) => m.name === 'impressions')?.values?.[0]?.value ??
           0,
@@ -52,6 +56,8 @@ export class AnalyticsService {
         clicks:
           insights.find((m) => m.name === 'reach')?.values?.[0]?.value ?? 0,
         fetchedAt: new Date(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       });
 
       this.em.persist(analytics);
@@ -64,7 +70,7 @@ export class AnalyticsService {
     const agg = await this.em.find(
       PostAnalytics,
       { post },
-      { orderBy: { fetchedAt: 'DESC' }, limit: 1 },
+      { orderBy: { fetchedAt: 'DESC' }, limit: 1, populate: ['socialAccount'] },
     );
     const latest = agg[0];
     return {
@@ -74,7 +80,9 @@ export class AnalyticsService {
       likes: latest?.likes ?? 0,
       comments: latest?.comments ?? 0,
       shares: latest?.shares ?? 0,
-      fetchedAt: latest?.fetchedAt ?? new Date(0),
+      provider: latest?.provider ?? 'x',
+      socialAccountId: latest?.socialAccount?.id ?? null,
+      fetchedAt: (latest?.fetchedAt ?? new Date(0)).toISOString(),
     };
   }
 
