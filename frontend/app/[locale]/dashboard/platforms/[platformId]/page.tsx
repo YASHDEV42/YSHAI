@@ -14,12 +14,12 @@ export default async function PlatformDetailPage({
 }) {
   const { locale, platformId } = await params;
   setRequestLocale(locale);
+
   const text = await extractPlatformDetailPageText(locale);
 
   const accountsData = await getUserSocialMediaAccounts();
   const accounts = accountsData.socialAccounts || [];
 
-  // Extract the account ID from platformId (format: "provider-id")
   const accountId = Number.parseInt(platformId.split("-").pop() || "0");
   const account = accounts.find((acc: any) => acc.id === accountId);
 

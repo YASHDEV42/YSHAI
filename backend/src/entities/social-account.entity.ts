@@ -20,7 +20,8 @@ export class SocialAccount {
 
   @Property()
   providerAccountId!: string;
-  @ManyToOne(() => User)
+
+  @ManyToOne(() => User, { fieldName: 'userId' })
   user!: User;
 
   @Property({ nullable: true })

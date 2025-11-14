@@ -1,19 +1,25 @@
-import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
-import { User } from './user.entity';
+import { Entity, PrimaryKey, Property, Index, Unique } from '@mikro-orm/core';
 
 @Entity()
+@Unique({ properties: ['key'] }) // each config key must be unique
 export class SystemConfig {
   @PrimaryKey()
   id!: number;
 
+  @Index()
   @Property()
-  value!: string;
+  key!: string;
+  // example: "ai.defaultModel", "maintenance.mode", "limits.dailyPosts"
+
+  @Property({ type: 'json', nullable: true })
+  value?: any;
+  // stored as JSON to support any structure (string, number, array, object)
 
   @Property({ nullable: true })
   description?: string;
 
   @Property()
-  type: 'string' | 'number' | 'boolean' | 'json' = 'string';
+  type!: 'string' | 'number' | 'boolean' | 'json' | 'encrypted';
 
   @Property({ onCreate: () => new Date() })
   createdAt = new Date();
@@ -21,6 +27,9 @@ export class SystemConfig {
   @Property({ onUpdate: () => new Date() })
   updatedAt = new Date();
 
-  @ManyToOne(() => User, { nullable: true })
-  updatedBy?: User;
+  @Property({ nullable: true })
+  updatedByUserId?: number; // store *ID only*, no FK
+
+  @Property({ nullable: true })
+  deletedAt?: Date;
 }

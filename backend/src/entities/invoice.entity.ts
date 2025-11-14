@@ -13,26 +13,42 @@ export class Invoice {
   @PrimaryKey()
   id!: number;
 
-  @Property()
-  amount!: number;
+  @ManyToOne(() => User, { fieldName: 'userId' })
+  @Index({ name: 'invoice_user_idx' })
+  user!: User;
+
+  @ManyToOne(() => Subscription, {
+    fieldName: 'subscriptionId',
+    nullable: true,
+  })
+  @Index({ name: 'invoice_subscription_idx' })
+  subscription?: Subscription;
 
   @Property()
-  currency: 'SAR' | 'USD' | 'EUR' = 'SAR';
+  amount!: number; // Store as float or integer cents
 
   @Property()
-  status: 'paid' | 'unpaid' | 'refunded' | 'failed' = 'unpaid';
+  currency!: 'SAR' | 'USD' | 'EUR';
 
   @Property()
+  status!: 'paid' | 'unpaid' | 'refunded' | 'failed';
+
+  @Property({ nullable: true })
   paymentGatewayId?: string;
+  // e.g. Stripe chargeId, PayTR transactionId
 
-  @Property()
+  @Property({ nullable: true })
   paymentMethod?: string;
+  // e.g. "visa", "mada", "paypal", "apple-pay"
 
   @Property({ onCreate: () => new Date() })
-  issuedAt = new Date();
+  issuedAt: Date = new Date();
 
   @Property({ nullable: true })
   paidAt?: Date;
+
+  @Property({ nullable: true })
+  refundedAt?: Date; // <— missing originally (important)
 
   @Property({ nullable: true })
   downloadedAt?: Date;
@@ -42,16 +58,18 @@ export class Invoice {
 
   @Property({ type: 'json', nullable: true })
   metadata?: {
-    periodStart: string;
-    periodEnd: string;
-    planName: string;
-    aiCredits: number;
+    periodStart?: string;
+    periodEnd?: string;
+    planName?: string;
+    aiCredits?: number;
+    vatPercentage?: number;
+    subtotal?: number;
+    receiptNumber?: string;
   };
-  @Index({ name: 'invoice_user_idx' })
-  @ManyToOne(() => User)
-  user!: User;
 
-  @Index({ name: 'invoice_subscription_idx' })
-  @ManyToOne(() => Subscription)
-  subscription!: Subscription;
+  @Property({ onCreate: () => new Date() })
+  createdAt: Date = new Date();
+
+  @Property({ onUpdate: () => new Date() })
+  updatedAt: Date = new Date();
 }

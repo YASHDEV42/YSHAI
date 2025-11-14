@@ -1,36 +1,41 @@
-import { Entity, PrimaryKey, Property, ManyToOne } from '@mikro-orm/core';
-import { ApiProperty } from '@nestjs/swagger';
-import { Generation } from './generation.entity';
+import {
+  Entity,
+  PrimaryKey,
+  Property,
+  ManyToOne,
+  Index,
+} from '@mikro-orm/core';
 import { Post } from './post.entity';
+import { Generation } from './generation.entity';
 
 @Entity()
 export class ModerationResult {
   @PrimaryKey()
   id!: number;
 
-  @ManyToOne(() => Generation, { nullable: true })
+  @Index()
+  @ManyToOne(() => Generation, {
+    fieldName: 'generationId',
+    nullable: true,
+  })
   generation?: Generation;
 
-  @ManyToOne(() => Post)
-  @ApiProperty({
-    description: 'Associated post',
-    type: () => Post,
+  @Index()
+  @ManyToOne(() => Post, {
+    fieldName: 'postId',
+    nullable: true,
   })
-  post!: Post;
+  post?: Post;
 
-  @ApiProperty({ enum: ['gemini', 'custom'] })
   @Property()
-  provider: 'gemini' | 'custom' = 'gemini';
+  provider!: 'openai' | 'meta' | 'tiktok' | 'internal';
 
-  @ApiProperty({ enum: ['allowed', 'flagged', 'blocked'] })
   @Property()
-  verdict: 'allowed' | 'flagged' | 'blocked' = 'allowed';
+  verdict!: 'allowed' | 'flagged' | 'blocked';
 
-  @ApiProperty({ description: 'Raw moderation details', required: false })
   @Property({ type: 'json', nullable: true })
-  details?: Record<string, any>;
+  details?: Record<string, any>; // raw moderation API output
 
-  @ApiProperty()
   @Property({ onCreate: () => new Date() })
-  checkedAt = new Date();
+  createdAt = new Date();
 }

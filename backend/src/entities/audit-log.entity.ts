@@ -1,4 +1,10 @@
-import { Entity, PrimaryKey, Property, ManyToOne } from '@mikro-orm/core';
+import {
+  Entity,
+  PrimaryKey,
+  Property,
+  ManyToOne,
+  Index,
+} from '@mikro-orm/core';
 import { User } from './user.entity';
 
 @Entity()
@@ -6,21 +12,50 @@ export class AuditLog {
   @PrimaryKey()
   id!: number;
 
-  @ManyToOne(() => User)
-  user!: User;
+  @Index() // most queries filter by user
+  @ManyToOne(() => User, { fieldName: 'userId', nullable: true })
+  user?: User;
 
+  @Index() // frequently queried
   @Property()
-  action!: string; // 'post.created', 'login.success', etc.
+  action!: string;
+  // Examples:
+  // 'auth.login'
+  // 'auth.logout'
+  // 'post.created'
+  // 'post.published'
+  // 'account.connected'
+  // 'team.member_added'
+  // 'settings.updated'
 
-  @Property()
-  entityType?: string; // 'post', 'user', 'team'
+  @Index()
+  @Property({ nullable: true })
+  entityType?: string;
+  // 'post', 'user', 'team', 'campaign', 'subscription', etc.
 
-  @Property()
+  @Index()
+  @Property({ nullable: true })
   entityId?: string;
+  // Store as string because IDs may include uuids in future
 
   @Property({ type: 'json', nullable: true })
   details?: Record<string, any>;
 
+  // Security context
+  @Property({ nullable: true })
+  ipAddress?: string;
+
+  @Property({ nullable: true })
+  userAgent?: string;
+
+  // Useful for linking related logs (optional)
+  @Property({ nullable: true })
+  correlationId?: string;
+
+  @Index()
   @Property({ onCreate: () => new Date() })
-  timestamp = new Date();
+  createdAt = new Date();
+
+  @Property({ nullable: true })
+  metadata?: Record<string, any>;
 }

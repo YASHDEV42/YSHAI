@@ -50,12 +50,23 @@ export const TikTokIcon = ({ className }: IconProps) => (
   </svg>
 );
 
+export const FacebookIcon = ({ className }: IconProps) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    aria-label="Facebook Icon"
+  >
+    <path d="M22.675 0H1.325C.593 0 0 .593 0 1.326v21.348C0 23.407.593 24 1.325 24H12.82v-9.294H9.692V11.01h3.128V8.414c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.464.099 2.795.143v3.24h-1.92c-1.505 0-1.797.716-1.797 1.767v2.334h3.587l-.467 3.696h-3.12V24h6.116C23.407 24 24 23.407 24 22.674V1.326C24 .593 23.407 0 22.675 0z" />
+  </svg>
+);
 // --------------------
 // Platform Helpers
 // --------------------
 
 export const getPlatformIcon = (provider: string) => {
   const p = provider.toLowerCase();
+  if (p.includes("facebook")) return FacebookIcon;
   if (p.includes("twitter") || p.includes("x")) return TwitterIcon;
   if (p.includes("instagram")) return InstagramIcon;
   if (p.includes("linkedin")) return LinkedInIcon;
@@ -65,11 +76,14 @@ export const getPlatformIcon = (provider: string) => {
 
 export const getPlatformColor = (provider: string) => {
   const p = provider.toLowerCase();
+
+  if (p.includes("facebook")) return "bg-blue-700 text-white";
   if (p.includes("twitter") || p.includes("x"))
     return "bg-black text-white dark:bg-white dark:text-black";
   if (p.includes("instagram"))
     return "bg-gradient-to-br from-purple-600 via-pink-600 to-orange-500 text-white";
   if (p.includes("linkedin")) return "bg-blue-600 text-white";
   if (p.includes("tiktok")) return "bg-black text-white";
+
   return "bg-primary text-white";
 };

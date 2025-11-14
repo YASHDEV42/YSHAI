@@ -6,11 +6,11 @@ export class AccountToken {
   @PrimaryKey()
   id!: number;
 
-  @ManyToOne(() => SocialAccount)
+  @ManyToOne(() => SocialAccount, { fieldName: 'socialAccountId' })
   account!: SocialAccount;
 
   @Property()
-  tokenType: 'access' | 'refresh' = 'access';
+  tokenType!: 'access' | 'refresh';
 
   @Property({ type: 'text' })
   tokenEncrypted!: string;
@@ -20,15 +20,6 @@ export class AccountToken {
 
   @Property({ default: false })
   revoked = false;
-
-  @Property({ nullable: true })
-  username?: string;
-
-  @Property({ nullable: true })
-  followersCount?: number;
-
-  @Property({ nullable: true })
-  profilePictureUrl?: string;
 
   @Property({ onCreate: () => new Date() })
   createdAt = new Date();

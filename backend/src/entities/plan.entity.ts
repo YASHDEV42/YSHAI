@@ -1,31 +1,62 @@
-import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
+import { Entity, PrimaryKey, Property, Unique } from '@mikro-orm/core';
 
 @Entity()
+@Unique({ properties: ['slug'] })
 export class Plan {
   @PrimaryKey()
   id!: number;
 
   @Property()
-  name: 'Free' | 'Pro' | 'Business' = 'Free';
+  name!: string; // "Free", "Pro", "Business", "Enterprise"
 
   @Property()
-  priceMonthly: number = 0;
+  slug!: string;
+  // "free", "pro", "business", "enterprise"
+  // Used in URLs, APIs, and plan lookups
 
   @Property()
-  maxAccounts = 5;
+  priceMonthly!: number; // store in minor units later (e.g. halalah/cents)
+
+  @Property({ nullable: true })
+  priceYearly?: number;
+  // yearly discount
+
+  // Usage limits
+  @Property()
+  maxAccounts!: number;
 
   @Property()
-  aiCreditsUnlimited = false;
+  aiCreditsUnlimited!: boolean;
 
-  @Property()
+  @Property({ nullable: true })
   aiCreditsLimit?: number;
 
   @Property()
-  teamCollaboration = false;
+  maxPostsPerMonth!: number;
 
   @Property()
-  analyticsExport = false;
+  maxScheduledPosts!: number;
+
+  // Feature flags
+  @Property()
+  teamCollaboration!: boolean;
+
+  @Property()
+  analyticsExport!: boolean;
+
+  @Property()
+  prioritySupport!: boolean;
+
+  @Property({ type: 'json', nullable: true })
+  metadata?: Record<string, any>;
+
+  // Recommended fields
+  @Property()
+  isActive: boolean = true; // for hiding deprecated plans
 
   @Property({ onCreate: () => new Date() })
   createdAt = new Date();
+
+  @Property({ onUpdate: () => new Date() })
+  updatedAt = new Date();
 }

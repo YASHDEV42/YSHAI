@@ -133,7 +133,6 @@ export class MediaService {
   }
 
   private extractPublicId(url: string): string {
-
     const match = url.match(/\/upload\/(.*)$/);
     const afterUpload = match ? match[1] : url;
     const withoutVersion = afterUpload.replace(/^v\d+\//, '');

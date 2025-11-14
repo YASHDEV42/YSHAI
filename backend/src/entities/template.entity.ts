@@ -24,20 +24,32 @@ export class Template {
   @Property({ nullable: true })
   contentEn?: string;
 
-  @ManyToOne(() => User)
+  @Property({ nullable: true })
+  description?: string;
+
+  @ManyToOne(() => User, { fieldName: 'ownerId' })
   owner!: User;
 
-  @ManyToOne(() => Team, { nullable: true })
+  @ManyToOne(() => Team, { fieldName: 'teamId', nullable: true })
   team?: Team;
 
-  @Property({ default: 'private' })
-  visibility: 'private' | 'team' | 'public' = 'private';
+  @Property()
+  visibility!: 'private' | 'team' | 'public';
+
+  @Property({ nullable: true })
+  language?: 'ar' | 'en';
+
+  @Property({ type: 'json', nullable: true })
+  metadata?: Record<string, any>;
 
   @Property({ onCreate: () => new Date() })
   createdAt = new Date();
 
   @Property({ onUpdate: () => new Date() })
   updatedAt = new Date();
+
+  @Property({ nullable: true })
+  deletedAt?: Date;
 
   @OneToMany(() => Post, (post) => post.template)
   posts = new Collection<Post>(this);

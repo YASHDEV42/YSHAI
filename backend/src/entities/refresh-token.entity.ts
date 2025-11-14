@@ -6,40 +6,47 @@ import {
   Index,
 } from '@mikro-orm/core';
 import { User } from './user.entity';
+
 @Entity()
 export class RefreshToken {
   @PrimaryKey()
   id!: number;
 
-  @ManyToOne(() => User)
+  @Index()
+  @ManyToOne(() => User, { fieldName: 'userId' })
   user!: User;
 
+  // Hashed token (NOT raw token)
   @Property()
   tokenHash!: string;
 
-  @Property()
+  // Device/session metadata
+  @Property({ nullable: true })
   userAgent?: string;
 
-  @Property()
+  @Property({ nullable: true })
   ipAddress?: string;
 
+  // Rotation timestamp
   @Property({ onCreate: () => new Date() })
   createdAt = new Date();
 
   @Property({ onUpdate: () => new Date() })
   updatedAt = new Date();
 
-  @Index({ name: 'refresh_token_active_idx' })
-  @Property({ persist: false })
-  get userId(): number {
-    return this.user.id;
-  }
-
-  @Index()
-  @Property()
+  // Soft-revocation
+  @Property({ default: false })
   revoked = false;
 
+  @Property({ nullable: true })
+  revokedAt?: Date;
+
+  // Hard expiration
   @Index()
   @Property()
   expiresAt!: Date;
+
+  // Optional additional data (device name, location, risk score, etc.)
+  @Property({ type: 'json', nullable: true })
+  metadata?: Record<string, any>;
 }

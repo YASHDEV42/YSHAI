@@ -22,13 +22,11 @@ export class Post {
   @PrimaryKey()
   id!: number;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { fieldName: 'authorId' })
   author!: User;
 
-  @ManyToOne(() => Team, { nullable: true })
+  @ManyToOne(() => Team, { nullable: true, fieldName: 'teamId' })
   team?: Team;
-
-  // Targets now live in PostTarget; keep this for backward compat only if needed
 
   @Property()
   contentAr!: string;
@@ -36,15 +34,20 @@ export class Post {
   @Property({ nullable: true })
   contentEn?: string;
 
-  @Property({ default: 'draft' })
-  status: 'draft' | 'scheduled' | 'published' | 'failed' | 'pending_approval' =
-    'draft';
+  @Property({
+    default: 'draft',
+  })
+  status!: 'draft' | 'scheduled' | 'published' | 'failed' | 'pending_approval';
 
   @Property({ default: false })
   isRecurring = false;
 
   @Property({ nullable: true })
   publishedAt?: Date;
+
+  @Index()
+  @Property({ nullable: true })
+  scheduledAt?: Date;
 
   @Property({ onCreate: () => new Date() })
   createdAt = new Date();
@@ -70,13 +73,9 @@ export class Post {
   @OneToMany(() => PostAnalytics, (analytics) => analytics.post)
   analytics = new Collection<PostAnalytics>(this);
 
-  @ManyToOne(() => Campaign, { nullable: true })
+  @ManyToOne(() => Campaign, { nullable: true, fieldName: 'campaignId' })
   campaign?: Campaign;
 
-  @ManyToOne(() => Template, { nullable: true })
+  @ManyToOne(() => Template, { nullable: true, fieldName: 'templateId' })
   template?: Template;
-
-  @Index({ name: 'post_schedule_status_idx' })
-  @Property()
-  scheduleAt!: Date;
 }

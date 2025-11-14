@@ -31,7 +31,7 @@ export class PublisherService implements OnModuleInit {
     private readonly em: EntityManager,
     private readonly webhooks: WebhooksService,
     private readonly providers: ProviderFactory,
-  ) { }
+  ) {}
 
   // When Nest starts this module, it starts a loop (tick()) every 5 seconds.
   // tick() is where pending jobs are checked and processed.
@@ -124,7 +124,9 @@ export class PublisherService implements OnModuleInit {
         const mediaUrls = mediaList.map((m) => m.url);
 
         if (!mediaUrls.length) {
-          this.log.warn(`⚠️ Post ${post.id} has no media; publishing text only`);
+          this.log.warn(
+            `⚠️ Post ${post.id} has no media; publishing text only`,
+          );
         }
 
         const result = await publisher.publish({

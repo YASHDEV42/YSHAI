@@ -4,20 +4,31 @@ import {
   Property,
   OneToMany,
   Collection,
+  Index,
+  Unique,
 } from '@mikro-orm/core';
+
 import { Post } from './post.entity';
 import { SocialAccount } from './social-account.entity';
 import { Membership } from './membership.entity';
 import { Invoice } from './invoice.entity';
 import { Notification } from './notification.entity';
 import { AuditLog } from './audit-log.entity';
+import { RefreshToken } from './refresh-token.entity';
+import { PasswordResetToken } from './password-reset-token.entity';
+import { WebhookSubscription } from './webhook-subscription.entity';
+import { AIUsageLog } from './ai-usage-log.entity';
+import { Campaign } from './campaign.entity';
+import { Template } from './template.entity';
 
 @Entity()
 export class User {
   @PrimaryKey()
   id!: number;
 
-  @Property({ unique: true })
+  @Unique()
+  @Index()
+  @Property()
   email!: string;
 
   @Property({ nullable: true, hidden: true })
@@ -35,7 +46,7 @@ export class User {
   @Property({ default: false })
   isEmailVerified: boolean;
 
-  // Optional user preference fields
+  // User preferences
   @Property({ nullable: true })
   language?: string;
 
@@ -45,21 +56,16 @@ export class User {
   @Property({ nullable: true })
   timeFormat?: '12h' | '24h';
 
-  @Property({ nullable: true })
-  resetToken?: string;
-
-  @Property({ nullable: true })
-  resetTokenExpiresAt?: Date;
-
   @Property({ onCreate: () => new Date() })
-  createdAt!: Date;
+  createdAt = new Date();
 
   @Property({ onUpdate: () => new Date() })
-  updatedAt!: Date;
+  updatedAt = new Date();
 
   @Property({ nullable: true })
   deletedAt?: Date;
 
+  // Relations
   @OneToMany(() => Post, (post) => post.author)
   posts = new Collection<Post>(this);
 
@@ -77,4 +83,22 @@ export class User {
 
   @OneToMany(() => AuditLog, (log) => log.user)
   auditLogs = new Collection<AuditLog>(this);
+
+  @OneToMany(() => RefreshToken, (rt) => rt.user)
+  refreshTokens = new Collection<RefreshToken>(this);
+
+  @OneToMany(() => PasswordResetToken, (prt) => prt.user)
+  passwordResetTokens = new Collection<PasswordResetToken>(this);
+
+  @OneToMany(() => WebhookSubscription, (ws) => ws.user)
+  webhookSubscriptions = new Collection<WebhookSubscription>(this);
+
+  @OneToMany(() => AIUsageLog, (usage) => usage.user)
+  aiUsageLogs = new Collection<AIUsageLog>(this);
+
+  @OneToMany(() => Campaign, (campaign) => campaign.owner)
+  campaigns = new Collection<Campaign>(this);
+
+  @OneToMany(() => Template, (template) => template.owner)
+  templates = new Collection<Template>(this);
 }

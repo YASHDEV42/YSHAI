@@ -6,14 +6,17 @@ export class Media {
   @PrimaryKey()
   id!: number;
 
-  @ManyToOne(() => Post, { nullable: true })
+  @ManyToOne(() => Post, {
+    nullable: true,
+    fieldName: 'postId',
+  })
   post?: Post | null;
 
   @Property()
   url!: string;
 
   @Property()
-  type: 'image' | 'video' = 'image';
+  type!: 'image' | 'video';
 
   @Property({ default: 0 })
   orderIndex = 0;

@@ -7,6 +7,7 @@ import {
   Collection,
 } from '@mikro-orm/core';
 import { User } from './user.entity';
+import { Team } from './team.entity';
 import { Post } from './post.entity';
 
 @Entity()
@@ -17,11 +18,17 @@ export class Campaign {
   @Property()
   name!: string;
 
-  @ManyToOne(() => User)
+  @Property({ nullable: true })
+  description?: string;
+
+  @ManyToOne(() => User, { fieldName: 'ownerId' })
   owner!: User;
 
+  @ManyToOne(() => Team, { fieldName: 'teamId', nullable: true })
+  team?: Team;
+
   @Property()
-  status: 'active' | 'paused' | 'completed' = 'active';
+  status!: 'draft' | 'active' | 'completed' | 'cancelled';
 
   @Property({ nullable: true })
   startsAt?: Date;
@@ -34,6 +41,12 @@ export class Campaign {
 
   @Property({ onUpdate: () => new Date() })
   updatedAt = new Date();
+
+  @Property({ nullable: true })
+  deletedAt?: Date;
+
+  @Property({ type: 'json', nullable: true })
+  metadata?: Record<string, any>;
 
   @OneToMany(() => Post, (post) => post.campaign)
   posts = new Collection<Post>(this);

@@ -1,4 +1,3 @@
-// entities/password-reset-token.entity.ts
 import {
   Entity,
   PrimaryKey,
@@ -13,20 +12,27 @@ export class PasswordResetToken {
   @PrimaryKey()
   id!: number;
 
-  @ManyToOne(() => User)
+  @Index()
+  @ManyToOne(() => User, { fieldName: 'userId' })
   user!: User;
 
-  // Store only a hash of the token for security
+  // Store ONLY a HASH of the token
   @Property()
-  @Index()
   tokenHash!: string;
 
   @Property({ default: false })
   used = false;
 
+  @Property({ nullable: true })
+  usedAt?: Date;
+
+  @Index()
   @Property()
   expiresAt!: Date;
 
   @Property({ onCreate: () => new Date() })
-  createdAt!: Date;
+  createdAt = new Date();
+
+  @Property({ type: 'json', nullable: true })
+  metadata?: Record<string, any>;
 }

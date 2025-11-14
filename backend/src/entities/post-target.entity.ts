@@ -13,17 +13,18 @@ export class PostTarget {
   @PrimaryKey()
   id!: number;
 
-  @ManyToOne(() => Post)
+  @ManyToOne(() => Post, { fieldName: 'postId' })
   @Index({ name: 'post_target_post_idx' })
   post!: Post;
 
-  @ManyToOne(() => SocialAccount)
+  @ManyToOne(() => SocialAccount, { fieldName: 'socialAccountId' })
   @Index({ name: 'post_target_account_idx' })
   socialAccount!: SocialAccount;
 
-  @Property({ default: 'pending' })
-  status: 'pending' | 'scheduled' | 'processing' | 'success' | 'failed' =
-    'pending';
+  @Property({
+    default: 'pending',
+  })
+  status!: 'pending' | 'scheduled' | 'processing' | 'success' | 'failed';
 
   @Property({ default: 0 })
   attempt = 0;
@@ -37,6 +38,7 @@ export class PostTarget {
   @Property({ nullable: true })
   externalUrl?: string;
 
+  @Index()
   @Property({ nullable: true })
   scheduledAt?: Date;
 
