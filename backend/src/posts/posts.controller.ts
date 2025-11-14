@@ -39,7 +39,9 @@ import {
   PostResponseDto,
   PostStatusResponseDto,
 } from './dto/post-response.dto';
+import { ApiStandardErrors } from 'src/common/decorators/api-standard-errors.decorator';
 
+@ApiStandardErrors()
 @ApiTags('Posts')
 @ApiCookieAuth()
 @UseGuards(JwtAuthGuard)

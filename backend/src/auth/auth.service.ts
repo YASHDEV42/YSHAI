@@ -2,6 +2,8 @@ import {
   Injectable,
   UnauthorizedException,
   BadRequestException,
+  ConflictException,
+  NotFoundException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -73,7 +75,7 @@ export class AuthService {
     //cheack if email already exists
     const existing = await this.em.findOne(User, { email });
     if (existing) {
-      throw new BadRequestException('Email already in use');
+      throw new ConflictException('Email already in use');
     }
     logger.log(`Registering user with email: ${email}`);
 
@@ -166,7 +168,7 @@ export class AuthService {
     //find the user
     const user = await this.em.findOne(User, { id });
     if (!user) {
-      throw new BadRequestException('User not found');
+      throw new NotFoundException('User not found');
     }
 
     //marking email as verified
@@ -185,14 +187,11 @@ export class AuthService {
   async validateUser(email: string, pass: string): Promise<User> {
     console.log(`Validating user with email: ${email}`);
     const user = await this.em.findOne(User, { email });
-    if (!user) {
-      throw new UnauthorizedException('User not found');
-    }
-    if (!user.passwordHash) {
-      throw new UnauthorizedException('Password not found');
+    if (!user || !user.passwordHash) {
+      throw new UnauthorizedException('Invalid email or password');
     }
     if (!(await bcrypt.compare(pass, user.passwordHash))) {
-      throw new UnauthorizedException('Invalid password');
+      throw new UnauthorizedException('Invalid email or password');
     }
     if (!user.isEmailVerified) {
       throw new UnauthorizedException(
@@ -304,7 +303,7 @@ export class AuthService {
     const tokenHash = createHash('sha256').update(token).digest('hex');
     if (!tokenHash) {
       logger.warn('Invalid token format');
-      throw new BadRequestException('Invalid token format');
+      throw new UnauthorizedException('Invalid or expired token');
     }
     logger.log(`Token hash generated`);
     const reset = await this.em.findOne(

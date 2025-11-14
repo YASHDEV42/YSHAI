@@ -31,7 +31,9 @@ import { UpdateMemberRoleDto } from './dto/update-member-role.dto';
 import { MessageDto } from 'src/common/dto/message.dto';
 import { TeamAuditLogResponseDto } from './dto/team-audit-log.response.dto';
 import { TeamResponseDto } from './dto/team-response.dto';
+import { ApiStandardErrors } from 'src/common/decorators/api-standard-errors.decorator';
 
+@ApiStandardErrors()
 @ApiTags('Teams')
 @ApiCookieAuth()
 @UseGuards(JwtAuthGuard)

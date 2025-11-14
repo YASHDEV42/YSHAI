@@ -17,7 +17,8 @@ import {
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { JobsService } from './jobs.service';
 import { JobResponseDto, PaginatedJobsDto } from './dto/job-response.dto';
-
+import { ApiStandardErrors } from 'src/common/decorators/api-standard-errors.decorator';
+@ApiStandardErrors()
 @ApiTags('Jobs')
 @ApiCookieAuth()
 @UseGuards(JwtAuthGuard)

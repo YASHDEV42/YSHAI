@@ -20,7 +20,9 @@ import { LinkAccountWithTokensDto } from './dto/link-account-with-tokens.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { LinkAccountResponseDto } from './dto/link-account.response.dto';
 import { MessageDto } from 'src/common/dto/message.dto';
+import { ApiStandardErrors } from 'src/common/decorators/api-standard-errors.decorator';
 
+@ApiStandardErrors()
 @ApiTags('Accounts')
 @Controller('accounts')
 @UseGuards(JwtAuthGuard)

@@ -25,7 +25,8 @@ import {
   UpdateCampaignDto,
 } from './dto/campaign.dto';
 import { Campaign } from '../entities/campaign.entity';
-
+import { ApiStandardErrors } from 'src/common/decorators/api-standard-errors.decorator';
+@ApiStandardErrors()
 @ApiTags('Campaigns')
 @ApiCookieAuth()
 @UseGuards(JwtAuthGuard)

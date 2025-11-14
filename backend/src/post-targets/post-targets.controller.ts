@@ -15,7 +15,8 @@ import {
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PostTargetsService } from './post-targets.service';
 import { PostTargetResponseDto } from './dto/post-target.dto';
-
+import { ApiStandardErrors } from 'src/common/decorators/api-standard-errors.decorator';
+@ApiStandardErrors()
 @ApiTags('PostTargets')
 @ApiCookieAuth()
 @UseGuards(JwtAuthGuard)

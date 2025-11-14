@@ -17,7 +17,6 @@ import {
   ApiBody,
   ApiQuery,
   ApiOkResponse,
-  ApiNotFoundResponse,
 } from '@nestjs/swagger';
 import { PassportLocalGuard } from './guards/passport-local.guard';
 import { RegisterDto } from './dto/register.dto';
@@ -26,12 +25,13 @@ import { MessageResponseDto } from './dto/message-response.dto';
 import { TokensResponseDto } from './dto/token-response.dto';
 import { LoginDto } from './dto/login.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
-import type { Request } from 'express';
 import {
   ResetPasswordDto,
   ResendVerificationDto,
 } from './dto/reset-password.dto';
-const logger = new Logger();
+import { ApiStandardErrors } from 'src/common/decorators/api-standard-errors.decorator';
+
+@ApiStandardErrors()
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
@@ -51,7 +51,7 @@ export class AuthController {
   @ApiBody({ type: LoginDto })
   async login(
     @Req() req: { user: { id: number; email: string; role: string } },
-    @Body() _body: LoginDto, // kept for Swagger docs
+    @Body() _body: LoginDto,
   ): Promise<{ accessToken: string }> {
     const { accessToken } = await this.authService.login(
       req.user.id,
@@ -68,55 +68,38 @@ export class AuthController {
   async refresh(
     @Body() dto: RefreshTokenDto,
   ): Promise<{ accessToken: string }> {
-    const oldRefreshToken = dto.refreshToken;
-    logger.log(`Received refresh token`);
-    if (!oldRefreshToken) {
+    if (!dto.refreshToken) {
       throw new UnauthorizedException('Missing refresh token');
     }
-    const { accessToken } = await this.authService.refresh(oldRefreshToken);
+    const { accessToken } = await this.authService.refresh(dto.refreshToken);
     return { accessToken };
   }
 
   @Post('logout')
   @ApiOperation({ summary: 'Logout' })
   @ApiOkResponse({ description: 'User logged out successfully.', type: String })
-  @ApiNotFoundResponse({ description: 'Unauthorized.', type: String })
   async logout(@Req() req: { user: { id: number } }): Promise<void> {
-    return await this.authService.logout(req.user);
+    return this.authService.logout(req.user);
   }
 
   @Post('forgot-password')
   @ApiOperation({ summary: 'Forgot password' })
-  @ApiOkResponse({
-    description: 'Password reset link sent.',
-    type: MessageResponseDto,
-  })
-  @ApiNotFoundResponse({
-    description: 'Bad request.',
-    type: MessageResponseDto,
-  })
+  @ApiOkResponse({ type: MessageResponseDto })
   @ApiBody({ type: ForgotPasswordDto })
   async forgotPassword(
     @Body() dto: ForgotPasswordDto,
   ): Promise<MessageResponseDto | void> {
-    return await this.authService.forgotPassword(dto.email);
+    return this.authService.forgotPassword(dto.email);
   }
 
   @Post('reset-password')
   @ApiOperation({ summary: 'Reset password' })
-  @ApiOkResponse({
-    description: 'Password reset successfully.',
-    type: MessageResponseDto,
-  })
-  @ApiNotFoundResponse({
-    description: 'Bad request.',
-    type: MessageResponseDto,
-  })
+  @ApiOkResponse({ type: MessageResponseDto })
   @ApiBody({ type: ResetPasswordDto })
   async resetPassword(
     @Body() dto: ResetPasswordDto,
   ): Promise<MessageResponseDto> {
-    return await this.authService.resetPassword(dto.token, dto.newPassword);
+    return this.authService.resetPassword(dto.token, dto.newPassword);
   }
 
   @Get('verify')
@@ -128,10 +111,6 @@ export class AuthController {
     description: 'Verification token from email',
   })
   @ApiOkResponse({ description: 'Email verified successfully.', type: String })
-  @ApiNotFoundResponse({
-    description: 'Invalid or expired token.',
-    type: String,
-  })
   async verifyEmail(
     @Query('token') token: string,
   ): Promise<{ message: string }> {
@@ -141,7 +120,7 @@ export class AuthController {
 
     const payload = this.authService.verifyEmailVerificationToken(token);
     if (!payload) {
-      throw new BadRequestException('Invalid or expired verification token');
+      throw new UnauthorizedException('Invalid or expired token');
     }
 
     await this.authService.markEmailAsVerified(payload.id);
@@ -150,21 +129,14 @@ export class AuthController {
 
   @Post('resend-verification')
   @ApiOperation({ summary: 'Resend email verification link' })
-  @ApiOkResponse({
-    description: 'Verification email resent.',
-    type: MessageResponseDto,
-  })
-  @ApiNotFoundResponse({
-    description: 'Bad request (e.g. user not found or already verified).',
-    type: MessageResponseDto,
-  })
+  @ApiOkResponse({ type: MessageResponseDto })
   @ApiBody({ type: ResendVerificationDto })
   async resendVerification(
     @Body() dto: ResendVerificationDto,
   ): Promise<{ message: string }> {
     const user = await this.authService.findUserByEmail(dto.email);
+
     if (!user) {
-      // Do not reveal whether email exists (security best practice)
       return {
         message:
           'If this email is registered, a verification link has been sent.',
@@ -180,6 +152,7 @@ export class AuthController {
       user.email,
     );
     await this.authService.sendVerificationEmail(user.email, token);
+
     return { message: 'Verification email resent.' };
   }
 }

@@ -23,7 +23,9 @@ import { GenerateAltTextResponseDto } from './dto/generate-alt-text.response.dto
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { AiUsageSummaryDto } from './dto/ai-usage-summary.dto';
 import { AiUsageBreakdownDto } from './dto/ai-usage-breakdown.dto';
+import { ApiStandardErrors } from 'src/common/decorators/api-standard-errors.decorator';
 
+@ApiStandardErrors()
 @ApiTags('AI')
 @ApiCookieAuth()
 @UseGuards(JwtAuthGuard)

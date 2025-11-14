@@ -12,7 +12,8 @@ import { ModerateImageDto } from './dto/moderate-image.dto';
 import { ModerateVideoDto } from './dto/moderate-video.dto';
 import { ModerationResultResponseDto } from './dto/moderation-result-response.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-
+import { ApiStandardErrors } from 'src/common/decorators/api-standard-errors.decorator';
+@ApiStandardErrors()
 @ApiTags('Moderation')
 @ApiCookieAuth()
 @UseGuards(JwtAuthGuard)

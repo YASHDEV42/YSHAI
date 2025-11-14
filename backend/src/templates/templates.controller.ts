@@ -24,7 +24,8 @@ import {
   UpdateTemplateDto,
 } from './dto/template.dto';
 import { Template } from '../entities/template.entity';
-
+import { ApiStandardErrors } from 'src/common/decorators/api-standard-errors.decorator';
+@ApiStandardErrors()
 @ApiTags('Templates')
 @ApiCookieAuth()
 @UseGuards(JwtAuthGuard)

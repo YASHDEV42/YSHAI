@@ -25,7 +25,9 @@ import {
   SubscriptionResponseDto,
 } from './dto/billing-response.dto';
 import { SubscribeResponseDto } from './dto/subscribe-response.dto';
+import { ApiStandardErrors } from 'src/common/decorators/api-standard-errors.decorator';
 
+@ApiStandardErrors()
 @ApiTags('Billing')
 @ApiCookieAuth()
 @UseGuards(JwtAuthGuard)

@@ -1,6 +1,13 @@
-
-import { Body, Controller, ForbiddenException, Get, Post, Query } from '@nestjs/common';
-
+import {
+  Body,
+  Controller,
+  ForbiddenException,
+  Get,
+  Post,
+  Query,
+} from '@nestjs/common';
+import { ApiStandardErrors } from 'src/common/decorators/api-standard-errors.decorator';
+@ApiStandardErrors()
 @Controller('meta/webhooks')
 export class MetaWebhookController {
   @Get()
@@ -12,7 +19,7 @@ export class MetaWebhookController {
     if (mode === 'subscribe' && token === process.env.META_VERIFY_TOKEN) {
       return challenge;
     }
-    throw new ForbiddenException('Invalid verify token');
+    throw new ForbiddenException('Webhook verification failed');
   }
 
   @Post()

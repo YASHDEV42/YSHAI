@@ -52,7 +52,7 @@ export class UsersService {
   ): Promise<{ message: string }> {
     const user = await this.em.findOne(User, { id });
     if (!user) {
-      throw new Error('User not found');
+      throw new NotFoundException('User not found');
     }
     if (prefs.timezone !== undefined) user.timezone = prefs.timezone;
     if (prefs.language !== undefined) user.language = prefs.language;
@@ -69,7 +69,7 @@ export class UsersService {
   ): Promise<{ message: string }> {
     const user = await this.em.findOne(User, { id });
     if (!user || !user.passwordHash) {
-      throw new BadRequestException('User not found');
+      throw new NotFoundException('User not found');
     }
 
     const ok = await bcrypt.compare(dto.currentPassword, user.passwordHash);
@@ -88,7 +88,7 @@ export class UsersService {
   ): Promise<{ message: string }> {
     const user = await this.em.findOne(User, { id });
     if (!user) {
-      throw new BadRequestException('User not found');
+      throw new NotFoundException('User not found');
     }
 
     user.email = dto.newEmail;
@@ -107,7 +107,7 @@ export class UsersService {
 
     const user = await this.em.findOne(User, { id });
     if (!user) {
-      throw new BadRequestException('User not found');
+      throw new NotFoundException('User not found');
     }
 
     // Soft delete: mark deletedAt

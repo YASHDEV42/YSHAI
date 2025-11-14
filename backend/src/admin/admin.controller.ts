@@ -20,6 +20,7 @@ import { AssignRoleDto } from './dto/assign-role.dto';
 import { AdminUserResponseDto } from './dto/admin-user-response.dto';
 import { AdminAuditLogResponseDto } from './dto/admin-audit-log-response.dto';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { ApiStandardErrors } from 'src/common/decorators/api-standard-errors.decorator';
 
 @Injectable()
 class AdminOnlyGuard implements CanActivate {
@@ -31,6 +32,7 @@ class AdminOnlyGuard implements CanActivate {
   }
 }
 
+@ApiStandardErrors()
 @ApiTags('Admin')
 @ApiCookieAuth()
 @UseGuards(JwtAuthGuard, AdminOnlyGuard)

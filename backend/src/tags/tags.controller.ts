@@ -18,7 +18,8 @@ import {
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { TagsService } from './tags.service';
 import { CreateTagDto, TagResponseDto, UpdatePostTagsDto } from './dto/tag.dto';
-
+import { ApiStandardErrors } from 'src/common/decorators/api-standard-errors.decorator';
+@ApiStandardErrors()
 @ApiTags('Tags')
 @ApiCookieAuth()
 @UseGuards(JwtAuthGuard)

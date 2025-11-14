@@ -27,7 +27,9 @@ import { IgProfileQueryDto } from './dto/ig-profile.dto';
 import { IgPageQueryDto } from './dto/ig-page.dto';
 import { IgPostsQueryDto } from './dto/ig-posts.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { ApiStandardErrors } from 'src/common/decorators/api-standard-errors.decorator';
 
+@ApiStandardErrors()
 @ApiTags('Meta')
 @Controller('meta')
 @UseGuards(JwtAuthGuard)

@@ -249,7 +249,7 @@ export class TeamsService {
     }
 
     if (membership.role === 'owner') {
-      throw new ForbiddenException('Owner cannot leave their own team');
+      throw new ForbiddenException('Team owner cannot leave their own team');
     }
 
     membership.leftAt = new Date();
@@ -268,7 +268,7 @@ export class TeamsService {
       throw new NotFoundException(`Team with ID ${teamId} not found`);
     }
     if (team.owner.id !== ownerId) {
-      throw new ForbiddenException('Only the owner can delete the team');
+      throw new ForbiddenException('Only the team owner can delete the team');
     }
 
     team.deletedAt = new Date();
@@ -289,7 +289,9 @@ export class TeamsService {
       throw new NotFoundException(`Team with ID ${teamId} not found`);
     }
     if (team.owner.id !== ownerId) {
-      throw new ForbiddenException('Only the owner can update team avatar');
+      throw new ForbiddenException(
+        'Only the team owner can update the team avatar',
+      );
     }
 
     team.avatarUrl = avatarUrl ?? undefined;
@@ -337,8 +339,11 @@ export class TeamsService {
       team: teamId,
     });
     const isAdmin = membership?.role === 'admin';
-    if (!isOwner && !isAdmin)
-      throw new ForbiddenException('Requires admin or owner');
+    if (!isOwner && !isAdmin) {
+      throw new ForbiddenException(
+        'Only a team admin or owner can perform this action',
+      );
+    }
     return { team };
   }
 
@@ -471,7 +476,9 @@ export class TeamsService {
       { populate: ['plan'] },
     );
     if (!sub || !sub.plan || (sub.plan as Plan).name !== 'Business') {
-      throw new ForbiddenException('Business plan required for team features');
+      throw new ForbiddenException(
+        'A Business plan is required for team features',
+      );
     }
   }
 }

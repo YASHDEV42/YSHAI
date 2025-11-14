@@ -15,7 +15,6 @@ import {
   ApiResponse,
   ApiTags,
   ApiOkResponse,
-  ApiNotFoundResponse,
   ApiConsumes,
   ApiBody,
 } from '@nestjs/swagger';
@@ -27,7 +26,8 @@ import { UpdatePreferencesDto } from './dto/update-preferences.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { ChangeEmailDto } from './dto/change-email.dto';
 import { DeleteAccountDto } from './dto/delete-account.dto';
-
+import { ApiStandardErrors } from 'src/common/decorators/api-standard-errors.decorator';
+@ApiStandardErrors()
 @ApiTags('Users')
 @ApiCookieAuth()
 @UseGuards(JwtAuthGuard)
@@ -41,7 +41,6 @@ export class UsersController {
     description: 'Current user profile retrieved successfully.',
     type: UserResponseDto,
   })
-  @ApiNotFoundResponse({ description: 'User not found.' })
   async getProfile(
     @Req() req: { user: { id: number } },
   ): Promise<UserResponseDto> {
@@ -84,7 +83,6 @@ export class UsersController {
     description: 'Current user updated successfully.',
     type: UserResponseDto,
   })
-  @ApiNotFoundResponse({ description: 'User not found.' })
   async updateProfile(
     @Req() req: { user: { id: number } },
     @Body() updateUserDto: UpdateUserDto,

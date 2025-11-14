@@ -29,7 +29,9 @@ import {
 import { Notification } from 'src/entities/notification.entity';
 import { MessageDto } from 'src/common/dto/message.dto';
 import { CountDto } from 'src/common/dto/count.dto';
+import { ApiStandardErrors } from 'src/common/decorators/api-standard-errors.decorator';
 
+@ApiStandardErrors()
 @ApiTags('Notifications')
 @ApiCookieAuth()
 @UseGuards(JwtAuthGuard)

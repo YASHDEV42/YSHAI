@@ -18,13 +18,15 @@ import { PostInsightsDto } from './dto/post-insights.dto';
 import { AccountInsightsDto } from './dto/account-insights.dto';
 import { CampaignInsightsDto } from './dto/campaign-insights.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { ApiStandardErrors } from 'src/common/decorators/api-standard-errors.decorator';
 
+@ApiStandardErrors()
 @ApiTags('Analytics')
 @ApiCookieAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('analytics')
 export class AnalyticsController {
-  constructor(private readonly analytics: AnalyticsService) { }
+  constructor(private readonly analytics: AnalyticsService) {}
 
   @Get('posts/:postId')
   @ApiOperation({ summary: 'Post Insights' })

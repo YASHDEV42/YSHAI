@@ -28,7 +28,9 @@ import {
   WebhookSubscriptionResponseDto,
 } from './dto/webhook-response.dto';
 import { MessageDto } from 'src/common/dto/message.dto';
+import { ApiStandardErrors } from 'src/common/decorators/api-standard-errors.decorator';
 
+@ApiStandardErrors()
 @ApiTags('Webhooks')
 @ApiCookieAuth()
 @UseGuards(JwtAuthGuard)

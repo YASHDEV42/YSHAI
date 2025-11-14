@@ -7,6 +7,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import cookieParser from 'cookie-parser';
 import * as path from 'path';
 import { existsSync, mkdirSync, writeFileSync } from 'fs';
+import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 
 async function bootstrap() {
   // Ensure uploads directory exists
@@ -33,11 +34,12 @@ async function bootstrap() {
       whitelist: true,
       transform: true,
       forbidNonWhitelisted: true,
-      stopAtFirstError: true,
+      stopAtFirstError: false,
       skipUndefinedProperties: true,
     }),
   );
 
+  app.useGlobalFilters(new AllExceptionsFilter());
   // Static Assets (Media Uploads)
   app.useStaticAssets(uploadDir, {
     prefix: '/media',
@@ -83,7 +85,6 @@ async function bootstrap() {
     path.join(process.cwd(), 'swagger-spec.json'),
     JSON.stringify(document, null, 2),
   );
-
   // Start Server
   // ----------------------------
   const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 5000;
