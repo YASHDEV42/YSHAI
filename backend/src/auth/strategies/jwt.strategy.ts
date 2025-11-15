@@ -12,7 +12,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
           if (request.cookies?.accessToken) {
             return request.cookies.accessToken;
           }
-          // 2. Fallback to header
           const fromHeader = ExtractJwt.fromAuthHeaderAsBearerToken()(request);
           return fromHeader || null;
         },

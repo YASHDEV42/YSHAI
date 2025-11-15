@@ -29,6 +29,7 @@ export async function handler(
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${accessToken}`,
+      Cookies: `accessToken=${accessToken}`,
     },
     ...(hasBody && { body }),
   });

@@ -1,7 +1,8 @@
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "./components/dashboard-sidebar";
-import { setRequestLocale, getTranslations } from "next-intl/server";
-import { getUser } from "@/lib/auth-helper";
+import { setRequestLocale } from "next-intl/server";
+import { extractSidebarText } from "@/app/i18n/extractTexts";
+import { me } from "@/lib/user-helper";
 
 export default async function DashboardLayout({
   children,
@@ -9,27 +10,11 @@ export default async function DashboardLayout({
 }: LayoutProps<"/[locale]/dashboard">) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const t = await getTranslations({ locale, namespace: "DashboardSidebar" });
-  const text = {
-    overview: t("overview"),
-    logo: t("logo"),
-    createPost: t("createPost"),
-    calendar: t("calendar"),
-    platforms: t("platforms"),
-    analytics: t("analytics"),
-    settings: t("settings"),
-    notifications: t("notifications"),
-    noNotifications: t("noNotifications"),
-    markAll: t("markAll"),
-    new: t("new"),
-    justNow: t("justNow"),
-    minutesAgo: t("minutesAgo"),
-    hoursAgo: t("hoursAgo"),
-    daysAgo: t("daysAgo"),
-  };
+
+  const text = await extractSidebarText(locale);
   let user = null;
-  const data = await getUser();
-  user = data.user ? data.user : null;
+  const response = await me();
+  user = response.success ? response.data : null;
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-background">

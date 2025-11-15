@@ -1,9 +1,9 @@
 "use server";
 
+import { login } from "@/lib/auth-helper";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
-const BaseURL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
 type initialStateType = {
   arMessage: string;
   enMessage: string;
@@ -37,25 +37,20 @@ export const loginAction = async (
       success: false,
     };
   }
-  const response = await fetch(`${BaseURL}/auth/login`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ email, password }),
-  });
-  console.log("Login response status:", response.status);
+  const result = await login({ email, password });
 
-  if (!response.ok) {
+  if (!result.success) {
     return {
       arMessage: "فشل تسجيل الدخول",
-      enMessage: "Login failed",
+      enMessage: result.error || "Login failed",
       success: false,
     };
   }
-  const { accessToken, refreshToken } = await response.json();
+
+  const accessToken = result.data.accessToken;
 
   const cookieStore = await cookies();
+
   cookieStore.set("accessToken", accessToken, {
     httpOnly: true,
     sameSite: "lax",
