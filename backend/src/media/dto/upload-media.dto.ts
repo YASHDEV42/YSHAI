@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsOptional } from 'class-validator';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class UploadMediaDto {
   @ApiProperty({
@@ -8,6 +8,6 @@ export class UploadMediaDto {
     required: false,
   })
   @IsOptional()
-  @IsNumber()
-  postId?: number;
+  @IsString()
+  postId?: string;
 }

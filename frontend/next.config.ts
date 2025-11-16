@@ -9,7 +9,6 @@ const nextConfig: NextConfig = {
         hostname: "scontent.cdninstagram.com",
         port: "",
         pathname: "/**",
-        search: "",
       },
       {
         protocol: "https",

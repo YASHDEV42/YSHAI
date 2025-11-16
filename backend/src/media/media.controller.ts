@@ -65,7 +65,8 @@ export class MediaController {
     @UploadedFile() file: { path?: string; buffer?: Buffer },
     @Body() dto: UploadMediaDto,
   ): Promise<MediaResponseDto> {
-    return this.mediaService.upload(file, dto.postId);
+    const postId = dto.postId ? parseInt(dto.postId, 10) : undefined;
+    return this.mediaService.upload(file, postId);
   }
 
   @Get()

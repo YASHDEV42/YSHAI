@@ -7,42 +7,56 @@ export async function handler(
   { params }: { params: Promise<{ path: string[] }> },
 ) {
   const { path } = await params;
-  const originalPath = path.join("/");
 
+  const targetPath = path.join("/");
   const url = new URL(request.url);
-  const queryString = url.search;
-  const targetUrl = `${API_BASE_URL.replace(/\/+$/, "")}/${originalPath}${queryString}`;
-  console.log("Proxying request to:", targetUrl);
-  const cookieStore = await cookies();
+  const targetUrl = `${API_BASE_URL.replace(/\/+$/, "")}/${targetPath}${url.search}`;
 
+  console.log("Proxying request to:", targetUrl);
+
+  const cookieStore = await cookies();
   const accessToken = cookieStore.get("accessToken")?.value;
+
   if (!accessToken) {
-    console.log("No access token found");
     return Response.json({ message: "Unauthorized" }, { status: 401 });
   }
 
-  const hasBody = !["GET", "HEAD"].includes(request.method);
-  const body = hasBody ? await request.text() : undefined;
+  const headers = new Headers(request.headers);
+  headers.set("Authorization", `Bearer ${accessToken}`);
+  headers.delete("host");
 
-  const res = await fetch(targetUrl, {
+  const contentType = request.headers.get("content-type") || "";
+
+  let fetchOptions: RequestInit = {
     method: request.method,
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-      Cookies: `accessToken=${accessToken}`,
-    },
-    ...(hasBody && { body }),
-  });
+    headers,
+    redirect: "manual",
+  };
 
-  let data = null;
-  try {
-    data = await res.json();
-  } catch {
-    console.log("No JSON response");
-    // Non-JSON response (e.g. 204 No Content)
+  if (contentType.includes("multipart/form-data")) {
+    // 🔥 pass raw body
+    fetchOptions.body = request.body;
+
+    // 🔥 REQUIRED for streaming uploads in Node.js
+    (fetchOptions as any).duplex = "half";
+  } else if (!["GET", "HEAD"].includes(request.method)) {
+    // JSON or text body
+    fetchOptions.body = await request.text();
   }
 
-  return Response.json(data, { status: res.status });
+  const response = await fetch(targetUrl, fetchOptions);
+
+  const respType = response.headers.get("content-type") || "";
+
+  if (respType.includes("application/json")) {
+    const json = await response.json();
+    return Response.json(json, { status: response.status });
+  }
+
+  return new Response(response.body, {
+    status: response.status,
+    headers: response.headers,
+  });
 }
 
 export { handler as GET };

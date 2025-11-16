@@ -3,6 +3,7 @@
 import { IPost } from "@/interfaces";
 import { ApiResult } from "@/lib/api-requester";
 import { create } from "@/lib/post-helper";
+import { uploadMedia } from "@/lib/media-helper";
 
 type InitialStateType = {
   arMessage: string;
@@ -15,122 +16,65 @@ export const createPostAction = async (
   formData: FormData,
 ): Promise<InitialStateType> => {
   try {
+    const files = formData.getAll("files") as File[];
+    formData.delete("files"); // Do not send files to /posts endpoint
     const contentAr = formData.get("contentAr")?.toString() || undefined;
     const contentEn = formData.get("contentEn")?.toString() || undefined;
-
-    const status = (formData.get("status")?.toString() || "draft") as
-      | "draft"
-      | "scheduled"
-      | "published"
-      | "failed"
-      | "pending_approval";
-
-    const scheduledAtRaw = formData.get("scheduledAt")?.toString() || undefined;
+    const status = (formData.get("status")?.toString() || "draft") as any;
+    const scheduledAt = formData.get("scheduledAt")?.toString() || undefined;
 
     const authorId = Number(formData.get("authorId"));
-    const teamId =
-      formData.get("teamId") !== null
-        ? Number(formData.get("teamId"))
-        : undefined;
-
-    const socialIdsRaw = formData.getAll("socialAccountIds");
-    const socialAccountIds =
-      socialIdsRaw.length > 0 ? socialIdsRaw.map((v) => Number(v)) : undefined;
-
-    const campaignId =
-      formData.get("campaignId") !== null
-        ? Number(formData.get("campaignId"))
-        : undefined;
-
-    const templateId =
-      formData.get("templateId") !== null
-        ? Number(formData.get("templateId"))
-        : undefined;
-
-    const isRecurring =
-      formData.get("isRecurring")?.toString() === "true" ? true : false;
-
-    if (!authorId || isNaN(authorId)) {
-      return {
-        success: false,
-        enMessage: "Author is required",
-        arMessage: "المؤلف مطلوب",
-      };
-    }
-
-    if (!socialAccountIds || socialAccountIds.length === 0) {
-      return {
-        success: false,
-        enMessage: "At least one social account is required",
-        arMessage: "مطلوب اختيار حساب اجتماعي واحد على الأقل",
-      };
-    }
-
-    if (status === "scheduled") {
-      if (!scheduledAtRaw) {
-        return {
-          success: false,
-          enMessage: "scheduledAt is required for scheduled posts",
-          arMessage: "وقت النشر مطلوب للمنشورات المجدولة",
-        };
-      }
-
-      const dateCheck = new Date(scheduledAtRaw);
-
-      if (isNaN(dateCheck.getTime())) {
-        return {
-          success: false,
-          enMessage: "Invalid scheduledAt date format",
-          arMessage: "صيغة التاريخ غير صحيحة",
-        };
-      }
-
-      if (dateCheck < new Date()) {
-        return {
-          success: false,
-          enMessage: "scheduledAt must be a future date",
-          arMessage: "وقت النشر يجب أن يكون في المستقبل",
-        };
-      }
-    }
+    const socialAccountIds = formData
+      .getAll("socialAccountIds")
+      .map((v) => Number(v));
 
     const dto = {
       contentAr,
       contentEn,
       status,
-      scheduledAt: scheduledAtRaw,
+      scheduledAt,
       authorId,
-      teamId,
       socialAccountIds,
-      campaignId,
-      templateId,
-      isRecurring,
     };
 
-    try {
-      const result: ApiResult<IPost> = await create(dto);
-      console.log("createPostAction Result:", result);
-    } catch (e) {
-      console.log(e);
+    const postResult: ApiResult<IPost> = await create(dto);
+
+    if (!postResult.success || !postResult.data) {
       return {
         success: false,
-        enMessage: "Failed to create post due to server error",
-        arMessage: "فشل في إنشاء المنشور بسبب خطأ في الخادم",
+        enMessage: "Failed to create the post",
+        arMessage: "فشل إنشاء المنشور",
       };
     }
 
+    console.log("Post created:", postResult.data);
+    const post = postResult.data;
+
+    for (const file of files) {
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("postId", String(post.id));
+
+      const uploadResult = await uploadMedia(fd);
+
+      if (!uploadResult.success) {
+        console.error("Media upload failed:", uploadResult);
+      }
+    }
+
+    // Finish
     return {
       success: true,
       enMessage: "Post created successfully",
       arMessage: "تم إنشاء المنشور بنجاح",
     };
-  } catch (err: any) {
+  } catch (err) {
     console.error("createPostAction Error:", err);
 
     return {
       success: false,
-      enMessage: "Something went wrong while creating the post",
-      arMessage: "حدث خطأ أثناء إنشاء المنشور",
+      enMessage: "Something went wrong",
+      arMessage: "حدث خطأ غير متوقع",
     };
   }
 };
