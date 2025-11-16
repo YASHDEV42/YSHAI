@@ -1,11 +1,9 @@
 import { setRequestLocale } from "next-intl/server";
 import { PlatformDetail } from "./components/platform-detail";
-import {
-  getInstagramPostsAction,
-  getUserSocialMediaAccounts,
-} from "@/lib/accounts-helper";
 import { notFound } from "next/navigation";
 import { extractPlatformDetailPageText } from "@/app/i18n/extractTexts";
+import { listMyAccounts } from "@/lib/accounts-helper";
+import { getInstagramPosts } from "@/lib/meta-helper";
 
 export default async function PlatformDetailPage({
   params,
@@ -17,8 +15,8 @@ export default async function PlatformDetailPage({
 
   const text = await extractPlatformDetailPageText(locale);
 
-  const accountsData = await getUserSocialMediaAccounts();
-  const accounts = accountsData.socialAccounts || [];
+  const accountsData = await listMyAccounts();
+  const accounts = accountsData.success ? accountsData.data : [];
 
   const accountId = Number.parseInt(platformId.split("-").pop() || "0");
   const account = accounts.find((acc: any) => acc.id === accountId);
@@ -27,10 +25,9 @@ export default async function PlatformDetailPage({
     notFound();
   }
   console.log("Rendering PlatformDetailPage for account:", account);
-  const postsResponse = await getInstagramPostsAction(
-    account.providerAccountId,
-  );
-  const posts = postsResponse?.posts?.data || [];
+  const postsResponse = await getInstagramPosts(account.providerAccountId);
+  console.log("Fetched posts response:", postsResponse);
+  const posts = postsResponse.success ? postsResponse.data.data : [];
 
   return (
     <PlatformDetail

@@ -1,11 +1,8 @@
 import { setRequestLocale } from "next-intl/server";
 import { Platforms } from "./components/platforms";
-import {
-  getInstagramPostsAction,
-  getInstagramProfileAction,
-  getUserSocialMediaAccounts,
-} from "@/lib/accounts-helper";
 import { extractPlatformsPageText } from "@/app/i18n/extractTexts";
+import { listMyAccounts } from "@/lib/accounts-helper";
+import { getInstagramPosts, getInstagramProfile } from "@/lib/meta-helper";
 
 export default async function PlatformsPage({
   params,
@@ -16,8 +13,8 @@ export default async function PlatformsPage({
   setRequestLocale(locale);
   const text = await extractPlatformsPageText(locale);
 
-  const accountsData = await getUserSocialMediaAccounts();
-  const accounts = accountsData.socialAccounts || [];
+  const accountsData = await listMyAccounts();
+  const accounts = accountsData.success ? accountsData.data : [];
 
   const enrichedAccounts = await Promise.all(
     accounts.map(async (acc: any) => {
@@ -28,16 +25,16 @@ export default async function PlatformsPage({
         const pageId = acc.pageId;
 
         if (pageId && pageToken) {
-          const profileRes = await getInstagramProfileAction(pageId, pageToken);
-          const postsRes = await getInstagramPostsAction(
+          const profileRes = await getInstagramProfile(pageId, pageToken);
+          const postsRes = await getInstagramPosts(
             acc.providerAccountId,
             pageToken,
           );
 
           return {
             ...acc,
-            profile: profileRes.success ? profileRes.profile : null,
-            posts: postsRes.success ? (postsRes.posts.data ?? []) : [],
+            profile: profileRes.success ? profileRes.data : null,
+            posts: postsRes.success ? (postsRes.data.data ?? []) : [],
           };
         }
       }

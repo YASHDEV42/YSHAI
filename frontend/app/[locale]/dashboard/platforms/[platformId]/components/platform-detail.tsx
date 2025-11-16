@@ -72,7 +72,8 @@ export function PlatformDetail({
   const totalPages = Math.ceil(posts.length / postsPerPage);
   const startIndex = (currentPage - 1) * postsPerPage;
   const endIndex = startIndex + postsPerPage;
-  const currentPosts = posts.slice(startIndex, endIndex);
+  const currentPosts =
+    posts.length > 0 ? posts.slice(startIndex, endIndex) : [];
   const PlatformIcon = getPlatformIcon(account.provider);
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -82,6 +83,7 @@ export function PlatformDetail({
         "Hello! How can I help you with your content strategy today?",
     },
   ]);
+  console.log("posts:", posts);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const formatDate = (dateString: string) => {

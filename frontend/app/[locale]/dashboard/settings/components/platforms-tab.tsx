@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { PlatformConnectionDialog } from "./platform-connection-dialog";
 import type { TConnectedAccount } from "@/types";
 import { getPlatformIcon } from "@/components/icons/platforms-icons";
-import { disconnectAccount } from "@/lib/accounts-helper";
+import { unlinkAccount } from "@/lib/accounts-helper";
 
 interface PlatformsTabProps {
   text: any;
@@ -34,7 +34,7 @@ export function PlatformsTab({ text, locale, accounts }: PlatformsTabProps) {
   //   const res = await reconnectAccount({ provider, providerAccountId });
   // };
   const handleDisconnect = async (accountId: number) => {
-    await disconnectAccount(accountId);
+    await unlinkAccount(accountId);
   };
 
   return (
