@@ -69,105 +69,150 @@ export class PostsService {
   }
 
   async create(createPostDto: CreatePostDto): Promise<Post> {
-    // Extract and remove relational IDs from DTO
     const {
       authorId,
       teamId,
       socialAccountIds,
       campaignId,
       templateId,
+      status = 'draft',
       scheduledAt,
+      isRecurring = false,
       ...data
-    } = createPostDto as CreatePostDto & { scheduledAt?: string };
-    // Validate required relations
+    } = createPostDto;
+
+    const now = new Date();
+
+    // 1. BASIC VALIDATION
     if (!authorId) {
-      throw new NotFoundException('Author ID is required');
+      throw new BadRequestException('authorId is required');
     }
-    if (!socialAccountIds || socialAccountIds.length === 0) {
+
+    if (!Array.isArray(socialAccountIds) || socialAccountIds.length === 0) {
       throw new BadRequestException('At least one socialAccountId is required');
     }
 
-    // Fetch related entities in parallel
+    // 2. FETCH RELATED ENTITIES (IN PARALLEL)
     const [author, team, campaign, template] = await Promise.all([
       this.em.findOne(User, { id: authorId }),
-      teamId ? this.em.findOne(Team, { id: teamId }) : undefined,
-      campaignId ? this.em.findOne(Campaign, { id: campaignId }) : undefined,
-      templateId ? this.em.findOne(Template, { id: templateId }) : undefined,
+      teamId ? this.em.findOne(Team, { id: teamId }) : null,
+      campaignId ? this.em.findOne(Campaign, { id: campaignId }) : null,
+      templateId ? this.em.findOne(Template, { id: templateId }) : null,
     ]);
 
     if (!author) {
       throw new NotFoundException(`Author with ID "${authorId}" not found`);
     }
-
-    // Validate and parse scheduleAt (API field) and map to entity.scheduledAt
-    const now = new Date();
-    const scheduledAtRaw = scheduledAt ?? (data as any).scheduledAt;
-    const scheduledAtDate = new Date(scheduledAtRaw);
-    if (Number.isNaN(scheduledAtDate.getTime())) {
-      throw new BadRequestException('Invalid scheduledAt');
+    if (teamId && !team) {
+      throw new NotFoundException(`Team with ID "${teamId}" not found`);
+    }
+    if (campaignId && !campaign) {
+      throw new NotFoundException(`Campaign with ID "${campaignId}" not found`);
+    }
+    if (templateId && !template) {
+      throw new NotFoundException(`Template with ID "${templateId}" not found`);
     }
 
-    // Create the Post entity
+    // 3. PARSE & VALIDATE scheduledAt (ONLY FOR SCHEDULED POSTS)
+    let scheduledAtDate: Date | null = null;
+
+    if (status === 'scheduled') {
+      if (!scheduledAt) {
+        throw new BadRequestException(
+          'scheduledAt is required for scheduled posts',
+        );
+      }
+
+      scheduledAtDate = new Date(scheduledAt);
+
+      if (Number.isNaN(scheduledAtDate.getTime())) {
+        throw new BadRequestException('Invalid scheduledAt format');
+      }
+
+      if (scheduledAtDate < now) {
+        throw new BadRequestException('scheduledAt must be a future date');
+      }
+    }
+
+    // 4. VALIDATE SOCIAL ACCOUNTS + OWNERSHIP
+    const uniqueAccountIds = [...new Set(socialAccountIds)];
+
+    const socialAccounts = await this.em.find(SocialAccount, {
+      id: { $in: uniqueAccountIds },
+    });
+
+    if (socialAccounts.length !== uniqueAccountIds.length) {
+      throw new NotFoundException('One or more socialAccountIds are invalid');
+    }
+
+    // enforce ownership
+    for (const acc of socialAccounts) {
+      if (acc.user.id !== authorId) {
+        throw new BadRequestException(
+          `SocialAccount ${acc.id} does not belong to the author`,
+        );
+      }
+    }
+
+    // 5. CREATE POST ENTITY
     const post = this.em.create(Post, {
       ...data,
       author,
       team,
       campaign,
       template,
+      status,
+      isRecurring,
       scheduledAt: scheduledAtDate,
-      status: data.status ?? 'draft',
-      isRecurring: data.isRecurring ?? false,
       createdAt: now,
       updatedAt: now,
     });
 
-    // Save the Post first to get an ID
     await this.em.persistAndFlush(post);
 
-    // Create PostTargets for each selected social account
-    if (socialAccountIds && socialAccountIds.length > 0) {
-      const uniqueIds = Array.from(new Set(socialAccountIds));
-      const accounts = await this.em.find(SocialAccount, {
-        id: { $in: uniqueIds },
-      });
-      if (accounts.length !== uniqueIds.length) {
-        throw new NotFoundException('One or more socialAccountIds are invalid');
-      }
-      for (const acc of accounts) {
-        const target = this.em.create(PostTarget, {
-          post,
-          socialAccount: acc,
-          status: post.status === 'scheduled' ? 'scheduled' : 'pending',
-          scheduledAt:
-            post.status === 'scheduled' ? post.scheduledAt : undefined,
-          attempt: 0,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        });
-        this.em.persist(target);
-      }
-      // Save all PostTargets
-      await this.em.flush();
+    // 6. CREATE POST TARGETS
+    const targets: PostTarget[] = [];
 
-      // If post is scheduled, create jobs for each target now
-      if (post.status === 'scheduled') {
-        const targets = await this.em.find(PostTarget, { post: post.id });
-        for (const t of targets) {
-          const job = this.em.create(Job, {
-            post,
-            target: t,
-            provider: t.socialAccount.provider,
-            attempt: 0,
-            status: 'pending',
-            scheduledAt: post.scheduledAt ?? new Date(),
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          });
-          this.em.persist(job);
-        }
-        await this.em.flush();
-      }
+    for (const acc of socialAccounts) {
+      const target = this.em.create(PostTarget, {
+        post,
+        socialAccount: acc,
+        status: status === 'scheduled' ? 'scheduled' : 'pending',
+        scheduledAt: status === 'scheduled' ? scheduledAtDate : null,
+        attempt: 0,
+        createdAt: now,
+        updatedAt: now,
+      });
+
+      targets.push(target);
+      this.em.persist(target);
     }
+
+    await this.em.flush();
+
+    // 7. CREATE JOBS FOR SCHEDULED POSTS
+    if (status === 'scheduled') {
+      if (!scheduledAtDate) {
+        throw new Error('scheduledAtDate must be defined for scheduled jobs');
+      }
+      for (const target of targets) {
+        const job = this.em.create(Job, {
+          post,
+          target,
+          provider: target.socialAccount.provider,
+          attempt: 0,
+          status: 'pending',
+          scheduledAt: scheduledAtDate,
+          createdAt: now,
+          updatedAt: now,
+        });
+
+        this.em.persist(job);
+      }
+
+      await this.em.flush();
+    }
+
     return post;
   }
 

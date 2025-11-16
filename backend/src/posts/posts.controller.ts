@@ -57,8 +57,8 @@ export class PostsController {
       status: p.status,
       isRecurring: p.isRecurring,
       publishedAt: p.publishedAt ? p.publishedAt.toISOString() : null,
-      createdAt: p.createdAt.toISOString(), // FIXED: DTO expects string
-      updatedAt: p.updatedAt.toISOString(), // FIXED: DTO expects string
+      createdAt: p.createdAt.toISOString(),
+      updatedAt: p.updatedAt.toISOString(),
       scheduledAt: p.scheduledAt ? p.scheduledAt.toISOString() : null,
       authorId: p.author.id,
       teamId: p.team ? p.team.id : null,
@@ -113,6 +113,7 @@ export class PostsController {
     }
     return this.toDto(post);
   }
+
   // endpoint to create
   @Post()
   @ApiOperation({ summary: 'Create a new post' })

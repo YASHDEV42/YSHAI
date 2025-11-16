@@ -25,7 +25,7 @@ export class CreatePostDto {
   })
   @IsString()
   @MinLength(1)
-  contentAr: string;
+  contentAr?: string;
 
   @ApiProperty({
     description: 'English content of the post (optional)',

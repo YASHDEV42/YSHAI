@@ -462,6 +462,16 @@
           "default": "'user'",
           "mappedType": "string"
         },
+        "avatar_url": {
+          "name": "avatar_url",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 255,
+          "mappedType": "string"
+        },
         "timezone": {
           "name": "timezone",
           "type": "varchar(255)",

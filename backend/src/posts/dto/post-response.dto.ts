@@ -38,7 +38,7 @@ export class PostResponseDto {
   id: number;
 
   @ApiProperty()
-  contentAr: string;
+  contentAr?: string;
 
   @ApiProperty({ required: false, nullable: true })
   contentEn?: string | null;

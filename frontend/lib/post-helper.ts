@@ -3,21 +3,15 @@
 import { IMedia, IPost, IPostTarget } from "@/interfaces";
 import { apiRequest, ApiResult } from "./api-requester";
 
-// NOTE: Your IPost type uses `scheduleAt`, backend uses `scheduledAt`.
-// You can either:
-// - Fix IPost → `scheduledAt`
-// - Or map it inside these helpers.
-// For now we assume you've aligned it to `scheduledAt`.
-
 interface CreatePostDto {
-  contentAr: string;
+  contentAr?: string;
   contentEn?: string;
-  scheduleAt: string; // match your frontend; map to backend field if needed
+  scheduledAt?: string;
   status?: "draft" | "scheduled" | "published" | "failed" | "pending_approval";
   isRecurring?: boolean;
   authorId: number;
   teamId?: number;
-  socialAccountIds?: number[];
+  socialAccountIds: number[];
   campaignId?: number;
   templateId?: number;
 }
@@ -34,6 +28,14 @@ interface UpdatePostDto {
   templateId?: number;
 }
 
+export async function create(dto: CreatePostDto): Promise<ApiResult<IPost>> {
+  return apiRequest<IPost, CreatePostDto>({
+    method: "POST",
+    path: "/posts",
+    body: dto,
+    cache: "no-store",
+  });
+}
 export async function list(params: {
   teamId: string;
   campaignId: string;
@@ -52,15 +54,6 @@ export async function getById(id: number): Promise<ApiResult<IPost>> {
   return apiRequest<IPost>({
     method: "GET",
     path: `/posts/${id}`,
-    cache: "no-store",
-  });
-}
-
-export async function create(dto: CreatePostDto): Promise<ApiResult<IPost>> {
-  return apiRequest<IPost, CreatePostDto>({
-    method: "POST",
-    path: "/posts",
-    body: dto,
     cache: "no-store",
   });
 }

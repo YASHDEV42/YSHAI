@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -23,26 +23,50 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Sparkles, X, ImageIcon, Video } from "lucide-react";
+import { Sparkles, X, ImageIcon, Video, Loader2 } from "lucide-react";
 import {
   getPlatformColor,
   getPlatformIcon,
 } from "@/components/icons/platforms-icons";
+import { createPostAction } from "../actions";
+import { IUser, ISocialAccount } from "@/interfaces";
 
 export default function CreatePage({
   text,
   locale,
+  user,
+  accounts,
 }: {
   text: any;
   locale: string;
+  user: IUser; // <--- REAL AUTH USER
+  accounts: ISocialAccount[]; // <--- REAL CONNECTED ACCOUNTS
 }) {
-  const [content, setContent] = useState("");
-  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([
-    "instagram",
-  ]);
+  // --------------------------------------------------
+  // STATE
+  // --------------------------------------------------
+  const [contentAr, setContentAr] = useState("");
+  const [contentEn, setContentEn] = useState("");
+  const [contentTab, setContentTab] = useState<"ar" | "en">("en");
+
+  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [uploadedMedia, setUploadedMedia] = useState<string[]>([]);
   const [scheduleType, setScheduleType] = useState<"now" | "later">("now");
   const [aiPrompt, setAiPrompt] = useState("");
+
+  const [scheduleDate, setScheduleDate] = useState("");
+  const [scheduleTime, setScheduleTime] = useState("");
+
+  const [isPending, startTransition] = useTransition();
+
+  // --------------------------------------------------
+  // Platform List (dynamic from backend)
+  // --------------------------------------------------
+  const platforms = accounts.map((acc) => ({
+    id: acc.provider,
+    name: text.platforms[acc.provider],
+    socialAccountId: acc.id,
+  }));
 
   const handlePlatformToggle = (platformId: string) => {
     setSelectedPlatforms((prev) =>
@@ -66,24 +90,35 @@ export default function CreatePage({
     setUploadedMedia((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const platforms = [
-    {
-      id: "instagram",
-      name: text.platforms.instagram,
-    },
-    {
-      id: "twitter",
-      name: text.platforms.twitter,
-    },
-    {
-      id: "linkedin",
-      name: text.platforms.linkedin,
-    },
-    {
-      id: "tiktok",
-      name: text.platforms.tiktok,
-    },
-  ];
+  // --------------------------------------------------
+  // FORM SUBMISSION
+  // --------------------------------------------------
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+
+    startTransition(async () => {
+      const result = await createPostAction(
+        { success: false, enMessage: "", arMessage: "" },
+        formData,
+      );
+
+      if (result.success) {
+        // Reset form (optional)
+        setContentAr("");
+        setContentEn("");
+        setSelectedPlatforms([]);
+        setUploadedMedia([]);
+        setScheduleDate("");
+        setScheduleTime("");
+      }
+    });
+  };
+
+  // --------------------------------------------------
+  // Unified Preview Component
+  // --------------------------------------------------
+  const currentContent = contentTab === "ar" ? contentAr : contentEn;
 
   const UnifiedPreview = ({
     platform,
@@ -111,7 +146,7 @@ export default function CreatePage({
         </div>
 
         <p className="whitespace-pre-wrap text-sm leading-relaxed mb-3">
-          {content || text.preview.noContent}
+          {currentContent || text.preview.noContent}
         </p>
 
         {uploadedMedia.length > 0 && (
@@ -128,7 +163,7 @@ export default function CreatePage({
                   {uploadedMedia.map((media, index) => (
                     <CarouselItem key={index}>
                       <img
-                        src={media || "/placeholder.svg"}
+                        src={media}
                         alt={`Preview ${index + 1}`}
                         className="w-full rounded-lg object-cover max-h-80"
                       />
@@ -141,307 +176,337 @@ export default function CreatePage({
             )}
           </div>
         )}
-
-        <div className="flex items-center gap-6 mt-4 pt-3 border-t text-xs text-muted-foreground">
-          <button className="hover:text-foreground transition-colors">
-            ❤️ 0
-          </button>
-          <button className="hover:text-foreground transition-colors">
-            💬 0
-          </button>
-          <button className="hover:text-foreground transition-colors">
-            🔄 0
-          </button>
-          <button className="hover:text-foreground transition-colors">
-            📤
-          </button>
-        </div>
       </div>
     );
   };
 
+  // --------------------------------------------------
+  // RENDER
+  // --------------------------------------------------
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8 max-w-7xl">
-        <div className="grid lg:grid-cols-2 gap-6 items-start">
-          {/* Left Side - Editor */}
-          <div className="space-y-4">
-            {/* Platform Selection */}
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base">
-                  {text.platforms.title}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {platforms.map((platform) => {
-                    const PlatformIcon = getPlatformIcon(platform.id);
-                    const isSelected = selectedPlatforms.includes(platform.id);
+        <form onSubmit={handleSubmit}>
+          {/* Hidden required fields (SAFE) */}
+          <input type="hidden" name="authorId" value={user.id} />
 
-                    return (
-                      <Button
-                        key={platform.id}
-                        variant={isSelected ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => handlePlatformToggle(platform.id)}
-                        className={
-                          isSelected ? getPlatformColor(platform.id) : ""
-                        }
-                      >
-                        <PlatformIcon className="w-3.5 h-3.5 mr-1.5" />
-                        <span className="text-xs">{platform.name}</span>
-                      </Button>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
+          {/* Render selected platform account IDs */}
+          {platforms.map((platform) =>
+            selectedPlatforms.includes(platform.id) ? (
+              <input
+                key={platform.id}
+                type="hidden"
+                name="socialAccountIds"
+                value={platform.socialAccountId}
+              />
+            ) : null,
+          )}
 
-            {/* Media Upload */}
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base">{text.media.title}</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="grid grid-cols-2 gap-2">
-                  <label className="flex flex-col items-center justify-center gap-1.5 p-4 rounded-lg border-2 border-dashed hover:border-primary/50 cursor-pointer transition-colors">
-                    <ImageIcon className="w-5 h-5 text-muted-foreground" />
-                    <span className="text-xs text-muted-foreground">
-                      {text.media.uploadImage}
-                    </span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      onChange={handleMediaUpload}
-                      className="hidden"
-                    />
-                  </label>
-                  <label className="flex flex-col items-center justify-center gap-1.5 p-4 rounded-lg border-2 border-dashed hover:border-primary/50 cursor-pointer transition-colors">
-                    <Video className="w-5 h-5 text-muted-foreground" />
-                    <span className="text-xs text-muted-foreground">
-                      {text.media.uploadVideo}
-                    </span>
-                    <input
-                      type="file"
-                      accept="video/*"
-                      onChange={handleMediaUpload}
-                      className="hidden"
-                    />
-                  </label>
-                </div>
+          {/* ScheduledAt (if scheduled) */}
+          {scheduleDate && scheduleTime && (
+            <input
+              type="hidden"
+              name="scheduledAt"
+              value={`${scheduleDate}T${scheduleTime}:00`}
+            />
+          )}
 
-                {uploadedMedia.length > 0 && (
-                  <div className="grid grid-cols-4 gap-2">
-                    {uploadedMedia.map((media, index) => (
-                      <div key={index} className="relative group">
-                        <img
-                          src={media || "/placeholder.svg"}
-                          alt={`Upload ${index + 1}`}
-                          className="w-full h-20 object-cover rounded-lg"
-                        />
-                        <button
-                          onClick={() => removeMedia(index)}
-                          className="absolute top-0.5 right-0.5 p-0.5 bg-background/90 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-            {/* Content Editor */}
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base">
-                  {text.contentEditor.title}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Textarea
-                  placeholder={text.contentEditor.placeholder}
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  className="min-h-[160px] text-sm"
-                />
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground">
-                    {text.contentEditor.characters.replace(
-                      "{count}",
-                      content.length.toString(),
+          {/* Status */}
+          <input
+            type="hidden"
+            name="status"
+            value={scheduleType === "later" ? "scheduled" : "draft"}
+          />
+
+          <div className="grid lg:grid-cols-2 gap-6 items-start">
+            {/* LEFT SIDE — Editor */}
+            <div className="space-y-4">
+              {/* PLATFORM SELECTION */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base">
+                    {text.platforms.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-wrap gap-2">
+                    {platforms.length === 0 && (
+                      <p className="text-xs text-muted-foreground">
+                        Connect a social account to start posting.
+                      </p>
                     )}
-                  </span>
-                  {selectedPlatforms.includes("twitter") &&
-                    content.length > 280 && (
-                      <Badge variant="destructive" className="text-xs">
-                        {text.contentEditor.twitterLimitExceeded}
-                      </Badge>
-                    )}
-                </div>
-              </CardContent>
-            </Card>
 
-            {/* AI Generation */}
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <Sparkles className="w-4 h-4 text-primary" />
-                  {text.aiGenerator.title}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div>
-                  <Label
-                    htmlFor="ai-prompt"
-                    className="text-xs text-muted-foreground"
-                  >
-                    {text.aiGenerator.promptLabel}
-                  </Label>
-                  <Textarea
-                    id="ai-prompt"
-                    placeholder={text.aiGenerator.placeholder}
-                    value={aiPrompt}
-                    onChange={(e) => setAiPrompt(e.target.value)}
-                    className="mt-1.5 min-h-[70px] text-sm"
-                  />
-                </div>
-                <Button
-                  size="sm"
-                  className="w-full cursor-not-allowed"
-                  disabled
-                >
-                  <Sparkles className="w-3.5 h-3.5 mr-1.5" />
-                  {text.aiGenerator.generateButton}
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Right Side - Preview */}
-          <div className="md:sticky md:top-6 md:self-start">
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base">
-                  {text.preview.title}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Tabs
-                  defaultValue={selectedPlatforms[0] || "instagram"}
-                  className="w-full"
-                >
-                  <TabsList className="grid w-full grid-cols-4 h-9">
                     {platforms.map((platform) => {
                       const PlatformIcon = getPlatformIcon(platform.id);
+                      const isSelected = selectedPlatforms.includes(
+                        platform.id,
+                      );
+
                       return (
-                        <TabsTrigger
+                        <Button
                           key={platform.id}
-                          value={platform.id}
-                          disabled={!selectedPlatforms.includes(platform.id)}
-                          className="text-xs gap-1"
+                          type="button"
+                          variant={isSelected ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => handlePlatformToggle(platform.id)}
+                          className={
+                            isSelected ? getPlatformColor(platform.id) : ""
+                          }
                         >
-                          <PlatformIcon className="w-3 h-3" />
-                          <span className="hidden sm:inline">
-                            {platform.name.split(" ")[0]}
-                          </span>
-                        </TabsTrigger>
+                          <PlatformIcon className="w-3.5 h-3.5 mr-1.5" />
+                          <span className="text-xs">{platform.name}</span>
+                        </Button>
                       );
                     })}
-                  </TabsList>
+                  </div>
+                </CardContent>
+              </Card>
 
-                  {platforms.map((platform) => (
-                    <TabsContent
-                      key={platform.id}
-                      value={platform.id}
-                      className="mt-4"
-                    >
-                      <UnifiedPreview platform={platform} />
+              {/* MEDIA UPLOAD */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base">
+                    {text.media.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="grid grid-cols-2 gap-2">
+                    <label className="flex flex-col items-center justify-center gap-1.5 p-4 rounded-lg border-2 border-dashed hover:border-primary/50 cursor-pointer">
+                      <ImageIcon className="w-5 h-5 text-muted-foreground" />
+                      <span className="text-xs">{text.media.uploadImage}</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={handleMediaUpload}
+                        className="hidden"
+                      />
+                    </label>
+
+                    <label className="flex flex-col items-center justify-center gap-1.5 p-4 rounded-lg border-2 border-dashed hover:border-primary/50 cursor-pointer">
+                      <Video className="w-5 h-5 text-muted-foreground" />
+                      <span className="text-xs">{text.media.uploadVideo}</span>
+                      <input
+                        type="file"
+                        accept="video/*"
+                        onChange={handleMediaUpload}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+
+                  {uploadedMedia.length > 0 && (
+                    <div className="grid grid-cols-4 gap-2">
+                      {uploadedMedia.map((media, index) => (
+                        <div key={index} className="relative group">
+                          <img
+                            src={media}
+                            className="w-full h-20 object-cover rounded-lg"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeMedia(index)}
+                            className="absolute top-0.5 right-0.5 p-0.5 bg-background/90 rounded-full opacity-0 group-hover:opacity-100"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* CONTENT EDITOR */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>{text.contentEditor.title}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <Tabs
+                    value={contentTab}
+                    onValueChange={(v) => setContentTab(v as any)}
+                  >
+                    <TabsList className="grid grid-cols-2">
+                      <TabsTrigger value="en">English</TabsTrigger>
+                      <TabsTrigger value="ar">العربية</TabsTrigger>
+                    </TabsList>
+
+                    <TabsContent value="en" className="mt-3">
+                      <Textarea
+                        name="contentEn"
+                        value={contentEn}
+                        onChange={(e) => setContentEn(e.target.value)}
+                        placeholder={text.contentEditor.placeholder}
+                        className="min-h-[160px]"
+                      />
+                      <div className="flex items-center justify-between text-xs mt-2">
+                        <span className="text-muted-foreground">
+                          {contentEn.length} characters
+                        </span>
+                        {selectedPlatforms.includes("twitter") &&
+                          contentEn.length > 280 && (
+                            <Badge variant="destructive" className="text-xs">
+                              {text.contentEditor.twitterLimitExceeded}
+                            </Badge>
+                          )}
+                      </div>
                     </TabsContent>
-                  ))}
-                </Tabs>
-              </CardContent>
-            </Card>
-            {/* Scheduling */}
-            <Card className="mt-3">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base">
-                  {text.schedule.title}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Tabs
-                  value={scheduleType}
-                  onValueChange={(v) => setScheduleType(v as "now" | "later")}
-                >
-                  <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="now" className="text-xs">
-                      {text.schedule.publishNowTab}
-                    </TabsTrigger>
-                    <TabsTrigger value="later" className="text-xs">
-                      {text.schedule.scheduleLaterTab}
-                    </TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="now" className="space-y-3 mt-3">
-                    <p className="text-xs text-muted-foreground">
-                      {text.schedule.publishNowDescription}
-                    </p>
-                  </TabsContent>
-                  <TabsContent value="later" className="space-y-3 mt-3">
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <Label htmlFor="schedule-date" className="text-xs">
-                          {text.schedule.dateLabel}
-                        </Label>
-                        <Input
-                          id="schedule-date"
-                          type="date"
-                          className="mt-1.5 h-9 text-sm"
-                        />
+
+                    <TabsContent value="ar" className="mt-3">
+                      <Textarea
+                        name="contentAr"
+                        value={contentAr}
+                        onChange={(e) => setContentAr(e.target.value)}
+                        placeholder="اكتب المحتوى..."
+                        dir="rtl"
+                        className="min-h-[160px]"
+                      />
+                      <div className="flex items-center justify-between text-xs mt-2">
+                        <span className="text-muted-foreground">
+                          {contentAr.length} حرف
+                        </span>
                       </div>
-                      <div>
-                        <Label htmlFor="schedule-time" className="text-xs">
-                          {text.schedule.timeLabel}
-                        </Label>
-                        <Input
-                          id="schedule-time"
-                          type="time"
-                          className="mt-1.5 h-9 text-sm"
-                        />
+                    </TabsContent>
+                  </Tabs>
+                </CardContent>
+              </Card>
+
+              {/* AI GENERATION (Disabled for now) */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>{text.aiGenerator.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Textarea
+                    disabled
+                    placeholder={text.aiGenerator.placeholder}
+                  />
+                  <Button disabled className="mt-2 w-full">
+                    <Sparkles className="w-3 h-3 mr-2" />{" "}
+                    {text.aiGenerator.generateButton}
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* RIGHT SIDE — PREVIEW & SCHEDULE */}
+            <div className="md:sticky md:top-6 md:self-start">
+              {/* Preview */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>{text.preview.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Tabs defaultValue={selectedPlatforms[0]} className="w-full">
+                    <TabsList className="grid grid-cols-4">
+                      {platforms.map((p) => {
+                        const Icon = getPlatformIcon(p.id);
+                        return (
+                          <TabsTrigger
+                            key={p.id}
+                            value={p.id}
+                            disabled={!selectedPlatforms.includes(p.id)}
+                            className="text-xs"
+                          >
+                            <Icon className="w-3 h-3" />
+                            {p.name.split(" ")[0]}
+                          </TabsTrigger>
+                        );
+                      })}
+                    </TabsList>
+
+                    {platforms.map((p) => (
+                      <TabsContent key={p.id} value={p.id}>
+                        <UnifiedPreview platform={p} />
+                      </TabsContent>
+                    ))}
+                  </Tabs>
+                </CardContent>
+              </Card>
+
+              {/* SCHEDULING */}
+              <Card className="mt-3">
+                <CardHeader>
+                  <CardTitle>{text.schedule.title}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <Tabs
+                    value={scheduleType}
+                    onValueChange={(v) => setScheduleType(v as any)}
+                  >
+                    <TabsList className="grid grid-cols-2">
+                      <TabsTrigger value="now">
+                        {text.schedule.publishNowTab}
+                      </TabsTrigger>
+                      <TabsTrigger value="later">
+                        {text.schedule.scheduleLaterTab}
+                      </TabsTrigger>
+                    </TabsList>
+
+                    {/* Publish now → Draft */}
+                    <TabsContent value="now">
+                      <p className="text-xs text-muted-foreground">
+                        {text.schedule.publishNowDescription}
+                      </p>
+                    </TabsContent>
+
+                    {/* Schedule later */}
+                    <TabsContent value="later" className="space-y-3">
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <Label>{text.schedule.dateLabel}</Label>
+                          <Input
+                            type="date"
+                            value={scheduleDate}
+                            onChange={(e) => setScheduleDate(e.target.value)}
+                            required={scheduleType === "later"}
+                          />
+                        </div>
+
+                        <div>
+                          <Label>{text.schedule.timeLabel}</Label>
+                          <Input
+                            type="time"
+                            value={scheduleTime}
+                            onChange={(e) => setScheduleTime(e.target.value)}
+                            required={scheduleType === "later"}
+                          />
+                        </div>
                       </div>
-                    </div>
-                    <div>
-                      <Label htmlFor="timezone" className="text-xs">
-                        {text.schedule.timezoneLabel}
-                      </Label>
-                      <Select defaultValue="riyadh">
-                        <SelectTrigger
-                          id="timezone"
-                          className="mt-1.5 h-9 text-sm"
-                        >
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="riyadh">
-                            {text.schedule.timezones.riyadh}
-                          </SelectItem>
-                          <SelectItem value="dubai">
-                            {text.schedule.timezones.dubai}
-                          </SelectItem>
-                          <SelectItem value="cairo">
-                            {text.schedule.timezones.cairo}
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </TabsContent>
-                </Tabs>
-              </CardContent>
-            </Card>
+
+                      {scheduleDate && scheduleTime && (
+                        <input
+                          type="hidden"
+                          name="scheduledAt"
+                          value={`${scheduleDate}T${scheduleTime}:00`}
+                        />
+                      )}
+                    </TabsContent>
+                  </Tabs>
+
+                  {/* Submit */}
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={isPending || selectedPlatforms.length === 0}
+                  >
+                    {isPending ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        {text.schedule.creating}
+                      </>
+                    ) : scheduleType === "now" ? (
+                      text.schedule.publishNowButton
+                    ) : (
+                      text.schedule.scheduleButton
+                    )}
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   );

@@ -29,7 +29,7 @@ export class Post {
   team?: Team;
 
   @Property()
-  contentAr!: string;
+  contentAr?: string;
 
   @Property({ nullable: true })
   contentEn?: string;
