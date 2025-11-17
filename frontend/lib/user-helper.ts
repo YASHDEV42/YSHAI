@@ -41,8 +41,8 @@ export async function updateProfile(
   dto: UpdateUserDto,
 ): Promise<ApiResult<IUser>> {
   const result = await apiRequest<IUser, UpdateUserDto>({
-    method: "PUT",
-    path: "/users/me",
+    method: "PATCH",
+    path: "/auth/profile",
     body: dto,
     cache: "no-store",
   });

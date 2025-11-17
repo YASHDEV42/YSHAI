@@ -51,7 +51,7 @@ export class TagsController {
       name: t.name,
       normalized: t.normalized,
       metadata: t.metadata ?? null,
-      createdAt: t.createdAt.toISOString(), // FIXED: DTO expects string
+      createdAt: t.createdAt.toISOString(),
     };
   }
 

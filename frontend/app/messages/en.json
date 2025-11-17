@@ -556,5 +556,44 @@
       "sampleResponse2": "Your recent posts show strong performance! Your engagement rate has increased by 12% this month. Posts with images perform 45% better than text-only posts. Consider adding more visual content to maintain this growth.",
       "sampleResponse3": "Here are some content ideas tailored to your audience: 1) Behind-the-scenes content about your workflow, 2) Tips and tricks related to your industry, 3) User-generated content showcasing customer success stories. These types of posts typically generate 2x more engagement."
     }
+  },
+  "ForgotPasswordPage": {
+    "title": "Forgot your password?",
+    "subtitle": "Enter your email and we'll send you a reset link",
+    "emailLabel": "Email",
+    "emailPlaceholder": "ahmed@example.com",
+    "emailRequired": "Email is required",
+    "emailInvalid": "Please enter a valid email",
+    "sendResetLink": "Send Reset Link",
+    "sendingLink": "Sending...",
+    "backToLogin": "Back to Login",
+    "success": "Reset link sent! Check your email.",
+    "needHelp": "Need help?",
+    "contactSupport": "Contact support"
+  },
+  "ResetPasswordPage": {
+    "title": "Reset your password",
+    "subtitle": "Enter your new password below",
+    "newPasswordLabel": "New Password",
+    "newPasswordPlaceholder": "••••••••",
+    "confirmPasswordLabel": "Confirm Password",
+    "confirmPasswordPlaceholder": "••••••••",
+    "passwordRequired": "Password is required",
+    "passwordTooShort": "Password must be at least 8 characters",
+    "passwordsNotMatch": "Passwords do not match",
+    "resetPassword": "Reset Password",
+    "resettingPassword": "Resetting...",
+    "success": "Password reset successfully! Redirecting to login...",
+    "invalidToken": "Invalid or expired reset link",
+    "backToLogin": "Back to Login"
+  },
+  "VerifyEmailPage": {
+    "verifying": "Verifying your email...",
+    "success": "Email verified successfully!",
+    "successMessage": "Your email has been verified. You can now sign in to your account.",
+    "error": "Verification failed",
+    "errorMessage": "The verification link is invalid or has expired. Please request a new verification email.",
+    "goToLogin": "Go to Login",
+    "resendVerification": "Resend Verification Email"
   }
 }

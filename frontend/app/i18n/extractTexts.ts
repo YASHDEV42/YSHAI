@@ -63,6 +63,21 @@ export async function extractLoginPageText(locale: string) {
   return messages.LoginPage;
 }
 
+export async function extractForgotPasswordPageText(locale: string) {
+  const messages = await getMessages({ locale });
+  return messages.ForgotPasswordPage;
+}
+
+export async function extractResetPasswordPageText(locale: string) {
+  const messages = await getMessages({ locale });
+  return messages.ResetPasswordPage;
+}
+
+export async function extractVerifyEmailPageText(locale: string) {
+  const messages = await getMessages({ locale });
+  return messages.VerifyEmailPage;
+}
+
 export async function extractPlatformsPageText(locale: string) {
   const messages = await getMessages({ locale });
   return {
