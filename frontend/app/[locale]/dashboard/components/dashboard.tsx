@@ -25,6 +25,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import type { IDashboardStats } from "@/lib/analytics-helper";
+import type { ISocialAccount, IPost } from "@/interfaces";
 
 export interface DashboardPageText {
   welcomeMessage: string;
@@ -75,99 +77,118 @@ export interface DashboardPageText {
 interface DashboardPageProps {
   text: DashboardPageText;
   locale: string;
+  stats?: IDashboardStats;
+  accounts: ISocialAccount[];
+  recentPosts: IPost[];
 }
 
-export default function DashboardPage({ text, locale }: DashboardPageProps) {
+export default function DashboardPage({
+  text,
+  locale,
+  stats,
+  accounts,
+  recentPosts,
+}: DashboardPageProps) {
   const statsRef = useRef<HTMLDivElement>(null);
   const activityRef = useRef<HTMLDivElement>(null);
   const quickActionsRef = useRef<HTMLDivElement>(null);
 
-  const stats = [
+  const dashboardStats = [
     {
       title: text.stats.scheduledPosts,
-      value: "24",
-      change: "+12%",
+      value: stats?.scheduledPosts.toString() ?? "0",
+      change: stats?.scheduledChange
+        ? `${stats.scheduledChange > 0 ? "+" : ""}${stats.scheduledChange}%`
+        : "+0%",
       icon: Clock,
-      trend: "up",
+      trend: "up" as const,
     },
     {
       title: text.stats.publishedThisWeek,
-      value: "18",
-      change: "+8%",
+      value: stats?.publishedThisWeek.toString() ?? "0",
+      change: stats?.publishedChange
+        ? `${stats.publishedChange > 0 ? "+" : ""}${stats.publishedChange}%`
+        : "+0%",
       icon: CheckCircle2,
-      trend: "up",
+      trend:
+        stats?.publishedChange && stats.publishedChange > 0
+          ? ("up" as const)
+          : ("down" as const),
     },
     {
       title: text.stats.connectedAccounts,
-      value: "4",
-      change: "+1",
+      value: accounts.length.toString(),
+      change: stats?.accountsChange ? `+${stats.accountsChange}` : "+0",
       icon: Users,
-      trend: "up",
+      trend: "up" as const,
     },
     {
       title: text.stats.avgEngagement,
-      value: "3.2%",
-      change: "+0.5%",
+      value: stats?.avgEngagement ? `${stats.avgEngagement.toFixed(1)}%` : "0%",
+      change: stats?.engagementChange
+        ? `${stats.engagementChange > 0 ? "+" : ""}${stats.engagementChange.toFixed(1)}%`
+        : "+0%",
       icon: TrendingUp,
-      trend: "up",
+      trend:
+        stats?.engagementChange && stats.engagementChange > 0
+          ? ("up" as const)
+          : ("down" as const),
     },
   ];
 
-  // Recent activity items — content is dynamic, but status labels are translated
-  const recentActivity = [
-    {
-      id: 1,
-      type: "published",
-      platform: "twitter",
-      content: "New product launch announcement in Arabic",
-      time: "2 hours ago",
-      status: "success" as const,
-    },
-    {
-      id: 2,
-      type: "scheduled",
-      platform: "instagram",
-      content: "Behind the scenes content for tomorrow",
-      time: "4 hours ago",
-      status: "pending" as const,
-    },
-    {
-      id: 3,
-      type: "published",
-      platform: "linkedin",
-      content: "Industry insights and market analysis",
-      time: "6 hours ago",
-      status: "success" as const,
-    },
-    {
-      id: 4,
-      type: "failed",
-      platform: "tiktok",
-      content: "Video content upload failed",
-      time: "8 hours ago",
-      status: "error" as const,
-    },
-  ];
+  const recentActivity = recentPosts.slice(0, 4).map((post, index) => ({
+    id: post.id,
+    type:
+      post.status === "published"
+        ? "published"
+        : post.status === "scheduled"
+          ? "scheduled"
+          : "failed",
+    platform: post.targets?.[0]?.provider ?? "unknown",
+    content: post.contentEn || post.contentAr || "No content",
+    time: getTimeAgo(post.createdAt),
+    status:
+      post.status === "published"
+        ? ("success" as const)
+        : post.status === "scheduled"
+          ? ("pending" as const)
+          : ("error" as const),
+  }));
 
   const connectedPlatforms = [
-    { name: "Twitter", icon: Twitter, connected: true, color: "text-blue-400" },
+    {
+      name: "Twitter",
+      icon: Twitter,
+      connected: accounts.some((a) => a.provider === "x"),
+      color: "text-blue-400",
+      provider: "x",
+    },
     {
       name: "Instagram",
       icon: Instagram,
-      connected: true,
+      connected: accounts.some((a) => a.provider === "instagram"),
       color: "text-pink-400",
+      provider: "instagram",
     },
     {
       name: "LinkedIn",
       icon: Linkedin,
-      connected: true,
+      connected: accounts.some((a) => a.provider === "linkedin"),
       color: "text-blue-600",
+      provider: "linkedin",
     },
-    { name: "TikTok", icon: Music2, connected: true, color: "text-gray-400" },
+    {
+      name: "TikTok",
+      icon: Music2,
+      connected: accounts.some((a) => a.provider === "tiktok"),
+      color: "text-gray-400",
+      provider: "tiktok",
+    },
   ];
 
   const getPlatformIcon = (platform: string) => {
     switch (platform) {
+      case "x":
       case "twitter":
         return <Twitter className="size-4" />;
       case "instagram":
@@ -224,7 +245,7 @@ export default function DashboardPage({ text, locale }: DashboardPageProps) {
         ref={statsRef}
         className="mb-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4"
       >
-        {stats.map((stat, index) => (
+        {dashboardStats.map((stat, index) => (
           <Card key={index} className="stat-card border-border bg-card">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
@@ -259,34 +280,40 @@ export default function DashboardPage({ text, locale }: DashboardPageProps) {
           </CardHeader>
           <CardContent>
             <div ref={activityRef} className="space-y-4">
-              {recentActivity.map((activity) => (
-                <div
-                  key={activity.id}
-                  className="activity-item flex items-start gap-4 rounded-lg border border-border bg-card p-4 transition-colors hover:bg-muted"
-                >
-                  <div className="flex size-10 items-center justify-center rounded-lg bg-muted">
-                    {getPlatformIcon(activity.platform)}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <p className="font-medium text-sm text-foreground">
-                        {activity.content}
-                      </p>
-                      {getStatusBadge(activity.status)}
+              {recentActivity.length > 0 ? (
+                recentActivity.map((activity) => (
+                  <div
+                    key={activity.id}
+                    className="activity-item flex items-start gap-4 rounded-lg border border-border bg-card p-4 transition-colors hover:bg-muted"
+                  >
+                    <div className="flex size-10 items-center justify-center rounded-lg bg-muted">
+                      {getPlatformIcon(activity.platform)}
                     </div>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      {activity.time}
-                    </p>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between">
+                        <p className="font-medium text-sm text-foreground line-clamp-2">
+                          {activity.content}
+                        </p>
+                        {getStatusBadge(activity.status)}
+                      </div>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {activity.time}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p className="text-center text-sm text-muted-foreground py-8">
+                  No recent activity yet
+                </p>
+              )}
             </div>
             <Button
               variant="ghost"
               className="mt-4 w-full text-primary hover:bg-primary/10 hover:text-primary"
               asChild
             >
-              <Link href="/dashboard/activity">
+              <Link href="/dashboard/platforms">
                 {text.recentActivity.viewAll}
               </Link>
             </Button>
@@ -389,4 +416,20 @@ export default function DashboardPage({ text, locale }: DashboardPageProps) {
       </div>
     </div>
   );
+}
+
+function getTimeAgo(dateString: string): string {
+  const date = new Date(dateString);
+  const now = new Date();
+  const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+  if (seconds < 60) return "just now";
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `${days} day${days > 1 ? "s" : ""} ago`;
+  const weeks = Math.floor(days / 7);
+  return `${weeks} week${weeks > 1 ? "s" : ""} ago`;
 }

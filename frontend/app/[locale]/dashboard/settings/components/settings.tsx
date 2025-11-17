@@ -1,31 +1,30 @@
 "use client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import {
-  User,
-  Bell,
-  CreditCard,
-  Twitter,
-  Instagram,
-  Linkedin,
-  Music2,
-  CircleFadingPlus,
-} from "lucide-react";
+import { User, Bell, CreditCard, CircleFadingPlus } from "lucide-react";
 import { BillingTab } from "./billing-tab";
 import { NotificationsTab } from "./notifications-tab";
 import { PlatformsTab } from "./platforms-tab";
 import { ProfileTab } from "./profile-tab";
 import { TConnectedAccount, TUser } from "@/types";
+import type { IPlan, IInvoice, SubscriptionWithPlan } from "@/interfaces";
+
 export default function SettingsClient({
   text,
   locale,
   user,
   accounts,
+  subscription,
+  plans,
+  invoices,
 }: {
   text: any;
   locale: string;
   user: TUser | undefined;
   accounts: TConnectedAccount[];
+  subscription?: SubscriptionWithPlan;
+  plans: IPlan[];
+  invoices: IInvoice[];
 }) {
   console.log("accounts in SettingsClient:", accounts);
   const dir = locale === "ar" ? "rtl" : "ltr";
@@ -77,7 +76,12 @@ export default function SettingsClient({
 
         {/* Billing Tab */}
         <TabsContent value="billing" className="space-y-6">
-          <BillingTab text={text} />
+          <BillingTab
+            text={text}
+            subscription={subscription}
+            plans={plans}
+            invoices={invoices}
+          />
         </TabsContent>
       </Tabs>
     </div>

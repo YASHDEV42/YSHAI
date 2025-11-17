@@ -1,6 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
+import type { ValidationErrorDto, ErrorResponseDto } from "@/interfaces";
 
 const APP_URL = process.env.NEXT_PUBLIC_PROTECTED_API_KEY ?? "";
 
@@ -16,6 +17,8 @@ export type ApiError = {
   success: false;
   status: number;
   error: string;
+  validationErrors?: ValidationErrorDto["errors"];
+  errorCode?: string;
 };
 
 export type ApiResult<T> = ApiSuccess<T> | ApiError;
@@ -50,7 +53,7 @@ export async function apiRequest<TResponse, TBody = any>(
     };
   }
 
-  //  BUILD QUERY STRING
+  // BUILD QUERY STRING
   const qs =
     query &&
     Object.entries(query)
@@ -62,7 +65,7 @@ export async function apiRequest<TResponse, TBody = any>(
 
   const url = `${APP_URL}${path}${qs ? `?${qs}` : ""}`;
 
-  // 3️⃣ BUILD REQUEST INIT
+  // BUILD REQUEST INIT
   const init: RequestInit & {
     next?: { revalidate?: number; tags?: string[] };
   } = {
@@ -96,7 +99,7 @@ export async function apiRequest<TResponse, TBody = any>(
     init.body = JSON.stringify(body);
   }
 
-  // 4️⃣ SEND REQUEST TO NEXT.JS PROXY
+  // SEND REQUEST TO NEXT.JS PROXY
   console.log(`[API] ${method} ${url}`);
   let res: Response;
   try {
@@ -110,7 +113,7 @@ export async function apiRequest<TResponse, TBody = any>(
     };
   }
 
-  // 5️⃣ PARSE JSON (if exists)
+  // PARSE JSON (if exists)
   const rawText = await res.text();
   let json = undefined;
   try {
@@ -120,6 +123,17 @@ export async function apiRequest<TResponse, TBody = any>(
   }
 
   if (!res.ok) {
+    // Check if this is a validation error (400 with errors array)
+    if (res.status === 400 && json && Array.isArray(json.errors)) {
+      return {
+        success: false,
+        status: res.status,
+        error: json.message || "Validation failed",
+        validationErrors: json.errors,
+      };
+    }
+
+    // Standard error response
     const message =
       (json && (json.message || json.error)) ||
       rawText ||
@@ -129,6 +143,7 @@ export async function apiRequest<TResponse, TBody = any>(
       success: false,
       status: res.status,
       error: message,
+      errorCode: json?.error,
     };
   }
 

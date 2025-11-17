@@ -4,6 +4,8 @@ import { extractCreatePageText } from "@/app/i18n/extractTexts";
 import { listMyAccounts } from "@/lib/accounts-helper";
 import { me } from "@/lib/user-helper";
 import { redirect } from "next/navigation";
+import { listTags } from "@/lib/tag-helper";
+import { listCampaigns } from "@/lib/campaign-helper";
 
 export default async function CreatePageRoute({
   params,
@@ -21,8 +23,21 @@ export default async function CreatePageRoute({
   const accountsRes = await listMyAccounts();
   const accounts = accountsRes.success ? accountsRes.data : [];
 
+  const tagsRes = await listTags();
+  const tags = tagsRes.success ? tagsRes.data : [];
+
+  const campaignsRes = await listCampaigns();
+  const campaigns = campaignsRes.success ? campaignsRes.data : [];
+
   const text = await extractCreatePageText(locale);
   return (
-    <CreatePage text={text} locale={locale} user={user} accounts={accounts} />
+    <CreatePage
+      text={text}
+      locale={locale}
+      user={user}
+      accounts={accounts}
+      tags={tags}
+      campaigns={campaigns}
+    />
   );
 }

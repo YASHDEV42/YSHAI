@@ -3,6 +3,7 @@ import SettingsClient from "./components/settings";
 import { TConnectedAccount, TUser } from "@/types";
 import { extractSettingsPageText } from "@/app/i18n/extractTexts";
 import { me } from "@/lib/user-helper";
+import { fetchSubscriptionData } from "./actions";
 
 export default async function SettingsPage({
   params,
@@ -14,8 +15,12 @@ export default async function SettingsPage({
 
   const text = await extractSettingsPageText(locale);
 
-  const response = await me();
-  const user = response.success ? (response.data as TUser) : undefined;
+  const [userResponse, subscriptionData] = await Promise.all([
+    me(),
+    fetchSubscriptionData(),
+  ]);
+
+  const user = userResponse.success ? (userResponse.data as TUser) : undefined;
   const dataAccounts = {
     socialAccounts: [] as TConnectedAccount[],
   };
@@ -30,6 +35,9 @@ export default async function SettingsPage({
       text={text}
       user={user}
       accounts={dataAccounts.socialAccounts || []}
+      subscription={subscriptionData.subscription}
+      plans={subscriptionData.plans}
+      invoices={subscriptionData.invoices}
     />
   );
 }

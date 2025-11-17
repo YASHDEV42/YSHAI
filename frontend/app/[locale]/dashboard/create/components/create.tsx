@@ -16,24 +16,45 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Sparkles, X, ImageIcon, Video, Loader2 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Sparkles,
+  X,
+  ImageIcon,
+  Video,
+  Loader2,
+  Tag,
+  FolderOpen,
+} from "lucide-react";
 import {
   getPlatformColor,
   getPlatformIcon,
 } from "@/components/icons/platforms-icons";
 import { createPostAction } from "../actions";
-import { IUser, ISocialAccount } from "@/interfaces";
+import { IUser, ISocialAccount, ITag } from "@/interfaces";
+import { ICampaign } from "@/lib/campaign-helper";
+import { useToast } from "@/hooks/use-toast";
 
 export default function CreatePage({
   text,
   locale,
   user,
   accounts,
+  tags,
+  campaigns,
 }: {
   text: any;
   locale: string;
   user: IUser;
   accounts: ISocialAccount[];
+  tags: ITag[];
+  campaigns: ICampaign[];
 }) {
   // ---------------------------------------------------------
   // STATE
@@ -52,6 +73,11 @@ export default function CreatePage({
 
   const [aiPrompt, setAiPrompt] = useState("");
   const [isPending, startTransition] = useTransition();
+
+  const [selectedCampaign, setSelectedCampaign] = useState<string>("");
+  const [selectedTags, setSelectedTags] = useState<number[]>([]);
+
+  const { toast } = useToast();
 
   // ---------------------------------------------------------
   // PLATFORM LIST (from backend)
@@ -91,6 +117,14 @@ export default function CreatePage({
     setFiles((prev) => prev.filter((_, i) => i !== index)); // Remove actual file too
   };
 
+  const handleTagToggle = (tagId: number) => {
+    setSelectedTags((prev) =>
+      prev.includes(tagId)
+        ? prev.filter((id) => id !== tagId)
+        : [...prev, tagId],
+    );
+  };
+
   // ---------------------------------------------------------
   // FORM SUBMISSION
   // ---------------------------------------------------------
@@ -107,6 +141,27 @@ export default function CreatePage({
         { success: false, enMessage: "", arMessage: "" },
         form,
       );
+
+      if (result.success) {
+        toast({
+          title: locale === "ar" ? "نجح" : "Success",
+          description: locale === "ar" ? result.arMessage : result.enMessage,
+        });
+        // Reset form
+        setContentAr("");
+        setContentEn("");
+        setUploadedMedia([]);
+        setFiles([]);
+        setSelectedPlatforms([]);
+        setSelectedCampaign("");
+        setSelectedTags([]);
+      } else {
+        toast({
+          title: locale === "ar" ? "خطأ" : "Error",
+          description: locale === "ar" ? result.arMessage : result.enMessage,
+          variant: "destructive",
+        });
+      }
     });
   };
 
@@ -146,7 +201,8 @@ export default function CreatePage({
           <div className="mt-3">
             {uploadedMedia.length === 1 ? (
               <img
-                src={uploadedMedia[0]}
+                src={uploadedMedia[0] || "/placeholder.svg"}
+                alt="Post media"
                 className="w-full rounded-lg object-cover max-h-80"
               />
             ) : (
@@ -155,7 +211,8 @@ export default function CreatePage({
                   {uploadedMedia.map((m, i) => (
                     <CarouselItem key={i}>
                       <img
-                        src={m}
+                        src={m || "/placeholder.svg"}
+                        alt={`Post media ${i + 1}`}
                         className="w-full rounded-lg object-cover max-h-80"
                       />
                     </CarouselItem>
@@ -194,7 +251,14 @@ export default function CreatePage({
             />
           )}
 
-          {/* SELECTED SOCIAL ACCOUNTS */}
+          {selectedCampaign && (
+            <input type="hidden" name="campaignId" value={selectedCampaign} />
+          )}
+
+          {selectedTags.map((tagId) => (
+            <input key={tagId} type="hidden" name="tagIds" value={tagId} />
+          ))}
+
           {platforms.map((p) =>
             selectedPlatforms.includes(p.id) ? (
               <input
@@ -237,6 +301,76 @@ export default function CreatePage({
                 </CardContent>
               </Card>
 
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FolderOpen className="w-4 h-4" />
+                    {text.campaigns.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Select
+                    value={selectedCampaign}
+                    onValueChange={setSelectedCampaign}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={text.campaigns.placeholder} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {campaigns.length === 0 ? (
+                        <div className="p-2 text-sm text-muted-foreground text-center">
+                          {text.campaigns.noCampaigns}
+                        </div>
+                      ) : (
+                        campaigns
+                          .filter((c) => c.isActive)
+                          .map((campaign) => (
+                            <SelectItem
+                              key={campaign.id}
+                              value={campaign.id.toString()}
+                            >
+                              {campaign.name}
+                            </SelectItem>
+                          ))
+                      )}
+                    </SelectContent>
+                  </Select>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Tag className="w-4 h-4" />
+                    {text.tags.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {tags.length === 0 ? (
+                    <p className="text-sm text-muted-foreground text-center py-4">
+                      {text.tags.noTags}
+                    </p>
+                  ) : (
+                    <div className="flex flex-wrap gap-2">
+                      {tags.map((tag) => {
+                        const isSelected = selectedTags.includes(tag.id);
+                        return (
+                          <Badge
+                            key={tag.id}
+                            variant={isSelected ? "default" : "outline"}
+                            className="cursor-pointer hover:bg-primary/80"
+                            onClick={() => handleTagToggle(tag.id)}
+                          >
+                            {tag.name}
+                            {isSelected && <X className="w-3 h-3 ml-1" />}
+                          </Badge>
+                        );
+                      })}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
               {/* MEDIA UPLOAD */}
               <Card>
                 <CardHeader>
@@ -244,7 +378,7 @@ export default function CreatePage({
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="grid grid-cols-2 gap-2">
-                    <label className="border-dashed border-2 rounded-lg p-4 text-center cursor-pointer">
+                    <label className="border-dashed border-2 rounded-lg p-4 text-center cursor-pointer hover:border-primary transition-colors">
                       <ImageIcon className="w-5 h-5 mx-auto text-muted-foreground" />
                       <span className="text-xs">{text.media.uploadImage}</span>
                       <input
@@ -256,7 +390,7 @@ export default function CreatePage({
                       />
                     </label>
 
-                    <label className="border-dashed border-2 rounded-lg p-4 text-center cursor-pointer">
+                    <label className="border-dashed border-2 rounded-lg p-4 text-center cursor-pointer hover:border-primary transition-colors">
                       <Video className="w-5 h-5 mx-auto text-muted-foreground" />
                       <span className="text-xs">{text.media.uploadVideo}</span>
                       <input
@@ -274,13 +408,14 @@ export default function CreatePage({
                       {uploadedMedia.map((media, i) => (
                         <div key={i} className="relative group">
                           <img
-                            src={media}
+                            src={media || "/placeholder.svg"}
+                            alt={`Upload ${i + 1}`}
                             className="h-20 w-full object-cover rounded-lg"
                           />
                           <button
                             type="button"
                             onClick={() => removeMedia(i)}
-                            className="absolute top-1 right-1 bg-background/90 p-1 rounded-full opacity-0 group-hover:opacity-100"
+                            className="absolute top-1 right-1 bg-background/90 p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                           >
                             <X className="w-3 h-3" />
                           </button>
@@ -312,6 +447,7 @@ export default function CreatePage({
                         value={contentEn}
                         onChange={(e) => setContentEn(e.target.value)}
                         placeholder={text.contentEditor.placeholder}
+                        rows={6}
                       />
                     </TabsContent>
 
@@ -322,6 +458,7 @@ export default function CreatePage({
                         value={contentAr}
                         onChange={(e) => setContentAr(e.target.value)}
                         placeholder="اكتب المحتوى هنا..."
+                        rows={6}
                       />
                     </TabsContent>
                   </Tabs>
@@ -329,7 +466,7 @@ export default function CreatePage({
               </Card>
             </div>
 
-            {/* RIGHT SIDE — PREVIEW + SCHEDULE */}
+            {/* RIGHT SIDE */}
             <div className="space-y-4">
               {/* PREVIEW */}
               <Card>

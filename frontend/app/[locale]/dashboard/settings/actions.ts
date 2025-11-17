@@ -1,6 +1,13 @@
 "use server";
-import { updateTag } from "next/cache";
+import { updateTag, revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
+import {
+  getMySubscription,
+  cancelSubscription as cancelUserSubscription,
+  updateSubscription as updateUserSubscription,
+  getPlans,
+  getMyInvoices,
+} from "@/lib/subscription-helper";
 
 const BaseURL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
 type initialStateType = {
@@ -87,4 +94,49 @@ export async function connectInstagram(shortToken: string, expiry?: any) {
     console.error("Error during fetch:", error);
     return { error: "Failed to connect Instagram account" };
   }
+}
+
+export async function fetchSubscriptionData() {
+  const [subscriptionResult, plansResult, invoicesResult] = await Promise.all([
+    getMySubscription(),
+    getPlans(),
+    getMyInvoices(),
+  ]);
+
+  return {
+    subscription: subscriptionResult.success
+      ? subscriptionResult.data
+      : undefined,
+    plans: plansResult.success ? plansResult.data : [],
+    invoices: invoicesResult.success ? invoicesResult.data : [],
+  };
+}
+
+export async function changePlan(
+  subscriptionId: number,
+  newPlanId: number,
+): Promise<{ success: boolean; error?: string }> {
+  const result = await updateUserSubscription(subscriptionId, {
+    planId: newPlanId,
+  });
+
+  if (!result.success) {
+    return { success: false, error: result.error };
+  }
+
+  revalidatePath("/dashboard/settings");
+  return { success: true };
+}
+
+export async function cancelSubscription(
+  subscriptionId: number,
+): Promise<{ success: boolean; error?: string }> {
+  const result = await cancelUserSubscription(subscriptionId);
+
+  if (!result.success) {
+    return { success: false, error: result.error };
+  }
+
+  revalidatePath("/dashboard/settings");
+  return { success: true };
 }

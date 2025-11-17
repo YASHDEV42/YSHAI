@@ -81,7 +81,12 @@ export async function extractVerifyEmailPageText(locale: string) {
 export async function extractPlatformsPageText(locale: string) {
   const messages = await getMessages({ locale });
   return {
-    ...messages.PlatformsPage, // main PlatformsPage
-    platforms: messages.SettingsPage?.platforms, // nested platform texts
+    ...messages.PlatformsPage,
+    platforms: messages.SettingsPage?.platforms,
   };
+}
+
+export async function extractCampaignsPageText(locale: string) {
+  const messages = await getMessages({ locale });
+  return messages.CampaignsPage;
 }

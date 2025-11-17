@@ -28,6 +28,14 @@ export const createPostAction = async (
       .getAll("socialAccountIds")
       .map((v) => Number(v));
 
+    const campaignIdStr = formData.get("campaignId")?.toString();
+    const campaignId = campaignIdStr ? Number(campaignIdStr) : undefined;
+
+    const tagIds = formData
+      .getAll("tagIds")
+      .map((v) => Number(v))
+      .filter((id) => !isNaN(id));
+
     const dto = {
       contentAr,
       contentEn,
@@ -35,6 +43,8 @@ export const createPostAction = async (
       scheduledAt,
       authorId,
       socialAccountIds,
+      campaignId,
+      tagIds: tagIds.length > 0 ? tagIds : undefined,
     };
 
     const postResult: ApiResult<IPost> = await create(dto);

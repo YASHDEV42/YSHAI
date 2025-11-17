@@ -286,6 +286,19 @@
       "reposts": "🔄 Repost",
       "shares": "📊 Share",
       "send": "📤 Send"
+    },
+    "campaigns": {
+      "title": "Campaign (Optional)",
+      "placeholder": "Select a campaign",
+      "noCampaigns": "No campaigns yet",
+      "createNew": "Create new campaign"
+    },
+    "tags": {
+      "title": "Tags",
+      "placeholder": "Add tags to organize your posts",
+      "addTag": "Add tag",
+      "noTags": "No tags yet",
+      "createNew": "Create new tag"
     }
   },
   "CalendarPage": {
@@ -451,23 +464,59 @@
       }
     },
     "billing": {
-      "title": "Billing",
+      "title": "Billing & Subscription",
       "description": "Manage your subscription and billing",
       "currentPlan": "Current Plan",
+      "planFeatures": "Plan Features",
+      "noPlan": "No Active Plan",
+      "freePlan": "Free Plan",
       "proPlan": "Pro Plan",
-      "proDescription": "Unlimited posts and advanced analytics",
-      "active": "Active",
-      "nextBilling": "Next billing date",
+      "businessPlan": "Business Plan",
+      "status": {
+        "active": "Active",
+        "canceled": "Canceled",
+        "past_due": "Past Due",
+        "trialing": "Trial",
+        "incomplete": "Incomplete"
+      },
+      "periodEnds": "Period ends",
+      "periodStarts": "Period starts",
       "paymentMethod": "Payment method",
       "changePlan": "Change Plan",
+      "cancelPlan": "Cancel Plan",
       "updatePayment": "Update Payment",
+      "availablePlans": "Available Plans",
+      "choosePlan": "Choose Plan",
+      "currentPlanBadge": "Current Plan",
+      "selectPlan": "Select Plan",
+      "upgradeNow": "Upgrade Now",
+      "perMonth": "/month",
+      "perYear": "/year",
       "billingHistory": "Billing History",
+      "invoice": "Invoice",
+      "amount": "Amount",
+      "date": "Date",
+      "status": "Status",
       "download": "Download",
-      "paid": "Paid",
+      "noInvoices": "No invoices yet",
+      "invoiceStatus": {
+        "paid": "Paid",
+        "unpaid": "Unpaid",
+        "refunded": "Refunded",
+        "failed": "Failed"
+      },
       "dangerZone": "Danger Zone",
       "dangerDescription": "Irreversible actions for your account",
       "cancelSubscription": "Cancel Subscription",
-      "deleteAccount": "Delete Account"
+      "cancelSubscriptionDescription": "You will lose access to Pro features at the end of your billing period.",
+      "deleteAccount": "Delete Account",
+      "deleteAccountDescription": "Permanently delete your account and all data. This cannot be undone.",
+      "confirmCancel": "Are you sure you want to cancel your subscription?",
+      "confirmDelete": "Are you sure you want to delete your account? This action cannot be undone.",
+      "cancelConfirm": "Yes, Cancel Subscription",
+      "deleteConfirm": "Yes, Delete Account",
+      "keep": "Keep Plan",
+      "loading": "Loading..."
     },
     "platformsNames": {
       "twitter": "X (Twitter)",
@@ -595,5 +644,26 @@
     "errorMessage": "The verification link is invalid or has expired. Please request a new verification email.",
     "goToLogin": "Go to Login",
     "resendVerification": "Resend Verification Email"
+  },
+  "CampaignsPage": {
+    "title": "Campaigns",
+    "subtitle": "Organize and track your social media campaigns",
+    "createCampaign": "Create Campaign",
+    "noCampaigns": "No campaigns yet",
+    "noCampaignsDescription": "Create your first campaign to organize and track your posts.",
+    "campaignName": "Campaign Name",
+    "description": "Description",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "active": "Active",
+    "inactive": "Inactive",
+    "edit": "Edit",
+    "delete": "Delete",
+    "posts": "posts",
+    "stats": {
+      "totalPosts": "Total Posts",
+      "engagement": "Engagement",
+      "reach": "Reach"
+    }
   }
 }

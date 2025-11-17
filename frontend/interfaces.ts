@@ -281,47 +281,6 @@ export interface ISubscription {
   metadata?: Record<string, any>;
 }
 
-/**
- * InvoiceResponseDto
- */
-export interface IInvoice {
-  id: number;
-  amount: number;
-  currency: Currency;
-  status: InvoiceStatus;
-  paymentGatewayId?: string | null;
-  paymentMethod?: string | null;
-  issuedAt: string;
-  paidAt?: string | null;
-  downloadedAt?: string | null;
-  pdfUrl?: string | null;
-  metadata?: Record<string, any> | null;
-
-  // If your DB has them, keep them optional
-  refundedAt?: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-// =========================
-// Teams & Memberships
-// =========================
-
-/**
- * TeamResponseDto
- */
-export interface ITeam {
-  id: number;
-  name: string;
-  description?: string | null;
-  avatarUrl?: string | null;
-  ownerId: number;
-  role: TeamRole; // current user’s role in that team
-  createdAt: string;
-  updatedAt: string;
-  deletedAt?: string | null; // if you store soft-delete on client
-}
-
 // Not from API; your own “membership” abstraction
 export interface IMembership {
   id: number;
@@ -331,6 +290,26 @@ export interface IMembership {
   metadata?: Record<string, any>;
   userId: number;
   teamId: number;
+}
+
+/**
+ * InvoiceResponseDto
+ */
+export interface IInvoice {
+  id: number;
+  subscriptionId: number;
+  amount: number;
+  currency: Currency;
+  status: InvoiceStatus;
+  invoiceNumber: string;
+  issuedAt: string;
+  dueDate?: string | null;
+  paidAt?: string | null;
+  paymentGatewayInvoiceId?: string | null;
+  pdfUrl?: string | null;
+  metadata?: Record<string, any> | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // =========================
@@ -514,4 +493,43 @@ export interface IAIUsageLog {
   costUsd: number;
   createdAt: string;
   metadata?: Record<string, any>;
+}
+
+// =========================
+// Backend Error Response Types
+// =========================
+
+export interface ValidationError {
+  field: string;
+  message: string;
+}
+
+export interface ValidationErrorDto {
+  statusCode: number;
+  message: string;
+  errors: ValidationError[];
+}
+
+export interface ErrorResponseDto {
+  statusCode: number;
+  message: string;
+  error?: string;
+}
+
+// =========================
+// Subscription DTOs Matching Backend
+// =========================
+
+export interface CreateSubscriptionDto {
+  planId: number;
+  paymentMethodId?: string;
+}
+
+export interface UpdateSubscriptionDto {
+  planId?: number;
+  cancelAtPeriodEnd?: boolean;
+}
+
+export interface SubscriptionWithPlan extends ISubscription {
+  plan: IPlan;
 }

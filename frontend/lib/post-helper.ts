@@ -14,6 +14,7 @@ interface CreatePostDto {
   socialAccountIds: number[];
   campaignId?: number;
   templateId?: number;
+  tagIds?: number[]; // Add tagIds support
 }
 
 interface UpdatePostDto {
@@ -26,6 +27,7 @@ interface UpdatePostDto {
   socialAccountIds?: number[];
   campaignId?: number;
   templateId?: number;
+  tagIds?: number[]; // Add tagIds support
 }
 
 export async function create(dto: CreatePostDto): Promise<ApiResult<IPost>> {
@@ -36,6 +38,7 @@ export async function create(dto: CreatePostDto): Promise<ApiResult<IPost>> {
     cache: "no-store",
   });
 }
+
 export async function list(params: {
   teamId: string;
   campaignId: string;
