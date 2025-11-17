@@ -7,10 +7,24 @@ export class CreateWebhookDto {
   url!: string;
 
   @ApiProperty({
-    enum: ['post.published', 'post.failed', 'account.disconnected'],
+    enum: [
+      'post.published',
+      'post.failed',
+      'account.disconnected',
+      'post.moderation.completed',
+    ],
   })
-  @IsEnum(['post.published', 'post.failed', 'account.disconnected'] as const)
-  event!: 'post.published' | 'post.failed' | 'account.disconnected';
+  @IsEnum([
+    'post.published',
+    'post.failed',
+    'account.disconnected',
+    'post.moderation.completed',
+  ] as const)
+  event!:
+    | 'post.published'
+    | 'post.failed'
+    | 'account.disconnected'
+    | 'post.moderation.completed';
 
   @ApiProperty({ description: 'Shared secret to sign webhook payloads' })
   @IsString()

@@ -6,9 +6,18 @@ export class WebhookSubscriptionResponseDto {
   @ApiProperty()
   url: string;
   @ApiProperty({
-    enum: ['post.published', 'post.failed', 'account.disconnected'], // FIXED: restrict to Swagger CreateWebhookDto.event values
+    enum: [
+      'post.published',
+      'post.failed',
+      'account.disconnected',
+      'post.moderation.completed',
+    ], // FIXED: restrict to Swagger CreateWebhookDto.event values
   })
-  event: 'post.published' | 'post.failed' | 'account.disconnected'; // FIXED: sync WebhookSubscriptionResponseDto.event with Swagger
+  event:
+    | 'post.published'
+    | 'post.failed'
+    | 'account.disconnected'
+    | 'post.moderation.completed'; // FIXED: sync WebhookSubscriptionResponseDto.event with Swagger
   @ApiProperty()
   active: boolean;
   @ApiProperty()
@@ -24,9 +33,18 @@ export class WebhookDeliveryAttemptResponseDto {
   @ApiProperty()
   url: string;
   @ApiProperty({
-    enum: ['post.published', 'post.failed', 'account.disconnected'], // FIXED: restrict to Swagger CreateWebhookDto.event values
+    enum: [
+      'post.published',
+      'post.failed',
+      'account.disconnected',
+      'post.moderation.completed',
+    ],
   })
-  event: 'post.published' | 'post.failed' | 'account.disconnected'; // FIXED: sync WebhookDeliveryAttemptResponseDto.event with Swagger
+  event:
+    | 'post.published'
+    | 'post.failed'
+    | 'account.disconnected'
+    | 'post.moderation.completed';
   @ApiProperty()
   attemptNumber: number;
   @ApiProperty({ enum: ['delivered', 'failed'] })
@@ -38,10 +56,10 @@ export class WebhookDeliveryAttemptResponseDto {
   @ApiProperty({ required: false, nullable: true })
   durationMs?: number | null;
   @ApiProperty()
-  createdAt: string; // FIXED: use ISO date-time string for webhook delivery createdAt
+  createdAt: string;
 
   @ApiProperty({ description: 'When this delivery attempt actually ran' })
-  attemptedAt: string; // FIXED: use ISO date-time string for webhook delivery attemptedAt
+  attemptedAt: string;
 
   @ApiProperty({
     description: 'Hash of the webhook payload for integrity/debugging',

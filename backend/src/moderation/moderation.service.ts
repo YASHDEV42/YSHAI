@@ -7,13 +7,16 @@ import { ModerateImageDto } from './dto/moderate-image.dto';
 import { ModerateVideoDto } from './dto/moderate-video.dto';
 import { ModerationResult } from '../entities/moderation-result.entity';
 import { Post } from '../entities/post.entity';
+import { EventBusService } from 'src/event-bus/event-bus.service';
 
 @Injectable()
 export class ModerationService {
   private readonly logger = new Logger(ModerationService.name);
   private readonly model: GenerativeModel | null;
-
-  constructor(private readonly em: EntityManager) {
+  constructor(
+    private readonly em: EntityManager,
+    private readonly events: EventBusService,
+  ) {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
       // Do not block app startup; allow boot without key (dev/docs). Guard usage in methods.
@@ -78,6 +81,12 @@ export class ModerationService {
     });
 
     await this.em.persistAndFlush(moderation);
+    await this.events.emit('post.moderation.completed', {
+      moderationId: moderation.id,
+      postId: post.id,
+      verdict,
+      provider: moderation.provider,
+    });
     return moderation;
   }
 
@@ -92,6 +101,14 @@ export class ModerationService {
     });
 
     await this.em.persistAndFlush(moderation);
+
+    await this.events.emit('post.moderation.completed', {
+      moderationId: moderation.id,
+      postId: post.id,
+      verdict: moderation.verdict,
+      provider: moderation.provider,
+    });
+
     return moderation;
   }
 
@@ -106,6 +123,12 @@ export class ModerationService {
     });
 
     await this.em.persistAndFlush(moderation);
+    await this.events.emit('post.moderation.completed', {
+      moderationId: moderation.id,
+      postId: post.id,
+      verdict: moderation.verdict,
+      provider: moderation.provider,
+    });
     return moderation;
   }
 

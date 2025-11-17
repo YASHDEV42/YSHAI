@@ -10,6 +10,7 @@ import { SocialAccount } from 'src/entities/social-account.entity';
 import { AccountToken } from 'src/entities/account-token.entity';
 import { ProviderFactory } from './providers/provider.factory';
 import { Media } from 'src/entities/media.entity';
+import { EventBusService } from 'src/event-bus/event-bus.service';
 
 @Injectable()
 export class PublisherService implements OnModuleInit {
@@ -20,17 +21,16 @@ export class PublisherService implements OnModuleInit {
   constructor(
     private readonly em: EntityManager,
     private readonly webhooks: WebhooksService,
+    private readonly events: EventBusService,
     private readonly providers: ProviderFactory,
   ) {}
 
-  // ----------------------------------------------------
   // Lifecycle: start background loop
-  // ----------------------------------------------------
   onModuleInit(): void {
     this.log.log('🚀 PublisherService initialized, starting scheduler loop...');
 
     this.timer = setInterval(() => {
-      // IMPORTANT: wrap each tick in a MikroORM RequestContext
+      // wrap each tick in a MikroORM RequestContext
       void RequestContext.create(this.em, async () => {
         try {
           await this.tick();
@@ -45,9 +45,7 @@ export class PublisherService implements OnModuleInit {
     }, 5_000);
   }
 
-  // ----------------------------------------------------
   // Main tick: find pending jobs and process them
-  // ----------------------------------------------------
   private async tick(): Promise<void> {
     // Use a fork for isolation inside this RequestContext
     const em = this.em.fork();
@@ -112,9 +110,7 @@ export class PublisherService implements OnModuleInit {
     }
   }
 
-  // ----------------------------------------------------
   // Core job processing
-  // ----------------------------------------------------
   private async processJob(
     em: EntityManager,
     job: Job,
@@ -151,7 +147,7 @@ export class PublisherService implements OnModuleInit {
         return;
       }
 
-      const accessToken = token.tokenEncrypted; // TODO: decrypt
+      const accessToken = token.tokenEncrypted;
 
       // Build post text + media
       const text = [post.contentAr, post.contentEn].filter(Boolean).join('\n');
@@ -169,7 +165,7 @@ export class PublisherService implements OnModuleInit {
       target.status = 'processing';
       await em.flush();
 
-      // 🔒 IMPORTANT: only call provider ONCE per job to avoid duplicate publishes
+      // IMPORTANT: only call provider ONCE per job to avoid duplicate publishes
       // If job.attempt > 0, we assume an earlier attempt may already have hit the provider
       // so we do NOT re-publish externally.
       let result: {
@@ -213,7 +209,14 @@ export class PublisherService implements OnModuleInit {
 
         job.status = 'success';
         job.executedAt = new Date();
-
+        await this.events.emit('post.published', {
+          postId: post.id,
+          authorId: post.author.id,
+          provider: account.provider,
+          externalPostId: target.externalPostId ?? null,
+          externalUrl: target.externalUrl ?? null,
+          publishedAt: (target.publishedAt ?? new Date()).toISOString(),
+        });
         await em.flush();
         await this.aggregatePostStatus(em, post);
 
@@ -221,6 +224,13 @@ export class PublisherService implements OnModuleInit {
       } else {
         // For attempts >0, we *only* update processing/failed state via handleJobError
         // or markFailed, so nothing special here.
+
+        await this.events.emit('post.failed', {
+          postId: post.id,
+          authorId: post.author.id,
+          error: job.lastError ?? 'unknown error',
+          attempt: job.attempt,
+        });
         this.log.log(
           `ℹ️ Job ${job.id} attempt > 0 finished internal processing (no external publish)`,
         );
@@ -232,9 +242,7 @@ export class PublisherService implements OnModuleInit {
     }
   }
 
-  // ----------------------------------------------------
   // Error handling + retry logic
-  // ----------------------------------------------------
   private async handleJobError(
     em: EntityManager,
     job: Job,
@@ -276,9 +284,7 @@ export class PublisherService implements OnModuleInit {
     }
   }
 
-  // ----------------------------------------------------
   // Mark job + target as failed (no retry)
-  // ----------------------------------------------------
   private async markFailed(
     em: EntityManager,
     job: Job,
@@ -302,9 +308,7 @@ export class PublisherService implements OnModuleInit {
     }
   }
 
-  // ----------------------------------------------------
   // Notifications + audit logs
-  // ----------------------------------------------------
   private async sendFailureNotification(
     em: EntityManager,
     post: Post,
@@ -341,9 +345,7 @@ export class PublisherService implements OnModuleInit {
     await em.flush();
   }
 
-  // ----------------------------------------------------
   // Post status aggregation across targets
-  // ----------------------------------------------------
   private async aggregatePostStatus(
     em: EntityManager,
     post: Post,

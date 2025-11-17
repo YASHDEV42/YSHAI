@@ -21,10 +21,8 @@ import {
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CreateWebhookDto } from './dto/create-webhook.dto';
 import { WebhooksService } from './webhooks.service';
-// import { WebhookSubscription } from 'src/entities/webhook-subscription.entity';
 import {
   PaginatedDeliveryAttemptsDto,
-  // WebhookDeliveryAttemptResponseDto,
   WebhookSubscriptionResponseDto,
 } from './dto/webhook-response.dto';
 import { MessageDto } from 'src/common/dto/message.dto';

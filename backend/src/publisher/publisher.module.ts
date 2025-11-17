@@ -8,10 +8,17 @@ import { ProviderFactory } from './providers/provider.factory';
 import { WebhooksModule } from 'src/webhooks/webhooks.module';
 import { MediaModule } from 'src/media/media.module';
 import { MetaModule } from 'src/meta/meta.module';
+import { EventBusModule } from 'src/event-bus/event-bus.module';
 
 @Module({
-  imports: [MikroOrmModule.forFeature([Post, Job, PostTarget]), WebhooksModule, MediaModule, MetaModule],
+  imports: [
+    MikroOrmModule.forFeature([Post, Job, PostTarget]),
+    WebhooksModule,
+    MediaModule,
+    MetaModule,
+    EventBusModule,
+  ],
   providers: [PublisherService, ProviderFactory],
   exports: [PublisherService],
 })
-export class PublisherModule { }
+export class PublisherModule {}
