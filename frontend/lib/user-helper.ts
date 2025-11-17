@@ -37,6 +37,8 @@ export async function me(): Promise<ApiResult<IUser>> {
   });
 }
 
+export const getUserProfile = me;
+
 export async function updateProfile(
   dto: UpdateUserDto,
 ): Promise<ApiResult<IUser>> {

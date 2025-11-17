@@ -15,6 +15,9 @@ import {
   AlertCircle,
   Info,
   Share2,
+  FolderKanban,
+  Tags,
+  Codesandbox,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -86,6 +89,18 @@ export function DashboardSidebar({
       activeHref: "/" + locale + "/dashboard/platforms",
     },
     {
+      href: "/dashboard/campaigns",
+      icon: FolderKanban,
+      label: text.campaigns || "Campaigns",
+      activeHref: "/" + locale + "/dashboard/campaigns",
+    },
+    {
+      href: "/dashboard/tags",
+      icon: Tags,
+      label: text.tags || "Tags",
+      activeHref: "/" + locale + "/dashboard/tags",
+    },
+    {
       href: "/dashboard/analytics",
       icon: TrendingUp,
       label: text.analytics || "Analytics",
@@ -139,8 +154,8 @@ export function DashboardSidebar({
       >
         <SidebarHeader className="border-b border-border p-6 flex items-center justify-between flex-row">
           <Link href="/" className="flex items-center gap-2 px-2">
-            <span className="font-bold text-xl text-foreground">
-              {text.logo}
+            <span className="font-bold text-xl text-foreground flex flex-row items-center justify-center gap-2">
+              <Codesandbox size={30} /> {text.logo}
             </span>
           </Link>
           <LanguageToggle />

@@ -221,6 +221,8 @@
     "createPost": "إنشاء منشور",
     "calendar": "التقويم",
     "platforms": "المنصات",
+    "campaigns": "الحملات",
+    "tags": "الوسوم",
     "analytics": "التحليلات",
     "settings": "الإعدادات",
     "notifications": "الإشعارات",
@@ -544,6 +546,9 @@
     "followers": "متابعين",
     "posts": "منشورات",
     "engagement": "معدل التفاعل",
+    "searchPlaceholder": "البحث في المنصات...",
+    "noResults": "لا توجد نتائج",
+    "noResultsDescription": "حاول تعديل مصطلحات البحث",
     "stats": {
       "totalAccounts": "إجمالي الحسابات",
       "totalFollowers": "إجمالي المتابعين",
@@ -715,10 +720,67 @@
     "edit": "تعديل",
     "delete": "حذف",
     "posts": "منشورات",
+    "cancel": "إلغاء",
+    "save": "حفظ التغييرات",
+    "create": "إنشاء",
+    "saving": "جارٍ الحفظ...",
+    "creating": "جارٍ الإنشاء...",
+    "editDescription": "تحديث تفاصيل الحملة",
+    "createDescription": "إنشاء حملة جديدة لتنظيم منشوراتك",
     "stats": {
       "totalPosts": "إجمالي المنشورات",
       "engagement": "التفاعل",
       "reach": "الوصول"
     }
+  },
+  "TagsPage": {
+    "title": "الوسوم",
+    "subtitle": "إدارة الوسوم لتنظيم محتواك",
+    "createTag": "إنشاء وسم",
+    "noTags": "لا توجد وسوم بعد",
+    "noTagsDescription": "أنشئ وسمك الأول لتنظيم وتصنيف منشوراتك.",
+    "tagName": "اسم الوسم",
+    "tagPlaceholder": "مثال: إطلاق منتج، تسويق، أحداث",
+    "allTags": "جميع الوسوم",
+    "cancel": "إلغاء",
+    "create": "إنشاء",
+    "creating": "جارٍ الإنشاء...",
+    "createDescription": "إنشاء وسم جديد لتصنيف منشوراتك"
+  },
+  "EditPostPage": {
+    "title": "تعديل المنشور",
+    "subtitle": "تحديث منشورك المجدول",
+    "back": "رجوع",
+    "platforms": {
+      "title": "المنصات",
+      "twitter": "X (تويتر)",
+      "instagram": "إنستغرام",
+      "linkedin": "لينكدإن",
+      "tiktok": "تيك توك"
+    },
+    "campaigns": {
+      "title": "الحملة (اختياري)",
+      "placeholder": "اختر حملة",
+      "noCampaigns": "لا توجد حملات بعد"
+    },
+    "tags": {
+      "title": "الوسوم",
+      "noTags": "لا توجد وسوم بعد"
+    },
+    "contentEditor": {
+      "title": "محتوى المنشور",
+      "placeholder": "اكتب محتوى منشورك هنا..."
+    },
+    "schedule": {
+      "title": "الجدولة",
+      "publishNowTab": "نشر الآن",
+      "scheduleLaterTab": "جدولة لاحقاً",
+      "publishNowDescription": "سيتم نشر منشورك فوراً.",
+      "dateLabel": "التاريخ",
+      "timeLabel": "الوقت"
+    },
+    "cancel": "إلغاء",
+    "saveChanges": "حفظ التغييرات",
+    "updating": "جارٍ التحديث..."
   }
 }

@@ -221,6 +221,8 @@
     "createPost": "Create Post",
     "calendar": "Calendar",
     "platforms": "Platforms",
+    "campaigns": "Campaigns",
+    "tags": "Tags",
     "analytics": "Analytics",
     "settings": "Settings",
     "notifications": "Notifications",
@@ -609,7 +611,13 @@
       "topLocation": "Top Location",
       "topAgeGroup": "Top Age Group",
       "maleAudience": "Male Audience",
-      "femaleAudience": "Female Audience"
+      "femaleAudience": "Female Audience",
+      "totalLikes": "Total Likes",
+      "totalComments": "Total Comments",
+      "totalShares": "Total Shares",
+      "totalReach": "Total Reach",
+      "peakEngagement": "peak engagement",
+      "perPost": "per post"
     },
     "description": "Get personalized recommendations and insights to improve your content strategy",
     "aiAdvisor": {
@@ -620,9 +628,19 @@
       "quickAction1": "What's the best time to post?",
       "quickAction2": "Analyze my recent performance",
       "quickAction3": "Suggest content ideas",
+      "quickAction4": "Audience insights",
       "sampleResponse1": "Based on your audience engagement patterns, the best times to post are between 2:00 PM - 4:00 PM on weekdays. Your audience is most active during these hours, which could increase your engagement by up to 35%.",
       "sampleResponse2": "Your recent posts show strong performance! Your engagement rate has increased by 12% this month. Posts with images perform 45% better than text-only posts. Consider adding more visual content to maintain this growth.",
-      "sampleResponse3": "Here are some content ideas tailored to your audience: 1) Behind-the-scenes content about your workflow, 2) Tips and tricks related to your industry, 3) User-generated content showcasing customer success stories. These types of posts typically generate 2x more engagement."
+      "sampleResponse3": "Here are some content ideas tailored to your audience: 1) Behind-the-scenes content about your workflow, 2) Tips and tricks related to your industry, 3) User-generated content showcasing customer success stories. These types of posts typically generate 2x more engagement.",
+      "conversationTitle": "Conversation",
+      "conversationDescription": "Ask me anything about your content strategy",
+      "tryAsking": "Try asking:",
+      "performanceInsights": "Performance Insights",
+      "performanceInsightsDescription": "Get detailed analysis of your content performance",
+      "contentSuggestions": "Content Suggestions",
+      "contentSuggestionsDescription": "Receive AI-powered content ideas tailored to your audience",
+      "audienceAnalysis": "Audience Analysis",
+      "audienceAnalysisDescription": "Understand your audience demographics and behavior"
     },
     "postsOf": "of"
   },
@@ -641,10 +659,89 @@
     "edit": "Edit",
     "delete": "Delete",
     "posts": "posts",
+    "cancel": "Cancel",
+    "save": "Save Changes",
+    "create": "Create",
+    "saving": "Saving...",
+    "creating": "Creating...",
+    "editDescription": "Update campaign details",
+    "createDescription": "Create a new campaign to organize your posts",
     "stats": {
       "totalPosts": "Total Posts",
       "engagement": "Engagement",
       "reach": "Reach"
+    }
+  },
+  "TagsPage": {
+    "title": "Tags",
+    "subtitle": "Manage tags to organize your content",
+    "createTag": "Create Tag",
+    "noTags": "No tags yet",
+    "noTagsDescription": "Create your first tag to organize and categorize your posts.",
+    "tagName": "Tag Name",
+    "tagPlaceholder": "e.g., Product Launch, Marketing, Events",
+    "allTags": "All Tags",
+    "cancel": "Cancel",
+    "create": "Create",
+    "creating": "Creating...",
+    "createDescription": "Create a new tag to categorize your posts"
+  },
+  "EditPostPage": {
+    "title": "Edit Post",
+    "subtitle": "Update your scheduled post",
+    "back": "Back",
+    "platforms": {
+      "title": "Platforms",
+      "twitter": "X (Twitter)",
+      "instagram": "Instagram",
+      "linkedin": "LinkedIn",
+      "tiktok": "TikTok"
+    },
+    "campaigns": {
+      "title": "Campaign (Optional)",
+      "placeholder": "Select a campaign",
+      "noCampaigns": "No campaigns yet"
+    },
+    "tags": {
+      "title": "Tags",
+      "noTags": "No tags yet"
+    },
+    "contentEditor": {
+      "title": "Post Content",
+      "placeholder": "Write your post content here..."
+    },
+    "schedule": {
+      "title": "Schedule",
+      "publishNowTab": "Publish Now",
+      "scheduleLaterTab": "Schedule for Later",
+      "publishNowDescription": "Your post will be published immediately.",
+      "dateLabel": "Date",
+      "timeLabel": "Time"
+    },
+    "cancel": "Cancel",
+    "saveChanges": "Save Changes",
+    "updating": "Updating..."
+  },
+  "PlatformsPage": {
+    "title": "Connected Platforms",
+    "subtitle": "Manage your social media accounts and view platform-specific insights",
+    "noPlatforms": "No platforms connected yet",
+    "noPlatformsDescription": "Connect your social media accounts to start managing content across multiple platforms.",
+    "connectPlatform": "Connect Platform",
+    "viewPlatform": "View",
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "followers": "followers",
+    "posts": "posts",
+    "engagement": "engagement rate",
+    "searchPlaceholder": "Search platforms...",
+    "noResults": "No results found",
+    "noResultsDescription": "Try adjusting your search terms",
+    "stats": {
+      "totalAccounts": "Total Accounts",
+      "totalFollowers": "Total Followers",
+      "totalPosts": "Total Posts",
+      "avgEngagement": "Avg. Engagement"
     }
   }
 }

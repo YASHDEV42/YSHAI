@@ -90,3 +90,13 @@ export async function extractCampaignsPageText(locale: string) {
   const messages = await getMessages({ locale });
   return messages.CampaignsPage;
 }
+
+export async function extractTagsPageText(locale: string) {
+  const messages = await getMessages({ locale });
+  return messages.TagsPage;
+}
+
+export async function extractEditPostPageText(locale: string) {
+  const messages = await getMessages({ locale });
+  return messages.EditPostPage;
+}

@@ -4,7 +4,7 @@ import { LanguageToggle } from "../../components/LanguageToggle";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { LogOut } from "lucide-react";
+import { Codesandbox, LogOut } from "lucide-react";
 export function Navbar({ text, user }: { text: any; user: any }) {
   const pathname = usePathname();
   if (
@@ -18,8 +18,11 @@ export function Navbar({ text, user }: { text: any; user: any }) {
     <nav className="fixed top-0 left-0 right-0 z-50 border-b bg-background/80 backdrop-blur-sm">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <div className="flex items-center w-[320px]">
-          <Link href="/" className="text-xl font-bold">
-            {text.logo}
+          <Link
+            href="/"
+            className="text-xl font-bold flex flex-row items-center gap-2"
+          >
+            <Codesandbox size={40} />
           </Link>
         </div>
 

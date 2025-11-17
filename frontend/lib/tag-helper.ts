@@ -25,6 +25,18 @@ export async function createTag(dto: CreateTagDto): Promise<ApiResult<ITag>> {
   });
 }
 
+export async function updateTag(
+  id: number,
+  dto: { name?: string; metadata?: Record<string, any> },
+): Promise<ApiResult<ITag>> {
+  return apiRequest<ITag>({
+    method: "PUT",
+    path: `/tags/${id}`,
+    body: dto,
+    cache: "no-store",
+  });
+}
+
 export async function deleteTag(id: number): Promise<ApiResult<void>> {
   return apiRequest<void>({
     method: "DELETE",
