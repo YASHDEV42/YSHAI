@@ -2,14 +2,11 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { EntityManager, RequestContext } from '@mikro-orm/core';
 import { Job } from 'src/entities/job.entity';
 import { Post } from 'src/entities/post.entity';
-import { Notification } from 'src/entities/notification.entity';
-import { AuditLog } from 'src/entities/audit-log.entity';
-import { WebhooksService } from 'src/webhooks/webhooks.service';
 import { PostTarget } from 'src/entities/post-target.entity';
 import { SocialAccount } from 'src/entities/social-account.entity';
 import { AccountToken } from 'src/entities/account-token.entity';
-import { ProviderFactory } from './providers/provider.factory';
 import { Media } from 'src/entities/media.entity';
+import { ProviderFactory } from './providers/provider.factory';
 import { EventBusService } from 'src/event-bus/event-bus.service';
 
 @Injectable()
@@ -20,7 +17,6 @@ export class PublisherService implements OnModuleInit {
 
   constructor(
     private readonly em: EntityManager,
-    private readonly webhooks: WebhooksService,
     private readonly events: EventBusService,
     private readonly providers: ProviderFactory,
   ) {}
@@ -30,7 +26,6 @@ export class PublisherService implements OnModuleInit {
     this.log.log('🚀 PublisherService initialized, starting scheduler loop...');
 
     this.timer = setInterval(() => {
-      // wrap each tick in a MikroORM RequestContext
       void RequestContext.create(this.em, async () => {
         try {
           await this.tick();
@@ -45,9 +40,10 @@ export class PublisherService implements OnModuleInit {
     }, 5_000);
   }
 
-  // Main tick: find pending jobs and process them
+  /**
+   * Main tick: find pending jobs and process them.
+   */
   private async tick(): Promise<void> {
-    // Use a fork for isolation inside this RequestContext
     const em = this.em.fork();
     const now = new Date();
 
@@ -65,7 +61,6 @@ export class PublisherService implements OnModuleInit {
     this.log.log(`🔄 Processing ${jobs.length} job(s)...`);
 
     for (const job of jobs) {
-      // Reload with this forked EM to ensure full entity graph belongs here
       const fullJob = await em.findOne(Job, job.id, {
         populate: ['post', 'target', 'target.socialAccount'],
       });
@@ -79,12 +74,17 @@ export class PublisherService implements OnModuleInit {
       const target = fullJob.target as PostTarget | undefined;
 
       if (!post) {
-        await this.markFailed(em, fullJob, target ?? null, 'Post not found');
+        await this.markPermanentFailure(
+          em,
+          fullJob,
+          target ?? null,
+          'Post not found',
+        );
         continue;
       }
 
       if (!target) {
-        await this.markFailed(
+        await this.markPermanentFailure(
           em,
           fullJob,
           null,
@@ -95,7 +95,7 @@ export class PublisherService implements OnModuleInit {
 
       const account = target.socialAccount as SocialAccount | undefined;
       if (!account) {
-        await this.markFailed(
+        await this.markPermanentFailure(
           em,
           fullJob,
           target,
@@ -110,7 +110,9 @@ export class PublisherService implements OnModuleInit {
     }
   }
 
-  // Core job processing
+  /**
+   * Handle one job: call provider, update DB, emit events.
+   */
   private async processJob(
     em: EntityManager,
     job: Job,
@@ -119,13 +121,17 @@ export class PublisherService implements OnModuleInit {
     account: SocialAccount,
     mediaList: Media[],
   ): Promise<void> {
+    this.log.log(`▶️ Starting Job ${job.id}, attempt ${job.attempt}`);
+
+    // Move job+target to processing
+    job.status = 'processing';
+    job.lastError = undefined;
+    target.status = 'processing';
+    target.lastError = undefined;
+    target.updatedAt = new Date();
+    await em.flush();
+
     try {
-      this.log.log(`▶️ Starting Job ${job.id}, attempt ${job.attempt}`);
-
-      // Move job to processing
-      job.status = 'processing';
-      await em.flush();
-
       // Fetch latest non-revoked access token
       const token = await em.findOne(
         AccountToken,
@@ -138,7 +144,7 @@ export class PublisherService implements OnModuleInit {
       );
 
       if (!token) {
-        await this.markFailed(
+        await this.markPermanentFailure(
           em,
           job,
           target,
@@ -149,10 +155,10 @@ export class PublisherService implements OnModuleInit {
 
       const accessToken = token.tokenEncrypted;
 
-      // Build post text + media
+      // Build content
       const text = [post.contentAr, post.contentEn].filter(Boolean).join('\n');
-
       const mediaUrls = mediaList.map((m) => m.url);
+
       if (!mediaUrls.length) {
         this.log.warn(
           `⚠️ Post ${post.id} has no media; will attempt text-only publish`,
@@ -161,80 +167,43 @@ export class PublisherService implements OnModuleInit {
 
       const publisher = this.providers.get(account.provider);
 
-      // Mark target processing before any external call
-      target.status = 'processing';
+      // Call provider on every attempt (network errors can be transient).
+      const result = await publisher.publish({
+        text,
+        mediaUrls,
+        accessToken,
+        providerAccountId: account.providerAccountId,
+      });
+
+      // Success path
+      const now = new Date();
+      target.externalPostId =
+        result.externalPostId ?? target.externalPostId ?? null;
+      target.externalUrl =
+        result.externalUrl ?? target.externalUrl ?? undefined;
+      target.publishedAt = result.publishedAt ?? target.publishedAt ?? now;
+      target.status = 'success';
+      target.updatedAt = now;
+
+      job.status = 'success';
+      job.executedAt = now;
+      job.lastError = undefined;
+
       await em.flush();
 
-      // IMPORTANT: only call provider ONCE per job to avoid duplicate publishes
-      // If job.attempt > 0, we assume an earlier attempt may already have hit the provider
-      // so we do NOT re-publish externally.
-      let result: {
-        externalPostId?: string;
-        externalUrl?: string;
-        publishedAt?: Date;
-      } | null = null;
+      // Emit domain event (listeners will create notifications, webhooks, etc.)
+      await this.events.emit('post.published', {
+        postId: post.id,
+        authorId: post.author.id,
+        provider: account.provider,
+        externalPostId: target.externalPostId ?? null,
+        externalUrl: target.externalUrl ?? null,
+        publishedAt: target.publishedAt.toISOString(),
+      });
 
-      if (job.attempt === 0) {
-        this.log.log(
-          `🌐 Calling provider for job ${job.id} (first attempt only)`,
-        );
-        result = await publisher.publish({
-          text,
-          mediaUrls,
-          accessToken,
-          providerAccountId: account.providerAccountId,
-        });
-      } else {
-        this.log.warn(
-          `⏭️ Skipping external publish for job ${job.id} because attempt=${job.attempt} > 0 (avoid duplicate posts on provider)`,
-        );
-        result = null;
-      }
+      await this.aggregatePostStatus(em, post);
 
-      // Even if result is null (we skipped external publish), we can still mark
-      // the job/target as success if we want. In your case, we’ll consider
-      // *success* only when attempt===0 publish path succeeds.
-      if (job.attempt === 0) {
-        // Mark success
-        if (result) {
-          target.externalPostId = result.externalPostId;
-          target.externalUrl = result.externalUrl;
-          target.publishedAt = result.publishedAt ?? new Date();
-        } else {
-          // Extremely unlikely: publish returned nothing but no error thrown
-          target.publishedAt = new Date();
-        }
-        target.status = 'success';
-        target.updatedAt = new Date();
-
-        job.status = 'success';
-        job.executedAt = new Date();
-        await this.events.emit('post.published', {
-          postId: post.id,
-          authorId: post.author.id,
-          provider: account.provider,
-          externalPostId: target.externalPostId ?? null,
-          externalUrl: target.externalUrl ?? null,
-          publishedAt: (target.publishedAt ?? new Date()).toISOString(),
-        });
-        await em.flush();
-        await this.aggregatePostStatus(em, post);
-
-        this.log.log(`✅ Job ${job.id} succeeded`);
-      } else {
-        // For attempts >0, we *only* update processing/failed state via handleJobError
-        // or markFailed, so nothing special here.
-
-        await this.events.emit('post.failed', {
-          postId: post.id,
-          authorId: post.author.id,
-          error: job.lastError ?? 'unknown error',
-          attempt: job.attempt,
-        });
-        this.log.log(
-          `ℹ️ Job ${job.id} attempt > 0 finished internal processing (no external publish)`,
-        );
-      }
+      this.log.log(`✅ Job ${job.id} succeeded`);
     } catch (e) {
       const err = e as Error;
       this.log.error(`❌ Job ${job.id} failed: ${err.message}`);
@@ -242,13 +211,18 @@ export class PublisherService implements OnModuleInit {
     }
   }
 
-  // Error handling + retry logic
+  /**
+   * Error handling + retry logic.
+   * We only emit post.failed when we give up (maxAttempts reached).
+   */
   private async handleJobError(
     em: EntityManager,
     job: Job,
     target: PostTarget | null | undefined,
     errorMsg: string,
   ): Promise<void> {
+    const now = new Date();
+
     job.lastError = errorMsg;
     job.attempt += 1;
 
@@ -256,22 +230,16 @@ export class PublisherService implements OnModuleInit {
       target.status = 'failed';
       target.lastError = errorMsg;
       target.attempt += 1;
+      target.updatedAt = now;
     }
 
     // Max attempts reached → permanent failure
     if (job.attempt >= this.maxAttempts) {
-      job.status = 'failed';
-      await em.flush();
-
-      const post = job.post as Post | undefined;
-      if (post) {
-        await this.aggregatePostStatus(em, post);
-        await this.sendFailureNotification(em, post, errorMsg);
-      }
+      await this.markPermanentFailure(em, job, target ?? null, errorMsg);
       return;
     }
 
-    // Retry: exponential backoff, BUT external publish will NOT be retried
+    // Retry: exponential backoff, no notification yet
     const delayMs = 1000 * 2 ** Math.min(job.attempt, 8);
     job.status = 'pending';
     job.scheduledAt = new Date(Date.now() + delayMs);
@@ -282,21 +250,30 @@ export class PublisherService implements OnModuleInit {
     if (post) {
       await this.aggregatePostStatus(em, post);
     }
+
+    this.log.warn(
+      `🔁 Job ${job.id} scheduled for retry #${job.attempt} in ${delayMs}ms`,
+    );
   }
 
-  // Mark job + target as failed (no retry)
-  private async markFailed(
+  /**
+   * Permanent failure: stop retrying and emit post.failed event.
+   */
+  private async markPermanentFailure(
     em: EntityManager,
     job: Job,
-    target: PostTarget | null | undefined,
+    target: PostTarget | null,
     error: string,
   ): Promise<void> {
+    const now = new Date();
+
     job.status = 'failed';
     job.lastError = error;
 
     if (target) {
       target.status = 'failed';
       target.lastError = error;
+      target.updatedAt = now;
     }
 
     await em.flush();
@@ -304,48 +281,24 @@ export class PublisherService implements OnModuleInit {
     const post = job.post as Post | undefined;
     if (post) {
       await this.aggregatePostStatus(em, post);
-      await this.sendFailureNotification(em, post, error);
+
+      await this.events.emit('post.failed', {
+        postId: post.id,
+        authorId: post.author.id,
+        error,
+        attempt: job.attempt,
+      });
     }
+
+    this.log.error(
+      `⛔ Job ${job.id} permanently failed after ${job.attempt} attempt(s): ${error}`,
+    );
   }
 
-  // Notifications + audit logs
-  private async sendFailureNotification(
-    em: EntityManager,
-    post: Post,
-    error: string,
-  ): Promise<void> {
-    const notif = em.create(Notification, {
-      user: post.author,
-      type: 'post.failed',
-      title: {
-        en: 'Publish Failed',
-        ar: 'فشل النشر',
-        tr: 'Yayın Başarısız',
-      },
-      message: {
-        en: `Failed to publish post: ${error}`,
-        ar: `فشل نشر المنشور: ${error}`,
-        tr: `Gönderi yayınlanamadı: ${error}`,
-      },
-      data: { postId: post.id, error },
-      read: false,
-      createdAt: new Date(),
-    });
-
-    const log = em.create(AuditLog, {
-      user: post.author,
-      action: 'post.publish_failed',
-      entityType: 'post',
-      entityId: String(post.id),
-      details: { error },
-      createdAt: new Date(),
-    });
-
-    em.persist([notif, log]);
-    await em.flush();
-  }
-
-  // Post status aggregation across targets
+  /**
+   * Aggregate status at Post level based on all its targets.
+   * No webhooks/notifications here – that’s done via EventBus listeners.
+   */
   private async aggregatePostStatus(
     em: EntityManager,
     post: Post,
@@ -365,11 +318,6 @@ export class PublisherService implements OnModuleInit {
       post.status = 'published';
       post.publishedAt = new Date();
       await em.flush();
-
-      await this.webhooks.emitInternal('post.published', {
-        postId: post.id,
-        status: post.status,
-      });
       return;
     }
 
