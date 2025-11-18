@@ -270,6 +270,8 @@
       "publishNowTab": "نشر الآن",
       "scheduleLaterTab": "جدولة لاحقاً",
       "publishNowDescription": "سيتم نشر منشورك فوراً على جميع المنصات المحددة.",
+      "publishNowButton": "نشر الآن",
+      "scheduleButton": "جدولة المنشور",
       "dateLabel": "التاريخ",
       "timeLabel": "الوقت",
       "timezoneLabel": "المنطقة الزمنية",
@@ -498,7 +500,7 @@
       "invoice": "فاتورة",
       "amount": "المبلغ",
       "date": "التاريخ",
-      "status": "الحالة",
+      "Status": "الحالة",
       "download": "تنزيل",
       "noInvoices": "لا توجد فواتير بعد",
       "invoiceStatus": {
@@ -776,6 +778,7 @@
       "publishNowTab": "نشر الآن",
       "scheduleLaterTab": "جدولة لاحقاً",
       "publishNowDescription": "سيتم نشر منشورك فوراً.",
+      "publishNowButton": "نشر الآن",
       "dateLabel": "التاريخ",
       "timeLabel": "الوقت"
     },

@@ -270,6 +270,8 @@
       "publishNowTab": "Publish Now",
       "scheduleLaterTab": "Schedule for Later",
       "publishNowDescription": "Your post will be published immediately to all selected platforms.",
+      "publishNowButton": "Publish Now",
+      "scheduleButton": "Schedule Post",
       "dateLabel": "Date",
       "timeLabel": "Time",
       "timezoneLabel": "Timezone",
@@ -498,7 +500,7 @@
       "invoice": "Invoice",
       "amount": "Amount",
       "date": "Date",
-      "status": "Status",
+      "Status": "Status",
       "download": "Download",
       "noInvoices": "No invoices yet",
       "invoiceStatus": {
@@ -715,6 +717,7 @@
       "publishNowTab": "Publish Now",
       "scheduleLaterTab": "Schedule for Later",
       "publishNowDescription": "Your post will be published immediately.",
+      "publishNowButton": "Publish Now",
       "dateLabel": "Date",
       "timeLabel": "Time"
     },

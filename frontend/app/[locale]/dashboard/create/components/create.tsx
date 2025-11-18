@@ -86,6 +86,7 @@ export default function CreatePage({
     id: acc.provider,
     name: text.platforms[acc.provider],
     socialAccountId: acc.id,
+    username: acc.username,
   }));
 
   // ---------------------------------------------------------
@@ -293,7 +294,7 @@ export default function CreatePage({
                           size="sm"
                         >
                           <Icon className="w-3 h-3 mr-1" />
-                          {p.name}
+                          {p.username}
                         </Button>
                       );
                     })}
@@ -485,7 +486,7 @@ export default function CreatePage({
                             disabled={!selectedPlatforms.includes(p.id)}
                           >
                             <Icon className="w-3 h-3 mr-1" />
-                            {p.name}
+                            {p.username}
                           </TabsTrigger>
                         );
                       })}
