@@ -49,21 +49,24 @@ export default function CampaignsManagement({
     null,
   );
 
+  /**
+   * Correct campaign form model matching backend
+   */
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    startDate: "",
-    endDate: "",
-    isActive: true,
+    startsAt: "",
+    endsAt: "",
+    status: "active" as "active" | "draft",
   });
 
   const resetForm = () => {
     setFormData({
       name: "",
       description: "",
-      startDate: "",
-      endDate: "",
-      isActive: true,
+      startsAt: "",
+      endsAt: "",
+      status: "active",
     });
     setEditingCampaign(null);
   };
@@ -79,9 +82,9 @@ export default function CampaignsManagement({
     setFormData({
       name: campaign.name,
       description: campaign.description || "",
-      startDate: campaign.startDate?.split("T")[0] || "",
-      endDate: campaign.endDate?.split("T")[0] || "",
-      isActive: campaign.isActive,
+      startsAt: campaign.startsAt ? campaign.startsAt.split("T")[0] : "",
+      endsAt: campaign.endsAt ? campaign.endsAt.split("T")[0] : "",
+      status: campaign.status,
     });
     setDialogOpen(true);
   };
@@ -89,16 +92,24 @@ export default function CampaignsManagement({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    const payload = {
+      name: formData.name,
+      description: formData.description || null,
+      startsAt: formData.startsAt || null,
+      endsAt: formData.endsAt || null,
+      status: formData.status,
+    };
+
     startTransition(async () => {
       const result = editingCampaign
         ? await updateCampaignAction(
             { success: false, enMessage: "", arMessage: "" },
             editingCampaign.id,
-            formData,
+            payload,
           )
         : await createCampaignAction(
             { success: false, enMessage: "", arMessage: "" },
-            formData,
+            payload,
           );
 
       if (result.success && result.data) {
@@ -154,11 +165,13 @@ export default function CampaignsManagement({
 
   return (
     <div className="container mx-auto px-4 py-8">
+      {/* TITLE + CREATE BUTTON */}
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold">{text.title}</h1>
           <p className="text-muted-foreground">{text.subtitle}</p>
         </div>
+
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
             <Button onClick={handleCreate}>
@@ -166,6 +179,7 @@ export default function CampaignsManagement({
               {text.createCampaign}
             </Button>
           </DialogTrigger>
+
           <DialogContent>
             <DialogHeader>
               <DialogTitle>
@@ -177,6 +191,7 @@ export default function CampaignsManagement({
                   : text.createDescription}
               </DialogDescription>
             </DialogHeader>
+
             <form onSubmit={handleSubmit}>
               <div className="space-y-4">
                 <div>
@@ -189,6 +204,7 @@ export default function CampaignsManagement({
                     required
                   />
                 </div>
+
                 <div>
                   <Label>{text.description}</Label>
                   <Textarea
@@ -202,16 +218,18 @@ export default function CampaignsManagement({
                     rows={3}
                   />
                 </div>
+
+                {/* FIXED DATES */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label>{text.startDate}</Label>
                     <Input
                       type="date"
-                      value={formData.startDate}
+                      value={formData.startsAt}
                       onChange={(e) =>
                         setFormData((prev) => ({
                           ...prev,
-                          startDate: e.target.value,
+                          startsAt: e.target.value,
                         }))
                       }
                     />
@@ -220,26 +238,32 @@ export default function CampaignsManagement({
                     <Label>{text.endDate}</Label>
                     <Input
                       type="date"
-                      value={formData.endDate}
+                      value={formData.endsAt}
                       onChange={(e) =>
                         setFormData((prev) => ({
                           ...prev,
-                          endDate: e.target.value,
+                          endsAt: e.target.value,
                         }))
                       }
                     />
                   </div>
                 </div>
+
+                {/* FIXED STATUS TOGGLE */}
                 <div className="flex items-center justify-between">
                   <Label>{text.active}</Label>
                   <Switch
-                    checked={formData.isActive}
+                    checked={formData.status === "active"}
                     onCheckedChange={(checked) =>
-                      setFormData((prev) => ({ ...prev, isActive: checked }))
+                      setFormData((prev) => ({
+                        ...prev,
+                        status: checked ? "active" : "draft",
+                      }))
                     }
                   />
                 </div>
               </div>
+
               <DialogFooter className="mt-6">
                 <Button
                   type="button"
@@ -266,6 +290,7 @@ export default function CampaignsManagement({
         </Dialog>
       </div>
 
+      {/* CAMPAIGN CARDS */}
       {campaigns.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
@@ -297,30 +322,35 @@ export default function CampaignsManagement({
                       </CardDescription>
                     )}
                   </div>
-                  <Badge variant={campaign.isActive ? "default" : "secondary"}>
-                    {campaign.isActive ? text.active : text.inactive}
+
+                  <Badge
+                    variant={
+                      campaign.status === "active" ? "default" : "secondary"
+                    }
+                  >
+                    {campaign.status === "active" ? text.active : text.inactive}
                   </Badge>
                 </div>
               </CardHeader>
+
               <CardContent>
-                {(campaign.startDate || campaign.endDate) && (
+                {(campaign.startsAt || campaign.endsAt) && (
                   <div className="text-sm text-muted-foreground mb-4">
-                    {campaign.startDate && (
+                    {campaign.startsAt && (
                       <p>
                         {text.startDate}:{" "}
-                        {new Date(campaign.startDate).toLocaleDateString(
-                          locale,
-                        )}
+                        {new Date(campaign.startsAt).toLocaleDateString(locale)}
                       </p>
                     )}
-                    {campaign.endDate && (
+                    {campaign.endsAt && (
                       <p>
                         {text.endDate}:{" "}
-                        {new Date(campaign.endDate).toLocaleDateString(locale)}
+                        {new Date(campaign.endsAt).toLocaleDateString(locale)}
                       </p>
                     )}
                   </div>
                 )}
+
                 <div className="flex gap-2">
                   <Button
                     variant="outline"
@@ -331,6 +361,7 @@ export default function CampaignsManagement({
                     <Pencil className="w-3 h-3 mr-1" />
                     {text.edit}
                   </Button>
+
                   <Button
                     variant="outline"
                     size="sm"

@@ -3,21 +3,24 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  Logger,
   Param,
   ParseIntPipe,
   Post,
   Put,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import {
   ApiCookieAuth,
   ApiOperation,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { User } from '../entities/user.entity';
 import { CampaignsService } from './campaigns.service';
 import {
   CampaignResponseDto,
@@ -26,6 +29,7 @@ import {
 } from './dto/campaign.dto';
 import { Campaign } from '../entities/campaign.entity';
 import { ApiStandardErrors } from 'src/common/decorators/api-standard-errors.decorator';
+const logger = new Logger('campaigns');
 @ApiStandardErrors()
 @ApiTags('Campaigns')
 @ApiCookieAuth()
@@ -34,6 +38,7 @@ import { ApiStandardErrors } from 'src/common/decorators/api-standard-errors.dec
 export class CampaignsController {
   constructor(private readonly campaignsService: CampaignsService) {}
 
+  // Map entity -> DTO
   private toDto(c: Campaign): CampaignResponseDto {
     return {
       id: c.id,
@@ -42,67 +47,106 @@ export class CampaignsController {
       ownerId: c.owner.id,
       teamId: c.team ? c.team.id : null,
       status: c.status,
-      startsAt: c.startsAt ? c.startsAt.toISOString() : null, // FIXED: DTO expects string | null
-      endsAt: c.endsAt ? c.endsAt.toISOString() : null, // FIXED: DTO expects string | null
+      startsAt: c.startsAt ? c.startsAt.toISOString() : null,
+      endsAt: c.endsAt ? c.endsAt.toISOString() : null,
       metadata: c.metadata ?? null,
-      createdAt: c.createdAt.toISOString(), // FIXED: DTO expects string
-      updatedAt: c.updatedAt.toISOString(), // FIXED: DTO expects string
+      createdAt: c.createdAt.toISOString(),
+      updatedAt: c.updatedAt.toISOString(),
     };
   }
 
   @Get()
-  @ApiOperation({ summary: 'List campaigns for current user' })
+  @ApiOperation({ summary: 'List campaigns for current user (paginated)' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    description: 'Page number (default 1)',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: 'Items per page (default 20, max 100)',
+  })
   @ApiResponse({ status: 200, type: [CampaignResponseDto] })
   async findAll(
-    @Query('ownerId', ParseIntPipe) ownerId: number,
+    @Req() req: { user: { id: number } },
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
   ): Promise<CampaignResponseDto[]> {
-    const campaigns = await this.campaignsService.findAll(ownerId);
+    const ownerId: number = req.user.id;
+    const pageNum = page ? parseInt(page, 10) || 1 : 1;
+    const limitNum = limit ? parseInt(limit, 10) || 20 : 20;
+    logger.log(
+      'Fetching campaigns for ownerId=' +
+        ownerId +
+        ', page=' +
+        pageNum +
+        ', limit=' +
+        limitNum,
+    );
+
+    const campaigns = await this.campaignsService.findAll(
+      ownerId,
+      pageNum,
+      limitNum,
+    );
     return campaigns.map((c) => this.toDto(c));
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get a single campaign' })
+  @ApiOperation({ summary: 'Get a single campaign owned by current user' })
   @ApiResponse({ status: 200, type: CampaignResponseDto })
   async findOne(
+    @Req() req: { user: { id: number } },
     @Param('id', ParseIntPipe) id: number,
-    @Query('ownerId', ParseIntPipe) ownerId: number,
   ): Promise<CampaignResponseDto> {
+    const ownerId: number = req.user.id;
     const c = await this.campaignsService.findOne(id, ownerId);
     return this.toDto(c);
   }
 
   @Post()
-  @ApiOperation({ summary: 'Create a new campaign' })
+  @ApiOperation({ summary: 'Create a new campaign for current user' })
+  @ApiQuery({
+    name: 'teamId',
+    required: false,
+    description: 'Optional team ID to associate with this campaign',
+  })
   @ApiResponse({ status: 201, type: CampaignResponseDto })
   async create(
-    @Query('ownerId', ParseIntPipe) ownerId: number,
+    @Req() req: { user: { id: number } },
     @Query('teamId') teamId: string | undefined,
     @Body() dto: CreateCampaignDto,
   ): Promise<CampaignResponseDto> {
+    const ownerId: number = req.user.id;
     const teamIdNum = teamId ? parseInt(teamId, 10) : undefined;
+
     const c = await this.campaignsService.create(ownerId, teamIdNum, dto);
     return this.toDto(c);
   }
 
   @Put(':id')
-  @ApiOperation({ summary: 'Update a campaign' })
+  @ApiOperation({ summary: 'Update a campaign owned by current user' })
   @ApiResponse({ status: 200, type: CampaignResponseDto })
   async update(
+    @Req() req: { user: { id: number } },
     @Param('id', ParseIntPipe) id: number,
-    @Query('ownerId', ParseIntPipe) ownerId: number,
     @Body() dto: UpdateCampaignDto,
   ): Promise<CampaignResponseDto> {
+    const ownerId: number = req.user.id;
     const c = await this.campaignsService.update(id, ownerId, dto);
     return this.toDto(c);
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete a campaign (soft delete)' })
-  @ApiResponse({ status: 204 })
+  @HttpCode(204)
+  @ApiOperation({ summary: 'Delete a campaign (soft delete) for current user' })
+  @ApiResponse({ status: 204, description: 'Campaign deleted' })
   async remove(
+    @Req() req: { user: { id: number } },
     @Param('id', ParseIntPipe) id: number,
-    @Query('ownerId', ParseIntPipe) ownerId: number,
   ): Promise<void> {
+    const ownerId: number = req.user.id;
     await this.campaignsService.remove(id, ownerId);
   }
 }

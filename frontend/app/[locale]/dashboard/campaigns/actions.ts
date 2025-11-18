@@ -13,24 +13,39 @@ interface ActionState {
   enMessage: string;
   arMessage: string;
   data?: ICampaign;
+  error?: string;
 }
+function revalidateCampaigns() {
+  revalidatePath("/dashboard/campaigns");
+  revalidatePath("/dashboard/create");
+}
+function extractErrorMessage(err: any): string {
+  if (!err) return "Unknown error";
 
+  // from apiRequest: { success: false, error: "..."}
+  if (typeof err === "string") return err;
+
+  if (err?.error) return err.error;
+
+  if (err?.message) return err.message;
+
+  return "Unknown error";
+}
 export async function createCampaignAction(
   prevState: ActionState,
   data: {
     name: string;
-    description?: string;
-    startDate?: string;
-    endDate?: string;
-    isActive: boolean;
+    description?: string | null;
+    startsAt?: string | null;
+    endsAt?: string | null;
+    status?: string;
   },
 ): Promise<ActionState> {
   try {
     const result = await createCampaign(data);
 
     if (result.success && result.data) {
-      revalidatePath("/dashboard/campaigns");
-      revalidatePath("/dashboard/create");
+      revalidateCampaigns();
       return {
         success: true,
         enMessage: "Campaign created successfully!",
@@ -41,14 +56,17 @@ export async function createCampaignAction(
 
     return {
       success: false,
-      enMessage: result.error || "Failed to create campaign",
-      arMessage: result.errorAr || "فشل في إنشاء الحملة",
+      enMessage: extractErrorMessage(result),
+      arMessage: extractErrorMessage(result),
+      error: extractErrorMessage(result),
     };
-  } catch (error) {
+  } catch (err) {
+    const msg = extractErrorMessage(err);
     return {
       success: false,
-      enMessage: "An error occurred while creating the campaign",
-      arMessage: "حدث خطأ أثناء إنشاء الحملة",
+      enMessage: msg,
+      arMessage: msg,
+      error: msg,
     };
   }
 }
@@ -58,18 +76,17 @@ export async function updateCampaignAction(
   id: number,
   data: Partial<{
     name: string;
-    description?: string;
-    startDate?: string;
-    endDate?: string;
-    isActive: boolean;
+    description?: string | null;
+    startsAt?: string | null;
+    endsAt?: string | null;
+    status?: string;
   }>,
 ): Promise<ActionState> {
   try {
     const result = await updateCampaign(id, data);
 
     if (result.success && result.data) {
-      revalidatePath("/dashboard/campaigns");
-      revalidatePath("/dashboard/create");
+      revalidateCampaigns();
       return {
         success: true,
         enMessage: "Campaign updated successfully!",
@@ -80,14 +97,17 @@ export async function updateCampaignAction(
 
     return {
       success: false,
-      enMessage: result.error || "Failed to update campaign",
-      arMessage: result.errorAr || "فشل في تحديث الحملة",
+      enMessage: extractErrorMessage(result),
+      arMessage: extractErrorMessage(result),
+      error: extractErrorMessage(result),
     };
-  } catch (error) {
+  } catch (err) {
+    const msg = extractErrorMessage(err);
     return {
       success: false,
-      enMessage: "An error occurred while updating the campaign",
-      arMessage: "حدث خطأ أثناء تحديث الحملة",
+      enMessage: msg,
+      arMessage: msg,
+      error: msg,
     };
   }
 }
@@ -100,8 +120,7 @@ export async function deleteCampaignAction(
     const result = await deleteCampaign(id);
 
     if (result.success) {
-      revalidatePath("/dashboard/campaigns");
-      revalidatePath("/dashboard/create");
+      revalidateCampaigns();
       return {
         success: true,
         enMessage: "Campaign deleted successfully!",
@@ -111,14 +130,17 @@ export async function deleteCampaignAction(
 
     return {
       success: false,
-      enMessage: result.error || "Failed to delete campaign",
-      arMessage: result.errorAr || "فشل في حذف الحملة",
+      enMessage: extractErrorMessage(result),
+      arMessage: extractErrorMessage(result),
+      error: extractErrorMessage(result),
     };
-  } catch (error) {
+  } catch (err) {
+    const msg = extractErrorMessage(err);
     return {
       success: false,
-      enMessage: "An error occurred while deleting the campaign",
-      arMessage: "حدث خطأ أثناء حذف الحملة",
+      enMessage: msg,
+      arMessage: msg,
+      error: msg,
     };
   }
 }

@@ -5,28 +5,34 @@ import { apiRequest, ApiResult } from "./api-requester";
 export interface ICampaign {
   id: number;
   name: string;
-  description?: string;
-  startDate?: string;
-  endDate?: string;
-  isActive: boolean;
-  metadata?: Record<string, any>;
+  description: string | null;
+  ownerId: number;
+  teamId: number | null;
+  status: "draft" | "active";
+  startsAt: string | null;
+  endsAt: string | null;
+  metadata?: Record<string, any> | null;
   createdAt: string;
   updatedAt: string;
 }
 
-interface CreateCampaignDto {
+export interface CreateCampaignDto {
   name: string;
-  description?: string;
-  startDate?: string;
-  endDate?: string;
-  isActive?: boolean;
+  description?: string | null;
+  status?: string;
+  teamId?: number | null;
+  startsAt?: string | null;
+  endsAt?: string | null;
   metadata?: Record<string, any>;
 }
 
-export async function listCampaigns(): Promise<ApiResult<ICampaign[]>> {
+export async function listCampaigns(
+  page = 1,
+  limit = 50,
+): Promise<ApiResult<ICampaign[]>> {
   return apiRequest<ICampaign[]>({
     method: "GET",
-    path: "/campaigns",
+    path: `/campaigns?page=${page}&limit=${limit}`,
     cache: { tags: ["campaigns"], revalidate: 3600 },
   });
 }
