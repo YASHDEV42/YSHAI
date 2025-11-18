@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -17,7 +11,7 @@ import {
   TrendingUp,
   Plus,
   Search,
-  Filter,
+  ArrowLeft,
 } from "lucide-react";
 import Link from "next/link";
 import type { TConnectedAccount } from "@/types";
@@ -61,18 +55,10 @@ export function Platforms({ text, locale, accounts }: PlatformsProps) {
               </h1>
               <p className="text-muted-foreground mt-1">{text.subtitle}</p>
             </div>
-            <Button
-              onClick={() => setDialogOpen(true)}
-              size="lg"
-              className="gap-2"
-            >
-              <Plus className="size-4" />
-              {text.connectPlatform}
-            </Button>
           </div>
 
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card className="border-l-4 border-l-primary">
+            <Card className="border-l-4 border-l-primary hover:border-l-accent transition-all">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   {text.stats.totalAccounts}
@@ -89,7 +75,7 @@ export function Platforms({ text, locale, accounts }: PlatformsProps) {
               </CardContent>
             </Card>
 
-            <Card className="border-l-4 border-l-blue-500">
+            <Card className="border-l-4 border-l-blue-500 hover:border-l-accent transition-all">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   {text.stats.totalFollowers}
@@ -108,7 +94,7 @@ export function Platforms({ text, locale, accounts }: PlatformsProps) {
               </CardContent>
             </Card>
 
-            <Card className="border-l-4 border-l-green-500">
+            <Card className="border-l-4 border-l-green-500 hover:border-l-accent transition-all">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   {text.stats.totalPosts}
@@ -125,7 +111,7 @@ export function Platforms({ text, locale, accounts }: PlatformsProps) {
               </CardContent>
             </Card>
 
-            <Card className="border-l-4 border-l-orange-500">
+            <Card className="border-l-4 border-l-orange-500 hover:border-l-accent transition-all">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   {text.stats.avgEngagement}
@@ -203,7 +189,7 @@ export function Platforms({ text, locale, accounts }: PlatformsProps) {
                 return (
                   <Card
                     key={account.id}
-                    className="group hover:shadow-xl hover:scale-[1.02] transition-all duration-300 overflow-hidden border-2 hover:border-primary/50"
+                    className="group hover:shadow-xl hover:scale-[1.02] transition-all duration-300 overflow-hidden border-2 hover:border-primary"
                   >
                     <CardContent className="p-6">
                       <div className="flex items-start justify-between mb-4">
@@ -264,14 +250,18 @@ export function Platforms({ text, locale, accounts }: PlatformsProps) {
 
                       <Button
                         asChild
-                        className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
+                        className="w-full group-hover:bg-primary  transition-colors"
                         variant="outline"
                       >
                         <Link
                           href={`/${locale}/dashboard/platforms/${account.provider.toLowerCase()}-${account.id}`}
                         >
                           {text.viewPlatform}
-                          <ArrowRight className="ml-2 size-4 group-hover:translate-x-1 transition-transform" />
+                          {locale === "ar" ? (
+                            <ArrowLeft className="ml-2 size-4 group-hover:-translate-x-1 transition-transform" />
+                          ) : (
+                            <ArrowRight className="ml-2 size-4 group-hover:translate-x-1 transition-transform" />
+                          )}
                         </Link>
                       </Button>
                     </CardContent>

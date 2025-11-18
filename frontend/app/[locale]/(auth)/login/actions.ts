@@ -3,6 +3,7 @@
 import { login } from "@/lib/auth-helper";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 type initialStateType = {
   arMessage: string;
@@ -60,6 +61,7 @@ export const loginAction = async (
   });
 
   revalidatePath("/dashboard");
+  redirect("/dashboard");
   return {
     arMessage: "تم تسجيل الدخول بنجاح",
     enMessage: "Login successful",

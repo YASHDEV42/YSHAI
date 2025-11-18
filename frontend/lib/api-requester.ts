@@ -41,11 +41,12 @@ export async function apiRequest<TResponse, TBody = any>(
   opts: ApiRequestOptions<TBody>,
 ): Promise<ApiResult<TResponse>> {
   const { method = "GET", path, query, body, formData, cache } = opts;
+  console.log("API path:", path);
 
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("accessToken")?.value;
 
-  if (!accessToken) {
+  if (!accessToken && path !== "/auth/login" && path !== "/auth/register") {
     return {
       success: false,
       status: 401,

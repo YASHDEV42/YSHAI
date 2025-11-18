@@ -3,10 +3,11 @@ import LoginPage from "./components/login";
 import { extractLoginPageText } from "@/app/i18n/extractTexts";
 
 export default async function LoginPageRoute({
-  params: { locale },
+  params,
 }: {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }) {
+  const { locale } = await params;
   setRequestLocale(locale);
 
   const text = await extractLoginPageText(locale);
