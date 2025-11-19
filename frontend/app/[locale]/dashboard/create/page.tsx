@@ -23,11 +23,13 @@ export default async function CreatePageRoute({
   const accountsRes = await listMyAccounts();
   const accounts = accountsRes.success ? accountsRes.data : [];
 
-  const tagsRes = await listTags();
+  const tagsRes = await listTags(1, 100);
   const tags = tagsRes.success ? tagsRes.data : [];
+  console.log("tags", tags);
 
-  const campaignsRes = await listCampaigns();
+  const campaignsRes = await listCampaigns(1, 100);
   const campaigns = campaignsRes.success ? campaignsRes.data : [];
+  console.log("campaigns", campaigns);
 
   const text = await extractCreatePageText(locale);
   return (

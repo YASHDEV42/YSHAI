@@ -2,15 +2,45 @@
 
 import { createTag, deleteTag } from "@/lib/tag-helper";
 import { ITag } from "@/interfaces";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 interface ActionState {
   success: boolean;
   enMessage: string;
   arMessage: string;
   data?: ITag;
+  error?: string;
 }
 
+/* ---------------------------------------------------------
+ * Revalidate Helper (aligned with campaign actions)
+ * --------------------------------------------------------- */
+function revalidateTags() {
+  // Revalidate cache tags if used elsewhere
+  revalidateTag("tags", "");
+
+  // Revalidate UI pages
+  revalidatePath("/dashboard/tags");
+  revalidatePath("/dashboard/create");
+}
+
+/* ---------------------------------------------------------
+ * Unified Error Extractor (same as campaign actions)
+ * --------------------------------------------------------- */
+function extractErrorMessage(err: any): string {
+  if (!err) return "Unknown error";
+
+  if (typeof err === "string") return err;
+
+  if (err.error) return err.error;
+  if (err.message) return err.message;
+
+  return "Unknown error";
+}
+
+/* ---------------------------------------------------------
+ * CREATE TAG
+ * --------------------------------------------------------- */
 export async function createTagAction(
   prevState: ActionState,
   data: { name: string },
@@ -19,8 +49,7 @@ export async function createTagAction(
     const result = await createTag(data);
 
     if (result.success && result.data) {
-      revalidatePath("/dashboard/tags");
-      revalidatePath("/dashboard/create");
+      revalidateTags();
       return {
         success: true,
         enMessage: "Tag created successfully!",
@@ -29,20 +58,28 @@ export async function createTagAction(
       };
     }
 
+    const msg = extractErrorMessage(result);
+
     return {
       success: false,
-      enMessage: result.error || "Failed to create tag",
-      arMessage: result.errorAr || "فشل في إنشاء الوسم",
+      enMessage: msg,
+      arMessage: msg,
+      error: msg,
     };
-  } catch (error) {
+  } catch (err) {
+    const msg = extractErrorMessage(err);
     return {
       success: false,
-      enMessage: "An error occurred while creating the tag",
-      arMessage: "حدث خطأ أثناء إنشاء الوسم",
+      enMessage: msg,
+      arMessage: msg,
+      error: msg,
     };
   }
 }
 
+/* ---------------------------------------------------------
+ * DELETE TAG
+ * --------------------------------------------------------- */
 export async function deleteTagAction(
   prevState: ActionState,
   id: number,
@@ -51,8 +88,7 @@ export async function deleteTagAction(
     const result = await deleteTag(id);
 
     if (result.success) {
-      revalidatePath("/dashboard/tags");
-      revalidatePath("/dashboard/create");
+      revalidateTags();
       return {
         success: true,
         enMessage: "Tag deleted successfully!",
@@ -60,16 +96,21 @@ export async function deleteTagAction(
       };
     }
 
+    const msg = extractErrorMessage(result);
+
     return {
       success: false,
-      enMessage: result.error || "Failed to delete tag",
-      arMessage: result.errorAr || "فشل في حذف الوسم",
+      enMessage: msg,
+      arMessage: msg,
+      error: msg,
     };
-  } catch (error) {
+  } catch (err) {
+    const msg = extractErrorMessage(err);
     return {
       success: false,
-      enMessage: "An error occurred while deleting the tag",
-      arMessage: "حدث خطأ أثناء حذف الوسم",
+      enMessage: msg,
+      arMessage: msg,
+      error: msg,
     };
   }
 }

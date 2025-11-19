@@ -9,7 +9,7 @@ export default async function CampaignsPage({
 }) {
   const { locale } = await params;
   const text = await extractCampaignsPageText(locale);
-  const campaignsResult = await listCampaigns();
+  const campaignsResult = await listCampaigns(1, 100);
 
   const campaigns = campaignsResult.success ? campaignsResult.data || [] : [];
 

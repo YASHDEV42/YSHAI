@@ -94,7 +94,14 @@ export class CreatePostDto {
   })
   @IsOptional()
   socialAccountIds?: number[];
-
+  @ApiProperty({
+    description: 'List of tag IDs (optional)',
+    example: [1, 3, 7],
+    required: false,
+    type: [Number],
+  })
+  @IsOptional()
+  tagIds?: number[];
   @ApiProperty({
     description: 'ID of the associated campaign (optional)',
     example: 7,

@@ -4,6 +4,7 @@ import { IPost } from "@/interfaces";
 import { ApiResult } from "@/lib/api-requester";
 import { create } from "@/lib/post-helper";
 import { uploadMedia } from "@/lib/media-helper";
+import { extractErrorMessage } from "@/lib/error-utils";
 
 type InitialStateType = {
   arMessage: string;
@@ -50,10 +51,11 @@ export const createPostAction = async (
     const postResult: ApiResult<IPost> = await create(dto);
 
     if (!postResult.success || !postResult.data) {
+      const msg = extractErrorMessage(postResult);
       return {
         success: false,
-        enMessage: "Failed to create the post",
-        arMessage: "فشل إنشاء المنشور",
+        enMessage: msg,
+        arMessage: msg,
       };
     }
 

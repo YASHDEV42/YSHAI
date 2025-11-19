@@ -2,27 +2,30 @@ import {
   Entity,
   PrimaryKey,
   Property,
+  ManyToOne,
   OneToMany,
-  Collection,
   Unique,
   Index,
+  Collection,
 } from '@mikro-orm/core';
+import { User } from '../entities/user.entity';
 import { PostTag } from './post-tag.entity';
 
 @Entity()
-@Unique({ properties: ['normalized'] }) // tags must be unique
+@Unique({ properties: ['owner', 'normalized'] }) // unique per owner
 export class Tag {
   @PrimaryKey()
   id!: number;
 
+  @ManyToOne(() => User, { fieldName: 'ownerId' })
+  owner!: User;
+
   @Property()
-  name!: string; // original text, e.g. "Social Media Tips"
+  name!: string;
 
   @Index()
   @Property()
   normalized!: string;
-  // lowercased, trimmed, slugged version
-  // e.g. "social-media-tips"
 
   @Property({ onCreate: () => new Date() })
   createdAt = new Date();

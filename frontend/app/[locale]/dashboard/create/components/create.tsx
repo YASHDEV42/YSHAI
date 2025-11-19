@@ -63,9 +63,11 @@ export default function CreatePage({
   const [contentEn, setContentEn] = useState("");
   const [contentTab, setContentTab] = useState<"ar" | "en">("en");
 
+  const [error, setError] = useState("");
+
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [uploadedMedia, setUploadedMedia] = useState<string[]>([]);
-  const [files, setFiles] = useState<File[]>([]); // 👈 IMPORTANT: real files
+  const [files, setFiles] = useState<File[]>([]);
 
   const [scheduleType, setScheduleType] = useState<"now" | "later">("now");
   const [scheduleDate, setScheduleDate] = useState("");
@@ -144,10 +146,13 @@ export default function CreatePage({
       );
 
       if (result.success) {
+        setError(""); // Clear error
+
         toast({
           title: locale === "ar" ? "نجح" : "Success",
           description: locale === "ar" ? result.arMessage : result.enMessage,
         });
+
         // Reset form
         setContentAr("");
         setContentEn("");
@@ -157,9 +162,13 @@ export default function CreatePage({
         setSelectedCampaign("");
         setSelectedTags([]);
       } else {
+        const message = locale === "ar" ? result.arMessage : result.enMessage;
+
+        setError(message); // SET ERROR STATE
+
         toast({
           title: locale === "ar" ? "خطأ" : "Error",
-          description: locale === "ar" ? result.arMessage : result.enMessage,
+          description: message,
           variant: "destructive",
         });
       }
@@ -185,7 +194,7 @@ export default function CreatePage({
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-semibold">YSHAI</span>
+              <span className="font-semibold">{platform.username}</span>
               <PlatformIcon className="w-4 h-4" />
             </div>
             <span className="text-xs text-muted-foreground">
@@ -324,7 +333,7 @@ export default function CreatePage({
                         </div>
                       ) : (
                         campaigns
-                          .filter((c) => c.isActive)
+                          .filter((c) => c.status == "active")
                           .map((campaign) => (
                             <SelectItem
                               key={campaign.id}
@@ -549,6 +558,9 @@ export default function CreatePage({
                       </div>
                     </TabsContent>
                   </Tabs>
+                  {error && (
+                    <p className="text-sm text-destructive mt-2">{error}</p>
+                  )}
 
                   <Button
                     type="submit"

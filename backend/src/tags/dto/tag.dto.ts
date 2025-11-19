@@ -1,39 +1,36 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsNotEmpty, IsString, IsOptional, IsArray } from 'class-validator';
 
 export class TagResponseDto {
   @ApiProperty()
   id: number;
 
-  @ApiProperty({ description: 'Original tag text, e.g. "Social Media Tips"' })
+  @ApiProperty()
   name: string;
 
-  @ApiProperty({ description: 'Normalized, slugged version of the tag name' })
+  @ApiProperty()
   normalized: string;
 
-  @ApiProperty({
-    required: false,
-    nullable: true,
-    description: 'Arbitrary JSON metadata for the tag',
-  })
-  metadata?: Record<string, unknown> | null;
+  @ApiProperty()
+  ownerId: number;
 
   @ApiProperty()
-  createdAt: string; // FIXED: use ISO date-time string to match Swagger TagResponseDto.createdAt
+  createdAt: string;
+
+  @ApiPropertyOptional()
+  metadata?: Record<string, any> | null;
 }
 
 export class CreateTagDto {
-  @ApiProperty({ description: 'Tag name as entered by the user' })
+  @ApiProperty()
   @IsString()
   @IsNotEmpty()
   name: string;
 }
 
 export class UpdatePostTagsDto {
-  @ApiProperty({
-    type: [String],
-    description: 'List of tag names to apply to the post',
-  })
+  @ApiProperty({ type: [String] })
+  @IsArray()
   @IsString({ each: true })
   @IsOptional()
   names?: string[];

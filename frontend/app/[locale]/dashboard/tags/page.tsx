@@ -9,7 +9,7 @@ export default async function TagsPage({
 }) {
   const { locale } = await params;
   const text = await extractTagsPageText(locale);
-  const tagsResult = await listTags();
+  const tagsResult = await listTags(1, 100, "");
 
   const tags = tagsResult.success ? tagsResult.data || [] : [];
 

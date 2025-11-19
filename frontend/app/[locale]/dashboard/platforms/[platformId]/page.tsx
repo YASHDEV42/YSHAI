@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { extractPlatformDetailPageText } from "@/app/i18n/extractTexts";
 import { listMyAccounts } from "@/lib/accounts-helper";
 import { getInstagramPosts } from "@/lib/meta-helper";
+import { list } from "@/lib/post-helper";
 
 export default async function PlatformDetailPage({
   params,
@@ -25,9 +26,19 @@ export default async function PlatformDetailPage({
     notFound();
   }
   console.log("Rendering PlatformDetailPage for account:", account);
-  const postsResponse = await getInstagramPosts(account.providerAccountId);
-  console.log("Fetched posts response:", postsResponse);
-  const posts = postsResponse.success ? postsResponse.data.data : [];
+  const instagramPostsResponse = await getInstagramPosts(
+    account.providerAccountId,
+  );
+  console.log("Fetched posts response:", instagramPostsResponse);
+  const posts = instagramPostsResponse.success
+    ? instagramPostsResponse.data.data
+    : [];
+  const postsResponse = await list({
+    teamId: undefined,
+    campaignId: 0,
+    scheduledFrom: "",
+    scheduledTo: "",
+  });
 
   return (
     <PlatformDetail
