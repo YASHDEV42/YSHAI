@@ -1,6 +1,5 @@
 {
   "Navbar": {
-    "logo": "YSHAI",
     "features": "Features",
     "pricing": "Pricing",
     "about": "About",
@@ -10,47 +9,107 @@
     "logout": "Logout"
   },
   "HeroSection": {
-    "heading": "Analyze, connect, and publish across all your accounts with AI that understands you",
-    "subHeading": "Save your time and effort! Analyze your performance, plan and schedule posts automatically, and create engaging content — all with AI tools fluent in your language.",
-    "primaryButton": "Start your free account now",
-    "secondaryButton": "Watch more",
-    "highlight": "AI-Powered Social Media Management"
+    "highlight": "AI-Powered Social Media Management",
+    "heading": "Manage all your social media in one powerful platform",
+    "subHeading": "Create, schedule, and analyze your content across all platforms with AI assistance. Save time and boost engagement with intelligent automation.",
+    "primaryButton": "Start Free Trial",
+    "secondaryButton": "Watch Demo"
+  },
+  "StatsSection": {
+    "badge": "Trusted Worldwide",
+    "heading": "Numbers that speak for themselves",
+    "subHeading": "Join thousands of businesses that trust us with their social media",
+    "stats": {
+      "users": {
+        "value": "50K+",
+        "label": "Active Users"
+      },
+      "posts": {
+        "value": "2M+",
+        "label": "Posts Scheduled"
+      },
+      "time": {
+        "value": "15hrs",
+        "label": "Saved per Week"
+      },
+      "engagement": {
+        "value": "3.5x",
+        "label": "More Engagement"
+      }
+    }
   },
   "FeatureSection": {
     "badge": "Features",
     "heading": "Everything you need to succeed",
-    "subHeading": "Built for Arabic content creators with powerful AI and seamless multi-platform publishing",
+    "subHeading": "Powerful features designed to streamline your social media workflow",
     "features": {
       "ai": {
         "title": "AI Content Generation",
-        "description": "Generate engaging Arabic captions, hashtags, and alt text with AI trained for MENA audiences. Support for MSA and Gulf dialects."
+        "description": "Generate engaging posts with AI assistance. Get content ideas, captions, and hashtags instantly."
       },
       "schedule": {
         "title": "Smart Scheduling",
-        "description": "Schedule posts across multiple platforms with timezone support, recurring posts, and drag-and-drop calendar management."
+        "description": "Schedule posts at optimal times across all platforms. Never miss the perfect moment to engage."
       },
       "analytics": {
-        "title": "Analytics & Reports",
-        "description": "Track engagement metrics, analyze trends, and export detailed reports. Campaign-level insights across all platforms."
+        "title": "Advanced Analytics",
+        "description": "Track performance with detailed insights. Understand what works and optimize your strategy."
       },
       "team": {
         "title": "Team Collaboration",
-        "description": "Invite team members, assign roles, and manage approval workflows. Perfect for agencies managing multiple clients."
+        "description": "Work together seamlessly. Assign roles, approve content, and manage workflows efficiently."
       },
       "publish": {
-        "title": "Reliable Publishing",
-        "description": "Independent status tracking per platform with automatic retries, webhooks, and real-time notifications for every post."
+        "title": "Multi-Platform Publishing",
+        "description": "Publish to all major social networks from one dashboard. Save time and stay consistent."
       },
       "rtl": {
         "title": "RTL Support",
-        "description": "Full right-to-left UI support with Arabic typography. Switch between Arabic and English seamlessly."
+        "description": "Full right-to-left language support. Perfect for Arabic, Hebrew, and other RTL languages."
       }
+    },
+    "learnMore": "Learn More"
+  },
+  "HowItWorksSection": {
+    "badge": "How It Works",
+    "heading": "Get started in minutes",
+    "subHeading": "Simple steps to transform your social media management",
+    "steps": {
+      "step1": {
+        "title": "Connect Your Accounts",
+        "description": "Link all your social media accounts in one place securely and quickly."
+      },
+      "step2": {
+        "title": "Create Content",
+        "description": "Use AI to generate engaging posts or create your own with our powerful editor."
+      },
+      "step3": {
+        "title": "Schedule & Publish",
+        "description": "Set your posting schedule and let automation handle the rest across all platforms."
+      },
+      "step4": {
+        "title": "Analyze & Optimize",
+        "description": "Track performance metrics and refine your strategy for maximum impact."
+      }
+    }
+  },
+  "IntegrationsSection": {
+    "badge": "Integrations",
+    "heading": "Connect all your platforms",
+    "subHeading": "Seamlessly integrate with all major social media networks",
+    "platforms": {
+      "facebook": "Facebook",
+      "twitter": "X (Twitter)",
+      "instagram": "Instagram",
+      "linkedin": "LinkedIn",
+      "youtube": "YouTube",
+      "tiktok": "TikTok"
     }
   },
   "PricingSection": {
     "badge": "Pricing",
-    "heading": "Simple, transparent pricing",
-    "subHeading": "Choose the plan that fits your needs. All plans include AI generation and multi-platform support.",
+    "heading": "Choose your plan",
+    "subHeading": "Flexible pricing for teams of all sizes",
     "plans": {
       "free": {
         "title": "Free",
@@ -59,48 +118,80 @@
         "features": [
           "1 social account",
           "10 scheduled posts",
-          "Basic AI generation",
-          "Basic analytics"
+          "Basic analytics",
+          "Community support"
         ],
         "button": "Get Started"
       },
       "pro": {
         "title": "Pro",
-        "price": "$9",
+        "price": "$29",
         "period": "/month",
         "badge": "Most Popular",
         "features": [
           "10 social accounts",
-          "Unlimited scheduled posts",
-          "Advanced AI generation",
-          "Advanced analytics & reports",
-          "Bulk upload (CSV)"
+          "Unlimited posts",
+          "Advanced analytics",
+          "AI content generation",
+          "Priority support",
+          "Team collaboration"
         ],
         "button": "Start Free Trial"
       },
       "business": {
         "title": "Business",
-        "price": "$19",
+        "price": "$99",
         "period": "/month",
         "features": [
           "Unlimited accounts",
-          "Everything in Pro",
+          "Unlimited posts",
+          "Advanced analytics",
+          "AI content generation",
+          "24/7 priority support",
           "Team collaboration",
-          "Approval workflows",
-          "Priority support"
+          "Custom branding",
+          "API access"
         ],
         "button": "Contact Sales"
       }
     }
   },
+  "TestimonialsSection": {
+    "badge": "Testimonials",
+    "heading": "Loved by teams worldwide",
+    "subHeading": "See what our customers have to say about their experience",
+    "testimonials": {
+      "testimonial1": {
+        "name": "Sarah Johnson",
+        "role": "Marketing Director",
+        "company": "TechCorp",
+        "content": "This platform has transformed how we manage our social media. The AI features save us hours every week!",
+        "rating": 5
+      },
+      "testimonial2": {
+        "name": "Michael Chen",
+        "role": "Social Media Manager",
+        "company": "GrowthLabs",
+        "content": "The analytics are incredibly detailed and the scheduling is seamless. Best tool we've used.",
+        "rating": 5
+      },
+      "testimonial3": {
+        "name": "Emily Rodriguez",
+        "role": "Founder",
+        "company": "CreativeStudio",
+        "content": "Finally, a tool that actually understands what content creators need. Highly recommended!",
+        "rating": 5
+      }
+    }
+  },
   "CtaSection": {
     "heading": "Ready to transform your social media?",
-    "subHeading": "Join thousands of creators and businesses using YSHAI to schedule smarter and grow faster.",
+    "subHeading": "Join thousands of businesses already growing with our platform. Start your free trial today.",
     "primaryButton": "Start Free Trial",
-    "secondaryButton": "Schedule a Demo"
+    "secondaryButton": "Schedule Demo"
   },
   "FooterSection": {
-    "description": "Arabic-first AI social media scheduler for the MENA region.",
+    "description": "The all-in-one platform for social media management. Create, schedule, and analyze your content with AI assistance.",
     "product": {
       "title": "Product",
       "features": "Features",
@@ -117,634 +208,246 @@
     },
     "legal": {
       "title": "Legal",
-      "privacy": "Privacy",
-      "terms": "Terms",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
       "security": "Security"
     },
     "copyright": "© 2025 YSHAI. All rights reserved."
   },
-  "SignUpPage": {
-    "title": "Create your account",
-    "subtitle": "Start scheduling smarter with AI-powered Arabic content",
-    "googleButton": "Continue with Google",
-    "orDivider": "Or continue with email",
-    "nameLabel": "Full Name",
-    "namePlaceholder": "Ahmed Al-Rashid",
-    "nameRequired": "Name is required",
-    "emailLabel": "Email",
-    "emailPlaceholder": "ahmed@example.com",
-    "emailRequired": "Email is required",
-    "emailInvalid": "Please enter a valid email",
-    "passwordLabel": "Password",
-    "passwordPlaceholder": "••••••••",
-    "passwordRequired": "Password is required",
-    "passwordTooShort": "Password must be at least 8 characters",
-    "passwordHint": "Must be at least 8 characters",
-    "haveAccount": "Already have an account?",
-    "signInLink": "Sign In",
-    "createAccountButton": "Create account",
-    "creatingAccountButton": "Creating account...",
-    "termsAgreement": "By creating an account, you agree to our",
-    "termsOfService": "Terms of Service",
-    "privacyPolicy": "Privacy Policy",
-    "needHelp": "Need help?",
-    "contactSupport": "Contact support",
-    "verificationTitle": "Check Your Email",
-    "verificationMessage": "We've sent a verification link to your email address. Please check your inbox and verify your email before signing in.",
-    "verificationButton": "I've Verified - Go to Login"
-  },
-  "LoginPage": {
-    "title": "Welcome back",
-    "subtitle": "Sign in to your account to continue",
-    "googleButton": "Continue with Google",
-    "githubButton": "Continue with GitHub",
-    "orDivider": "Or continue with email",
-    "emailLabel": "Email",
-    "emailPlaceholder": "ahmed@example.com",
-    "emailRequired": "Email is required",
-    "emailInvalid": "Please enter a valid email",
-    "passwordLabel": "Password",
-    "passwordPlaceholder": "••••••••",
-    "passwordRequired": "Password is required",
-    "forgotPassword": "Forgot password?",
-    "noAccount": "Don't have an account?",
-    "signUpLink": "Sign Up",
-    "signInButton": "Sign in",
-    "signingInButton": "Signing in...",
-    "termsAgreement": "By signing in, you agree to our",
-    "termsOfService": "Terms of Service",
-    "privacyPolicy": "Privacy Policy",
-    "needHelp": "Need help?",
-    "contactSupport": "Contact support"
-  },
-  "DashboardPage": {
-    "welcomeMessage": "Welcome back, John",
-    "welcomeSubtitle": "Here's what's happening with your social media today",
-    "stats": {
-      "scheduledPosts": "Scheduled Posts",
-      "publishedThisWeek": "Published This Week",
-      "connectedAccounts": "Connected Accounts",
-      "avgEngagement": "Avg. Engagement",
-      "changeFromLastWeek": "from last week"
-    },
-    "recentActivity": {
-      "title": "Recent Activity",
-      "description": "Your latest posts and scheduled content",
-      "viewAll": "View All Activity"
-    },
-    "quickActions": {
-      "title": "Quick Actions",
-      "createPost": "Create New Post",
-      "viewCalendar": "View Calendar",
-      "viewAnalytics": "View Analytics"
-    },
-    "connectedPlatforms": {
-      "title": "Connected Platforms",
-      "description": "Manage your social accounts",
-      "connected": "Connected",
-      "connect": "Connect",
-      "addPlatform": "Add Platform"
-    },
-    "user": {
-      "name": "John Doe",
-      "email": "john@example.com"
-    },
-    "activityStatus": {
-      "published": "Published",
-      "scheduled": "Scheduled",
-      "failed": "Failed"
-    }
-  },
-  "DashboardSidebar": {
-    "logo": "YSHAI",
-    "overview": "Overview",
-    "createPost": "Create Post",
-    "calendar": "Calendar",
-    "platforms": "Platforms",
-    "campaigns": "Campaigns",
-    "tags": "Tags",
-    "analytics": "Analytics",
-    "settings": "Settings",
-    "notifications": "Notifications",
-    "noNotifications": "No notifications yet",
-    "markAll": "Mark all as read",
-    "new": "new",
-    "justNow": "just now",
-    "minutesAgo": "around minutes ago",
-    "hoursAgo": "around hours ago",
-    "daysAgo": "around days ago"
-  },
-  "CreatePage": {
-    "header": {
-      "saveDraft": "Save Draft",
-      "schedule": "Schedule",
-      "publishNow": "Publish Now"
-    },
-    "aiGenerator": {
-      "title": "AI Content Generator",
-      "promptLabel": "Describe what you want to post about",
-      "placeholder": "e.g., Write a post about the benefits of AI in social media management for Arabic businesses...",
-      "generateButton": "Generate with AI",
-      "generating": "Generating..."
-    },
-    "platforms": {
-      "title": "Select Platforms",
-      "twitter": "X (Twitter)",
-      "instagram": "Instagram",
-      "linkedin": "LinkedIn",
-      "tiktok": "TikTok"
-    },
-    "contentEditor": {
-      "title": "Post Content",
-      "placeholder": "Write your post content here... You can also write in Arabic",
-      "characters": "characters",
-      "twitterLimitExceeded": "Twitter limit exceeded"
-    },
-    "media": {
-      "title": "Media",
-      "uploadImage": "Upload Image",
-      "uploadVideo": "Upload Video"
+  "FeatureDetailPages": {
+    "ai": {
+      "badge": "AI Technology",
+      "title": "AI Content Generation",
+      "description": "Transform your content creation with cutting-edge AI technology. Generate engaging captions, hashtags, and full posts in seconds while maintaining your unique brand voice.",
+      "cta": "Start Creating with AI",
+      "viewAllFeatures": "View All Features",
+      "benefitsHeading": "What you can do with AI Content Generation",
+      "benefitsSubheading": "Unlock powerful capabilities to streamline your content workflow",
+      "benefits": [
+        "Generate engaging captions in seconds",
+        "Get AI-powered content suggestions",
+        "Automatic hashtag recommendations",
+        "Multi-language support",
+        "Tone and style customization",
+        "Image description generation"
+      ],
+      "howItWorksHeading": "How AI Content Generation Works",
+      "howItWorksSubheading": "Start creating amazing content in four simple steps",
+      "steps": [
+        {
+          "title": "Choose Your Content Type",
+          "description": "Select the type of content you want to create - whether it's a social post, caption, hashtags, or a complete campaign."
+        },
+        {
+          "title": "Provide Context",
+          "description": "Give the AI some context about your brand, target audience, and the message you want to convey."
+        },
+        {
+          "title": "Generate & Refine",
+          "description": "Let AI generate multiple variations and refine them to match your style perfectly with our intuitive editor."
+        },
+        {
+          "title": "Publish or Schedule",
+          "description": "Once satisfied, publish immediately or schedule your AI-generated content for optimal engagement times."
+        }
+      ],
+      "ctaHeading": "Ready to supercharge your content creation?",
+      "ctaSubheading": "Join thousands of creators using AI to produce better content faster."
     },
     "schedule": {
-      "title": "Schedule",
-      "publishNowTab": "Publish Now",
-      "scheduleLaterTab": "Schedule for Later",
-      "publishNowDescription": "Your post will be published immediately to all selected platforms.",
-      "publishNowButton": "Publish Now",
-      "scheduleButton": "Schedule Post",
-      "dateLabel": "Date",
-      "timeLabel": "Time",
-      "timezoneLabel": "Timezone",
-      "timezones": {
-        "riyadh": "Riyadh (GMT+3)",
-        "dubai": "Dubai (GMT+4)",
-        "cairo": "Cairo (GMT+2)"
-      }
-    },
-    "preview": {
-      "title": "Preview",
-      "noContent": "Your post content will appear here...",
-      "captionPlaceholder": "Your caption will appear here...",
-      "likes": "👍 Like",
-      "comments": "💬 Comment",
-      "reposts": "🔄 Repost",
-      "shares": "📊 Share",
-      "send": "📤 Send"
-    },
-    "campaigns": {
-      "title": "Campaign (Optional)",
-      "placeholder": "Select a campaign",
-      "noCampaigns": "No campaigns yet",
-      "createNew": "Create new campaign"
-    },
-    "tags": {
-      "title": "Tags",
-      "placeholder": "Add tags to organize your posts",
-      "addTag": "Add tag",
-      "noTags": "No tags yet",
-      "createNew": "Create new tag"
-    }
-  },
-  "CalendarPage": {
-    "title": "Content Calendar",
-    "subtitle": "Manage and schedule your social media posts",
-    "filterButton": "Filter",
-    "newPostButton": "New Post",
-    "views": {
-      "month": "Month",
-      "week": "Week",
-      "list": "List"
-    },
-    "platforms": {
-      "twitter": "X (Twitter)",
-      "instagram": "Instagram",
-      "linkedin": "LinkedIn",
-      "tiktok": "TikTok"
-    },
-    "selectedDate": {
-      "title": "Select a date",
-      "noPosts": "No posts scheduled for this date",
-      "schedulePost": "Schedule a post"
-    },
-    "postActions": {
-      "edit": "Edit",
-      "duplicate": "Duplicate",
-      "delete": "Delete"
-    },
-    "status": {
-      "scheduled": "Scheduled"
-    },
-    "weekDays": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-    "allScheduledPosts": "All Scheduled Posts"
-  },
-  "AnalyticsPage": {
-    "title": "Analytics",
-    "subtitle": "Track your social media performance and insights",
-    "timeRangeLabel": "Select time range",
-    "timeRanges": {
-      "7d": "Last 7 days",
-      "30d": "Last 30 days",
-      "90d": "Last 90 days",
-      "1y": "Last year"
-    },
-    "stats": {
-      "totalEngagement": "Total Engagement",
-      "totalReach": "Total Reach",
-      "newFollowers": "New Followers",
-      "avgEngagementRate": "Avg. Engagement Rate"
-    },
-    "charts": {
-      "engagementOverTime": "Engagement Over Time",
-      "engagementOverTimeDesc": "Daily engagement metrics for the selected period",
-      "platformPerformance": "Platform Performance",
-      "platformPerformanceDesc": "Engagement comparison across platforms"
-    },
-    "platformBreakdown": {
-      "title": "Platform Breakdown",
-      "description": "Performance by social platform",
-      "posts": "posts"
-    },
-    "topPosts": {
-      "title": "Top Performing Posts",
-      "description": "Your best content from the selected period"
-    },
-    "platforms": {
-      "twitter": "X (Twitter)",
-      "instagram": "Instagram",
-      "linkedin": "LinkedIn",
-      "tiktok": "TikTok"
-    },
-    "metrics": {
-      "likes": "Likes",
-      "comments": "Comments",
-      "shares": "Shares",
-      "views": "Views",
-      "engagement": "Engagement"
-    }
-  },
-  "SettingsPage": {
-    "title": "Settings",
-    "subtitle": "Manage your account and preferences",
-    "tabs": {
-      "profile": "Profile",
-      "platforms": "Platforms",
-      "notifications": "Notifications",
-      "billing": "Billing"
-    },
-    "profile": {
-      "title": "Profile Information",
-      "description": "Update your personal information and profile picture",
-      "changePhoto": "Change Photo",
-      "photoHelp": "JPG, PNG or GIF. Max size 2MB",
-      "name": "Full Name",
-      "email": "Email",
-      "bio": "Bio",
-      "timezone": "Timezone",
-      "saveChanges": "Save Changes",
-      "cancel": "Cancel",
-      "security": {
-        "title": "Security",
-        "description": "Manage your password and security settings",
-        "currentPassword": "Current Password",
-        "newPassword": "New Password",
-        "confirmPassword": "Confirm New Password",
-        "updatePassword": "Update Password"
-      }
-    },
-    "platforms": {
-      "title": "Connected Platforms",
-      "description": "Manage your social media account connections",
-      "connected": "Connected",
-      "followers": "followers",
-      "reconnect": "Reconnect",
-      "disconnect": "Disconnect",
-      "connectNew": "Connect New Platform",
-      "noConnected": "No platforms connected yet",
-      "disconnected": "Inactive",
-      "postingPreferences": {
-        "title": "Posting Preferences",
-        "description": "Configure default settings for your posts",
-        "autoPublish": {
-          "label": "Auto-publish scheduled posts",
-          "description": "Automatically publish posts at scheduled time"
+      "badge": "Smart Scheduling",
+      "title": "Intelligent Post Scheduling",
+      "description": "Schedule your content at the perfect time for maximum engagement. Our smart scheduling algorithm analyzes your audience behavior to recommend optimal posting times across all platforms.",
+      "cta": "Start Scheduling Smarter",
+      "viewAllFeatures": "View All Features",
+      "benefitsHeading": "Benefits of Smart Scheduling",
+      "benefitsSubheading": "Maximize your reach with intelligent timing",
+      "benefits": [
+        "Best time to post recommendations",
+        "Bulk scheduling for multiple posts",
+        "Queue management system",
+        "Time zone optimization",
+        "Recurring post scheduling",
+        "Calendar view for planning"
+      ],
+      "howItWorksHeading": "How Smart Scheduling Works",
+      "howItWorksSubheading": "Automate your posting schedule for better results",
+      "steps": [
+        {
+          "title": "Analyze Audience Behavior",
+          "description": "Our system analyzes when your audience is most active across different platforms and time zones."
         },
-        "watermark": {
-          "label": "Add watermark to images",
-          "description": "Add your brand watermark to uploaded images"
+        {
+          "title": "Create Your Content Queue",
+          "description": "Build a queue of posts that will be automatically scheduled at optimal times based on our recommendations."
         },
-        "crossPost": {
-          "label": "Cross-post to all platforms",
-          "description": "Post to all connected platforms by default"
+        {
+          "title": "Set Posting Preferences",
+          "description": "Customize posting frequency, time windows, and platform-specific preferences to match your strategy."
+        },
+        {
+          "title": "Auto-Publish & Monitor",
+          "description": "Sit back while your content publishes automatically, and monitor performance in real-time from your dashboard."
         }
-      }
-    },
-    "notifications": {
-      "title": "Notification Preferences",
-      "description": "Choose how you want to be notified",
-      "email": {
-        "label": "Email Notifications",
-        "description": "Receive notifications via email"
-      },
-      "push": {
-        "label": "Push Notifications",
-        "description": "Receive push notifications in your browser"
-      },
-      "weeklyReport": {
-        "label": "Weekly Report",
-        "description": "Get a weekly summary of your performance"
-      },
-      "postReminders": {
-        "label": "Post Reminders",
-        "description": "Remind me before scheduled posts go live"
-      },
-      "types": {
-        "title": "Notification Types",
-        "description": "Select which events trigger notifications",
-        "published": "Post published successfully",
-        "failed": "Post failed to publish",
-        "comments": "New comments on posts",
-        "milestones": "Engagement milestones",
-        "connectionIssues": "Platform connection issues"
-      }
-    },
-    "billing": {
-      "title": "Billing & Subscription",
-      "description": "Manage your subscription and billing",
-      "currentPlan": "Current Plan",
-      "planFeatures": "Plan Features",
-      "noPlan": "No Active Plan",
-      "freePlan": "Free Plan",
-      "proPlan": "Pro Plan",
-      "businessPlan": "Business Plan",
-      "status": {
-        "active": "Active",
-        "canceled": "Canceled",
-        "past_due": "Past Due",
-        "trialing": "Trial",
-        "incomplete": "Incomplete"
-      },
-      "periodEnds": "Period ends",
-      "periodStarts": "Period starts",
-      "paymentMethod": "Payment method",
-      "changePlan": "Change Plan",
-      "cancelPlan": "Cancel Plan",
-      "updatePayment": "Update Payment",
-      "availablePlans": "Available Plans",
-      "choosePlan": "Choose Plan",
-      "currentPlanBadge": "Current Plan",
-      "selectPlan": "Select Plan",
-      "upgradeNow": "Upgrade Now",
-      "perMonth": "/month",
-      "perYear": "/year",
-      "billingHistory": "Billing History",
-      "invoice": "Invoice",
-      "amount": "Amount",
-      "date": "Date",
-      "Status": "Status",
-      "download": "Download",
-      "noInvoices": "No invoices yet",
-      "invoiceStatus": {
-        "paid": "Paid",
-        "unpaid": "Unpaid",
-        "refunded": "Refunded",
-        "failed": "Failed"
-      },
-      "dangerZone": "Danger Zone",
-      "dangerDescription": "Irreversible actions for your account",
-      "cancelSubscription": "Cancel Subscription",
-      "cancelSubscriptionDescription": "You will lose access to Pro features at the end of your billing period.",
-      "deleteAccount": "Delete Account",
-      "deleteAccountDescription": "Permanently delete your account and all data. This cannot be undone.",
-      "confirmCancel": "Are you sure you want to cancel your subscription?",
-      "confirmDelete": "Are you sure you want to delete your account? This action cannot be undone.",
-      "cancelConfirm": "Yes, Cancel Subscription",
-      "deleteConfirm": "Yes, Delete Account",
-      "keep": "Keep Plan",
-      "loading": "Loading..."
-    },
-    "platformsNames": {
-      "twitter": "X (Twitter)",
-      "instagram": "Instagram",
-      "linkedin": "LinkedIn",
-      "tiktok": "TikTok"
-    },
-    "timezones": {
-      "riyadh": "Asia/Riyadh (GMT+3)",
-      "dubai": "Asia/Dubai (GMT+4)",
-      "cairo": "Africa/Cairo (GMT+2)",
-      "london": "Europe/London (GMT+0)",
-      "newyork": "America/New_York (GMT-5)"
-    }
-  },
-  "PlatformDetailPage": {
-    "back": "Back to Platforms",
-    "connected": "Connected",
-    "disconnected": "Disconnected",
-    "createPost": "Create Post",
-    "analytic": "Analytics",
-    "insights": "Insights",
-    "content": "Content",
-    "overview": "Overview",
-    "tabs": {
-      "overview": "Overview",
-      "content": "Content",
-      "analytics": "Analytics",
-      "aiAdvisor": "AI Advisor"
-    },
-    "stats": {
-      "followers": "Followers",
-      "posts": "Posts",
-      "engagement": "Engagement Rate",
-      "reach": "Reach",
-      "fromLastMonth": "from last month",
-      "fromLastWeek": "from last week",
-      "thisMonth": "this month"
-    },
-    "filters": {
-      "title": "Filters",
-      "description": "Filter posts by tags, campaigns, and status",
-      "clearAll": "Clear All",
-      "tags": "Tags",
-      "allTags": "All tags",
-      "campaigns": "Campaigns",
-      "allCampaigns": "All campaigns",
-      "status": "Status",
-      "allStatuses": "All statuses",
-      "published": "Published",
-      "scheduled": "Scheduled",
-      "draft": "Draft",
-      "failed": "Failed"
-    },
-    "recentPosts": {
-      "title": "Recent Posts",
-      "description": "Your latest content on this platform",
-      "viewAll": "View All Posts",
-      "noPosts": "No posts yet",
-      "noPostsDescription": "Create your first post on this platform using the 'Create Post' button above.",
-      "noMatchingPosts": "No posts match your filters",
-      "adjustFilters": "Try adjusting your filters or clear them to see all posts"
-    },
-    "contentLibrary": "Content Library",
-    "contentLibraryDescription": "All your posts on this platform",
-    "engagement": "Engagement",
-    "edit": "Edit",
-    "repost": "Repost",
-    "view": "View",
-    "clearFilters": "Clear Filters",
-    "backToPlatforms": "Back to Platforms",
-    "performanceChart": {
-      "title": "Post Performance Over Time",
-      "description": "Monthly engagement metrics for your posts on this platform"
-    },
-    "quickActions": {
-      "createPost": "Create Post",
-      "title": "Quick Actions",
-      "viewAnalytics": "View Analytics",
-      "schedulePost": "Schedule Post",
-      "manageAccount": "Manage Account"
+      ],
+      "ctaHeading": "Never miss the perfect posting time",
+      "ctaSubheading": "Let our smart scheduling handle your content calendar while you focus on creating."
     },
     "analytics": {
-      "performanceOverview": "Performance Overview",
-      "avgLikes": "Average Likes",
-      "avgComments": "Average Comments",
-      "avgShares": "Average Shares",
-      "bestPostTime": "Best Time to Post",
-      "audienceInsights": "Audience Insights",
-      "topLocation": "Top Location",
-      "topAgeGroup": "Top Age Group",
-      "maleAudience": "Male Audience",
-      "femaleAudience": "Female Audience",
-      "totalLikes": "Total Likes",
-      "totalComments": "Total Comments",
-      "totalShares": "Total Shares",
-      "totalReach": "Total Reach",
-      "peakEngagement": "peak engagement",
-      "perPost": "per post"
+      "badge": "Data Insights",
+      "title": "Advanced Analytics & Reporting",
+      "description": "Get deep insights into your social media performance with comprehensive analytics. Track engagement, reach, audience demographics, and ROI across all your platforms in one unified dashboard.",
+      "cta": "Start Analyzing Your Data",
+      "viewAllFeatures": "View All Features",
+      "benefitsHeading": "Powerful Analytics Features",
+      "benefitsSubheading": "Make data-driven decisions with comprehensive insights",
+      "benefits": [
+        "Real-time performance metrics",
+        "Engagement rate tracking",
+        "Audience insights and demographics",
+        "Competitor analysis",
+        "Custom report generation",
+        "ROI measurement tools"
+      ],
+      "howItWorksHeading": "How Analytics Works",
+      "howItWorksSubheading": "Turn data into actionable insights",
+      "steps": [
+        {
+          "title": "Connect Your Accounts",
+          "description": "Link all your social media accounts to start collecting performance data automatically."
+        },
+        {
+          "title": "Track Key Metrics",
+          "description": "Monitor engagement rates, reach, impressions, follower growth, and other important KPIs in real-time."
+        },
+        {
+          "title": "Generate Reports",
+          "description": "Create custom reports with the metrics that matter most to you and your stakeholders."
+        },
+        {
+          "title": "Optimize Your Strategy",
+          "description": "Use insights to identify what works, double down on successful content, and improve your overall performance."
+        }
+      ],
+      "ctaHeading": "Make data-driven decisions",
+      "ctaSubheading": "Get the insights you need to grow your social media presence effectively."
     },
-    "description": "Get personalized recommendations and insights to improve your content strategy",
-    "aiAdvisor": {
-      "title": "AI Content Advisor",
-      "description": "Get personalized recommendations and insights to improve your content strategy based on your audience and past performance.",
-      "welcomeMessage": "Hello! I'm your AI content advisor. I can help you optimize your content strategy, suggest the best times to post, analyze your audience, and provide creative content ideas. How can I assist you today?",
-      "inputPlaceholder": "Ask me anything about your content strategy...",
-      "quickAction1": "What's the best time to post?",
-      "quickAction2": "Analyze my recent performance",
-      "quickAction3": "Suggest content ideas",
-      "quickAction4": "Audience insights",
-      "sampleResponse1": "Based on your audience engagement patterns, the best times to post are between 2:00 PM - 4:00 PM on weekdays. Your audience is most active during these hours, which could increase your engagement by up to 35%.",
-      "sampleResponse2": "Your recent posts show strong performance! Your engagement rate has increased by 12% this month. Posts with images perform 45% better than text-only posts. Consider adding more visual content to maintain this growth.",
-      "sampleResponse3": "Here are some content ideas tailored to your audience: 1) Behind-the-scenes content about your workflow, 2) Tips and tricks related to your industry, 3) User-generated content showcasing customer success stories. These types of posts typically generate 2x more engagement.",
-      "conversationTitle": "Conversation",
-      "conversationDescription": "Ask me anything about your content strategy",
-      "tryAsking": "Try asking:",
-      "performanceInsights": "Performance Insights",
-      "performanceInsightsDescription": "Get detailed analysis of your content performance",
-      "contentSuggestions": "Content Suggestions",
-      "contentSuggestionsDescription": "Receive AI-powered content ideas tailored to your audience",
-      "audienceAnalysis": "Audience Analysis",
-      "audienceAnalysisDescription": "Understand your audience demographics and behavior"
+    "team": {
+      "badge": "Collaboration",
+      "title": "Team Collaboration Tools",
+      "description": "Work seamlessly with your team or clients. Assign roles, manage approval workflows, and collaborate on content creation all in one centralized platform.",
+      "cta": "Start Collaborating",
+      "viewAllFeatures": "View All Features",
+      "benefitsHeading": "Streamline Team Workflows",
+      "benefitsSubheading": "Collaborate efficiently with powerful team features",
+      "benefits": [
+        "Role-based access control",
+        "Content approval workflows",
+        "Team activity tracking",
+        "Internal commenting system",
+        "Asset library sharing",
+        "Client collaboration tools"
+      ],
+      "howItWorksHeading": "How Team Collaboration Works",
+      "howItWorksSubheading": "Manage your team and workflows effectively",
+      "steps": [
+        {
+          "title": "Invite Team Members",
+          "description": "Add team members and assign specific roles with customized permissions for secure collaboration."
+        },
+        {
+          "title": "Create Approval Workflows",
+          "description": "Set up multi-level approval processes to ensure content quality and brand consistency before publishing."
+        },
+        {
+          "title": "Collaborate on Content",
+          "description": "Use internal comments, feedback tools, and shared asset libraries to work together seamlessly."
+        },
+        {
+          "title": "Track Team Activity",
+          "description": "Monitor team contributions, approval status, and workflow efficiency with detailed activity logs."
+        }
+      ],
+      "ctaHeading": "Empower your team",
+      "ctaSubheading": "Scale your social media operations with powerful collaboration tools."
     },
-    "postsOf": "of"
-  },
-  "CampaignsPage": {
-    "title": "Campaigns",
-    "subtitle": "Organize and track your social media campaigns",
-    "createCampaign": "Create Campaign",
-    "noCampaigns": "No campaigns yet",
-    "noCampaignsDescription": "Create your first campaign to organize and track your posts.",
-    "campaignName": "Campaign Name",
-    "description": "Description",
-    "startDate": "Start Date",
-    "endDate": "End Date",
-    "active": "Active",
-    "inactive": "Inactive",
-    "edit": "Edit",
-    "delete": "Delete",
-    "posts": "posts",
-    "cancel": "Cancel",
-    "save": "Save Changes",
-    "create": "Create",
-    "saving": "Saving...",
-    "creating": "Creating...",
-    "editDescription": "Update campaign details",
-    "createDescription": "Create a new campaign to organize your posts",
-    "stats": {
-      "totalPosts": "Total Posts",
-      "engagement": "Engagement",
-      "reach": "Reach"
-    }
-  },
-  "TagsPage": {
-    "title": "Tags",
-    "subtitle": "Manage tags to organize your content",
-    "createTag": "Create Tag",
-    "noTags": "No tags yet",
-    "noTagsDescription": "Create your first tag to organize and categorize your posts.",
-    "tagName": "Tag Name",
-    "tagPlaceholder": "e.g., Product Launch, Marketing, Events",
-    "allTags": "All Tags",
-    "cancel": "Cancel",
-    "create": "Create",
-    "creating": "Creating...",
-    "createDescription": "Create a new tag to categorize your posts"
-  },
-  "EditPostPage": {
-    "title": "Edit Post",
-    "subtitle": "Update your scheduled post",
-    "back": "Back",
-    "platforms": {
-      "title": "Platforms",
-      "twitter": "X (Twitter)",
-      "instagram": "Instagram",
-      "linkedin": "LinkedIn",
-      "tiktok": "TikTok"
+    "publish": {
+      "badge": "Multi-Platform",
+      "title": "Multi-Platform Publishing",
+      "description": "Publish to all major social networks from one central dashboard. Save time, ensure consistency, and reach your entire audience across Facebook, Instagram, Twitter, LinkedIn, and more.",
+      "cta": "Start Publishing Everywhere",
+      "viewAllFeatures": "View All Features",
+      "benefitsHeading": "Simplify Multi-Platform Publishing",
+      "benefitsSubheading": "Reach your audience wherever they are",
+      "benefits": [
+        "One-click multi-platform publishing",
+        "Platform-specific optimization",
+        "Draft management",
+        "Post preview for all platforms",
+        "Automatic resizing and formatting",
+        "Error detection before posting"
+      ],
+      "howItWorksHeading": "How Multi-Platform Publishing Works",
+      "howItWorksSubheading": "Publish once, reach everywhere",
+      "steps": [
+        {
+          "title": "Create Your Content",
+          "description": "Write your post once using our universal composer with support for text, images, videos, and links."
+        },
+        {
+          "title": "Optimize Per Platform",
+          "description": "Our system automatically adjusts your content for each platform's specifications and best practices."
+        },
+        {
+          "title": "Preview Before Publishing",
+          "description": "See exactly how your post will look on each platform before you hit publish."
+        },
+        {
+          "title": "Publish Instantly",
+          "description": "Push your content to all selected platforms simultaneously or schedule for different times per platform."
+        }
+      ],
+      "ctaHeading": "Simplify your publishing workflow",
+      "ctaSubheading": "Save hours every week by managing all your platforms in one place."
     },
-    "campaigns": {
-      "title": "Campaign (Optional)",
-      "placeholder": "Select a campaign",
-      "noCampaigns": "No campaigns yet"
-    },
-    "tags": {
-      "title": "Tags",
-      "noTags": "No tags yet"
-    },
-    "contentEditor": {
-      "title": "Post Content",
-      "placeholder": "Write your post content here..."
-    },
-    "schedule": {
-      "title": "Schedule",
-      "publishNowTab": "Publish Now",
-      "scheduleLaterTab": "Schedule for Later",
-      "publishNowDescription": "Your post will be published immediately.",
-      "publishNowButton": "Publish Now",
-      "dateLabel": "Date",
-      "timeLabel": "Time"
-    },
-    "cancel": "Cancel",
-    "saveChanges": "Save Changes",
-    "updating": "Updating..."
-  },
-  "PlatformsPage": {
-    "title": "Connected Platforms",
-    "subtitle": "Manage your social media accounts and view platform-specific insights",
-    "noPlatforms": "No platforms connected yet",
-    "noPlatformsDescription": "Connect your social media accounts to start managing content across multiple platforms.",
-    "connectPlatform": "Connect Platform",
-    "viewPlatform": "View",
-    "connected": "Connected",
-    "disconnected": "Disconnected",
-    "followers": "followers",
-    "posts": "posts",
-    "engagement": "engagement rate",
-    "searchPlaceholder": "Search platforms...",
-    "noResults": "No results found",
-    "noResultsDescription": "Try adjusting your search terms",
-    "stats": {
-      "totalAccounts": "Total Accounts",
-      "totalFollowers": "Total Followers",
-      "totalPosts": "Total Posts",
-      "avgEngagement": "Avg. Engagement"
+    "rtl": {
+      "badge": "Localization",
+      "title": "Full RTL Language Support",
+      "description": "Complete support for right-to-left languages including Arabic, Hebrew, Persian, and Urdu. Our platform adapts the entire interface and content flow for perfect RTL experience.",
+      "cta": "Explore RTL Features",
+      "viewAllFeatures": "View All Features",
+      "benefitsHeading": "Comprehensive RTL Support",
+      "benefitsSubheading": "Perfect experience for right-to-left languages",
+      "benefits": [
+        "Full Arabic language support",
+        "Hebrew text handling",
+        "Right-to-left UI adaptation",
+        "Bidirectional text editing",
+        "RTL-optimized layouts",
+        "Mixed language content support"
+      ],
+      "howItWorksHeading": "How RTL Support Works",
+      "howItWorksSubheading": "Seamless experience in your preferred language",
+      "steps": [
+        {
+          "title": "Select Your Language",
+          "description": "Choose your preferred RTL language from our settings, and the entire interface adapts automatically."
+        },
+        {
+          "title": "Create RTL Content",
+          "description": "Our editor fully supports RTL text editing with proper character flow and formatting."
+        },
+        {
+          "title": "Preview in RTL",
+          "description": "See how your content will appear on social platforms with accurate RTL rendering."
+        },
+        {
+          "title": "Publish with Confidence",
+          "description": "Your RTL content publishes perfectly to all platforms with proper text direction and formatting."
+        }
+      ],
+      "ctaHeading": "Perfect for Arabic content creators",
+      "ctaSubheading": "Manage your Arabic social media with a platform built for your language."
     }
   }
 }

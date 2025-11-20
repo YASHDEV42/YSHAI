@@ -34,8 +34,8 @@ export default async function PlatformDetailPage({
     ? instagramPostsResponse.data.data
     : [];
   const postsResponse = await list({
-    teamId: undefined,
-    campaignId: 0,
+    teamId: "",
+    campaignId: "",
     scheduledFrom: "",
     scheduledTo: "",
   });

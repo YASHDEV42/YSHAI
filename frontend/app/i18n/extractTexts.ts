@@ -12,7 +12,11 @@ export async function extractLandingPageText(locale: string) {
   return {
     HeroText: messages.HeroSection,
     FeatureText: messages.FeatureSection,
+    StatsText: messages.StatsSection,
+    HowItWorksText: messages.HowItWorksSection,
     PricingText: messages.PricingSection,
+    TestimonialsText: messages.TestimonialsSection,
+    IntegrationsText: messages.IntegrationsSection,
     CtaText: messages.CtaSection,
     FooterText: messages.FooterSection,
   };
@@ -99,4 +103,31 @@ export async function extractTagsPageText(locale: string) {
 export async function extractEditPostPageText(locale: string) {
   const messages = await getMessages({ locale });
   return messages.EditPostPage;
+}
+
+export async function extractFeatureDetailText(
+  locale: string,
+  feature: string,
+) {
+  const messages = (await getMessages({ locale })) as any;
+  const featureData = messages?.FeatureDetailPages?.[feature];
+
+  if (!featureData) {
+    return {
+      badge: "",
+      title: "",
+      description: "",
+      cta: "",
+      benefitsHeading: "",
+      benefitsSubheading: "",
+      benefits: [],
+      howItWorksHeading: "",
+      howItWorksSubheading: "",
+      steps: [],
+      ctaHeading: "",
+      ctaSubheading: "",
+    };
+  }
+
+  return featureData;
 }

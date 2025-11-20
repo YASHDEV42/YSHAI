@@ -1,6 +1,6 @@
 import { extractSignUpPageText } from "@/app/i18n/extractTexts";
 import SignUpPage from "./components/signup";
-import { setRequestLocale, getTranslations } from "next-intl/server";
+import { setRequestLocale } from "next-intl/server";
 
 const page = async ({ params: { locale } }: { params: { locale: string } }) => {
   setRequestLocale(locale);

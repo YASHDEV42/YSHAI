@@ -5,7 +5,11 @@ import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Codesandbox, LogOut } from "lucide-react";
+import Image from "next/image";
+import { useTheme } from "next-themes";
 export function Navbar({ text, user }: { text: any; user: any }) {
+  const theme = useTheme();
+  console.log("Current theme:", theme.theme);
   const pathname = usePathname();
   if (
     pathname?.startsWith("/ar/dashboard") ||
@@ -22,7 +26,11 @@ export function Navbar({ text, user }: { text: any; user: any }) {
             href="/"
             className="text-xl font-bold flex flex-row items-center gap-2"
           >
-            <Codesandbox size={40} />
+            {theme.theme === "dark" ? (
+              <Image src="/bitmap-dark.svg" alt="Logo" width={35} height={35} />
+            ) : (
+              <Image src="/bitmap.svg" alt="Logo" width={35} height={35} />
+            )}
           </Link>
         </div>
 

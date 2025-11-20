@@ -1,11 +1,16 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Field, FieldLabel, FieldDescription, FieldError } from "@/components/ui/field"
-import { Separator } from "@/components/ui/separator"
+import type React from "react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import {
+  Field,
+  FieldLabel,
+  FieldDescription,
+  FieldError,
+} from "@/components/ui/field";
+import { Separator } from "@/components/ui/separator";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -14,61 +19,68 @@ import {
   AlertDialogTitle,
   AlertDialogDescription,
   AlertDialogAction,
-} from "@/components/ui/alert-dialog"
-import Link from "next/link"
-import { useState } from "react"
-import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react"
-import { useRouter } from "next/navigation"
-
+} from "@/components/ui/alert-dialog";
+import Link from "next/link";
+import { useState } from "react";
+import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface SignUpPageProps {
-  text: any,
-  locale: string
+  text: any;
+  locale: string;
 }
 
 export default function SignUpPage({ text, locale }: SignUpPageProps) {
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     name: "",
-  })
-  const [errors, setErrors] = useState<Record<string, string>>({})
-  const [showVerificationMessage, setShowVerificationMessage] = useState(false)
-  const router = useRouter()
+  });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [showVerificationMessage, setShowVerificationMessage] = useState(false);
+  const router = useRouter();
 
-
-  console.log("[v0] Signup form submitted:", formData)
-  console.log(JSON.stringify(formData))
+  console.log("[v0] Signup form submitted:", formData);
+  console.log(JSON.stringify(formData));
 
   const handleVerificationComplete = () => {
-    setShowVerificationMessage(false)
-    router.push("/login")
-  }
+    setShowVerificationMessage(false);
+    router.push("/login");
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) {
       setErrors((prev) => {
-        const newErrors = { ...prev }
-        delete newErrors[name]
-        return newErrors
-      })
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <AlertDialog open={showVerificationMessage} onOpenChange={setShowVerificationMessage}>
-        <AlertDialogContent className={locale === 'ar' ? 'direction-rtl' : ''}
-          dir={locale === 'ar' ? 'rtl' : 'ltr'}>
+      <AlertDialog
+        open={showVerificationMessage}
+        onOpenChange={setShowVerificationMessage}
+      >
+        <AlertDialogContent
+          className={locale === "ar" ? "direction-rtl" : ""}
+          dir={locale === "ar" ? "rtl" : "ltr"}
+        >
           <AlertDialogHeader>
             <AlertDialogTitle>{text.verificationTitle}</AlertDialogTitle>
-            <AlertDialogDescription>{text.verificationMessage}</AlertDialogDescription>
+            <AlertDialogDescription>
+              {text.verificationMessage}
+            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogAction onClick={handleVerificationComplete}>{text.verificationButton}</AlertDialogAction>
+            <AlertDialogAction onClick={handleVerificationComplete}>
+              {text.verificationButton}
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -82,7 +94,11 @@ export default function SignUpPage({ text, locale }: SignUpPageProps) {
 
           <Card className="p-8 bg-card backdrop-blur-sm border-border">
             <div className="space-y-3 mb-2">
-              <Button variant="outline" className="w-full bg-transparent" type="button">
+              <Button
+                variant="outline"
+                className="w-full bg-transparent"
+                type="button"
+              >
                 <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                   <path
                     fill="currentColor"
@@ -160,14 +176,27 @@ export default function SignUpPage({ text, locale }: SignUpPageProps) {
               </Field>
 
               <div className="flex items-center justify-center gap-2 text-sm pt-2">
-                <span className="text-muted-foreground">{text.haveAccount}</span>
-                <Link href="/login" className="text-primary hover:underline font-medium">
+                <span className="text-muted-foreground">
+                  {text.haveAccount}
+                </span>
+                <Link
+                  href="/login"
+                  className="text-primary hover:underline font-medium"
+                >
                   {text.signInLink}
                 </Link>
               </div>
 
-              {errors.form && <p className="text-base text-red-600 text-center font-bold">{errors.form}</p>}
-              <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={isLoading}>
+              {errors.form && (
+                <p className="text-base text-red-600 text-center font-bold">
+                  {errors.form}
+                </p>
+              )}
+              <Button
+                type="submit"
+                className="w-full bg-primary hover:bg-primary/90"
+                disabled={isLoading}
+              >
                 {isLoading ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -176,7 +205,11 @@ export default function SignUpPage({ text, locale }: SignUpPageProps) {
                 ) : (
                   <>
                     {text.createAccountButton}
-                    {locale === "ar" ? <ArrowLeft className="mr-2 w-4 h-4" /> : <ArrowRight className="ml-2 w-4 h-4" />}
+                    {locale === "ar" ? (
+                      <ArrowLeft className="mr-2 w-4 h-4" />
+                    ) : (
+                      <ArrowRight className="ml-2 w-4 h-4" />
+                    )}
                   </>
                 )}
               </Button>
@@ -203,5 +236,5 @@ export default function SignUpPage({ text, locale }: SignUpPageProps) {
         </div>
       </main>
     </div>
-  )
+  );
 }
