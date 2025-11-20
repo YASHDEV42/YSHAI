@@ -17,7 +17,6 @@ import {
   Share2,
   FolderKanban,
   Tags,
-  Codesandbox,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -34,6 +33,8 @@ import {
 import { cn } from "@/lib/utils";
 import { ModeToggle } from "../../../components/toggleTheme";
 import { LanguageToggle } from "@/app/components/LanguageToggle";
+import Image from "next/image";
+import { useTheme } from "next-themes";
 
 type NotificationResponseDto = {
   title: string | null;
@@ -56,6 +57,7 @@ export function DashboardSidebar({
   user,
 }: DashboardSidebarProps) {
   const pathname = usePathname();
+  const { theme } = useTheme();
   const [notifications, setNotifications] = useState<NotificationResponseDto[]>(
     [],
   );
@@ -155,7 +157,17 @@ export function DashboardSidebar({
         <SidebarHeader className="border-b border-border p-6 flex items-center justify-between flex-row">
           <Link href="/" className="flex items-center gap-2 px-2">
             <span className="font-bold text-xl text-foreground flex flex-row items-center justify-center gap-2">
-              <Codesandbox size={30} /> {text.logo}
+              {theme === "dark" ? (
+                <Image
+                  src="/bitmap-dark.svg"
+                  alt="Logo"
+                  width={30}
+                  height={30}
+                />
+              ) : (
+                <Image src="/bitmap.svg" alt="Logo" width={30} height={30} />
+              )}
+              {text.logo}
             </span>
           </Link>
           <LanguageToggle />
