@@ -19,22 +19,6 @@ interface HowItWorksSectionText {
   };
 }
 
-const StepCardSkeleton = () => (
-  <div className="relative">
-    <Card className="p-6 bg-card border-border animate-pulse h-full">
-      <div className="flex items-center gap-3 mb-4">
-        <div className="w-10 h-10 bg-muted rounded-full"></div>
-        <div className="w-5 h-5 bg-muted rounded"></div>
-      </div>
-      <div className="h-6 bg-muted rounded mb-3 w-3/4"></div>
-      <div className="space-y-2">
-        <div className="h-4 bg-muted rounded w-full"></div>
-        <div className="h-4 bg-muted rounded w-5/6"></div>
-      </div>
-    </Card>
-  </div>
-);
-
 const ProgressBar = ({
   currentStep,
   totalSteps,
@@ -83,7 +67,6 @@ const StepCard = ({
   isActive,
   isCompleted,
   isNext,
-  isLoading,
   onClick,
 }: {
   step: { title: string; description: string };
@@ -91,12 +74,9 @@ const StepCard = ({
   isActive: boolean;
   isCompleted: boolean;
   isNext: boolean;
-  isLoading: boolean;
   onClick: () => void;
 }) => {
   const [isHovered, setIsHovered] = useState(false);
-
-  if (isLoading) return <StepCardSkeleton />;
 
   return (
     <motion.div
@@ -240,19 +220,9 @@ export const HowItWorksSection = ({
   text: HowItWorksSectionText;
 }) => {
   const { badge, heading, subHeading, steps } = text;
-  const [isLoading, setIsLoading] = useState(true);
   const [activeStep, setActiveStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Simulate loading state
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, []);
 
   // Auto-play functionality
   useEffect(() => {
@@ -336,7 +306,6 @@ export const HowItWorksSection = ({
             isActive={activeStep === index}
             isCompleted={index < activeStep}
             isNext={index === activeStep + 1}
-            isLoading={isLoading}
             onClick={() => handleStepClick(index)}
           />
         ))}

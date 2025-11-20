@@ -174,10 +174,10 @@ const ActionButtons = ({
       >
         <Button
           size="lg"
-          className="text-base px-8 h-12 group flex items-center justify-center relative overflow-hidden shadow-lg hover:shadow-xl transition-all"
+          className="text-base pr-8 pl-8 h-12 group flex items-center justify-center relative overflow-hidden shadow-lg hover:shadow-xl transition-all"
           aria-label={primaryButton}
         >
-          <span className="relative z-10 flex items-center">
+          <span className="relative z-10 flex items-center  gap-5 w-full justify-between">
             {locale === "ar" ? (
               <>
                 {primaryButton}
@@ -255,9 +255,8 @@ const ScrollIndicator = () => {
       <motion.div
         animate={{ y: [0, 10, 0] }}
         transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
-        className="flex flex-col items-center gap-2 text-muted-foreground"
+        className="flex flex-col items-end  text-muted-foreground"
       >
-        <span className="text-sm">Scroll down</span>
         <ChevronDown className="w-5 h-5" />
       </motion.div>
     </motion.div>

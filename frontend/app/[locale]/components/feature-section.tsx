@@ -34,29 +34,16 @@ interface FeatureSectionText {
   learnMore: string;
 }
 
-const FeatureCardSkeleton = () => (
-  <Card className="p-8 bg-card border-border animate-pulse">
-    <div className="w-14 h-14 bg-muted rounded-xl mb-4"></div>
-    <div className="h-6 bg-muted rounded mb-3 w-3/4"></div>
-    <div className="space-y-2">
-      <div className="h-4 bg-muted rounded w-full"></div>
-      <div className="h-4 bg-muted rounded w-5/6"></div>
-    </div>
-  </Card>
-);
-
 const FeatureCard = ({
   feature,
   icon: Icon,
   index,
-  isLoading,
   featureKey,
   learnMore,
 }: {
   feature: { title: string; description: string };
   icon: React.ElementType;
   index: number;
-  isLoading: boolean;
   featureKey: string;
   learnMore: string;
 }) => {
@@ -70,8 +57,6 @@ const FeatureCard = ({
     "from-accent/10 to-primary/15",
     "from-primary/12 to-accent/8",
   ];
-
-  if (isLoading) return <FeatureCardSkeleton />;
 
   return (
     <motion.div
@@ -146,16 +131,6 @@ const FeatureCard = ({
 
 export const FeatureSection = ({ text }: { text: FeatureSectionText }) => {
   const { badge, heading, subHeading, features } = text;
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
   return (
     <section
       id="features"
@@ -218,7 +193,6 @@ export const FeatureSection = ({ text }: { text: FeatureSectionText }) => {
               feature={value}
               icon={Icon}
               index={index}
-              isLoading={isLoading}
               featureKey={key}
             />
           );

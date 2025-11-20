@@ -36,23 +36,6 @@ interface PricingSectionText {
   };
 }
 
-const PricingCardSkeleton = () => (
-  <Card className="p-8 bg-card border-border animate-pulse h-full flex flex-col">
-    <div className="h-6 bg-muted rounded mb-2 w-1/2"></div>
-    <div className="h-10 bg-muted rounded mb-2 w-3/4"></div>
-    <div className="h-4 bg-muted rounded mb-6 w-1/4"></div>
-    <div className="space-y-3 mb-8 flex-grow">
-      {Array.from({ length: 5 }).map((_, i) => (
-        <div key={i} className="flex items-center gap-2">
-          <div className="w-5 h-5 bg-muted rounded-full"></div>
-          <div className="h-4 bg-muted rounded w-full"></div>
-        </div>
-      ))}
-    </div>
-    <div className="h-12 bg-muted rounded w-full"></div>
-  </Card>
-);
-
 const PricingToggle = ({
   isYearly,
   setIsYearly,
@@ -120,18 +103,14 @@ const PricingCard = ({
   plan,
   index,
   isYearly,
-  isLoading,
 }: {
   plan: PricingPlan;
   index: number;
   isYearly: boolean;
-  isLoading: boolean;
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
-
-  if (isLoading) return <PricingCardSkeleton />;
 
   const displayPrice =
     isYearly && plan.yearlyPrice ? plan.yearlyPrice : plan.price;
@@ -180,8 +159,8 @@ const PricingCard = ({
         )}
 
         {/* Card content */}
-        <div className="relative z-10 w-full">
-          <div className="flex items-center gap-2 mb-2">
+        <div className="relative z-10 w-full h-full">
+          <div className="flex items-center justify-between gap-2 mb-2">
             <h3 className="text-2xl font-bold">{plan.title}</h3>
             {isPopular && (
               <Star className="w-5 h-5 text-primary fill-current" />
@@ -263,20 +242,10 @@ export const PricingSection = ({
   locale: string;
   text: PricingSectionText;
 }) => {
-  const [isLoading, setIsLoading] = useState(true);
   const [isYearly, setIsYearly] = useState(false);
 
   // Safety check for text object
   const { badge, heading, subHeading, plans, toggle } = text || {};
-
-  // Simulate loading state
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, []);
 
   if (!text || !text.plans) {
     console.error("[v0] PricingSection: Missing required text data", { text });
@@ -336,28 +305,13 @@ export const PricingSection = ({
 
       <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
         {plans.free && (
-          <PricingCard
-            plan={plans.free}
-            index={0}
-            isYearly={isYearly}
-            isLoading={isLoading}
-          />
+          <PricingCard plan={plans.free} index={0} isYearly={isYearly} />
         )}
         {plans.pro && (
-          <PricingCard
-            plan={plans.pro}
-            index={1}
-            isYearly={isYearly}
-            isLoading={isLoading}
-          />
+          <PricingCard plan={plans.pro} index={1} isYearly={isYearly} />
         )}
         {plans.business && (
-          <PricingCard
-            plan={plans.business}
-            index={2}
-            isYearly={isYearly}
-            isLoading={isLoading}
-          />
+          <PricingCard plan={plans.business} index={2} isYearly={isYearly} />
         )}
       </div>
     </section>

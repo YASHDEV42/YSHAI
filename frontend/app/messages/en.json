@@ -6,7 +6,8 @@
     "login": "Login",
     "register": "Sign Up",
     "dashboard": "Dashboard",
-    "logout": "Logout"
+    "logout": "Logout",
+    "logo": "YSHAI"
   },
   "HeroSection": {
     "highlight": "AI-Powered Social Media Management",
@@ -450,6 +451,459 @@
       ],
       "ctaHeading": "Perfect for Arabic content creators",
       "ctaSubheading": "Manage your Arabic social media with a platform built for your language."
+    }
+  },
+  "SignUpPage": {
+    "title": "Create your account",
+    "subtitle": "Start scheduling smarter with AI-powered Arabic content",
+    "googleButton": "Continue with Google",
+    "orDivider": "Or continue with email",
+    "nameLabel": "Full Name",
+    "namePlaceholder": "Ahmed Al-Rashid",
+    "nameRequired": "Name is required",
+    "emailLabel": "Email",
+    "emailPlaceholder": "ahmed@example.com",
+    "emailRequired": "Email is required",
+    "emailInvalid": "Please enter a valid email",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "••••••••",
+    "passwordRequired": "Password is required",
+    "passwordTooShort": "Password must be at least 8 characters",
+    "passwordHint": "Must be at least 8 characters",
+    "haveAccount": "Already have an account?",
+    "signInLink": "Sign In",
+    "createAccountButton": "Create account",
+    "creatingAccountButton": "Creating account...",
+    "termsAgreement": "By creating an account, you agree to our",
+    "termsOfService": "Terms of Service",
+    "privacyPolicy": "Privacy Policy",
+    "needHelp": "Need help?",
+    "contactSupport": "Contact support",
+    "verificationTitle": "Check Your Email",
+    "verificationMessage": "We've sent a verification link to your email address. Please check your inbox and verify your email before signing in.",
+    "verificationButton": "I've Verified - Go to Login"
+  },
+  "LoginPage": {
+    "title": "Welcome back",
+    "subtitle": "Sign in to your account to continue",
+    "googleButton": "Continue with Google",
+    "githubButton": "Continue with GitHub",
+    "orDivider": "Or continue with email",
+    "emailLabel": "Email",
+    "emailPlaceholder": "ahmed@example.com",
+    "emailRequired": "Email is required",
+    "emailInvalid": "Please enter a valid email",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "••••••••",
+    "passwordRequired": "Password is required",
+    "forgotPassword": "Forgot password?",
+    "noAccount": "Don't have an account?",
+    "signUpLink": "Sign Up",
+    "signInButton": "Sign in",
+    "signingInButton": "Signing in...",
+    "termsAgreement": "By signing in, you agree to our",
+    "termsOfService": "Terms of Service",
+    "privacyPolicy": "Privacy Policy",
+    "needHelp": "Need help?",
+    "contactSupport": "Contact support"
+  },
+  "DashboardPage": {
+    "welcomeMessage": "Welcome back, John",
+    "welcomeSubtitle": "Here's what's happening with your social media today",
+    "stats": {
+      "scheduledPosts": "Scheduled Posts",
+      "publishedThisWeek": "Published This Week",
+      "connectedAccounts": "Connected Accounts",
+      "avgEngagement": "Avg. Engagement",
+      "changeFromLastWeek": "from last week"
+    },
+    "recentActivity": {
+      "title": "Recent Activity",
+      "description": "Your latest posts and scheduled content",
+      "viewAll": "View All Activity"
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "createPost": "Create New Post",
+      "viewCalendar": "View Calendar",
+      "viewAnalytics": "View Analytics"
+    },
+    "connectedPlatforms": {
+      "title": "Connected Platforms",
+      "description": "Manage your social accounts",
+      "connected": "Connected",
+      "connect": "Connect",
+      "addPlatform": "Add Platform"
+    },
+    "user": {
+      "name": "John Doe",
+      "email": "john@example.com"
+    },
+    "activityStatus": {
+      "published": "Published",
+      "scheduled": "Scheduled",
+      "failed": "Failed"
+    }
+  },
+  "DashboardSidebar": {
+    "logo": "YSHAI",
+    "overview": "Overview",
+    "createPost": "Create Post",
+    "calendar": "Calendar",
+    "platforms": "Platforms",
+    "analytics": "Analytics",
+    "settings": "Settings",
+    "notifications": "Notifications",
+    "noNotifications": "No notifications yet",
+    "markAll": "Mark all as read",
+    "new": "new",
+    "justNow": "just now",
+    "minutesAgo": "around minutes ago",
+    "hoursAgo": "around hours ago",
+    "daysAgo": "around days ago"
+  },
+  "CreatePage": {
+    "header": {
+      "saveDraft": "Save Draft",
+      "schedule": "Schedule",
+      "publishNow": "Publish Now"
+    },
+    "aiGenerator": {
+      "title": "AI Content Generator",
+      "promptLabel": "Describe what you want to post about",
+      "placeholder": "e.g., Write a post about the benefits of AI in social media management for Arabic businesses...",
+      "generateButton": "Generate with AI",
+      "generating": "Generating..."
+    },
+    "platforms": {
+      "title": "Select Platforms",
+      "twitter": "X (Twitter)",
+      "instagram": "Instagram",
+      "linkedin": "LinkedIn",
+      "tiktok": "TikTok"
+    },
+    "contentEditor": {
+      "title": "Post Content",
+      "placeholder": "Write your post content here... You can also write in Arabic",
+      "characters": "characters",
+      "twitterLimitExceeded": "Twitter limit exceeded"
+    },
+    "media": {
+      "title": "Media",
+      "uploadImage": "Upload Image",
+      "uploadVideo": "Upload Video"
+    },
+    "schedule": {
+      "title": "Schedule",
+      "publishNowTab": "Publish Now",
+      "scheduleLaterTab": "Schedule for Later",
+      "publishNowDescription": "Your post will be published immediately to all selected platforms.",
+      "dateLabel": "Date",
+      "timeLabel": "Time",
+      "timezoneLabel": "Timezone",
+      "timezones": {
+        "riyadh": "Riyadh (GMT+3)",
+        "dubai": "Dubai (GMT+4)",
+        "cairo": "Cairo (GMT+2)"
+      }
+    },
+    "preview": {
+      "title": "Preview",
+      "noContent": "Your post content will appear here...",
+      "captionPlaceholder": "Your caption will appear here...",
+      "likes": "👍 Like",
+      "comments": "💬 Comment",
+      "reposts": "🔄 Repost",
+      "shares": "📊 Share",
+      "send": "📤 Send"
+    }
+  },
+  "CalendarPage": {
+    "title": "Content Calendar",
+    "subtitle": "Manage and schedule your social media posts",
+    "filterButton": "Filter",
+    "newPostButton": "New Post",
+    "views": {
+      "month": "Month",
+      "week": "Week",
+      "list": "List"
+    },
+    "platforms": {
+      "twitter": "X (Twitter)",
+      "instagram": "Instagram",
+      "linkedin": "LinkedIn",
+      "tiktok": "TikTok"
+    },
+    "selectedDate": {
+      "title": "Select a date",
+      "noPosts": "No posts scheduled for this date",
+      "schedulePost": "Schedule a post"
+    },
+    "postActions": {
+      "edit": "Edit",
+      "duplicate": "Duplicate",
+      "delete": "Delete"
+    },
+    "status": {
+      "scheduled": "Scheduled"
+    },
+    "weekDays": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+    "allScheduledPosts": "All Scheduled Posts"
+  },
+  "AnalyticsPage": {
+    "title": "Analytics",
+    "subtitle": "Track your social media performance and insights",
+    "timeRangeLabel": "Select time range",
+    "timeRanges": {
+      "7d": "Last 7 days",
+      "30d": "Last 30 days",
+      "90d": "Last 90 days",
+      "1y": "Last year"
+    },
+    "stats": {
+      "totalEngagement": "Total Engagement",
+      "totalReach": "Total Reach",
+      "newFollowers": "New Followers",
+      "avgEngagementRate": "Avg. Engagement Rate"
+    },
+    "charts": {
+      "engagementOverTime": "Engagement Over Time",
+      "engagementOverTimeDesc": "Daily engagement metrics for the selected period",
+      "platformPerformance": "Platform Performance",
+      "platformPerformanceDesc": "Engagement comparison across platforms"
+    },
+    "platformBreakdown": {
+      "title": "Platform Breakdown",
+      "description": "Performance by social platform",
+      "posts": "posts"
+    },
+    "topPosts": {
+      "title": "Top Performing Posts",
+      "description": "Your best content from the selected period"
+    },
+    "platforms": {
+      "twitter": "X (Twitter)",
+      "instagram": "Instagram",
+      "linkedin": "LinkedIn",
+      "tiktok": "TikTok"
+    },
+    "metrics": {
+      "likes": "Likes",
+      "comments": "Comments",
+      "shares": "Shares",
+      "views": "Views",
+      "engagement": "Engagement"
+    }
+  },
+  "SettingsPage": {
+    "title": "Settings",
+    "subtitle": "Manage your account and preferences",
+    "tabs": {
+      "profile": "Profile",
+      "platforms": "Platforms",
+      "notifications": "Notifications",
+      "billing": "Billing"
+    },
+    "profile": {
+      "title": "Profile Information",
+      "description": "Update your personal information and profile picture",
+      "changePhoto": "Change Photo",
+      "photoHelp": "JPG, PNG or GIF. Max size 2MB",
+      "name": "Full Name",
+      "email": "Email",
+      "bio": "Bio",
+      "timezone": "Timezone",
+      "saveChanges": "Save Changes",
+      "cancel": "Cancel",
+      "security": {
+        "title": "Security",
+        "description": "Manage your password and security settings",
+        "currentPassword": "Current Password",
+        "newPassword": "New Password",
+        "confirmPassword": "Confirm New Password",
+        "updatePassword": "Update Password"
+      }
+    },
+    "platforms": {
+      "title": "Connected Platforms",
+      "description": "Manage your social media account connections",
+      "connected": "Connected",
+      "followers": "followers",
+      "reconnect": "Reconnect",
+      "disconnect": "Disconnect",
+      "connectNew": "Connect New Platform",
+      "noConnected": "No platforms connected yet",
+      "disconnected": "Inactive",
+      "postingPreferences": {
+        "title": "Posting Preferences",
+        "description": "Configure default settings for your posts",
+        "autoPublish": {
+          "label": "Auto-publish scheduled posts",
+          "description": "Automatically publish posts at scheduled time"
+        },
+        "watermark": {
+          "label": "Add watermark to images",
+          "description": "Add your brand watermark to uploaded images"
+        },
+        "crossPost": {
+          "label": "Cross-post to all platforms",
+          "description": "Post to all connected platforms by default"
+        }
+      }
+    },
+    "notifications": {
+      "title": "Notification Preferences",
+      "description": "Choose how you want to be notified",
+      "email": {
+        "label": "Email Notifications",
+        "description": "Receive notifications via email"
+      },
+      "push": {
+        "label": "Push Notifications",
+        "description": "Receive push notifications in your browser"
+      },
+      "weeklyReport": {
+        "label": "Weekly Report",
+        "description": "Get a weekly summary of your performance"
+      },
+      "postReminders": {
+        "label": "Post Reminders",
+        "description": "Remind me before scheduled posts go live"
+      },
+      "types": {
+        "title": "Notification Types",
+        "description": "Select which events trigger notifications",
+        "published": "Post published successfully",
+        "failed": "Post failed to publish",
+        "comments": "New comments on posts",
+        "milestones": "Engagement milestones",
+        "connectionIssues": "Platform connection issues"
+      }
+    },
+    "billing": {
+      "title": "Billing",
+      "description": "Manage your subscription and billing",
+      "currentPlan": "Current Plan",
+      "proPlan": "Pro Plan",
+      "proDescription": "Unlimited posts and advanced analytics",
+      "active": "Active",
+      "nextBilling": "Next billing date",
+      "paymentMethod": "Payment method",
+      "changePlan": "Change Plan",
+      "updatePayment": "Update Payment",
+      "billingHistory": "Billing History",
+      "download": "Download",
+      "paid": "Paid",
+      "dangerZone": "Danger Zone",
+      "dangerDescription": "Irreversible actions for your account",
+      "cancelSubscription": "Cancel Subscription",
+      "deleteAccount": "Delete Account"
+    },
+    "platformsNames": {
+      "twitter": "X (Twitter)",
+      "instagram": "Instagram",
+      "linkedin": "LinkedIn",
+      "tiktok": "TikTok"
+    },
+    "timezones": {
+      "riyadh": "Asia/Riyadh (GMT+3)",
+      "dubai": "Asia/Dubai (GMT+4)",
+      "cairo": "Africa/Cairo (GMT+2)",
+      "london": "Europe/London (GMT+0)",
+      "newyork": "America/New_York (GMT-5)"
+    }
+  },
+  "PlatformDetailPage": {
+    "back": "Back to Platforms",
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "createPost": "Create Post",
+    "analytic": "Analytics",
+    "insights": "Insights",
+    "content": "Content",
+    "overview": "Overview",
+    "tabs": {
+      "overview": "Overview",
+      "content": "Content",
+      "analytics": "Analytics",
+      "aiAdvisor": "AI Advisor"
+    },
+    "stats": {
+      "followers": "Followers",
+      "posts": "Posts",
+      "engagement": "Engagement Rate",
+      "reach": "Reach",
+      "fromLastMonth": "from last month",
+      "fromLastWeek": "from last week",
+      "thisMonth": "this month"
+    },
+    "recentPosts": {
+      "title": "Recent Posts",
+      "description": "Your latest content on this platform",
+      "viewAll": "View All Posts",
+      "noPosts": "No posts yet",
+      "noPostsDescription": "Create your first post on this platform using the 'Create Post' button above."
+    },
+    "contentLibrary": "Content Library",
+    "contentLibraryDescription": "All your posts on this platform",
+    "engagement": "Engagement",
+    "edit": "Edit",
+    "repost": "Repost",
+    "backToPlatforms": "Back to Platforms",
+    "performanceChart": {
+      "title": "Post Performance Over Time",
+      "description": "Monthly engagement metrics for your posts on this platform"
+    },
+    "quickActions": {
+      "createPost": "Create Post",
+      "title": "Quick Actions",
+      "viewAnalytics": "View Analytics",
+      "schedulePost": "Schedule Post",
+      "manageAccount": "Manage Account"
+    },
+    "analytics": {
+      "performanceOverview": "Performance Overview",
+      "avgLikes": "Average Likes",
+      "avgComments": "Average Comments",
+      "avgShares": "Average Shares",
+      "bestPostTime": "Best Time to Post",
+      "audienceInsights": "Audience Insights",
+      "topLocation": "Top Location",
+      "topAgeGroup": "Top Age Group",
+      "maleAudience": "Male Audience",
+      "femaleAudience": "Female Audience"
+    },
+    "description": "Get personalized recommendations and insights to improve your content strategy",
+    "aiAdvisor": {
+      "title": "AI Content Advisor",
+      "description": "Get personalized recommendations and insights to improve your content strategy based on your audience and past performance.",
+      "welcomeMessage": "Hello! I'm your AI content advisor. I can help you optimize your content strategy, suggest the best times to post, analyze your audience, and provide creative content ideas. How can I assist you today?",
+      "inputPlaceholder": "Ask me anything about your content strategy...",
+      "quickAction1": "What's the best time to post?",
+      "quickAction2": "Analyze my recent performance",
+      "quickAction3": "Suggest content ideas",
+      "sampleResponse1": "Based on your audience engagement patterns, the best times to post are between 2:00 PM - 4:00 PM on weekdays. Your audience is most active during these hours, which could increase your engagement by up to 35%.",
+      "sampleResponse2": "Your recent posts show strong performance! Your engagement rate has increased by 12% this month. Posts with images perform 45% better than text-only posts. Consider adding more visual content to maintain this growth.",
+      "sampleResponse3": "Here are some content ideas tailored to your audience: 1) Behind-the-scenes content about your workflow, 2) Tips and tricks related to your industry, 3) User-generated content showcasing customer success stories. These types of posts typically generate 2x more engagement."
+    }
+  },
+  "PlatformsPage": {
+    "title": "Connected Platforms",
+    "subtitle": "Manage your social media accounts and view platform-specific insights",
+    "noPlatforms": "No platforms connected yet",
+    "noPlatformsDescription": "Connect your social media accounts to start managing content across multiple platforms.",
+    "connectPlatform": "Connect Platform",
+    "viewPlatform": "View",
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "followers": "followers",
+    "posts": "Posts",
+    "engagement": "Engagement Rate",
+    "stats": {
+      "totalAccounts": "Total Accounts",
+      "totalFollowers": "Total Followers",
+      "totalPosts": "Total Posts",
+      "avgEngagement": "Avg. Engagement"
     }
   }
 }
