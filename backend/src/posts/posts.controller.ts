@@ -119,7 +119,6 @@ export class PostsController {
   @ApiOperation({ summary: 'Create a new post' })
   @ApiResponse({
     status: 201,
-    description: 'Post created successfully',
     type: PostResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Related entity not found' })

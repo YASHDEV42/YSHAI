@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { EntityManager } from '@mikro-orm/core';
+import { EntityManager, Loaded } from '@mikro-orm/core';
 import { Post } from 'src/entities/post.entity';
 import { User } from 'src/entities/user.entity';
 import { Team } from 'src/entities/team.entity';
@@ -17,6 +17,7 @@ import { RecurringPostDto } from './dto/recurring-post.dto';
 import { DraftPostDto } from './dto/draft-post.dto';
 import { Job } from 'src/entities/job.entity';
 import { PostTarget } from 'src/entities/post-target.entity';
+import { Tag } from 'src/entities/tag.entity';
 
 @Injectable()
 export class PostsService {
@@ -134,7 +135,7 @@ export class PostsService {
       }
     }
 
-    // 4. VALIDATE SOCIAL ACCOUNTS + OWNERSHIP
+    // 4. VALIDATE SOCIAL ACCOUNTS + OWNERSHIP + TAGS
     const uniqueAccountIds = [...new Set(socialAccountIds)];
 
     const socialAccounts = await this.em.find(SocialAccount, {
@@ -153,13 +154,35 @@ export class PostsService {
         );
       }
     }
+    let tags: Loaded<Tag>[] = [];
 
+    if (createPostDto.tagIds && createPostDto.tagIds.length > 0) {
+      const uniqueTagIds = [...new Set(createPostDto.tagIds)];
+
+      tags = await this.em.find(Tag, {
+        id: { $in: uniqueTagIds },
+      });
+
+      if (tags.length !== uniqueTagIds.length) {
+        throw new NotFoundException('One or more tagIds are invalid');
+      }
+
+      // enforce ownership: tag.owner.id === authorId
+      for (const tag of tags) {
+        if (tag.owner.id !== authorId) {
+          throw new BadRequestException(
+            `Tag ${tag.id} does not belong to the author`,
+          );
+        }
+      }
+    }
     // 5. CREATE POST ENTITY
     const post = this.em.create(Post, {
       ...data,
       author,
       team,
       campaign,
+      tags: tags.length > 0 ? tags : null,
       template,
       status,
       isRecurring,

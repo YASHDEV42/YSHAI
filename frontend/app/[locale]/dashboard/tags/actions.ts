@@ -1,6 +1,12 @@
 "use server";
 
-import { createTag, deleteTag } from "@/lib/tag-helper";
+import {
+  createTag,
+  deleteTag,
+  updateTag,
+  getOrCreateTag,
+} from "@/lib/tag-helper";
+
 import { ITag } from "@/interfaces";
 import { revalidatePath, revalidateTag } from "next/cache";
 
@@ -13,10 +19,10 @@ interface ActionState {
 }
 
 /* ---------------------------------------------------------
- * Revalidate Helper (aligned with campaign actions)
+ * Revalidate Helper
  * --------------------------------------------------------- */
 function revalidateTags() {
-  // Revalidate cache tags if used elsewhere
+  // Revalidate API tag cache
   revalidateTag("tags", "");
 
   // Revalidate UI pages
@@ -25,13 +31,12 @@ function revalidateTags() {
 }
 
 /* ---------------------------------------------------------
- * Unified Error Extractor (same as campaign actions)
+ * Unified Error Extractor
  * --------------------------------------------------------- */
 function extractErrorMessage(err: any): string {
   if (!err) return "Unknown error";
 
   if (typeof err === "string") return err;
-
   if (err.error) return err.error;
   if (err.message) return err.message;
 
@@ -59,7 +64,84 @@ export async function createTagAction(
     }
 
     const msg = extractErrorMessage(result);
+    return {
+      success: false,
+      enMessage: msg,
+      arMessage: msg,
+      error: msg,
+    };
+  } catch (err) {
+    const msg = extractErrorMessage(err);
+    return {
+      success: false,
+      enMessage: msg,
+      arMessage: msg,
+      error: msg,
+    };
+  }
+}
 
+/* ---------------------------------------------------------
+ * UPDATE TAG
+ * --------------------------------------------------------- */
+export async function updateTagAction(
+  prevState: ActionState,
+  id: number,
+  data: { name?: string; metadata?: Record<string, any> },
+): Promise<ActionState> {
+  try {
+    const result = await updateTag(id, data);
+
+    if (result.success && result.data) {
+      revalidateTags();
+      return {
+        success: true,
+        enMessage: "Tag updated successfully!",
+        arMessage: "تم تحديث الوسم بنجاح!",
+        data: result.data,
+      };
+    }
+
+    const msg = extractErrorMessage(result);
+    return {
+      success: false,
+      enMessage: msg,
+      arMessage: msg,
+      error: msg,
+    };
+  } catch (err) {
+    const msg = extractErrorMessage(err);
+    return {
+      success: false,
+      enMessage: msg,
+      arMessage: msg,
+      error: msg,
+    };
+  }
+}
+
+/* ---------------------------------------------------------
+ * GET OR CREATE TAG
+ * (Useful for auto-creating tags from UI)
+ * --------------------------------------------------------- */
+export async function getOrCreateTagAction(
+  prevState: ActionState,
+  name: string,
+): Promise<ActionState> {
+  try {
+    const result = await getOrCreateTag(name);
+
+    if (result.success && result.data) {
+      revalidateTags();
+      return {
+        success: true,
+        enMessage: "Tag ready!",
+        arMessage: "الوسم جاهز!",
+        data: result.data,
+      };
+    }
+
+    const msg = extractErrorMessage(result);
     return {
       success: false,
       enMessage: msg,
@@ -97,7 +179,6 @@ export async function deleteTagAction(
     }
 
     const msg = extractErrorMessage(result);
-
     return {
       success: false,
       enMessage: msg,

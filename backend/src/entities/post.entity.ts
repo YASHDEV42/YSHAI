@@ -6,6 +6,7 @@ import {
   OneToMany,
   Collection,
   Index,
+  ManyToMany,
 } from '@mikro-orm/core';
 import { User } from './user.entity';
 import { Team } from './team.entity';
@@ -16,6 +17,8 @@ import { PostAnalytics } from './post-analytics.entity';
 import { Campaign } from './campaign.entity';
 import { Template } from './template.entity';
 import { PostTarget } from './post-target.entity';
+import { Tag } from './tag.entity';
+import { PostTag } from './post-tag.entity';
 
 @Entity()
 export class Post {
@@ -78,4 +81,9 @@ export class Post {
 
   @ManyToOne(() => Template, { nullable: true, fieldName: 'templateId' })
   template?: Template;
+
+  @ManyToMany(() => Tag, (tag) => tag.posts, {
+    pivotEntity: () => PostTag,
+  })
+  tags = new Collection<Tag>(this);
 }

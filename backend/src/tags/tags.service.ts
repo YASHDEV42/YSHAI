@@ -1,13 +1,18 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/core';
 import { Tag } from '../entities/tag.entity';
 import { Post } from '../entities/post.entity';
-import { PostTag } from '../entities/post-tag.entity';
-import { CreateTagDto } from './dto/tag.dto';
+import { CreateTagDto, UpdateTagDto } from './dto/tag.dto';
 
-const logger = new Logger('tags');
 @Injectable()
 export class TagsService {
+  private readonly logger = new Logger('TagsService');
+
   constructor(private readonly em: EntityManager) {}
 
   private normalize(name: string): string {
@@ -15,7 +20,7 @@ export class TagsService {
   }
 
   /* ---------------------------------------------------------
-   * LIST TAGS (user-specific + pagination)
+   * LIST TAGS (owner scoped + pagination + search)
    * --------------------------------------------------------- */
   async findAll(
     ownerId: number,
@@ -25,7 +30,7 @@ export class TagsService {
   ): Promise<Tag[]> {
     const offset = (page - 1) * limit;
 
-    const where: Record<string, any> = { owner: ownerId };
+    const where: any = { owner: ownerId };
 
     if (search) {
       const term = search.toLowerCase().trim();
@@ -34,9 +39,8 @@ export class TagsService {
         { normalized: { $ilike: `${term}%` }, owner: ownerId },
       ];
     }
-    logger.log(`Finding tags with criteria: ${JSON.stringify(where)}`);
 
-    return await this.em.find(Tag, where, {
+    return this.em.find(Tag, where, {
       limit,
       offset,
       orderBy: { name: 'ASC' },
@@ -53,22 +57,76 @@ export class TagsService {
   }
 
   /* ---------------------------------------------------------
-   * CREATE TAG (owner scoped)
+   * CREATE TAG (safe + idempotent)
    * --------------------------------------------------------- */
   async create(ownerId: number, dto: CreateTagDto): Promise<Tag> {
     const normalized = this.normalize(dto.name);
 
-    // check existing tag for that user
-    const existing = await this.em.findOne(Tag, {
-      owner: ownerId,
-      normalized,
-    });
-
+    // Check if tag exists already
+    const existing = await this.em.findOne(Tag, { owner: ownerId, normalized });
     if (existing) return existing;
 
     const tag = this.em.create(Tag, {
       owner: ownerId,
       name: dto.name.trim(),
+      normalized,
+      createdAt: new Date(),
+      metadata: dto.metadata ?? null,
+    });
+
+    await this.em.persistAndFlush(tag);
+    return tag;
+  }
+
+  /* ---------------------------------------------------------
+   * UPDATE TAG (name + metadata)
+   * --------------------------------------------------------- */
+  async update(id: number, ownerId: number, dto: UpdateTagDto): Promise<Tag> {
+    const tag = await this.em.findOne(Tag, { id, owner: ownerId });
+    if (!tag) throw new NotFoundException('Tag not found');
+
+    // Rename
+    if (dto.name) {
+      tag.name = dto.name.trim();
+      tag.normalized = this.normalize(dto.name);
+    }
+
+    // Update metadata
+    if (dto.metadata !== undefined) {
+      tag.metadata = dto.metadata;
+    }
+
+    await this.em.flush();
+    return tag;
+  }
+
+  /* ---------------------------------------------------------
+   * DELETE TAG
+   * --------------------------------------------------------- */
+  async remove(id: number, ownerId: number): Promise<void> {
+    const tag = await this.em.findOne(Tag, { id, owner: ownerId });
+    if (!tag) throw new NotFoundException('Tag not found');
+    await this.em.removeAndFlush(tag);
+  }
+
+  /* ---------------------------------------------------------
+   * GET OR CREATE TAG (backend mirror of helper)
+   * --------------------------------------------------------- */
+  async getOrCreate(ownerId: number, name: string): Promise<Tag> {
+    const normalized = this.normalize(name);
+
+    // find existing
+    let tag = await this.em.findOne(Tag, {
+      owner: ownerId,
+      normalized,
+    });
+
+    if (tag) return tag;
+
+    // create new
+    tag = this.em.create(Tag, {
+      owner: ownerId,
+      name,
       normalized,
       createdAt: new Date(),
     });
@@ -78,89 +136,54 @@ export class TagsService {
   }
 
   /* ---------------------------------------------------------
-   * DELETE TAG (owner scoped)
-   * --------------------------------------------------------- */
-  async remove(id: number, ownerId: number): Promise<void> {
-    const tag = await this.em.findOne(Tag, { id, owner: ownerId });
-    if (!tag) throw new NotFoundException('Tag not found');
-    await this.em.removeAndFlush(tag);
-  }
-
-  /* ---------------------------------------------------------
-   * GET POST TAGS (owner enforced)
+   * GET TAGS FOR POST (simple & clean)
    * --------------------------------------------------------- */
   async getPostTags(postId: number, ownerId: number): Promise<Tag[]> {
-    const post = await this.em.findOne(Post, { id: postId, author: ownerId });
+    const post = await this.em.findOne(
+      Post,
+      { id: postId, author: ownerId },
+      {
+        populate: ['tags'],
+      },
+    );
     if (!post) throw new NotFoundException('Post not found');
 
-    const postTags = await this.em.find(
-      PostTag,
-      { post: postId },
-      { populate: ['tag'] },
-    );
-
-    return postTags.map((pt) => pt.tag);
+    return post.tags.getItems();
   }
 
   /* ---------------------------------------------------------
-   * SET POST TAGS (owner scoped)
+   * SET TAGS ON POST  (many-to-many, no manual pivot)
    * --------------------------------------------------------- */
   async setPostTags(
     postId: number,
     ownerId: number,
-    tagNames: string[],
+    tagIds: number[],
   ): Promise<Tag[]> {
-    return await this.em.transactional(async (em) => {
-      const post = await em.findOne(Post, { id: postId, author: ownerId });
-      if (!post) throw new NotFoundException('Post not found');
+    const post = await this.em.findOne(
+      Post,
+      { id: postId, author: ownerId },
+      {
+        populate: ['tags'],
+      },
+    );
+    if (!post) throw new NotFoundException('Post not found');
 
-      const names = Array.from(
-        new Set(tagNames.map((n) => n.trim()).filter((n) => n.length > 0)),
-      );
+    const uniqueIds = [...new Set(tagIds)];
 
-      await em.nativeDelete(PostTag, { post: postId });
-
-      if (names.length === 0) return [];
-
-      const normalizedNames = names.map((n) => this.normalize(n));
-
-      const existing = await em.find(Tag, {
-        owner: ownerId,
-        normalized: { $in: normalizedNames },
-      });
-
-      const map = new Map(existing.map((t) => [t.normalized, t]));
-      const result: Tag[] = [];
-
-      for (let i = 0; i < names.length; i++) {
-        const name = names[i];
-        const normalized = normalizedNames[i];
-
-        let tag = map.get(normalized);
-
-        if (!tag) {
-          tag = em.create(Tag, {
-            owner: ownerId,
-            name,
-            normalized,
-            createdAt: new Date(),
-          });
-
-          await em.persist(tag);
-          map.set(normalized, tag);
-        }
-
-        const pt = em.create(PostTag, {
-          post,
-          tag,
-          createdAt: new Date(),
-        });
-
-        await em.persist(pt);
-        result.push(tag);
-      }
-
-      return result;
+    // Load tags
+    const tags = await this.em.find(Tag, {
+      id: { $in: uniqueIds },
+      owner: ownerId,
     });
+
+    if (tags.length !== uniqueIds.length) {
+      throw new BadRequestException('Invalid or unauthorized tags');
+    }
+
+    // Set tags (MikroORM handles pivot table automatically)
+    post.tags.set(tags);
+
+    await this.em.flush();
+    return tags;
   }
 }

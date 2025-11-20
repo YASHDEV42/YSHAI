@@ -6,6 +6,7 @@ import {
   HttpCode,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Query,
   Req,
@@ -20,12 +21,17 @@ import {
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { TagsService } from './tags.service';
-import { TagResponseDto, CreateTagDto, UpdatePostTagsDto } from './dto/tag.dto';
+import {
+  TagResponseDto,
+  CreateTagDto,
+  UpdateTagDto,
+  GetOrCreateTagDto,
+} from './dto/tag.dto';
 import { ApiStandardErrors } from 'src/common/decorators/api-standard-errors.decorator';
 import { Tag } from '../entities/tag.entity';
 import { Logger } from '@nestjs/common';
 
-const logger = new Logger('tags');
+const logger = new Logger('TagsController');
 
 @ApiStandardErrors()
 @ApiTags('Tags')
@@ -46,6 +52,9 @@ export class TagsController {
     };
   }
 
+  /* --------------------------------------
+   * LIST TAGS
+   * -------------------------------------- */
   @Get()
   @ApiOperation({ summary: 'List tags for current user (paginated)' })
   @ApiQuery({ name: 'page', required: false })
@@ -76,6 +85,9 @@ export class TagsController {
     return tags.map((t) => this.toDto(t));
   }
 
+  /* --------------------------------------
+   * GET ONE TAG
+   * -------------------------------------- */
   @Get(':id')
   @ApiOperation({ summary: 'Get a user-owned tag' })
   @ApiResponse({ status: 200, type: TagResponseDto })
@@ -87,6 +99,9 @@ export class TagsController {
     return this.toDto(t);
   }
 
+  /* --------------------------------------
+   * CREATE TAG
+   * -------------------------------------- */
   @Post()
   @ApiOperation({ summary: 'Create a new tag for current user' })
   @ApiResponse({ status: 201, type: TagResponseDto })
@@ -98,6 +113,38 @@ export class TagsController {
     return this.toDto(tag);
   }
 
+  /* --------------------------------------
+   * UPDATE TAG  (🔥 NEW)
+   * -------------------------------------- */
+  @Patch(':id')
+  @ApiOperation({ summary: 'Update a tag (name or metadata)' })
+  @ApiResponse({ status: 200, type: TagResponseDto })
+  async update(
+    @Req() req: { user: { id: number } },
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateTagDto,
+  ): Promise<TagResponseDto> {
+    const tag = await this.tagsService.update(id, req.user.id, dto);
+    return this.toDto(tag);
+  }
+
+  /* --------------------------------------
+   * GET OR CREATE TAG (🔥 NEW)
+   * -------------------------------------- */
+  @Post('get-or-create')
+  @ApiOperation({ summary: 'Get an existing tag or create it if missing' })
+  @ApiResponse({ status: 200, type: TagResponseDto })
+  async getOrCreate(
+    @Req() req: { user: { id: number } },
+    @Body() dto: GetOrCreateTagDto,
+  ): Promise<TagResponseDto> {
+    const tag = await this.tagsService.getOrCreate(req.user.id, dto.name);
+    return this.toDto(tag);
+  }
+
+  /* --------------------------------------
+   * DELETE TAG
+   * -------------------------------------- */
   @Delete(':id')
   @HttpCode(204)
   @ApiOperation({ summary: 'Delete a user-owned tag' })

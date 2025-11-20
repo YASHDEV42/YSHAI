@@ -7,6 +7,9 @@ import {
   IsEnum,
   MinLength,
   IsString,
+  IsArray,
+  ArrayMinSize,
+  IsInt,
 } from 'class-validator';
 
 enum PostStatus {
@@ -22,103 +25,103 @@ export class CreatePostDto {
     description: 'Arabic content of the post',
     example: 'هذا محتوى المنشور باللغة العربية',
     type: String,
+    required: false,
   })
   @IsString()
+  @IsOptional()
   @MinLength(1)
   contentAr?: string;
 
   @ApiProperty({
-    description: 'English content of the post (optional)',
+    description: 'English content of the post',
     example: 'This is the post content in English',
     required: false,
-    type: String,
   })
   @IsString()
   @IsOptional()
   contentEn?: string;
 
   @ApiProperty({
-    description: 'Scheduled date and time for the post (ISO format)',
+    description:
+      'Scheduled date (ISO8601). Required only when status = scheduled.',
     example: '2025-04-05T10:00:00Z',
-    type: String,
-    format: 'date-time',
+    required: false,
   })
+  @IsOptional()
   @IsDateString()
-  scheduledAt: string;
+  scheduledAt?: string;
 
   @ApiProperty({
     description: 'Status of the post',
-    enum: ['draft', 'scheduled', 'published', 'failed', 'pending_approval'],
-    default: 'draft',
+    enum: PostStatus,
+    default: PostStatus.DRAFT,
     required: false,
-    type: String,
   })
   @IsEnum(PostStatus)
   @IsOptional()
   status?: PostStatus;
 
   @ApiProperty({
-    description: 'Whether the post is part of a recurring schedule',
-    default: false,
+    description: 'Whether this post is recurring',
+    example: false,
     required: false,
-    type: Boolean,
   })
   @IsBoolean()
   @IsOptional()
   isRecurring?: boolean;
 
   @ApiProperty({
-    description: 'ID of the author (User)',
+    description: 'Author ID',
     example: 1,
-    type: Number,
   })
   @IsNumber()
-  authorId: number;
+  authorId!: number;
 
   @ApiProperty({
-    description: 'ID of the team (optional)',
-    example: 5,
+    description: 'Team ID (optional)',
+    example: 2,
     required: false,
-    type: Number,
   })
-  @IsNumber()
   @IsOptional()
+  @IsNumber()
   teamId?: number;
 
   @ApiProperty({
-    description:
-      'IDs of the social accounts to post to (optional, multi-target)',
+    description: 'List of target social account IDs',
     example: [12, 15],
     required: false,
     type: [Number],
   })
   @IsOptional()
+  @IsArray()
+  @IsInt({ each: true })
   socialAccountIds?: number[];
+
   @ApiProperty({
-    description: 'List of tag IDs (optional)',
+    description: 'List of tag IDs',
     example: [1, 3, 7],
     required: false,
-    type: [Number],
   })
   @IsOptional()
+  @IsArray()
+  @IsInt({ each: true })
   tagIds?: number[];
+
   @ApiProperty({
-    description: 'ID of the associated campaign (optional)',
+    description: 'Campaign ID (optional)',
     example: 7,
     required: false,
-    type: Number,
   })
-  @IsNumber()
   @IsOptional()
+  @IsNumber()
   campaignId?: number;
 
   @ApiProperty({
-    description: 'ID of the template used (optional)',
+    description: 'Template ID (optional)',
     example: 3,
     required: false,
-    type: Number,
   })
-  @IsNumber()
   @IsOptional()
+  @IsNumber()
   templateId?: number;
 }
