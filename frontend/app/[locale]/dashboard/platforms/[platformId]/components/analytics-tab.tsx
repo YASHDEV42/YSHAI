@@ -7,7 +7,17 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Heart, MessageCircle, Share2, TrendingUp, Eye } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import {
+  Heart,
+  MessageCircle,
+  Share2,
+  TrendingUp,
+  Eye,
+  Users,
+  Zap,
+  Activity,
+} from "lucide-react";
 import {
   Line,
   LineChart,
@@ -22,14 +32,21 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { cn } from "@/lib/utils";
 
 interface AnalyticsTabProps {
   text: any;
   locale: string;
   posts: any[];
+  animateItems?: boolean;
 }
 
-export function AnalyticsTab({ text, locale, posts }: AnalyticsTabProps) {
+export function AnalyticsTab({
+  text,
+  locale,
+  posts,
+  animateItems = false,
+}: AnalyticsTabProps) {
   const calculateEngagementData = () => {
     const monthlyData: Record<
       string,
@@ -128,12 +145,22 @@ export function AnalyticsTab({ text, locale, posts }: AnalyticsTabProps) {
     <div className="space-y-6">
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
+        <Card
+          className={cn(
+            "border-l-4 border-l-primary hover:border-l-accent transition-all duration-300 hover:shadow-md hover:scale-[1.02]",
+            animateItems
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-4",
+          )}
+          style={{ animationDelay: "100ms" }}
+        >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               {text.analytics?.avgLikes || "Average Likes"}
             </CardTitle>
-            <Heart className="size-4 text-muted-foreground" />
+            <div className="p-2 bg-primary/10 rounded-lg transition-all duration-300 group-hover:scale-110">
+              <Heart className="size-5 text-primary" />
+            </div>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -142,15 +169,31 @@ export function AnalyticsTab({ text, locale, posts }: AnalyticsTabProps) {
             <p className="text-xs text-muted-foreground mt-1">
               {text.stats?.posts || "per post"}
             </p>
+            <div className="mt-2">
+              <Progress
+                value={Math.min(analytics.avgLikes * 2, 100)}
+                className="h-1"
+              />
+            </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card
+          className={cn(
+            "border-l-4 border-l-blue-500 hover:border-l-accent transition-all duration-300 hover:shadow-md hover:scale-[1.02]",
+            animateItems
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-4",
+          )}
+          style={{ animationDelay: "200ms" }}
+        >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               {text.analytics?.avgComments || "Average Comments"}
             </CardTitle>
-            <MessageCircle className="size-4 text-muted-foreground" />
+            <div className="p-2 bg-blue-500/10 rounded-lg transition-all duration-300 group-hover:scale-110">
+              <MessageCircle className="size-5 text-blue-500" />
+            </div>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -159,15 +202,31 @@ export function AnalyticsTab({ text, locale, posts }: AnalyticsTabProps) {
             <p className="text-xs text-muted-foreground mt-1">
               {text.stats?.posts || "per post"}
             </p>
+            <div className="mt-2">
+              <Progress
+                value={Math.min(analytics.avgComments * 5, 100)}
+                className="h-1"
+              />
+            </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card
+          className={cn(
+            "border-l-4 border-l-green-500 hover:border-l-accent transition-all duration-300 hover:shadow-md hover:scale-[1.02]",
+            animateItems
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-4",
+          )}
+          style={{ animationDelay: "300ms" }}
+        >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               {text.analytics?.avgShares || "Average Shares"}
             </CardTitle>
-            <Share2 className="size-4 text-muted-foreground" />
+            <div className="p-2 bg-green-500/10 rounded-lg transition-all duration-300 group-hover:scale-110">
+              <Share2 className="size-5 text-green-500" />
+            </div>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -176,30 +235,58 @@ export function AnalyticsTab({ text, locale, posts }: AnalyticsTabProps) {
             <p className="text-xs text-muted-foreground mt-1">
               {text.stats?.posts || "per post"}
             </p>
+            <div className="mt-2">
+              <Progress
+                value={Math.min(analytics.avgShares * 10, 100)}
+                className="h-1"
+              />
+            </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card
+          className={cn(
+            "border-l-4 border-l-orange-500 hover:border-l-accent transition-all duration-300 hover:shadow-md hover:scale-[1.02]",
+            animateItems
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-4",
+          )}
+          style={{ animationDelay: "400ms" }}
+        >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               {text.analytics?.bestPostTime || "Best Time to Post"}
             </CardTitle>
-            <TrendingUp className="size-4 text-muted-foreground" />
+            <div className="p-2 bg-orange-500/10 rounded-lg transition-all duration-300 group-hover:scale-110">
+              <TrendingUp className="size-5 text-orange-500" />
+            </div>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{analytics.bestTime}</div>
             <p className="text-xs text-muted-foreground mt-1">
               {text.analytics?.bestPostTime || "peak engagement"}
             </p>
+            <div className="mt-2">
+              <Progress value={75} className="h-1" />
+            </div>
           </CardContent>
         </Card>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Engagement Over Time Chart */}
-        <Card className="lg:col-span-2">
+        <Card
+          className={cn(
+            "lg:col-span-2 transition-all duration-300 hover:shadow-md",
+            animateItems
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-4",
+          )}
+          style={{ animationDelay: "500ms" }}
+        >
           <CardHeader>
-            <CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <Activity className="size-5 text-primary" />
               {text.performanceChart?.title || "Engagement Over Time"}
             </CardTitle>
             <CardDescription>
@@ -305,9 +392,18 @@ export function AnalyticsTab({ text, locale, posts }: AnalyticsTabProps) {
         </Card>
 
         {/* Performance Breakdown */}
-        <Card>
+        <Card
+          className={cn(
+            "transition-all duration-300 hover:shadow-md",
+            animateItems
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-4",
+          )}
+          style={{ animationDelay: "600ms" }}
+        >
           <CardHeader>
-            <CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="size-5 text-primary" />
               {text.analytics?.performanceOverview || "Performance Overview"}
             </CardTitle>
             <CardDescription>
@@ -318,12 +414,12 @@ export function AnalyticsTab({ text, locale, posts }: AnalyticsTabProps) {
             <div className="space-y-4">
               <div className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors">
                 <div className="flex items-center gap-3">
-                  <div className="flex size-10 items-center justify-center rounded-lg bg-chart-1/10">
-                    <Heart className="size-5 text-chart-1" />
+                  <div className="p-1.5 bg-chart-1/10 rounded-md">
+                    <Heart className="size-4 text-chart-1" />
                   </div>
                   <div>
                     <p className="font-medium text-sm">
-                      {text.analytics?.avgLikes || "Total Likes"}
+                      {text.analytics?.totalLikes || "Total Likes"}
                     </p>
                     <p className="text-xs text-muted-foreground">
                       {posts.length} {text.stats?.posts || "posts"}
@@ -336,17 +432,20 @@ export function AnalyticsTab({ text, locale, posts }: AnalyticsTabProps) {
                       .reduce((sum, p) => sum + (p.likeCount || 0), 0)
                       .toLocaleString()}
                   </p>
+                  <div className="mt-1 w-16">
+                    <Progress value={75} className="h-1" />
+                  </div>
                 </div>
               </div>
 
               <div className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors">
                 <div className="flex items-center gap-3">
-                  <div className="flex size-10 items-center justify-center rounded-lg bg-chart-2/10">
-                    <MessageCircle className="size-5 text-chart-2" />
+                  <div className="p-1.5 bg-chart-2/10 rounded-md">
+                    <MessageCircle className="size-4 text-chart-2" />
                   </div>
                   <div>
                     <p className="font-medium text-sm">
-                      {text.analytics?.avgComments || "Total Comments"}
+                      {text.analytics?.totalComments || "Total Comments"}
                     </p>
                     <p className="text-xs text-muted-foreground">
                       {posts.length} {text.stats?.posts || "posts"}
@@ -359,17 +458,20 @@ export function AnalyticsTab({ text, locale, posts }: AnalyticsTabProps) {
                       .reduce((sum, p) => sum + (p.commentsCount || 0), 0)
                       .toLocaleString()}
                   </p>
+                  <div className="mt-1 w-16">
+                    <Progress value={60} className="h-1" />
+                  </div>
                 </div>
               </div>
 
               <div className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors">
                 <div className="flex items-center gap-3">
-                  <div className="flex size-10 items-center justify-center rounded-lg bg-chart-3/10">
-                    <Share2 className="size-5 text-chart-3" />
+                  <div className="p-1.5 bg-chart-3/10 rounded-md">
+                    <Share2 className="size-4 text-chart-3" />
                   </div>
                   <div>
                     <p className="font-medium text-sm">
-                      {text.analytics?.avgShares || "Total Shares"}
+                      {text.analytics?.totalShares || "Total Shares"}
                     </p>
                     <p className="text-xs text-muted-foreground">
                       {posts.length} {text.stats?.posts || "posts"}
@@ -382,13 +484,16 @@ export function AnalyticsTab({ text, locale, posts }: AnalyticsTabProps) {
                       .reduce((sum, p) => sum + (p.shareCount || 0), 0)
                       .toLocaleString()}
                   </p>
+                  <div className="mt-1 w-16">
+                    <Progress value={45} className="h-1" />
+                  </div>
                 </div>
               </div>
 
               <div className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors">
                 <div className="flex items-center gap-3">
-                  <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10">
-                    <Eye className="size-5 text-primary" />
+                  <div className="p-1.5 bg-primary/10 rounded-md">
+                    <Eye className="size-4 text-primary" />
                   </div>
                   <div>
                     <p className="font-medium text-sm">
@@ -403,6 +508,9 @@ export function AnalyticsTab({ text, locale, posts }: AnalyticsTabProps) {
                   <p className="font-semibold">
                     {analytics.totalReach.toLocaleString()}
                   </p>
+                  <div className="mt-1 w-16">
+                    <Progress value={30} className="h-1" />
+                  </div>
                 </div>
               </div>
             </div>
@@ -410,9 +518,18 @@ export function AnalyticsTab({ text, locale, posts }: AnalyticsTabProps) {
         </Card>
 
         {/* Audience Insights */}
-        <Card>
+        <Card
+          className={cn(
+            "transition-all duration-300 hover:shadow-md",
+            animateItems
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-4",
+          )}
+          style={{ animationDelay: "700ms" }}
+        >
           <CardHeader>
-            <CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <Users className="size-5 text-primary" />
               {text.analytics?.audienceInsights || "Audience Insights"}
             </CardTitle>
             <CardDescription>Demographic and behavioral data</CardDescription>

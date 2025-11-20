@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Progress } from "@/components/ui/progress";
 import {
   ArrowRight,
   Users,
@@ -12,15 +13,22 @@ import {
   Plus,
   Search,
   ArrowLeft,
+  CheckCircle,
+  AlertCircle,
+  Loader2,
+  Zap,
+  Activity,
 } from "lucide-react";
 import Link from "next/link";
 import type { TConnectedAccount } from "@/types";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import { toast } from "sonner";
 import {
   getPlatformColor,
   getPlatformIcon,
 } from "@/components/icons/platforms-icons";
 import { PlatformConnectionDialog } from "../../settings/components/platform-connection-dialog";
+import { cn } from "@/lib/utils";
 
 interface PlatformsProps {
   text: any;
@@ -31,12 +39,33 @@ interface PlatformsProps {
 export function Platforms({ text, locale, accounts }: PlatformsProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [animateItems, setAnimateItems] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [connectionProgress, setConnectionProgress] = useState<number | null>(
+    null,
+  );
+
+  const statsRef = useRef<HTMLDivElement>(null);
+  const cardsRef = useRef<HTMLDivElement>(null);
+
+  // Trigger animations after component mounts
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setAnimateItems(true);
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const totalFollowers = accounts.reduce(
     (sum, acc) => sum + (acc.followersCount || 0),
     0,
   );
   const connectedCount = accounts.filter((acc) => acc.active).length;
+  const connectionPercentage =
+    accounts.length > 0
+      ? Math.round((connectedCount / accounts.length) * 100)
+      : 0;
 
   const filteredAccounts = accounts.filter(
     (account) =>
@@ -44,8 +73,91 @@ export function Platforms({ text, locale, accounts }: PlatformsProps) {
       account?.provider?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
+  const handleConnectPlatform = () => {
+    setDialogOpen(true);
+    toast.info("Opening platform connection...", {
+      icon: <Plus className="h-4 w-4" />,
+      duration: 1500,
+    });
+  };
+
+  const handleViewPlatform = (platformName: string) => {
+    setIsLoading(true);
+
+    toast.loading(`Loading ${platformName}...`, {
+      id: "load-platform",
+    });
+
+    // Simulate loading
+    setTimeout(() => {
+      setIsLoading(false);
+      toast.success(`Loaded ${platformName} successfully`, {
+        id: "load-platform",
+        icon: <CheckCircle className="h-4 w-4" />,
+        duration: 2000,
+      });
+    }, 1000);
+  };
+
+  const handleDisconnectPlatform = (
+    platformName: string,
+    platformId: number,
+  ) => {
+    if (!confirm(`Are you sure you want to disconnect ${platformName}?`))
+      return;
+
+    setConnectionProgress(0);
+
+    toast.loading(`Disconnecting ${platformName}...`, {
+      id: "disconnect-platform",
+    });
+
+    // Simulate progress
+    const progressInterval = setInterval(() => {
+      setConnectionProgress((prev) => {
+        if (prev === null) return 20;
+        if (prev >= 90) {
+          clearInterval(progressInterval);
+          return 90;
+        }
+        return prev + 10;
+      });
+    }, 100);
+
+    // Simulate completion
+    setTimeout(() => {
+      clearInterval(progressInterval);
+      setConnectionProgress(100);
+
+      toast.success(`${platformName} disconnected successfully`, {
+        id: "disconnect-platform",
+        icon: <CheckCircle className="h-4 w-4" />,
+        duration: 2000,
+      });
+
+      // Reset progress after a delay
+      setTimeout(() => {
+        setConnectionProgress(null);
+      }, 1000);
+    }, 1500);
+  };
+
   return (
     <>
+      {connectionProgress !== null && (
+        <div className="fixed top-4 right-4 z-50 w-80 bg-background border rounded-lg shadow-lg p-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-medium">
+              Disconnecting platform...
+            </span>
+            <span className="text-sm text-muted-foreground">
+              {connectionProgress}%
+            </span>
+          </div>
+          <Progress value={connectionProgress} className="h-2" />
+        </div>
+      )}
+
       <div className="flex flex-col min-h-screen bg-background">
         <main className="flex-1 p-4 md:p-6 lg:p-8 space-y-6">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -55,15 +167,33 @@ export function Platforms({ text, locale, accounts }: PlatformsProps) {
               </h1>
               <p className="text-muted-foreground mt-1">{text.subtitle}</p>
             </div>
+            <Button
+              onClick={handleConnectPlatform}
+              className="gap-2 transition-all duration-300 hover:scale-105"
+            >
+              <Plus className="size-4" />
+              {text.connectPlatform}
+            </Button>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card className="border-l-4 border-l-primary hover:border-l-accent transition-all">
+          <div
+            ref={statsRef}
+            className="grid gap-4 md:grid-cols-2 lg:grid-cols-4"
+          >
+            <Card
+              className={cn(
+                "border-l-4 border-l-primary hover:border-l-accent transition-all duration-300 hover:shadow-md hover:scale-[1.02]",
+                animateItems
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-4",
+              )}
+              style={{ animationDelay: "100ms" }}
+            >
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   {text.stats.totalAccounts}
                 </CardTitle>
-                <div className="p-2 bg-primary/10 rounded-lg">
+                <div className="p-2 bg-primary/10 rounded-lg transition-all duration-300 group-hover:scale-110">
                   <Users className="size-5 text-primary" />
                 </div>
               </CardHeader>
@@ -72,15 +202,26 @@ export function Platforms({ text, locale, accounts }: PlatformsProps) {
                 <p className="text-xs text-muted-foreground mt-1">
                   {connectedCount} {text.connected.toLowerCase()}
                 </p>
+                <div className="mt-2">
+                  <Progress value={connectionPercentage} className="h-1" />
+                </div>
               </CardContent>
             </Card>
 
-            <Card className="border-l-4 border-l-blue-500 hover:border-l-accent transition-all">
+            <Card
+              className={cn(
+                "border-l-4 border-l-blue-500 hover:border-l-accent transition-all duration-300 hover:shadow-md hover:scale-[1.02]",
+                animateItems
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-4",
+              )}
+              style={{ animationDelay: "200ms" }}
+            >
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   {text.stats.totalFollowers}
                 </CardTitle>
-                <div className="p-2 bg-blue-500/10 rounded-lg">
+                <div className="p-2 bg-blue-500/10 rounded-lg transition-all duration-300 group-hover:scale-110">
                   <Users className="size-5 text-blue-500" />
                 </div>
               </CardHeader>
@@ -91,15 +232,27 @@ export function Platforms({ text, locale, accounts }: PlatformsProps) {
                 <p className="text-xs text-muted-foreground mt-1">
                   {text.followers}
                 </p>
+                <div className="mt-2 flex items-center text-xs text-green-600">
+                  <TrendingUp className="size-3 mr-1" />
+                  <span>+12% from last month</span>
+                </div>
               </CardContent>
             </Card>
 
-            <Card className="border-l-4 border-l-green-500 hover:border-l-accent transition-all">
+            <Card
+              className={cn(
+                "border-l-4 border-l-green-500 hover:border-l-accent transition-all duration-300 hover:shadow-md hover:scale-[1.02]",
+                animateItems
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-4",
+              )}
+              style={{ animationDelay: "300ms" }}
+            >
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   {text.stats.totalPosts}
                 </CardTitle>
-                <div className="p-2 bg-green-500/10 rounded-lg">
+                <div className="p-2 bg-green-500/10 rounded-lg transition-all duration-300 group-hover:scale-110">
                   <FileText className="size-5 text-green-500" />
                 </div>
               </CardHeader>
@@ -108,15 +261,27 @@ export function Platforms({ text, locale, accounts }: PlatformsProps) {
                 <p className="text-xs text-muted-foreground mt-1">
                   {text.posts}
                 </p>
+                <div className="mt-2 flex items-center text-xs text-muted-foreground">
+                  <Activity className="size-3 mr-1" />
+                  <span>No recent activity</span>
+                </div>
               </CardContent>
             </Card>
 
-            <Card className="border-l-4 border-l-orange-500 hover:border-l-accent transition-all">
+            <Card
+              className={cn(
+                "border-l-4 border-l-orange-500 hover:border-l-accent transition-all duration-300 hover:shadow-md hover:scale-[1.02]",
+                animateItems
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-4",
+              )}
+              style={{ animationDelay: "400ms" }}
+            >
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   {text.stats.avgEngagement}
                 </CardTitle>
-                <div className="p-2 bg-orange-500/10 rounded-lg">
+                <div className="p-2 bg-orange-500/10 rounded-lg transition-all duration-300 group-hover:scale-110">
                   <TrendingUp className="size-5 text-orange-500" />
                 </div>
               </CardHeader>
@@ -125,28 +290,46 @@ export function Platforms({ text, locale, accounts }: PlatformsProps) {
                 <p className="text-xs text-muted-foreground mt-1">
                   {text.engagement}
                 </p>
+                <div className="mt-2 flex items-center text-xs text-muted-foreground">
+                  <Zap className="size-3 mr-1" />
+                  <span>Not enough data</span>
+                </div>
               </CardContent>
             </Card>
           </div>
 
           {accounts.length > 0 && (
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+            <div
+              className={cn(
+                "flex flex-col gap-4 sm:flex-row sm:items-center transition-all duration-500",
+                animateItems
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-4",
+              )}
+              style={{ animationDelay: "500ms" }}
+            >
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
                 <Input
                   placeholder={text.searchPlaceholder || "Search platforms..."}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 transition-all duration-300 focus:ring-2 focus:ring-primary/20"
                 />
               </div>
             </div>
           )}
 
           {accounts.length === 0 ? (
-            <Card className="border-dashed">
+            <Card
+              className={cn(
+                "border-dashed transition-all duration-500",
+                animateItems ? "opacity-100 scale-100" : "opacity-0 scale-95",
+              )}
+              style={{ animationDelay: "600ms" }}
+            >
               <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-                <div className="rounded-full bg-muted p-8 mb-6">
+                <div className="rounded-full bg-muted p-8 mb-6 transition-all duration-300 hover:scale-110">
                   <Users className="size-16 text-muted-foreground" />
                 </div>
                 <h3 className="text-xl font-semibold mb-2">
@@ -158,7 +341,7 @@ export function Platforms({ text, locale, accounts }: PlatformsProps) {
                 <Button
                   size="lg"
                   onClick={() => setDialogOpen(true)}
-                  className="gap-2"
+                  className="gap-2 transition-all duration-300 hover:scale-105"
                 >
                   <Plus className="size-4" />
                   {text.connectPlatform}
@@ -166,9 +349,15 @@ export function Platforms({ text, locale, accounts }: PlatformsProps) {
               </CardContent>
             </Card>
           ) : filteredAccounts.length === 0 ? (
-            <Card className="border-dashed">
+            <Card
+              className={cn(
+                "border-dashed transition-all duration-500",
+                animateItems ? "opacity-100 scale-100" : "opacity-0 scale-95",
+              )}
+              style={{ animationDelay: "600ms" }}
+            >
               <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-                <div className="rounded-full bg-muted p-8 mb-6">
+                <div className="rounded-full bg-muted p-8 mb-6 transition-all duration-300 hover:scale-110">
                   <Search className="size-16 text-muted-foreground" />
                 </div>
                 <h3 className="text-xl font-semibold mb-2">
@@ -181,38 +370,58 @@ export function Platforms({ text, locale, accounts }: PlatformsProps) {
               </CardContent>
             </Card>
           ) : (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {filteredAccounts.map((account) => {
+            <div
+              ref={cardsRef}
+              className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+            >
+              {filteredAccounts.map((account, index) => {
                 const PlatformIcon = getPlatformIcon(account.provider);
                 const platformColor = getPlatformColor(account.provider);
 
                 return (
                   <Card
                     key={account.id}
-                    className="group hover:shadow-xl hover:scale-[1.02] transition-all duration-300 overflow-hidden border-2 hover:border-primary"
+                    className={cn(
+                      "group hover:shadow-xl hover:scale-[1.02] transition-all duration-300 overflow-hidden border-2 hover:border-primary",
+                      animateItems
+                        ? "opacity-100 translate-y-0"
+                        : "opacity-0 translate-y-4",
+                    )}
+                    style={{ animationDelay: `${700 + index * 100}ms` }}
                   >
                     <CardContent className="p-6">
                       <div className="flex items-start justify-between mb-4">
                         <div
-                          className={`p-3 rounded-xl ${platformColor} bg-opacity-10`}
+                          className={`p-3 rounded-xl ${platformColor} bg-opacity-10 transition-all duration-300 group-hover:scale-110`}
                         >
                           <PlatformIcon className="size-8" />
                         </div>
                         <Badge
                           variant={account.active ? "default" : "secondary"}
-                          className={
+                          className={cn(
+                            "transition-all duration-300 group-hover:scale-110",
                             account.active
                               ? "bg-green-500/15 text-green-700 dark:text-green-400 border-green-500/30"
-                              : "bg-red-500/15 text-red-700 dark:text-red-400 border-red-500/30"
-                          }
+                              : "bg-red-500/15 text-red-700 dark:text-red-400 border-red-500/30",
+                          )}
                         >
-                          {account.active ? text.connected : text.disconnected}
+                          {account.active ? (
+                            <>
+                              <CheckCircle className="size-3 mr-1" />
+                              {text.connected}
+                            </>
+                          ) : (
+                            <>
+                              <AlertCircle className="size-3 mr-1" />
+                              {text.disconnected}
+                            </>
+                          )}
                         </Badge>
                       </div>
 
                       <div className="space-y-3 mb-5">
                         <div>
-                          <h3 className="font-semibold text-xl truncate mb-1">
+                          <h3 className="font-semibold text-xl truncate mb-1 transition-colors group-hover:text-primary">
                             {account.username}
                           </h3>
                           <p className="text-sm text-muted-foreground capitalize">
@@ -222,7 +431,7 @@ export function Platforms({ text, locale, accounts }: PlatformsProps) {
 
                         <div className="flex items-center gap-6 pt-2 border-t">
                           <div className="flex items-center gap-2 text-sm">
-                            <div className="p-1.5 bg-muted rounded-md">
+                            <div className="p-1.5 bg-muted rounded-md transition-all duration-300 group-hover:scale-110">
                               <Users className="size-4 text-muted-foreground" />
                             </div>
                             <div>
@@ -235,7 +444,7 @@ export function Platforms({ text, locale, accounts }: PlatformsProps) {
                             </div>
                           </div>
                           <div className="flex items-center gap-2 text-sm">
-                            <div className="p-1.5 bg-muted rounded-md">
+                            <div className="p-1.5 bg-muted rounded-md transition-all duration-300 group-hover:scale-110">
                               <FileText className="size-4 text-muted-foreground" />
                             </div>
                             <div>
@@ -248,22 +457,45 @@ export function Platforms({ text, locale, accounts }: PlatformsProps) {
                         </div>
                       </div>
 
-                      <Button
-                        asChild
-                        className="w-full group-hover:bg-primary  transition-colors"
-                        variant="outline"
-                      >
-                        <Link
-                          href={`/${locale}/dashboard/platforms/${account.provider.toLowerCase()}-${account.id}`}
+                      <div className="flex gap-2">
+                        <Button
+                          asChild
+                          className="flex-1 group-hover:bg-primary transition-colors"
+                          variant="outline"
+                          onClick={() => handleViewPlatform(account.provider)}
                         >
-                          {text.viewPlatform}
-                          {locale === "ar" ? (
-                            <ArrowLeft className="ml-2 size-4 group-hover:-translate-x-1 transition-transform" />
-                          ) : (
-                            <ArrowRight className="ml-2 size-4 group-hover:translate-x-1 transition-transform" />
-                          )}
-                        </Link>
-                      </Button>
+                          <Link
+                            href={`/${locale}/dashboard/platforms/${account.provider.toLowerCase()}-${account.id}`}
+                          >
+                            {text.viewPlatform}
+                            {locale === "ar" ? (
+                              <ArrowLeft className="ml-2 size-4 group-hover:-translate-x-1 transition-transform" />
+                            ) : (
+                              <ArrowRight className="ml-2 size-4 group-hover:translate-x-1 transition-transform" />
+                            )}
+                          </Link>
+                        </Button>
+
+                        {account.active && (
+                          <Button
+                            size="icon"
+                            variant="outline"
+                            className="transition-all duration-300 hover:bg-red-50 dark:hover:bg-red-950/20 hover:text-red-600 hover:border-red-300"
+                            onClick={() =>
+                              handleDisconnectPlatform(
+                                account.provider,
+                                account.id,
+                              )
+                            }
+                          >
+                            {isLoading && connectionProgress !== null ? (
+                              <Loader2 className="size-4 animate-spin" />
+                            ) : (
+                              <AlertCircle className="size-4" />
+                            )}
+                          </Button>
+                        )}
+                      </div>
                     </CardContent>
                   </Card>
                 );

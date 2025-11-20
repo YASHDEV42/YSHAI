@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import {
   Carousel,
   CarouselContent,
@@ -30,22 +31,38 @@ import {
   Heart,
   MessageCircle,
   ExternalLink,
+  Search,
+  Filter,
+  Loader2,
+  CheckCircle,
+  AlertCircle,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface ContentTabProps {
   text: any;
   locale: string;
   posts: any[];
+  animateItems?: boolean;
 }
 
-export function ContentTab({ text, locale, posts }: ContentTabProps) {
+export function ContentTab({
+  text,
+  locale,
+  posts,
+  animateItems = false,
+}: ContentTabProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const postsPerPage = 6;
   const [selectedTag, setSelectedTag] = useState<string>("all");
   const [selectedCampaign, setSelectedCampaign] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
+  const [isLoading, setIsLoading] = useState(false);
+  const [deletingPostId, setDeletingPostId] = useState<number | null>(null);
+  const [repostingPostId, setRepostingPostId] = useState<number | null>(null);
 
   const allTags: string[] = Array.from(
     new Set(posts.flatMap((post) => post.tags?.map((t: any) => t.name) || [])),
@@ -81,14 +98,87 @@ export function ContentTab({ text, locale, posts }: ContentTabProps) {
     });
   };
 
+  const handleRepost = async (postId: number) => {
+    setRepostingPostId(postId);
+
+    toast.loading("Reposting content...", {
+      id: "repost-post",
+    });
+
+    // Simulate API call
+    setTimeout(() => {
+      setRepostingPostId(null);
+
+      toast.success("Content reposted successfully", {
+        id: "repost-post",
+        icon: <CheckCircle className="h-4 w-4" />,
+        duration: 2000,
+      });
+    }, 1500);
+  };
+
+  const handleDelete = async (postId: number) => {
+    if (!confirm("Are you sure you want to delete this post?")) return;
+
+    setDeletingPostId(postId);
+
+    toast.loading("Deleting post...", {
+      id: "delete-post",
+    });
+
+    // Simulate API call
+    setTimeout(() => {
+      setDeletingPostId(null);
+
+      toast.success("Post deleted successfully", {
+        id: "delete-post",
+        icon: <CheckCircle className="h-4 w-4" />,
+        duration: 2000,
+      });
+
+      // In a real app, you would update the posts state here
+      // For now, we'll just show a success message
+    }, 1500);
+  };
+
+  const handleFilterChange = () => {
+    setIsLoading(true);
+
+    toast.loading("Applying filters...", {
+      id: "filter-posts",
+    });
+
+    // Simulate API call
+    setTimeout(() => {
+      setIsLoading(false);
+
+      toast.success("Filters applied successfully", {
+        id: "filter-posts",
+        icon: <CheckCircle className="h-4 w-4" />,
+        duration: 1500,
+      });
+    }, 800);
+  };
+
   return (
     <div className="space-y-6">
       {/* Filters Card */}
-      <Card>
+      <Card
+        className={cn(
+          "transition-all duration-300 hover:shadow-md",
+          animateItems
+            ? "opacity-100 translate-y-0"
+            : "opacity-0 translate-y-4",
+        )}
+        style={{ animationDelay: "100ms" }}
+      >
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>{text.filters?.title || "Filters"}</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <Filter className="size-5" />
+                {text.filters?.title || "Filters"}
+              </CardTitle>
               <CardDescription>
                 {text.filters?.description ||
                   "Filter posts by tags, campaigns, and status"}
@@ -101,7 +191,9 @@ export function ContentTab({ text, locale, posts }: ContentTabProps) {
                 setSelectedTag("all");
                 setSelectedCampaign("all");
                 setSelectedStatus("all");
+                handleFilterChange();
               }}
+              className="transition-all duration-300 hover:scale-105"
             >
               {text.filters?.clearAll || "Clear All"}
             </Button>
@@ -116,8 +208,11 @@ export function ContentTab({ text, locale, posts }: ContentTabProps) {
               </label>
               <select
                 value={selectedTag}
-                onChange={(e) => setSelectedTag(e.target.value)}
-                className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                onChange={(e) => {
+                  setSelectedTag(e.target.value);
+                  handleFilterChange();
+                }}
+                className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all duration-300 focus:ring-primary/20"
               >
                 <option value="all">
                   {text.filters?.allTags || "All tags"}
@@ -137,8 +232,11 @@ export function ContentTab({ text, locale, posts }: ContentTabProps) {
               </label>
               <select
                 value={selectedCampaign}
-                onChange={(e) => setSelectedCampaign(e.target.value)}
-                className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                onChange={(e) => {
+                  setSelectedCampaign(e.target.value);
+                  handleFilterChange();
+                }}
+                className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all duration-300 focus:ring-primary/20"
               >
                 <option value="all">
                   {text.filters?.allCampaigns || "All campaigns"}
@@ -158,8 +256,11 @@ export function ContentTab({ text, locale, posts }: ContentTabProps) {
               </label>
               <select
                 value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value)}
-                className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                onChange={(e) => {
+                  setSelectedStatus(e.target.value);
+                  handleFilterChange();
+                }}
+                className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all duration-300 focus:ring-primary/20"
               >
                 <option value="all">
                   {text.filters?.allStatuses || "All statuses"}
@@ -181,9 +282,20 @@ export function ContentTab({ text, locale, posts }: ContentTabProps) {
       </Card>
 
       {/* Content Library */}
-      <Card>
+      <Card
+        className={cn(
+          "transition-all duration-300 hover:shadow-md",
+          animateItems
+            ? "opacity-100 translate-y-0"
+            : "opacity-0 translate-y-4",
+        )}
+        style={{ animationDelay: "200ms" }}
+      >
         <CardHeader>
-          <CardTitle>{text.contentLibrary || "Content Library"}</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <FileText className="size-5" />
+            {text.contentLibrary || "Content Library"}
+          </CardTitle>
           <CardDescription>
             {filteredPosts.length} {text.postsOf || "of"} {posts.length}{" "}
             {text.stats?.posts || "posts"}
@@ -196,7 +308,11 @@ export function ContentTab({ text, locale, posts }: ContentTabProps) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {filteredPosts.length === 0 ? (
+          {isLoading ? (
+            <div className="flex justify-center py-12">
+              <Loader2 className="size-8 animate-spin text-primary" />
+            </div>
+          ) : filteredPosts.length === 0 ? (
             <div className="text-center py-12">
               <FileText className="size-12 mx-auto text-muted-foreground mb-4" />
               <h3 className="text-lg font-semibold mb-2">
@@ -231,6 +347,7 @@ export function ContentTab({ text, locale, posts }: ContentTabProps) {
                     setSelectedTag("all");
                     setSelectedCampaign("all");
                     setSelectedStatus("all");
+                    handleFilterChange();
                   }}
                 >
                   {text.clearFilters || "Clear Filters"}
@@ -240,10 +357,16 @@ export function ContentTab({ text, locale, posts }: ContentTabProps) {
           ) : (
             <div className="space-y-6">
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {currentPosts.map((post) => (
+                {currentPosts.map((post, index) => (
                   <Card
                     key={post.id}
-                    className="overflow-hidden hover:shadow-lg transition-shadow"
+                    className={cn(
+                      "overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-[1.02] group",
+                      animateItems
+                        ? "opacity-100 translate-y-0"
+                        : "opacity-0 translate-y-4",
+                    )}
+                    style={{ animationDelay: `${300 + index * 100}ms` }}
                   >
                     <CardContent className="p-0">
                       {post.mediaUrl && (
@@ -255,7 +378,7 @@ export function ContentTab({ text, locale, posts }: ContentTabProps) {
                                   src={post.mediaUrl || "/placeholder.svg"}
                                   alt={post.caption || "Post image"}
                                   fill
-                                  className="object-cover"
+                                  className="object-cover transition-all duration-300 group-hover:scale-105"
                                 />
                               </div>
                             </CarouselItem>
@@ -265,7 +388,9 @@ export function ContentTab({ text, locale, posts }: ContentTabProps) {
                         </Carousel>
                       )}
                       <div className="p-4 space-y-3">
-                        <p className="text-sm line-clamp-3">{post.caption}</p>
+                        <p className="text-sm line-clamp-3 transition-colors group-hover:text-foreground">
+                          {post.caption}
+                        </p>
                         <div className="flex items-center gap-4 text-sm text-muted-foreground">
                           <span className="flex items-center gap-1">
                             <Heart className="size-4" />
@@ -284,7 +409,7 @@ export function ContentTab({ text, locale, posts }: ContentTabProps) {
                             <Button
                               size="sm"
                               variant="outline"
-                              className="flex-1 bg-transparent"
+                              className="flex-1 bg-transparent transition-all duration-300 hover:scale-105 hover:bg-primary/10"
                               asChild
                             >
                               <a
@@ -300,9 +425,31 @@ export function ContentTab({ text, locale, posts }: ContentTabProps) {
                           <Button
                             size="sm"
                             variant="outline"
-                            className="flex-1 bg-transparent"
+                            className="flex-1 bg-transparent transition-all duration-300 hover:scale-105 hover:bg-blue-50 dark:hover:bg-blue-950/20"
+                            onClick={() => handleRepost(post.id)}
+                            disabled={repostingPostId === post.id}
                           >
-                            {text.repost || "Repost"}
+                            {repostingPostId === post.id ? (
+                              <Loader2 className="mr-2 size-3 animate-spin" />
+                            ) : (
+                              <>
+                                <ExternalLink className="mr-2 size-3" />
+                                {text.repost || "Repost"}
+                              </>
+                            )}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="transition-all duration-300 hover:scale-105 hover:bg-red-50 dark:hover:bg-red-950/20 hover:text-red-600 hover:border-red-300"
+                            onClick={() => handleDelete(post.id)}
+                            disabled={deletingPostId === post.id}
+                          >
+                            {deletingPostId === post.id ? (
+                              <Loader2 className="size-3 animate-spin" />
+                            ) : (
+                              <AlertCircle className="size-3" />
+                            )}
                           </Button>
                         </div>
                       </div>
@@ -313,7 +460,7 @@ export function ContentTab({ text, locale, posts }: ContentTabProps) {
 
               {/* Pagination */}
               {totalPages > 1 && (
-                <Pagination>
+                <Pagination className="transition-all duration-300">
                   <PaginationContent>
                     <PaginationItem>
                       <PaginationPrevious
@@ -323,7 +470,7 @@ export function ContentTab({ text, locale, posts }: ContentTabProps) {
                         className={
                           currentPage === 1
                             ? "pointer-events-none opacity-50"
-                            : "cursor-pointer"
+                            : "cursor-pointer transition-all duration-300 hover:scale-105"
                         }
                       />
                     </PaginationItem>
@@ -333,7 +480,7 @@ export function ContentTab({ text, locale, posts }: ContentTabProps) {
                           <PaginationLink
                             onClick={() => setCurrentPage(page)}
                             isActive={currentPage === page}
-                            className="cursor-pointer"
+                            className="cursor-pointer transition-all duration-300 hover:scale-105"
                           >
                             {page}
                           </PaginationLink>
@@ -350,7 +497,7 @@ export function ContentTab({ text, locale, posts }: ContentTabProps) {
                         className={
                           currentPage === totalPages
                             ? "pointer-events-none opacity-50"
-                            : "cursor-pointer"
+                            : "cursor-pointer transition-all duration-300 hover:scale-105"
                         }
                       />
                     </PaginationItem>

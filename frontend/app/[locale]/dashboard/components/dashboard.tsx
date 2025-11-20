@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Calendar,
@@ -15,6 +15,8 @@ import {
   BarChart3,
   Clock,
   CheckCircle2,
+  ArrowUp,
+  ArrowDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,6 +27,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import type { IDashboardStats } from "@/lib/analytics-helper";
 import type { ISocialAccount, IPost } from "@/interfaces";
 
@@ -92,11 +95,93 @@ export default function DashboardPage({
   const statsRef = useRef<HTMLDivElement>(null);
   const activityRef = useRef<HTMLDivElement>(null);
   const quickActionsRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState({
+    stats: false,
+    activity: false,
+    quickActions: false,
+  });
+  const [animatedValues, setAnimatedValues] = useState({
+    scheduledPosts: 0,
+    publishedThisWeek: 0,
+    connectedAccounts: 0,
+    avgEngagement: 0,
+  });
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsVisible((prev) => ({
+              ...prev,
+              [entry.target.id]: true,
+            }));
+          }
+        });
+      },
+      { threshold: 0.1 },
+    );
+
+    if (statsRef.current) observer.observe(statsRef.current);
+    if (activityRef.current) observer.observe(activityRef.current);
+    if (quickActionsRef.current) observer.observe(quickActionsRef.current);
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (isVisible.stats) {
+      const targetValues = {
+        scheduledPosts: stats?.scheduledPosts || 0,
+        publishedThisWeek: stats?.publishedThisWeek || 0,
+        connectedAccounts: accounts.length,
+        avgEngagement: stats?.avgEngagement || 0,
+      };
+
+      const duration = 1500;
+      const steps = 60;
+      const increment = {
+        scheduledPosts: targetValues.scheduledPosts / steps,
+        publishedThisWeek: targetValues.publishedThisWeek / steps,
+        connectedAccounts: targetValues.connectedAccounts / steps,
+        avgEngagement: targetValues.avgEngagement / steps,
+      };
+
+      let currentStep = 0;
+      const timer = setInterval(() => {
+        currentStep++;
+        setAnimatedValues({
+          scheduledPosts: Math.min(
+            Math.floor(increment.scheduledPosts * currentStep),
+            targetValues.scheduledPosts,
+          ),
+          publishedThisWeek: Math.min(
+            Math.floor(increment.publishedThisWeek * currentStep),
+            targetValues.publishedThisWeek,
+          ),
+          connectedAccounts: Math.min(
+            Math.floor(increment.connectedAccounts * currentStep),
+            targetValues.connectedAccounts,
+          ),
+          avgEngagement: Math.min(
+            increment.avgEngagement * currentStep,
+            targetValues.avgEngagement,
+          ),
+        });
+
+        if (currentStep >= steps) {
+          clearInterval(timer);
+        }
+      }, duration / steps);
+
+      return () => clearInterval(timer);
+    }
+  }, [isVisible.stats, stats, accounts]);
 
   const dashboardStats = [
     {
       title: text.stats.scheduledPosts,
-      value: stats?.scheduledPosts.toString() ?? "0",
+      value: animatedValues.scheduledPosts.toString(),
       change: stats?.scheduledChange
         ? `${stats.scheduledChange > 0 ? "+" : ""}${stats.scheduledChange}%`
         : "+0%",
@@ -105,7 +190,7 @@ export default function DashboardPage({
     },
     {
       title: text.stats.publishedThisWeek,
-      value: stats?.publishedThisWeek.toString() ?? "0",
+      value: animatedValues.publishedThisWeek.toString(),
       change: stats?.publishedChange
         ? `${stats.publishedChange > 0 ? "+" : ""}${stats.publishedChange}%`
         : "+0%",
@@ -117,14 +202,16 @@ export default function DashboardPage({
     },
     {
       title: text.stats.connectedAccounts,
-      value: accounts.length.toString(),
+      value: animatedValues.connectedAccounts.toString(),
       change: stats?.accountsChange ? `+${stats.accountsChange}` : "+0",
       icon: Users,
       trend: "up" as const,
     },
     {
       title: text.stats.avgEngagement,
-      value: stats?.avgEngagement ? `${stats.avgEngagement.toFixed(1)}%` : "0%",
+      value: animatedValues.avgEngagement
+        ? `${animatedValues.avgEngagement.toFixed(1)}%`
+        : "0%",
       change: stats?.engagementChange
         ? `${stats.engagementChange > 0 ? "+" : ""}${stats.engagementChange.toFixed(1)}%`
         : "+0%",
@@ -206,7 +293,7 @@ export default function DashboardPage({
     switch (status) {
       case "success":
         return (
-          <Badge variant="default" className="bg-primary ">
+          <Badge variant="default" className="bg-primary animate-pulse-once">
             {text.activityStatus.published}
           </Badge>
         );
@@ -230,7 +317,10 @@ export default function DashboardPage({
         );
       case "error":
         return (
-          <Badge variant="destructive" className="bg-red-500">
+          <Badge
+            variant="destructive"
+            className="bg-red-500 animate-pulse-once"
+          >
             {text.activityStatus.failed}
           </Badge>
         );
@@ -243,24 +333,53 @@ export default function DashboardPage({
     <div className="container mx-auto p-8">
       <div
         ref={statsRef}
-        className="mb-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4"
+        id="stats"
+        className={`mb-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4 transition-all duration-1000 ease-out ${
+          isVisible.stats
+            ? "opacity-100 translate-y-0"
+            : "opacity-0 translate-y-4"
+        }`}
       >
         {dashboardStats.map((stat, index) => (
-          <Card key={index} className="stat-card border-border bg-card">
+          <Card
+            key={index}
+            className="stat-card border-border bg-card transition-all duration-300 hover:scale-105 hover:shadow-lg hover:-translate-y-1"
+            style={{
+              animationDelay: isVisible.stats ? `${index * 100}ms` : "0ms",
+              animation: isVisible.stats
+                ? "slideInUp 0.6s ease-out forwards"
+                : "none",
+            }}
+          >
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">{stat.title}</p>
-                  <p className="mt-2 font-bold text-3xl text-foreground">
+                  <p className="mt-2 font-bold text-3xl text-foreground transition-all duration-300">
                     {stat.value}
                   </p>
-                  <p className="mt-1 text-sm text-primary">
+                  <p className="mt-1 text-sm text-primary flex items-center gap-1">
+                    {stat.trend === "up" ? (
+                      <ArrowUp className="size-3 text-green-500 animate-bounce" />
+                    ) : (
+                      <ArrowDown className="size-3 text-red-500 animate-bounce" />
+                    )}
                     {stat.change} {text.stats.changeFromLastWeek}
                   </p>
                 </div>
-                <div className="flex size-12 items-center justify-center rounded-lg bg-primary/20">
+                <div className="flex size-12 items-center justify-center rounded-lg bg-primary/20 transition-all duration-300 hover:rotate-12 hover:scale-110">
                   <stat.icon className="size-6 text-primary" />
                 </div>
+              </div>
+              <div className="mt-4">
+                <Progress
+                  value={(parseInt(stat.value) / 10) * 100}
+                  className="h-2 transition-all duration-1000 ease-out"
+                  style={{
+                    width: isVisible.stats ? "100%" : "0%",
+                    transitionDelay: `${500 + index * 100}ms`,
+                  }}
+                />
               </div>
             </CardContent>
           </Card>
@@ -269,29 +388,40 @@ export default function DashboardPage({
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Recent Activity */}
-        <Card className="border-border bg-card lg:col-span-2">
+        <Card className="border-border bg-card lg:col-span-2 transition-all duration-500 hover:shadow-lg">
           <CardHeader>
-            <CardTitle className="text-foreground">
+            <CardTitle className="text-foreground flex items-center gap-2">
               {text.recentActivity.title}
+              <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div>
             </CardTitle>
             <CardDescription className="text-muted-foreground">
               {text.recentActivity.description}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div ref={activityRef} className="space-y-4">
+            <div ref={activityRef} id="activity" className="space-y-4">
               {recentActivity.length > 0 ? (
-                recentActivity.map((activity) => (
+                recentActivity.map((activity, index) => (
                   <div
                     key={activity.id}
-                    className="activity-item flex items-start gap-4 rounded-lg border border-border bg-card p-4 transition-colors hover:bg-muted"
+                    className="activity-item flex items-start gap-4 rounded-lg border border-border bg-card p-4 transition-all duration-300 hover:bg-muted hover:scale-[1.02] hover:shadow-md"
+                    style={{
+                      animationDelay: `${index * 150}ms`,
+                      animation: isVisible.activity
+                        ? "slideInLeft 0.5s ease-out forwards"
+                        : "none",
+                      opacity: isVisible.activity ? 1 : 0,
+                      transform: isVisible.activity
+                        ? "translateX(0)"
+                        : "translateX(-20px)",
+                    }}
                   >
-                    <div className="flex size-10 items-center justify-center rounded-lg bg-muted">
+                    <div className="flex size-10 items-center justify-center rounded-lg bg-muted transition-all duration-300 hover:scale-110 hover:rotate-6">
                       {getPlatformIcon(activity.platform)}
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
-                        <p className="font-medium text-sm text-foreground line-clamp-2">
+                        <p className="font-medium text-sm text-foreground line-clamp-2 transition-all duration-300 hover:text-primary">
                           {activity.content}
                         </p>
                         {getStatusBadge(activity.status)}
@@ -303,14 +433,14 @@ export default function DashboardPage({
                   </div>
                 ))
               ) : (
-                <p className="text-center text-sm text-muted-foreground py-8">
+                <p className="text-center text-sm text-muted-foreground py-8 animate-pulse">
                   No recent activity yet
                 </p>
               )}
             </div>
             <Button
               variant="ghost"
-              className="mt-4 w-full text-primary hover:bg-primary/10 hover:text-primary"
+              className="mt-4 w-full text-primary hover:bg-primary/10 hover:text-primary transition-all duration-300 hover:scale-105"
               asChild
             >
               <Link href="/dashboard/platforms">
@@ -323,47 +453,60 @@ export default function DashboardPage({
         {/* Quick Actions & Connected Platforms */}
         <div className="space-y-6">
           {/* Quick Actions */}
-          <Card className="border-border bg-card">
+          <Card className="border-border bg-card transition-all duration-500 hover:shadow-lg">
             <CardHeader>
               <CardTitle className="text-foreground">
                 {text.quickActions.title}
               </CardTitle>
             </CardHeader>
-            <CardContent ref={quickActionsRef} className="space-y-3">
-              <Button
-                className="quick-action w-full justify-start bg-primary text-primary-foreground hover:bg-primary/90"
-                asChild
-              >
-                <Link href="/dashboard/create">
-                  <Plus className="mr-2 size-4" />
-                  {text.quickActions.createPost}
-                </Link>
-              </Button>
-              <Button
-                variant="outline"
-                className="quick-action w-full justify-start border-border bg-card text-foreground hover:bg-muted"
-                asChild
-              >
-                <Link href="/dashboard/calendar">
-                  <Calendar className="mr-2 size-4" />
-                  {text.quickActions.viewCalendar}
-                </Link>
-              </Button>
-              <Button
-                variant="outline"
-                className="quick-action w-full justify-start border-border bg-card text-foreground hover:bg-muted"
-                asChild
-              >
-                <Link href="/dashboard/analytics">
-                  <BarChart3 className="mr-2 size-4" />
-                  {text.quickActions.viewAnalytics}
-                </Link>
-              </Button>
+            <CardContent
+              ref={quickActionsRef}
+              id="quickActions"
+              className="space-y-3"
+            >
+              {[
+                {
+                  href: "/dashboard/create",
+                  icon: Plus,
+                  text: text.quickActions.createPost,
+                },
+                {
+                  href: "/dashboard/calendar",
+                  icon: Calendar,
+                  text: text.quickActions.viewCalendar,
+                },
+                {
+                  href: "/dashboard/analytics",
+                  icon: BarChart3,
+                  text: text.quickActions.viewAnalytics,
+                },
+              ].map((action, index) => (
+                <Button
+                  key={index}
+                  className="quick-action w-full justify-start bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 hover:scale-105 hover:shadow-md hover:-translate-y-1 group"
+                  asChild
+                  style={{
+                    animationDelay: `${index * 100}ms`,
+                    animation: isVisible.quickActions
+                      ? "slideInRight 0.5s ease-out forwards"
+                      : "none",
+                    opacity: isVisible.quickActions ? 1 : 0,
+                    transform: isVisible.quickActions
+                      ? "translateX(0)"
+                      : "translateX(20px)",
+                  }}
+                >
+                  <Link href={action.href}>
+                    <action.icon className="mr-2 size-4 transition-transform duration-300 group-hover:rotate-12" />
+                    {action.text}
+                  </Link>
+                </Button>
+              ))}
             </CardContent>
           </Card>
 
           {/* Connected Platforms */}
-          <Card className="border-border bg-card">
+          <Card className="border-border bg-card transition-all duration-500 hover:shadow-lg">
             <CardHeader>
               <CardTitle className="text-foreground">
                 {text.connectedPlatforms.title}
@@ -373,14 +516,20 @@ export default function DashboardPage({
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
-              {connectedPlatforms.map((platform) => (
+              {connectedPlatforms.map((platform, index) => (
                 <div
                   key={platform.name}
-                  className="flex items-center justify-between rounded-lg border border-border bg-card p-3"
+                  className="flex items-center justify-between rounded-lg border border-border bg-card p-3 transition-all duration-300 hover:scale-105 hover:shadow-md hover:-translate-y-1"
+                  style={{
+                    animationDelay: `${index * 100}ms`,
+                    animation: "fadeIn 0.5s ease-out forwards",
+                  }}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="flex size-8 items-center justify-center rounded-lg bg-muted">
-                      <platform.icon className="size-4 text-foreground" />
+                    <div className="flex size-8 items-center justify-center rounded-lg bg-muted transition-all duration-300 hover:scale-110 hover:rotate-12">
+                      <platform.icon
+                        className={`size-4 text-foreground ${platform.color}`}
+                      />
                     </div>
                     <span className="text-sm text-foreground">
                       {platform.name}
@@ -389,12 +538,16 @@ export default function DashboardPage({
                   {platform.connected ? (
                     <Badge
                       variant="default"
-                      className="bg-primary/20 text-primary"
+                      className="bg-primary/20 text-primary transition-all duration-300 hover:scale-110"
                     >
                       {text.connectedPlatforms.connected}
                     </Badge>
                   ) : (
-                    <Button size="sm" variant="ghost">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="transition-all duration-300 hover:scale-110 hover:bg-primary/10"
+                    >
                       {text.connectedPlatforms.connect}
                     </Button>
                   )}
@@ -402,11 +555,11 @@ export default function DashboardPage({
               ))}
               <Button
                 variant="ghost"
-                className="w-full text-primary hover:bg-primary/10 hover:text-primary"
+                className="w-full text-primary hover:bg-primary/10 hover:text-primary transition-all duration-300 hover:scale-105"
                 asChild
               >
                 <Link href="/dashboard/platforms">
-                  <Plus className="mr-2 size-4" />
+                  <Plus className="mr-2 size-4 transition-transform duration-300 hover:rotate-90" />
                   {text.connectedPlatforms.addPlatform}
                 </Link>
               </Button>
@@ -414,6 +567,54 @@ export default function DashboardPage({
           </Card>
         </div>
       </div>
+
+      <style jsx>{`
+        @keyframes slideInUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes slideInLeft {
+          from {
+            opacity: 0;
+            transform: translateX(-30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        @keyframes slideInRight {
+          from {
+            opacity: 0;
+            transform: translateX(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        .animate-pulse-once {
+          animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) 1;
+        }
+      `}</style>
     </div>
   );
 }

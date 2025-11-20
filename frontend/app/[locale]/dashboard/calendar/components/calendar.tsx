@@ -30,9 +30,9 @@ import { Label } from "@/components/ui/label";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { format, isSameDay } from "date-fns";
 import { EmptyState } from "@/components/empty-state";
-import { IPost, ISocialAccount, Provider } from "@/interfaces";
+import { IPost, ISocialAccount } from "@/interfaces";
 import { useToast } from "@/hooks/use-toast";
-import { remove as deletePost, update as updatePost } from "@/lib/post-helper";
+import { remove as deletePost } from "@/lib/post-helper";
 
 interface CalendarPageProps {
   text: any;

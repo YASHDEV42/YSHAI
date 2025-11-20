@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Sparkles,
@@ -20,8 +21,12 @@ import {
   Users,
   Target,
   Zap,
+  CheckCircle,
+  AlertCircle,
 } from "lucide-react";
 import type { TConnectedAccount } from "@/types";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface Message {
   role: "user" | "assistant";
@@ -31,9 +36,14 @@ interface Message {
 interface AIAgentTabProps {
   text: any;
   account: TConnectedAccount;
+  animateItems?: boolean;
 }
 
-export function AIAgentTab({ text, account }: AIAgentTabProps) {
+export function AIAgentTab({
+  text,
+  account,
+  animateItems = false,
+}: AIAgentTabProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
@@ -44,6 +54,7 @@ export function AIAgentTab({ text, account }: AIAgentTabProps) {
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [thinkingProgress, setThinkingProgress] = useState<number | null>(null);
 
   const quickActions = [
     {
@@ -72,13 +83,80 @@ export function AIAgentTab({ text, account }: AIAgentTabProps) {
     },
   ];
 
+  const handleSendMessage = async () => {
+    if (!input.trim()) return;
+
+    const userMessage = { role: "user" as const, content: input };
+    setMessages((prev) => [...prev, userMessage]);
+    setInput("");
+    setIsLoading(true);
+    setThinkingProgress(0);
+
+    toast.loading("AI is thinking...", {
+      id: "ai-thinking",
+    });
+
+    // Simulate thinking progress
+    const progressInterval = setInterval(() => {
+      setThinkingProgress((prev) => {
+        if (prev === null) return 20;
+        if (prev >= 90) {
+          clearInterval(progressInterval);
+          return 90;
+        }
+        return prev + 10;
+      });
+    }, 100);
+
+    // Simulate AI response
+    setTimeout(() => {
+      clearInterval(progressInterval);
+      setThinkingProgress(100);
+
+      const aiResponse = {
+        role: "assistant" as const,
+        content: `Based on your recent content performance, I recommend posting at 2 PM on weekdays for maximum engagement. Your audience is most active during this time, and your posts tend to get 30% more interactions when published then.`,
+      };
+
+      setMessages((prev) => [...prev, aiResponse]);
+      setIsLoading(false);
+
+      toast.success("AI response generated", {
+        id: "ai-thinking",
+        icon: <CheckCircle className="h-4 w-4" />,
+        duration: 2000,
+      });
+
+      // Reset progress after a delay
+      setTimeout(() => {
+        setThinkingProgress(null);
+      }, 1000);
+    }, 2000);
+  };
+
+  const handleQuickAction = (action: any) => {
+    setInput(action.label);
+    toast.info(`Preparing ${action.label} query...`, {
+      icon: <Zap className="h-4 w-4" />,
+      duration: 1500,
+    });
+  };
+
   return (
     <div className="space-y-6">
       {/* AI Agent Header Card */}
-      <Card className="bg-gradient-to-br from-primary/10 via-accent/5 to-background border-primary/20">
+      <Card
+        className={cn(
+          "bg-gradient-to-br from-primary/10 via-accent/5 to-background border-primary/20 transition-all duration-300 hover:shadow-md",
+          animateItems
+            ? "opacity-100 translate-y-0"
+            : "opacity-0 translate-y-4",
+        )}
+        style={{ animationDelay: "100ms" }}
+      >
         <CardHeader>
           <div className="flex items-center gap-3">
-            <div className="flex size-12 items-center justify-center rounded-xl bg-primary/20 backdrop-blur-sm">
+            <div className="flex size-12 items-center justify-center rounded-xl bg-primary/20 backdrop-blur-sm transition-all duration-300 hover:scale-110">
               <Sparkles className="size-6 text-primary" />
             </div>
             <div className="flex-1">
@@ -102,19 +180,33 @@ export function AIAgentTab({ text, account }: AIAgentTabProps) {
       </Card>
 
       {/* Quick Actions Grid */}
-      <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+      <div
+        className={cn(
+          "grid gap-3 md:grid-cols-2 lg:grid-cols-4",
+          animateItems
+            ? "opacity-100 translate-y-0"
+            : "opacity-0 translate-y-4",
+        )}
+        style={{ animationDelay: "200ms" }}
+      >
         {quickActions.map((action, index) => {
           const Icon = action.icon;
           return (
             <Card
               key={index}
-              className="cursor-pointer hover:shadow-md transition-all hover:scale-105 border-border/50"
-              onClick={() => setInput(action.label)}
+              className={cn(
+                "cursor-pointer hover:shadow-md transition-all duration-300 hover:scale-105 border-border/50",
+                animateItems
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-4",
+              )}
+              style={{ animationDelay: `${300 + index * 100}ms` }}
+              onClick={() => handleQuickAction(action)}
             >
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
                   <div
-                    className={`flex size-10 items-center justify-center rounded-lg ${action.bgColor}`}
+                    className={`flex size-10 items-center justify-center rounded-lg ${action.bgColor} transition-all duration-300 hover:scale-110`}
                   >
                     <Icon className={`size-5 ${action.color}`} />
                   </div>
@@ -129,7 +221,15 @@ export function AIAgentTab({ text, account }: AIAgentTabProps) {
       </div>
 
       {/* Chat Interface */}
-      <Card>
+      <Card
+        className={cn(
+          "transition-all duration-300 hover:shadow-md",
+          animateItems
+            ? "opacity-100 translate-y-0"
+            : "opacity-0 translate-y-4",
+        )}
+        style={{ animationDelay: "500ms" }}
+      >
         <CardHeader>
           <CardTitle className="text-lg">Conversation</CardTitle>
           <CardDescription>
@@ -143,7 +243,14 @@ export function AIAgentTab({ text, account }: AIAgentTabProps) {
               {messages.map((message, index) => (
                 <div
                   key={index}
-                  className={`flex gap-3 ${message.role === "user" ? "justify-end" : "justify-start"}`}
+                  className={cn(
+                    "flex gap-3",
+                    message.role === "user" ? "justify-end" : "justify-start",
+                    animateItems
+                      ? "opacity-100 translate-y-0"
+                      : "opacity-0 translate-y-4",
+                  )}
+                  style={{ animationDelay: `${600 + index * 100}ms` }}
                 >
                   {message.role === "assistant" && (
                     <div className="flex size-8 items-center justify-center rounded-full bg-primary shrink-0 shadow-sm">
@@ -151,11 +258,12 @@ export function AIAgentTab({ text, account }: AIAgentTabProps) {
                     </div>
                   )}
                   <div
-                    className={`max-w-[80%] rounded-xl p-3 shadow-sm ${
+                    className={cn(
+                      "max-w-[80%] rounded-xl p-3 shadow-sm transition-all duration-300",
                       message.role === "user"
                         ? "bg-primary text-primary-foreground"
-                        : "bg-background border border-border"
-                    }`}
+                        : "bg-background border border-border",
+                    )}
                   >
                     <p className="text-sm whitespace-pre-wrap leading-relaxed">
                       {message.content}
@@ -176,7 +284,20 @@ export function AIAgentTab({ text, account }: AIAgentTabProps) {
                     <Sparkles className="size-4 text-primary-foreground" />
                   </div>
                   <div className="bg-background border border-border rounded-xl p-3 shadow-sm">
-                    <Loader2 className="size-4 animate-spin text-muted-foreground" />
+                    {thinkingProgress !== null ? (
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between text-xs">
+                          <span>AI is thinking...</span>
+                          <span>{thinkingProgress}%</span>
+                        </div>
+                        <Progress
+                          value={thinkingProgress}
+                          className="h-1 w-32"
+                        />
+                      </div>
+                    ) : (
+                      <Loader2 className="size-4 animate-spin text-muted-foreground" />
+                    )}
                   </div>
                 </div>
               )}
@@ -193,16 +314,17 @@ export function AIAgentTab({ text, account }: AIAgentTabProps) {
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
-                    // Handle send message here
+                    handleSendMessage();
                   }
                 }}
-                className="resize-none min-h-[60px] shadow-sm"
+                className="resize-none min-h-[60px] shadow-sm transition-all duration-300 focus:ring-2 focus:ring-primary/20"
                 rows={2}
               />
               <Button
                 disabled={!input.trim() || isLoading}
                 size="icon"
-                className="shrink-0 size-12 shadow-sm"
+                className="shrink-0 size-12 shadow-sm transition-all duration-300 hover:scale-110"
+                onClick={handleSendMessage}
               >
                 {isLoading ? (
                   <Loader2 className="size-4 animate-spin" />
@@ -224,7 +346,7 @@ export function AIAgentTab({ text, account }: AIAgentTabProps) {
                   key={index}
                   variant="outline"
                   size="sm"
-                  className="text-xs h-7"
+                  className="text-xs h-7 transition-all duration-300 hover:scale-105"
                   onClick={() => setInput(suggestion)}
                 >
                   {suggestion}
@@ -236,11 +358,19 @@ export function AIAgentTab({ text, account }: AIAgentTabProps) {
       </Card>
 
       {/* AI Features Info */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card className="border-border/50">
+      <div
+        className={cn(
+          "grid gap-4 md:grid-cols-3",
+          animateItems
+            ? "opacity-100 translate-y-0"
+            : "opacity-0 translate-y-4",
+        )}
+        style={{ animationDelay: "600ms" }}
+      >
+        <Card className="border-border/50 transition-all duration-300 hover:shadow-md hover:scale-[1.02]">
           <CardContent className="p-4">
             <div className="flex items-start gap-3">
-              <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 shrink-0">
+              <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 shrink-0 transition-all duration-300 hover:scale-110">
                 <TrendingUp className="size-5 text-primary" />
               </div>
               <div className="space-y-1">
@@ -253,10 +383,10 @@ export function AIAgentTab({ text, account }: AIAgentTabProps) {
           </CardContent>
         </Card>
 
-        <Card className="border-border/50">
+        <Card className="border-border/50 transition-all duration-300 hover:shadow-md hover:scale-[1.02]">
           <CardContent className="p-4">
             <div className="flex items-start gap-3">
-              <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 shrink-0">
+              <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 shrink-0 transition-all duration-300 hover:scale-110">
                 <Lightbulb className="size-5 text-primary" />
               </div>
               <div className="space-y-1">
@@ -269,10 +399,10 @@ export function AIAgentTab({ text, account }: AIAgentTabProps) {
           </CardContent>
         </Card>
 
-        <Card className="border-border/50">
+        <Card className="border-border/50 transition-all duration-300 hover:shadow-md hover:scale-[1.02]">
           <CardContent className="p-4">
             <div className="flex items-start gap-3">
-              <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 shrink-0">
+              <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 shrink-0 transition-all duration-300 hover:scale-110">
                 <Users className="size-5 text-primary" />
               </div>
               <div className="space-y-1">
