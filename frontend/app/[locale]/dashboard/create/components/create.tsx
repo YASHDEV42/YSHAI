@@ -37,7 +37,7 @@ import {
   getPlatformIcon,
 } from "@/components/icons/platforms-icons";
 import { createPostAction } from "../actions";
-import { IUser, ISocialAccount, ITag } from "@/interfaces";
+import { IUser, ISocialAccount } from "@/interfaces";
 import { ICampaign } from "@/lib/campaign-helper";
 import { useToast } from "@/hooks/use-toast";
 
@@ -46,14 +46,12 @@ export default function CreatePage({
   locale,
   user,
   accounts,
-  tags,
   campaigns,
 }: {
   text: any;
   locale: string;
   user: IUser;
   accounts: ISocialAccount[];
-  tags: ITag[];
   campaigns: ICampaign[];
 }) {
   // ---------------------------------------------------------
@@ -345,39 +343,6 @@ export default function CreatePage({
                       )}
                     </SelectContent>
                   </Select>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Tag className="w-4 h-4" />
-                    {text.tags.title}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {tags.length === 0 ? (
-                    <p className="text-sm text-muted-foreground text-center py-4">
-                      {text.tags.noTags}
-                    </p>
-                  ) : (
-                    <div className="flex flex-wrap gap-2">
-                      {tags.map((tag) => {
-                        const isSelected = selectedTags.includes(tag.id);
-                        return (
-                          <Badge
-                            key={tag.id}
-                            variant={isSelected ? "default" : "outline"}
-                            className="cursor-pointer hover:bg-primary/80"
-                            onClick={() => handleTagToggle(tag.id)}
-                          >
-                            {tag.name}
-                            {isSelected && <X className="w-3 h-3 ml-1" />}
-                          </Badge>
-                        );
-                      })}
-                    </div>
-                  )}
                 </CardContent>
               </Card>
 

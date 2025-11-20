@@ -8,6 +8,7 @@ import {
   Index,
   ManyToMany,
 } from '@mikro-orm/core';
+
 import { User } from './user.entity';
 import { Team } from './team.entity';
 import { Media } from './media.entity';
@@ -17,8 +18,6 @@ import { PostAnalytics } from './post-analytics.entity';
 import { Campaign } from './campaign.entity';
 import { Template } from './template.entity';
 import { PostTarget } from './post-target.entity';
-import { Tag } from './tag.entity';
-import { PostTag } from './post-tag.entity';
 
 @Entity()
 export class Post {
@@ -28,7 +27,7 @@ export class Post {
   @ManyToOne(() => User, { fieldName: 'authorId' })
   author!: User;
 
-  @ManyToOne(() => Team, { nullable: true, fieldName: 'teamId' })
+  @ManyToOne(() => Team, { fieldName: 'teamId', nullable: true })
   team?: Team;
 
   @Property()
@@ -37,9 +36,7 @@ export class Post {
   @Property({ nullable: true })
   contentEn?: string;
 
-  @Property({
-    default: 'draft',
-  })
+  @Property({ default: 'draft' })
   status!: 'draft' | 'scheduled' | 'published' | 'failed' | 'pending_approval';
 
   @Property({ default: false })
@@ -76,14 +73,9 @@ export class Post {
   @OneToMany(() => PostAnalytics, (analytics) => analytics.post)
   analytics = new Collection<PostAnalytics>(this);
 
-  @ManyToOne(() => Campaign, { nullable: true, fieldName: 'campaignId' })
+  @ManyToOne(() => Campaign, { fieldName: 'campaignId', nullable: true })
   campaign?: Campaign;
 
-  @ManyToOne(() => Template, { nullable: true, fieldName: 'templateId' })
+  @ManyToOne(() => Template, { fieldName: 'templateId', nullable: true })
   template?: Template;
-
-  @ManyToMany(() => Tag, (tag) => tag.posts, {
-    pivotEntity: () => PostTag,
-  })
-  tags = new Collection<Tag>(this);
 }

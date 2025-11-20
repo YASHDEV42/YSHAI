@@ -19,7 +19,6 @@ import { WebhooksModule } from './webhooks/webhooks.module';
 import { BillingModule } from './billing/billing.module';
 import { AdminModule } from './admin/admin.module';
 import { PublisherModule } from './publisher/publisher.module';
-import { TagsModule } from './tags/tags.module';
 import { CampaignsModule } from './campaigns/campaigns.module';
 import { TemplatesModule } from './templates/templates.module';
 import { PostTargetsModule } from './post-targets/post-targets.module';
@@ -35,7 +34,6 @@ import { PostTargetsModule } from './post-targets/post-targets.module';
     UsersModule,
     PostsModule,
     JobsModule,
-    TagsModule,
     CampaignsModule,
     TemplatesModule,
     PostTargetsModule,

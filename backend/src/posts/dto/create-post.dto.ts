@@ -98,16 +98,6 @@ export class CreatePostDto {
   socialAccountIds?: number[];
 
   @ApiProperty({
-    description: 'List of tag IDs',
-    example: [1, 3, 7],
-    required: false,
-  })
-  @IsOptional()
-  @IsArray()
-  @IsInt({ each: true })
-  tagIds?: number[];
-
-  @ApiProperty({
     description: 'Campaign ID (optional)',
     example: 7,
     required: false,

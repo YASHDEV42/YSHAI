@@ -209,28 +209,6 @@ export interface IJob {
 }
 
 // =========================
-// Tags
-// =========================
-
-/**
- * TagResponseDto
- */
-export interface ITag {
-  id: number;
-  name: string;
-  normalized: string;
-  createdAt: string;
-  metadata?: Record<string, any> | null;
-}
-
-// Local helper – not in OpenAPI, but useful on the client
-export interface IPostTag {
-  id: number;
-  createdAt: string;
-  tagId: number;
-}
-
-// =========================
 // Billing: Plans / Subscriptions / Invoices
 // =========================
 
