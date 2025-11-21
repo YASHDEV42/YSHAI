@@ -102,7 +102,7 @@ const GradientHeading = ({ text }: { text: string }) => {
   }, []);
 
   return (
-    <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight">
+    <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold leading-tight">
       {words.map((word, index) => (
         <motion.span
           key={index}

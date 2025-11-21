@@ -8,7 +8,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -16,22 +15,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Loader2,
-  X,
-  ImageIcon,
-  Video,
-  Tag,
-  FolderOpen,
-  ArrowLeft,
-} from "lucide-react";
+import { Loader2, FolderOpen, ArrowLeft } from "lucide-react";
 import {
   getPlatformColor,
   getPlatformIcon,
 } from "@/components/icons/platforms-icons";
 import { updatePostAction } from "../actions";
-import { IUser, ISocialAccount, ITag, IPost } from "@/interfaces";
-import { ICampaign } from "@/lib/campaign-helper";
+import type { IUser, ISocialAccount, IPost } from "@/interfaces";
+import type { ICampaign } from "@/lib/campaign-helper";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 
@@ -41,7 +32,6 @@ export default function EditPostForm({
   locale,
   user,
   accounts,
-  tags,
   campaigns,
 }: {
   post: IPost;
@@ -49,7 +39,6 @@ export default function EditPostForm({
   locale: string;
   user: IUser;
   accounts: ISocialAccount[];
-  tags: ITag[];
   campaigns: ICampaign[];
 }) {
   const router = useRouter();
@@ -61,7 +50,7 @@ export default function EditPostForm({
   const [contentTab, setContentTab] = useState<"ar" | "en">("en");
 
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(
-    post.postTargets?.map((pt) => pt.socialAccount?.provider || "") || [],
+    post.targets?.map((pt) => pt.provider || "") || [],
   );
 
   const [scheduleType, setScheduleType] = useState<"now" | "later">(
@@ -77,9 +66,6 @@ export default function EditPostForm({
   const [selectedCampaign, setSelectedCampaign] = useState<string>(
     post.campaignId?.toString() || "",
   );
-  const [selectedTags, setSelectedTags] = useState<number[]>(
-    post.tags?.map((t) => t.id) || [],
-  );
 
   const platforms = accounts.map((acc) => ({
     id: acc.provider,
@@ -90,14 +76,6 @@ export default function EditPostForm({
   const handlePlatformToggle = (id: string) => {
     setSelectedPlatforms((prev) =>
       prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id],
-    );
-  };
-
-  const handleTagToggle = (tagId: number) => {
-    setSelectedTags((prev) =>
-      prev.includes(tagId)
-        ? prev.filter((id) => id !== tagId)
-        : [...prev, tagId],
     );
   };
 
@@ -153,10 +131,6 @@ export default function EditPostForm({
           {selectedCampaign && (
             <input type="hidden" name="campaignId" value={selectedCampaign} />
           )}
-
-          {selectedTags.map((tagId) => (
-            <input key={tagId} type="hidden" name="tagIds" value={tagId} />
-          ))}
 
           {platforms.map((p) =>
             selectedPlatforms.includes(p.id) ? (
@@ -220,7 +194,7 @@ export default function EditPostForm({
                         </div>
                       ) : (
                         campaigns
-                          .filter((c) => c.isActive)
+                          .filter((c) => c.status === "active")
                           .map((campaign) => (
                             <SelectItem
                               key={campaign.id}
@@ -232,39 +206,6 @@ export default function EditPostForm({
                       )}
                     </SelectContent>
                   </Select>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Tag className="w-4 h-4" />
-                    {text.tags.title}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {tags.length === 0 ? (
-                    <p className="text-sm text-muted-foreground text-center py-4">
-                      {text.tags.noTags}
-                    </p>
-                  ) : (
-                    <div className="flex flex-wrap gap-2">
-                      {tags.map((tag) => {
-                        const isSelected = selectedTags.includes(tag.id);
-                        return (
-                          <Badge
-                            key={tag.id}
-                            variant={isSelected ? "default" : "outline"}
-                            className="cursor-pointer hover:bg-primary/80"
-                            onClick={() => handleTagToggle(tag.id)}
-                          >
-                            {tag.name}
-                            {isSelected && <X className="w-3 h-3 ml-1" />}
-                          </Badge>
-                        );
-                      })}
-                    </div>
-                  )}
                 </CardContent>
               </Card>
 

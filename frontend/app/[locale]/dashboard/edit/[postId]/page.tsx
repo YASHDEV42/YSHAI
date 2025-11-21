@@ -3,7 +3,6 @@ import { extractEditPostPageText } from "@/app/i18n/extractTexts";
 import { redirect } from "next/navigation";
 import EditPostForm from "./components/edit-post-form";
 import { listMyAccounts } from "@/lib/accounts-helper";
-import { listTags } from "@/lib/tag-helper";
 import { listCampaigns } from "@/lib/campaign-helper";
 import { getUserProfile } from "@/lib/user-helper";
 
@@ -15,12 +14,11 @@ export default async function EditPostPage({
   const { postId, locale } = await params;
   const text = await extractEditPostPageText(locale);
 
-  const [postResult, userResult, accountsResult, tagsResult, campaignsResult] =
+  const [postResult, userResult, accountsResult, campaignsResult] =
     await Promise.all([
       getById(Number(postId)),
       getUserProfile(),
       listMyAccounts(),
-      listTags(),
       listCampaigns(),
     ]);
 
@@ -33,7 +31,6 @@ export default async function EditPostPage({
   }
 
   const accounts = accountsResult.success ? accountsResult.data || [] : [];
-  const tags = tagsResult.success ? tagsResult.data || [] : [];
   const campaigns = campaignsResult.success ? campaignsResult.data || [] : [];
 
   return (
@@ -43,7 +40,6 @@ export default async function EditPostPage({
       locale={locale}
       user={userResult.data}
       accounts={accounts}
-      tags={tags}
       campaigns={campaigns}
     />
   );

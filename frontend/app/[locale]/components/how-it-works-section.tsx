@@ -2,7 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { CheckCircle2, ChevronRight, Play, Pause } from "lucide-react";
+import { CheckCircle2, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
@@ -29,11 +29,7 @@ const ProgressBar = ({
   const [width, setWidth] = useState(0);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setWidth((currentStep / totalSteps) * 100);
-    }, 300);
-
-    return () => clearTimeout(timer);
+    setWidth((currentStep / (totalSteps - 1)) * 100);
   }, [currentStep, totalSteps]);
 
   return (
@@ -43,19 +39,8 @@ const ProgressBar = ({
           className="h-full bg-gradient-to-r from-primary to-primary/70"
           initial={{ width: 0 }}
           animate={{ width: `${width}%` }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
         />
-      </div>
-      <div className="flex justify-between mt-2">
-        {Array.from({ length: totalSteps }).map((_, i) => (
-          <div
-            key={i}
-            className={cn(
-              "w-3 h-3 rounded-full transition-all duration-300",
-              i <= currentStep ? "bg-primary" : "bg-border",
-            )}
-          />
-        ))}
       </div>
     </div>
   );
@@ -164,53 +149,7 @@ const StepCard = ({
           </p>
         </div>
       </Card>
-
-      {/* Connection line to next step */}
-      {index < 3 && (
-        <motion.div
-          className="hidden lg:block absolute top-1/2 -right-4 w-8 h-0.5 bg-border"
-          initial={{ scaleX: 0 }}
-          animate={{ scaleX: isCompleted ? 1 : 0.5 }}
-          transition={{ duration: 0.5, delay: index * 0.1 + 0.5 }}
-          style={{ transformOrigin: "left" }}
-        />
-      )}
     </motion.div>
-  );
-};
-
-const AutoPlayController = ({
-  isPlaying,
-  onToggle,
-  currentStep,
-  totalSteps,
-}: {
-  isPlaying: boolean;
-  onToggle: () => void;
-  currentStep: number;
-  totalSteps: number;
-}) => {
-  return (
-    <div className="flex items-center justify-center gap-4 mt-8">
-      <button
-        onClick={onToggle}
-        className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
-        aria-label={isPlaying ? "Pause" : "Play"}
-      >
-        {isPlaying ? (
-          <Pause className="w-4 h-4" />
-        ) : (
-          <Play className="w-4 h-4" />
-        )}
-        <span className="text-sm font-medium">
-          {isPlaying ? "Pause" : "Auto-play"}
-        </span>
-      </button>
-
-      <div className="text-sm text-muted-foreground">
-        {currentStep + 1} of {totalSteps}
-      </div>
-    </div>
   );
 };
 
@@ -221,40 +160,55 @@ export const HowItWorksSection = ({
 }) => {
   const { badge, heading, subHeading, steps } = text;
   const [activeStep, setActiveStep] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const sectionRef = useRef<HTMLDivElement>(null);
 
-  // Auto-play functionality
+  // Calculate active step based on scroll position
   useEffect(() => {
-    if (isPlaying) {
-      intervalRef.current = setInterval(() => {
-        setActiveStep((prev) => (prev + 1) % 4);
-      }, 3000);
-    } else {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-    }
+    const handleScroll = () => {
+      if (!sectionRef.current) return;
 
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
+      const sectionTop = sectionRef.current.offsetTop;
+      const sectionHeight = sectionRef.current.offsetHeight;
+      const scrollPosition = window.scrollY;
+      const windowHeight = window.innerHeight;
+
+      // Calculate how much of the section has been scrolled past
+      const scrolledPast = Math.max(
+        0,
+        scrollPosition + windowHeight * 0.5 - sectionTop,
+      );
+      const scrollProgress = Math.min(1, scrolledPast / sectionHeight);
+
+      // Calculate the active step based on scroll progress
+      const newActiveStep = Math.min(3, Math.floor(scrollProgress * 4));
+      setActiveStep(newActiveStep);
     };
-  }, [isPlaying]);
+
+    window.addEventListener("scroll", handleScroll);
+    handleScroll(); // Initial calculation
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleStepClick = (index: number) => {
-    setActiveStep(index);
-    setIsPlaying(false);
-  };
+    if (sectionRef.current) {
+      const sectionHeight = sectionRef.current.offsetHeight;
+      const sectionTop = sectionRef.current.offsetTop;
 
-  const toggleAutoPlay = () => {
-    setIsPlaying(!isPlaying);
+      // Calculate the scroll position to center the selected step
+      const stepPosition = sectionTop + (sectionHeight * (index + 0.5)) / 4;
+      const targetScrollPosition = stepPosition - window.innerHeight / 2;
+
+      window.scrollTo({
+        top: targetScrollPosition,
+        behavior: "smooth",
+      });
+    }
   };
 
   return (
     <section
+      ref={sectionRef}
       className="container mx-auto px-4 py-20"
       aria-labelledby="how-it-works-heading"
     >
@@ -310,14 +264,6 @@ export const HowItWorksSection = ({
           />
         ))}
       </div>
-
-      {/* Auto-play controller */}
-      <AutoPlayController
-        isPlaying={isPlaying}
-        onToggle={toggleAutoPlay}
-        currentStep={activeStep}
-        totalSteps={4}
-      />
     </section>
   );
 };

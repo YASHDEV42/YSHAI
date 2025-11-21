@@ -28,7 +28,6 @@ export default async function Home({ params }: { params: { locale: string } }) {
       <FeatureSection text={FeatureText} />
       <HowItWorksSection text={HowItWorksText} />
       <PricingSection text={PricingText} locale={locale} />
-      <TestimonialsSection text={TestimonialsText} />
       <CtaSection text={CtaText} locale={locale} />
       <FooterSection text={FooterText} locale={locale} />
     </section>

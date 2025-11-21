@@ -25,12 +25,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Sparkles,
   X,
   ImageIcon,
   Video,
   Loader2,
-  Tag,
   FolderOpen,
   CheckCircle,
   AlertCircle,
@@ -38,8 +36,6 @@ import {
   Zap,
   Clock,
   Calendar,
-  Upload,
-  ArrowRight,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -47,8 +43,8 @@ import {
   getPlatformIcon,
 } from "@/components/icons/platforms-icons";
 import { createPostAction } from "../actions";
-import { IUser, ISocialAccount } from "@/interfaces";
-import { ICampaign } from "@/lib/campaign-helper";
+import type { IUser, ISocialAccount } from "@/interfaces";
+import type { ICampaign } from "@/lib/campaign-helper";
 import { cn } from "@/lib/utils";
 
 // Step indicator component
@@ -135,8 +131,6 @@ export default function CreatePage({
   const [isPending, startTransition] = useTransition();
 
   const [selectedCampaign, setSelectedCampaign] = useState<string>("");
-  const [selectedTags, setSelectedTags] = useState<number[]>([]);
-
   const [currentStep, setCurrentStep] = useState(1);
   const [isAnimating, setIsAnimating] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -276,18 +270,10 @@ export default function CreatePage({
     setUploadedMedia((prev) => prev.filter((_, i) => i !== index));
     setFiles((prev) => prev.filter((_, i) => i !== index)); // Remove actual file too
 
-    toast(locale === "ar" ? "تم حذف الوسائط" : "Media removed", {
+    toast(locale === "ar" ? text.media.mediaRemoved : text.media.mediaRemoved, {
       icon: <X className="h-4 w-4" />,
       duration: 1500,
     });
-  };
-
-  const handleTagToggle = (tagId: number) => {
-    setSelectedTags((prev) =>
-      prev.includes(tagId)
-        ? prev.filter((id) => id !== tagId)
-        : [...prev, tagId],
-    );
   };
 
   const navigateToStep = (step: number) => {
@@ -330,7 +316,6 @@ export default function CreatePage({
         setFiles([]);
         setSelectedPlatforms([]);
         setSelectedCampaign("");
-        setSelectedTags([]);
         setCurrentStep(1);
       } else {
         const message = locale === "ar" ? result.arMessage : result.enMessage;
@@ -421,7 +406,7 @@ export default function CreatePage({
               {text.createPost || "Create Post"}
             </h1>
             <span className="text-sm font-medium text-muted-foreground">
-              {Math.round(progress)}% Complete
+              {Math.round(progress)}% {text.complete || "Complete"}
             </span>
           </div>
           <Progress value={progress} className="h-2" />
@@ -492,10 +477,6 @@ export default function CreatePage({
           {selectedCampaign && (
             <input type="hidden" name="campaignId" value={selectedCampaign} />
           )}
-
-          {selectedTags.map((tagId) => (
-            <input key={tagId} type="hidden" name="tagIds" value={tagId} />
-          ))}
 
           {platforms.map((p) =>
             selectedPlatforms.includes(p.id) ? (

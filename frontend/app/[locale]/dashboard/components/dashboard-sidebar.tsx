@@ -274,7 +274,7 @@ export function DashboardSidebar({
                     asChild
                     isActive={isActive}
                     className={cn(
-                      "py-5 transition-all duration-300 hover:scale-105",
+                      "py-5 transition-all duration-100 hover:scale-105",
                       isActive && "bg-primary/10 border-primary/20",
                     )}
                     style={{ animationDelay: `${index * 50}ms` }}
@@ -285,7 +285,7 @@ export function DashboardSidebar({
                     >
                       <div
                         className={cn(
-                          "flex items-center justify-center w-9 h-9 rounded-lg transition-all duration-300",
+                          "flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-300",
                           isActive
                             ? "bg-primary text-primary-foreground"
                             : "bg-muted text-muted-foreground group-hover:bg-primary/10",
@@ -294,9 +294,6 @@ export function DashboardSidebar({
                         <Icon className="size-5 transition-all duration-300 group-hover:scale-110" />
                       </div>
                       <span className="font-medium">{item.label}</span>
-                      {isActive && (
-                        <div className="ml-auto w-2 h-2 rounded-full bg-primary animate-pulse" />
-                      )}
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -308,7 +305,7 @@ export function DashboardSidebar({
         <SidebarFooter className="border-t border-border p-4">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3 flex-1 min-w-0">
-              <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
                 <span className="text-primary font-semibold text-sm">
                   {user?.name?.[0]?.toUpperCase() || "U"}
                 </span>
@@ -349,7 +346,7 @@ export function DashboardSidebar({
       <div
         ref={notificationsRef}
         className={cn(
-          "fixed inset-0 z-50 bg-background/80 backdrop-blur-sm transition-opacity duration-300",
+          "fixed inset-0 z-50 bg-background/80 backdrop-blur-sm transition-opacity duration-150",
           showNotifications ? "opacity-100" : "opacity-0 pointer-events-none",
         )}
         onClick={() => setShowNotifications(false)}

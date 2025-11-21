@@ -343,7 +343,7 @@ export default function DashboardPage({
         {dashboardStats.map((stat, index) => (
           <Card
             key={index}
-            className="stat-card border-border bg-card transition-all duration-300 hover:scale-105 hover:shadow-lg hover:-translate-y-1"
+            className="stat-card border-border bg-card transition-all duration-150 hover:scale-105 hover:shadow-lg hover:-translate-y-1 aspect-square overflow-hidden"
             style={{
               animationDelay: isVisible.stats ? `${index * 100}ms` : "0ms",
               animation: isVisible.stats
@@ -351,11 +351,11 @@ export default function DashboardPage({
                 : "none",
             }}
           >
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
+            <CardContent className="p-6 h-full flex flex-col justify-between">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
                   <p className="text-sm text-muted-foreground">{stat.title}</p>
-                  <p className="mt-2 font-bold text-3xl text-foreground transition-all duration-300">
+                  <p className="mt-2 font-bold text-3xl text-foreground transition-all duration-150">
                     {stat.value}
                   </p>
                   <p className="mt-1 text-sm text-primary flex items-center gap-1">
@@ -367,14 +367,14 @@ export default function DashboardPage({
                     {stat.change} {text.stats.changeFromLastWeek}
                   </p>
                 </div>
-                <div className="flex size-12 items-center justify-center rounded-lg bg-primary/20 transition-all duration-300 hover:rotate-12 hover:scale-110">
+                <div className="flex size-12 items-center justify-center rounded-lg bg-primary/20 transition-all duration-150 hover:rotate-12 hover:scale-110">
                   <stat.icon className="size-6 text-primary" />
                 </div>
               </div>
-              <div className="mt-4">
+              <div className="-mx-6 -mb-6 mt-4">
                 <Progress
-                  value={(parseInt(stat.value) / 10) * 100}
-                  className="h-2 transition-all duration-1000 ease-out"
+                  value={(Number.parseInt(stat.value) / 10) * 100}
+                  className="h-2 rounded-none transition-all duration-1000 ease-out"
                   style={{
                     width: isVisible.stats ? "100%" : "0%",
                     transitionDelay: `${500 + index * 100}ms`,
@@ -404,7 +404,7 @@ export default function DashboardPage({
                 recentActivity.map((activity, index) => (
                   <div
                     key={activity.id}
-                    className="activity-item flex items-start gap-4 rounded-lg border border-border bg-card p-4 transition-all duration-300 hover:bg-muted hover:scale-[1.02] hover:shadow-md"
+                    className="activity-item flex items-start gap-4 rounded-lg border border-border bg-card p-4 transition-all duration-150 hover:bg-muted hover:scale-[1.02] hover:shadow-md"
                     style={{
                       animationDelay: `${index * 150}ms`,
                       animation: isVisible.activity
@@ -416,12 +416,12 @@ export default function DashboardPage({
                         : "translateX(-20px)",
                     }}
                   >
-                    <div className="flex size-10 items-center justify-center rounded-lg bg-muted transition-all duration-300 hover:scale-110 hover:rotate-6">
+                    <div className="flex size-10 items-center justify-center rounded-lg bg-muted transition-all duration-150 hover:scale-110 hover:rotate-6">
                       {getPlatformIcon(activity.platform)}
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
-                        <p className="font-medium text-sm text-foreground line-clamp-2 transition-all duration-300 hover:text-primary">
+                        <p className="font-medium text-sm text-foreground line-clamp-2 transition-all duration-150 hover:text-primary">
                           {activity.content}
                         </p>
                         {getStatusBadge(activity.status)}
@@ -440,7 +440,7 @@ export default function DashboardPage({
             </div>
             <Button
               variant="ghost"
-              className="mt-4 w-full text-primary hover:bg-primary/10 hover:text-primary transition-all duration-300 hover:scale-105"
+              className="mt-4 w-full text-primary hover:bg-primary/10 hover:text-primary transition-all duration-150 hover:scale-105"
               asChild
             >
               <Link href="/dashboard/platforms">
@@ -483,7 +483,7 @@ export default function DashboardPage({
               ].map((action, index) => (
                 <Button
                   key={index}
-                  className="quick-action w-full justify-start bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 hover:scale-105 hover:shadow-md hover:-translate-y-1 group"
+                  className="quick-action w-full justify-start bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-150 hover:scale-105 hover:shadow-md hover:-translate-y-1 group"
                   asChild
                   style={{
                     animationDelay: `${index * 100}ms`,
@@ -497,7 +497,7 @@ export default function DashboardPage({
                   }}
                 >
                   <Link href={action.href}>
-                    <action.icon className="mr-2 size-4 transition-transform duration-300 group-hover:rotate-12" />
+                    <action.icon className="mr-2 size-4 transition-transform duration-150 group-hover:rotate-12" />
                     {action.text}
                   </Link>
                 </Button>
@@ -519,14 +519,14 @@ export default function DashboardPage({
               {connectedPlatforms.map((platform, index) => (
                 <div
                   key={platform.name}
-                  className="flex items-center justify-between rounded-lg border border-border bg-card p-3 transition-all duration-300 hover:scale-105 hover:shadow-md hover:-translate-y-1"
+                  className="flex items-center justify-between rounded-lg border border-border bg-card p-3 transition-all duration-150 hover:scale-105 hover:shadow-md hover:-translate-y-1"
                   style={{
                     animationDelay: `${index * 100}ms`,
                     animation: "fadeIn 0.5s ease-out forwards",
                   }}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="flex size-8 items-center justify-center rounded-lg bg-muted transition-all duration-300 hover:scale-110 hover:rotate-12">
+                    <div className="flex size-8 items-center justify-center rounded-lg bg-muted transition-all duration-150 hover:scale-110 hover:rotate-12">
                       <platform.icon
                         className={`size-4 text-foreground ${platform.color}`}
                       />
@@ -538,7 +538,7 @@ export default function DashboardPage({
                   {platform.connected ? (
                     <Badge
                       variant="default"
-                      className="bg-primary/20 text-primary transition-all duration-300 hover:scale-110"
+                      className="bg-primary/20 text-primary transition-all duration-150 hover:scale-110"
                     >
                       {text.connectedPlatforms.connected}
                     </Badge>
@@ -546,7 +546,7 @@ export default function DashboardPage({
                     <Button
                       size="sm"
                       variant="ghost"
-                      className="transition-all duration-300 hover:scale-110 hover:bg-primary/10"
+                      className="transition-all duration-150 hover:scale-110 hover:bg-primary/10"
                     >
                       {text.connectedPlatforms.connect}
                     </Button>
@@ -555,11 +555,11 @@ export default function DashboardPage({
               ))}
               <Button
                 variant="ghost"
-                className="w-full text-primary hover:bg-primary/10 hover:text-primary transition-all duration-300 hover:scale-105"
+                className="w-full text-primary hover:bg-primary/10 hover:text-primary transition-all duration-150 hover:scale-105"
                 asChild
               >
                 <Link href="/dashboard/platforms">
-                  <Plus className="mr-2 size-4 transition-transform duration-300 hover:rotate-90" />
+                  <Plus className="mr-2 size-4 transition-transform duration-150 hover:rotate-90" />
                   {text.connectedPlatforms.addPlatform}
                 </Link>
               </Button>
@@ -608,6 +608,16 @@ export default function DashboardPage({
           }
           to {
             opacity: 1;
+          }
+        }
+
+        @keyframes pulse {
+          0%,
+          100% {
+            opacity: 1;
+          }
+          50% {
+            opacity: 0.5;
           }
         }
 

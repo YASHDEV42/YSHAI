@@ -1,7 +1,7 @@
 "use server";
 
-import { IPost } from "@/interfaces";
-import { ApiResult } from "@/lib/api-requester";
+import type { IPost } from "@/interfaces";
+import type { ApiResult } from "@/lib/api-requester";
 import { create } from "@/lib/post-helper";
 import { uploadMedia } from "@/lib/media-helper";
 import { extractErrorMessage } from "@/lib/error-utils";
@@ -32,11 +32,6 @@ export const createPostAction = async (
     const campaignIdStr = formData.get("campaignId")?.toString();
     const campaignId = campaignIdStr ? Number(campaignIdStr) : undefined;
 
-    const tagIds = formData
-      .getAll("tagIds")
-      .map((v) => Number(v))
-      .filter((id) => !isNaN(id));
-
     const dto = {
       contentAr,
       contentEn,
@@ -45,7 +40,6 @@ export const createPostAction = async (
       authorId,
       socialAccountIds,
       campaignId,
-      tagIds: tagIds.length > 0 ? tagIds : undefined,
     };
 
     const postResult: ApiResult<IPost> = await create(dto);

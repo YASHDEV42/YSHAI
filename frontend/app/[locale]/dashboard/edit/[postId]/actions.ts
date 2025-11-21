@@ -20,7 +20,6 @@ export async function updatePostAction(
     const status = formData.get("status") as any;
     const campaignId = formData.get("campaignId");
     const socialAccountIds = formData.getAll("socialAccountIds").map(Number);
-    const tagIds = formData.getAll("tagIds").map(Number);
 
     const result = await update(postId, {
       contentAr: contentAr || undefined,
@@ -30,7 +29,6 @@ export async function updatePostAction(
       socialAccountIds:
         socialAccountIds.length > 0 ? socialAccountIds : undefined,
       campaignId: campaignId ? Number(campaignId) : undefined,
-      tagIds: tagIds.length > 0 ? tagIds : undefined,
     });
 
     if (result.success) {
@@ -44,7 +42,7 @@ export async function updatePostAction(
     return {
       success: false,
       enMessage: result.error || "Failed to update post",
-      arMessage: result.errorAr || "فشل في تحديث المنشور",
+      arMessage: result.error || "فشل في تحديث المنشور",
     };
   } catch (error) {
     return {

@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { CheckCircle2, Star, TrendingUp } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -36,65 +36,60 @@ interface PricingSectionText {
   };
 }
 
-const PricingToggle = ({
+const PricingSelector = ({
   isYearly,
   setIsYearly,
   monthlyLabel,
   yearlyLabel,
   discountLabel,
+  isRTL,
 }: {
   isYearly: boolean;
   setIsYearly: (value: boolean) => void;
   monthlyLabel: string;
   yearlyLabel: string;
   discountLabel: string;
+  isRTL: boolean;
 }) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="flex items-center justify-center gap-4 mb-12"
+      className="flex items-center justify-center gap-3 mb-12"
     >
-      <span
-        className={cn(
-          "text-sm font-medium transition-colors",
-          !isYearly ? "text-foreground" : "text-muted-foreground",
-        )}
-      >
-        {monthlyLabel}
-      </span>
-
-      <button
-        type="button"
-        role="switch"
-        aria-checked={isYearly}
-        aria-label="Toggle between monthly and yearly billing"
-        onClick={() => setIsYearly(!isYearly)}
-        className="relative inline-flex h-6 w-11 items-center rounded-full bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-      >
-        <span className="sr-only">Toggle billing period</span>
-        <motion.span
-          className="inline-block h-4 w-4 transform rounded-full bg-primary transition-transform"
-          animate={{ x: isYearly ? 20 : 4 }}
-          transition={{ type: "spring", stiffness: 500, damping: 30 }}
-        />
-      </button>
-
-      <span
-        className={cn(
-          "text-sm font-medium transition-colors flex items-center gap-2",
-          isYearly ? "text-foreground" : "text-muted-foreground",
-        )}
-      >
-        {yearlyLabel}
-        <Badge
-          variant="secondary"
-          className="text-xs bg-primary/10 text-primary"
+      <div className="inline-flex items-center gap-2 p-1 bg-muted rounded-lg">
+        <button
+          type="button"
+          onClick={() => setIsYearly(false)}
+          className={cn(
+            "px-6 py-2.5 rounded-md text-sm font-medium transition-all duration-200",
+            !isYearly
+              ? "bg-background text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground",
+          )}
         >
-          {discountLabel}
-        </Badge>
-      </span>
+          {monthlyLabel}
+        </button>
+        <button
+          type="button"
+          onClick={() => setIsYearly(true)}
+          className={cn(
+            "px-6 py-2.5 rounded-md text-sm font-medium transition-all duration-200 flex items-center gap-2",
+            isYearly
+              ? "bg-background text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground",
+          )}
+        >
+          {yearlyLabel}
+          <Badge
+            variant="secondary"
+            className="text-xs bg-primary/10 text-primary rounded-t-none"
+          >
+            {discountLabel}
+          </Badge>
+        </button>
+      </div>
     </motion.div>
   );
 };
@@ -132,7 +127,7 @@ const PricingCard = ({
     >
       <Card
         className={cn(
-          "p-8 bg-card flex justify-between items-start flex-col h-full transition-all duration-300 overflow-hidden relative",
+          "p-8 bg-card flex flex-col h-full transition-all duration-300 overflow-hidden relative",
           isPopular ? "border-primary shadow-lg" : "border-border",
           isHovered && "shadow-xl",
         )}
@@ -143,7 +138,7 @@ const PricingCard = ({
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: index * 0.1 + 0.2 }}
-            className="absolute -top-3 left-1/2 -translate-x-1/2 z-10"
+            className="absolute -top-1 left-1/2 -translate-x-1/2 z-10"
           >
             <Badge
               className={cn(
@@ -159,7 +154,7 @@ const PricingCard = ({
         )}
 
         {/* Card content */}
-        <div className="relative z-10 w-full h-full">
+        <div className="relative z-10 w-full flex flex-col h-full">
           <div className="flex items-center justify-between gap-2 mb-2">
             <h3 className="text-2xl font-bold">{plan.title}</h3>
             {isPopular && (
@@ -208,7 +203,7 @@ const PricingCard = ({
           <motion.div
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="w-full"
+            className="w-full mt-auto"
           >
             <Button
               variant={isPopular ? "default" : "outline"}
@@ -243,6 +238,7 @@ export const PricingSection = ({
   text: PricingSectionText;
 }) => {
   const [isYearly, setIsYearly] = useState(false);
+  const isRTL = locale === "ar";
 
   // Safety check for text object
   const { badge, heading, subHeading, plans, toggle } = text || {};
@@ -257,6 +253,7 @@ export const PricingSection = ({
       id="pricing"
       className="container mx-auto px-4 py-20"
       aria-labelledby="pricing-heading"
+      dir={isRTL ? "rtl" : "ltr"}
     >
       <div className="text-center mb-16">
         <motion.div
@@ -292,14 +289,14 @@ export const PricingSection = ({
         </motion.p>
       </div>
 
-      {/* Monthly/Yearly toggle */}
       {toggle && (
-        <PricingToggle
+        <PricingSelector
           isYearly={isYearly}
           setIsYearly={setIsYearly}
           monthlyLabel={toggle.monthly}
           yearlyLabel={toggle.yearly}
           discountLabel={toggle.discount}
+          isRTL={isRTL}
         />
       )}
 

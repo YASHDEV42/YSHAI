@@ -1,7 +1,7 @@
 "use server";
 
-import { IMedia, IPost, IPostTarget } from "@/interfaces";
-import { apiRequest, ApiResult } from "./api-requester";
+import type { IPost } from "@/interfaces";
+import { apiRequest, type ApiResult } from "./api-requester";
 
 interface CreatePostDto {
   contentAr?: string;
@@ -14,7 +14,6 @@ interface CreatePostDto {
   socialAccountIds: number[];
   campaignId?: number;
   templateId?: number;
-  tagIds?: number[]; // Add tagIds support
 }
 
 interface UpdatePostDto {
@@ -27,7 +26,6 @@ interface UpdatePostDto {
   socialAccountIds?: number[];
   campaignId?: number;
   templateId?: number;
-  tagIds?: number[]; // Add tagIds support
 }
 
 export async function create(dto: CreatePostDto): Promise<ApiResult<IPost>> {

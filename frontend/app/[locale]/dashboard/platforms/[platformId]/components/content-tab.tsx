@@ -9,7 +9,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import {
   Carousel,
   CarouselContent,
@@ -31,7 +30,6 @@ import {
   Heart,
   MessageCircle,
   ExternalLink,
-  Search,
   Filter,
   Loader2,
   CheckCircle,
@@ -57,30 +55,23 @@ export function ContentTab({
 }: ContentTabProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const postsPerPage = 6;
-  const [selectedTag, setSelectedTag] = useState<string>("all");
   const [selectedCampaign, setSelectedCampaign] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [isLoading, setIsLoading] = useState(false);
   const [deletingPostId, setDeletingPostId] = useState<number | null>(null);
   const [repostingPostId, setRepostingPostId] = useState<number | null>(null);
 
-  const allTags: string[] = Array.from(
-    new Set(posts.flatMap((post) => post.tags?.map((t: any) => t.name) || [])),
-  );
   const allCampaigns: string[] = Array.from(
     new Set(posts.map((post) => post.campaign?.name).filter(Boolean)),
   );
 
   const filteredPosts = posts.filter((post) => {
-    const matchesTag =
-      selectedTag === "all" ||
-      post.tags?.some((t: any) => t.name === selectedTag);
     const matchesCampaign =
       selectedCampaign === "all" || post.campaign?.name === selectedCampaign;
     const matchesStatus =
       selectedStatus === "all" || post.status === selectedStatus;
 
-    return matchesTag && matchesCampaign && matchesStatus;
+    return matchesCampaign && matchesStatus;
   });
 
   const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
@@ -101,7 +92,7 @@ export function ContentTab({
   const handleRepost = async (postId: number) => {
     setRepostingPostId(postId);
 
-    toast.loading("Reposting content...", {
+    toast.loading(text.reposting || "Reposting content...", {
       id: "repost-post",
     });
 
@@ -109,7 +100,7 @@ export function ContentTab({
     setTimeout(() => {
       setRepostingPostId(null);
 
-      toast.success("Content reposted successfully", {
+      toast.success(text.repostSuccess || "Content reposted successfully", {
         id: "repost-post",
         icon: <CheckCircle className="h-4 w-4" />,
         duration: 2000,
@@ -118,11 +109,16 @@ export function ContentTab({
   };
 
   const handleDelete = async (postId: number) => {
-    if (!confirm("Are you sure you want to delete this post?")) return;
+    if (
+      !confirm(
+        text.deleteConfirm || "Are you sure you want to delete this post?",
+      )
+    )
+      return;
 
     setDeletingPostId(postId);
 
-    toast.loading("Deleting post...", {
+    toast.loading(text.deleting || "Deleting post...", {
       id: "delete-post",
     });
 
@@ -130,21 +126,18 @@ export function ContentTab({
     setTimeout(() => {
       setDeletingPostId(null);
 
-      toast.success("Post deleted successfully", {
+      toast.success(text.deleteSuccess || "Post deleted successfully", {
         id: "delete-post",
         icon: <CheckCircle className="h-4 w-4" />,
         duration: 2000,
       });
-
-      // In a real app, you would update the posts state here
-      // For now, we'll just show a success message
     }, 1500);
   };
 
   const handleFilterChange = () => {
     setIsLoading(true);
 
-    toast.loading("Applying filters...", {
+    toast.loading(text.applyingFilters || "Applying filters...", {
       id: "filter-posts",
     });
 
@@ -152,7 +145,7 @@ export function ContentTab({
     setTimeout(() => {
       setIsLoading(false);
 
-      toast.success("Filters applied successfully", {
+      toast.success(text.filtersApplied || "Filters applied successfully", {
         id: "filter-posts",
         icon: <CheckCircle className="h-4 w-4" />,
         duration: 1500,
@@ -181,14 +174,13 @@ export function ContentTab({
               </CardTitle>
               <CardDescription>
                 {text.filters?.description ||
-                  "Filter posts by tags, campaigns, and status"}
+                  "Filter posts by campaigns and status"}
               </CardDescription>
             </div>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => {
-                setSelectedTag("all");
                 setSelectedCampaign("all");
                 setSelectedStatus("all");
                 handleFilterChange();
@@ -200,31 +192,7 @@ export function ContentTab({
           </div>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 md:grid-cols-3">
-            {/* Tag Filter */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
-                {text.filters?.tags || "Tags"}
-              </label>
-              <select
-                value={selectedTag}
-                onChange={(e) => {
-                  setSelectedTag(e.target.value);
-                  handleFilterChange();
-                }}
-                className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-all duration-300 focus:ring-primary/20"
-              >
-                <option value="all">
-                  {text.filters?.allTags || "All tags"}
-                </option>
-                {allTags.map((tag) => (
-                  <option key={tag} value={tag}>
-                    {tag}
-                  </option>
-                ))}
-              </select>
-            </div>
-
+          <div className="grid gap-4 md:grid-cols-2">
             {/* Campaign Filter */}
             <div className="space-y-2">
               <label className="text-sm font-medium">
@@ -299,8 +267,6 @@ export function ContentTab({
           <CardDescription>
             {filteredPosts.length} {text.postsOf || "of"} {posts.length}{" "}
             {text.stats?.posts || "posts"}
-            {selectedTag !== "all" &&
-              ` • ${text.filters?.tags || "Tag"}: ${selectedTag}`}
             {selectedCampaign !== "all" &&
               ` • ${text.filters?.campaigns?.slice(0, -1) || "Campaign"}: ${selectedCampaign}`}
             {selectedStatus !== "all" &&
@@ -316,25 +282,19 @@ export function ContentTab({
             <div className="text-center py-12">
               <FileText className="size-12 mx-auto text-muted-foreground mb-4" />
               <h3 className="text-lg font-semibold mb-2">
-                {selectedTag !== "all" ||
-                selectedCampaign !== "all" ||
-                selectedStatus !== "all"
+                {selectedCampaign !== "all" || selectedStatus !== "all"
                   ? text.recentPosts?.noMatchingPosts ||
                     "No posts match your filters"
                   : text.recentPosts?.noPosts || "No posts yet"}
               </h3>
               <p className="text-muted-foreground mb-4">
-                {selectedTag !== "all" ||
-                selectedCampaign !== "all" ||
-                selectedStatus !== "all"
+                {selectedCampaign !== "all" || selectedStatus !== "all"
                   ? text.recentPosts?.adjustFilters ||
                     "Try adjusting your filters or clear them to see all posts"
                   : text.recentPosts?.noPostsDescription ||
                     "Start creating content to see it here"}
               </p>
-              {selectedTag === "all" &&
-              selectedCampaign === "all" &&
-              selectedStatus === "all" ? (
+              {selectedCampaign === "all" && selectedStatus === "all" ? (
                 <Button asChild>
                   <Link href={`/${locale}/dashboard/create`}>
                     <Plus className="mr-2 size-4" />
@@ -344,7 +304,6 @@ export function ContentTab({
               ) : (
                 <Button
                   onClick={() => {
-                    setSelectedTag("all");
                     setSelectedCampaign("all");
                     setSelectedStatus("all");
                     handleFilterChange();
@@ -441,7 +400,7 @@ export function ContentTab({
                           <Button
                             size="sm"
                             variant="outline"
-                            className="transition-all duration-300 hover:scale-105 hover:bg-red-50 dark:hover:bg-red-950/20 hover:text-red-600 hover:border-red-300"
+                            className="transition-all duration-300 hover:scale-105 hover:bg-red-50 dark:hover:bg-red-950/20 hover:text-red-600 hover:border-red-300 bg-transparent"
                             onClick={() => handleDelete(post.id)}
                             disabled={deletingPostId === post.id}
                           >
