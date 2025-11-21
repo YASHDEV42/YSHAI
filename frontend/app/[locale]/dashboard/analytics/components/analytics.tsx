@@ -19,7 +19,6 @@ import {
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import {
   TrendingUp,
-  TrendingDown,
   Users,
   Heart,
   MessageCircle,
@@ -33,6 +32,7 @@ import {
   Zap,
   CheckCircle,
 } from "lucide-react";
+import { StatCard } from "@/components/ui/stat-card";
 import {
   Bar,
   BarChart,
@@ -148,67 +148,6 @@ export default function AnalyticsClient({
       });
     }, 1500);
   };
-
-  const stats = [
-    {
-      title: text.stats.totalEngagement,
-      value: analytics?.totalEngagement
-        ? formatNumber(analytics.totalEngagement)
-        : "0",
-      change: analytics?.engagementChange
-        ? `${analytics.engagementChange > 0 ? "+" : ""}${analytics.engagementChange.toFixed(1)}%`
-        : "+0%",
-      trend:
-        (analytics?.engagementChange ?? 0) >= 0
-          ? ("up" as const)
-          : ("down" as const),
-      icon: Heart,
-      color: "from-pink-500 to-rose-500",
-    },
-    {
-      title: text.stats.totalReach,
-      value: analytics?.totalReach ? formatNumber(analytics.totalReach) : "0",
-      change: analytics?.reachChange
-        ? `${analytics.reachChange > 0 ? "+" : ""}${analytics.reachChange.toFixed(1)}%`
-        : "+0%",
-      trend:
-        (analytics?.reachChange ?? 0) >= 0
-          ? ("up" as const)
-          : ("down" as const),
-      icon: Eye,
-      color: "from-blue-500 to-cyan-500",
-    },
-    {
-      title: text.stats.newFollowers,
-      value: analytics?.newFollowers
-        ? formatNumber(analytics.newFollowers)
-        : "0",
-      change: analytics?.followersChange
-        ? `${analytics.followersChange > 0 ? "+" : ""}${analytics.followersChange.toFixed(1)}%`
-        : "+0%",
-      trend:
-        (analytics?.followersChange ?? 0) >= 0
-          ? ("up" as const)
-          : ("down" as const),
-      icon: Users,
-      color: "from-green-500 to-emerald-500",
-    },
-    {
-      title: text.stats.avgEngagementRate,
-      value: analytics?.avgEngagementRate
-        ? `${analytics.avgEngagementRate.toFixed(1)}%`
-        : "0%",
-      change: analytics?.engagementRateChange
-        ? `${analytics.engagementRateChange > 0 ? "+" : ""}${analytics.engagementRateChange.toFixed(1)}%`
-        : "+0%",
-      trend:
-        (analytics?.engagementRateChange ?? 0) >= 0
-          ? ("up" as const)
-          : ("down" as const),
-      icon: TrendingUp,
-      color: "from-amber-500 to-orange-500",
-    },
-  ];
 
   const chartEngagementData = engagementData ?? [
     { date: "Mon", likes: 0, comments: 0, shares: 0, views: 0 },
@@ -335,60 +274,62 @@ export default function AnalyticsClient({
 
           {/* Stats Grid */}
           <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {stats.map((stat, index) => (
-              <Card
-                key={index}
-                className={cn(
-                  "border-border bg-card overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-[1.02] group",
-                  animateItems
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 translate-y-4",
-                )}
-                style={{ animationDelay: `${100 + index * 100}ms` }}
-              >
-                <div className={`h-1 bg-gradient-to-r ${stat.color}`}></div>
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <p className="text-sm text-muted-foreground">
-                        {stat.title}
-                      </p>
-                      <p className="mt-2 font-bold text-2xl sm:text-3xl text-foreground transition-all duration-300 group-hover:scale-105">
-                        {stat.value}
-                      </p>
-                      <div className="mt-1 flex items-center gap-1">
-                        {stat.trend === "up" ? (
-                          <TrendingUp className="size-4 text-green-500" />
-                        ) : (
-                          <TrendingDown className="size-4 text-red-500" />
-                        )}
-                        <p
-                          className={`text-sm ${stat.trend === "up" ? "text-green-500" : "text-red-500"}`}
-                        >
-                          {stat.change}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="ml-4 flex size-12 items-center justify-center rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 transition-all duration-300 group-hover:scale-110">
-                      <stat.icon className="size-6 text-primary" />
-                    </div>
-                  </div>
-                  <div className="mt-4">
-                    <Progress
-                      value={
-                        Math.abs(
-                          Number.parseFloat(
-                            stat.change.replace(/[^0-9.-]/g, ""),
-                          ),
-                        ) * 10
-                      }
-                      className="h-2"
-                      dir={locale === "ar" ? "rtl" : "ltr"}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+            <StatCard
+              title={text.stats.totalEngagement}
+              value={
+                analytics?.totalEngagement
+                  ? formatNumber(analytics.totalEngagement)
+                  : "0"
+              }
+              description={`${analytics?.engagementChange ? `${analytics.engagementChange > 0 ? "+" : ""}${analytics.engagementChange.toFixed(1)}%` : "+0%"} from last period`}
+              icon={Heart}
+              progressValue={Math.abs(analytics?.engagementChange || 0) * 10}
+              animate={animateItems}
+              animationDelay="100ms"
+              locale={locale}
+            />
+            <StatCard
+              title={text.stats.totalReach}
+              value={
+                analytics?.totalReach ? formatNumber(analytics.totalReach) : "0"
+              }
+              description={`${analytics?.reachChange ? `${analytics.reachChange > 0 ? "+" : ""}${analytics.reachChange.toFixed(1)}%` : "+0%"} from last period`}
+              icon={Eye}
+              progressValue={Math.abs(analytics?.reachChange || 0) * 10}
+              animate={animateItems}
+              animationDelay="200ms"
+              locale={locale}
+            />
+            <StatCard
+              title={text.stats.newFollowers}
+              value={
+                analytics?.newFollowers
+                  ? formatNumber(analytics.newFollowers)
+                  : "0"
+              }
+              description={`${analytics?.followersChange ? `${analytics.followersChange > 0 ? "+" : ""}${analytics.followersChange.toFixed(1)}%` : "+0%"} from last period`}
+              icon={Users}
+              progressValue={Math.abs(analytics?.followersChange || 0) * 10}
+              animate={animateItems}
+              animationDelay="300ms"
+              locale={locale}
+            />
+            <StatCard
+              title={text.stats.avgEngagementRate}
+              value={
+                analytics?.avgEngagementRate
+                  ? `${analytics.avgEngagementRate.toFixed(1)}%`
+                  : "0%"
+              }
+              description={`${analytics?.engagementRateChange ? `${analytics.engagementRateChange > 0 ? "+" : ""}${analytics.engagementRateChange.toFixed(1)}%` : "+0%"} from last period`}
+              icon={TrendingUp}
+              progressValue={
+                Math.abs(analytics?.engagementRateChange || 0) * 10
+              }
+              animate={animateItems}
+              animationDelay="400ms"
+              locale={locale}
+            />
           </div>
 
           {/* Charts */}

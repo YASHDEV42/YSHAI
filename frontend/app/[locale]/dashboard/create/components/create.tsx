@@ -87,7 +87,7 @@ const StepIndicator = ({
       </div>
       <span
         className={cn(
-          "ml-2 text-sm font-medium transition-colors",
+          "mx-2 text-sm font-medium transition-colors",
           isActive || isCompleted ? "text-foreground" : "text-muted-foreground",
         )}
       >
@@ -110,9 +110,7 @@ export default function CreatePage({
   accounts: ISocialAccount[];
   campaigns: ICampaign[];
 }) {
-  // ---------------------------------------------------------
   // STATE
-  // ---------------------------------------------------------
   const [contentAr, setContentAr] = useState("");
   const [contentEn, setContentEn] = useState("");
   const [contentTab, setContentTab] = useState<"ar" | "en">("en");
@@ -138,9 +136,7 @@ export default function CreatePage({
 
   const formRef = useRef<HTMLFormElement>(null);
 
-  // ---------------------------------------------------------
   // PLATFORM LIST (from backend)
-  // ---------------------------------------------------------
   const platforms = accounts.map((acc) => ({
     id: acc.provider,
     name: text.platforms[acc.provider],
@@ -148,9 +144,7 @@ export default function CreatePage({
     username: acc.username,
   }));
 
-  // ---------------------------------------------------------
   // PROGRESS CALCULATION
-  // ---------------------------------------------------------
   const calculateProgress = () => {
     let progress = 0;
     const steps = 5; // Total number of steps
@@ -177,9 +171,7 @@ export default function CreatePage({
 
   const progress = calculateProgress();
 
-  // ---------------------------------------------------------
   // EFFECTS
-  // ---------------------------------------------------------
   useEffect(() => {
     // Show welcome toast
     toast.info(
@@ -193,9 +185,7 @@ export default function CreatePage({
     );
   }, [locale]);
 
-  // ---------------------------------------------------------
   // HANDLERS
-  // ---------------------------------------------------------
   const handlePlatformToggle = (id: string) => {
     setSelectedPlatforms((prev) =>
       prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id],
@@ -284,9 +274,7 @@ export default function CreatePage({
     }, 300);
   };
 
-  // ---------------------------------------------------------
   // FORM SUBMISSION
-  // ---------------------------------------------------------
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -302,7 +290,7 @@ export default function CreatePage({
       );
 
       if (result.success) {
-        setError(""); // Clear error
+        setError("");
 
         toast.success(locale === "ar" ? result.arMessage : result.enMessage, {
           icon: <CheckCircle className="h-4 w-4" />,
@@ -330,9 +318,7 @@ export default function CreatePage({
     });
   };
 
-  // ---------------------------------------------------------
   // PREVIEW COMPONENT
-  // ---------------------------------------------------------
   const currentContent = contentTab === "ar" ? contentAr : contentEn;
 
   const UnifiedPreview = ({
@@ -393,9 +379,7 @@ export default function CreatePage({
     );
   };
 
-  // ---------------------------------------------------------
   // RENDER
-  // ---------------------------------------------------------
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8 max-w-7xl">
@@ -426,7 +410,7 @@ export default function CreatePage({
             />
             <StepIndicator
               step={2}
-              title={text.contentEditor.title || "Content"}
+              title={text.campaigns.title || "Campaign"}
               isActive={currentStep === 2}
               isCompleted={contentEn || contentAr ? true : false}
               onClick={() => navigateToStep(2)}
@@ -440,7 +424,7 @@ export default function CreatePage({
             />
             <StepIndicator
               step={4}
-              title={text.campaigns.title || "Campaign"}
+              title={text.contentEditor.title || "Content"}
               isActive={currentStep === 4}
               isCompleted={selectedCampaign ? true : false}
               onClick={() => navigateToStep(4)}

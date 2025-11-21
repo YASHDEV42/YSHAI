@@ -15,8 +15,6 @@ import {
   BarChart3,
   Clock,
   CheckCircle2,
-  ArrowUp,
-  ArrowDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,7 +25,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
+import { StatCard } from "@/components/ui/stat-card";
 import type { IDashboardStats } from "@/lib/analytics-helper";
 import type { ISocialAccount, IPost } from "@/interfaces";
 
@@ -180,51 +178,6 @@ export default function DashboardPage({
     }
   }, [isVisible.stats, stats, accounts]);
 
-  const dashboardStats = [
-    {
-      title: text.stats.scheduledPosts,
-      value: animatedValues.scheduledPosts.toString(),
-      change: stats?.scheduledChange
-        ? `${stats.scheduledChange > 0 ? "+" : ""}${stats.scheduledChange}%`
-        : "+0%",
-      icon: Clock,
-      trend: "up" as const,
-    },
-    {
-      title: text.stats.publishedThisWeek,
-      value: animatedValues.publishedThisWeek.toString(),
-      change: stats?.publishedChange
-        ? `${stats.publishedChange > 0 ? "+" : ""}${stats.publishedChange}%`
-        : "+0%",
-      icon: CheckCircle2,
-      trend:
-        stats?.publishedChange && stats.publishedChange > 0
-          ? ("up" as const)
-          : ("down" as const),
-    },
-    {
-      title: text.stats.connectedAccounts,
-      value: animatedValues.connectedAccounts.toString(),
-      change: stats?.accountsChange ? `+${stats.accountsChange}` : "+0",
-      icon: Users,
-      trend: "up" as const,
-    },
-    {
-      title: text.stats.avgEngagement,
-      value: animatedValues.avgEngagement
-        ? `${animatedValues.avgEngagement.toFixed(1)}%`
-        : "0%",
-      change: stats?.engagementChange
-        ? `${stats.engagementChange > 0 ? "+" : ""}${stats.engagementChange.toFixed(1)}%`
-        : "+0%",
-      icon: TrendingUp,
-      trend:
-        stats?.engagementChange && stats.engagementChange > 0
-          ? ("up" as const)
-          : ("down" as const),
-    },
-  ];
-
   const recentActivity = recentPosts.slice(0, 4).map((post, index) => ({
     id: post.id,
     type:
@@ -342,51 +295,59 @@ export default function DashboardPage({
             : "opacity-0 translate-y-4"
         }`}
       >
-        {dashboardStats.map((stat, index) => (
-          <Card
-            key={index}
-            className="stat-card border-border bg-card transition-all duration-300 hover:scale-105 hover:shadow-lg hover:-translate-y-1 aspect-square overflow-hidden"
-            style={{
-              animationDelay: isVisible.stats ? `${index * 100}ms` : "0ms",
-              animation: isVisible.stats
-                ? "slideInUp 0.6s ease-out forwards"
-                : "none",
-            }}
-          >
-            <CardContent className="p-6 h-full flex flex-col justify-between">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <p className="text-sm text-muted-foreground">{stat.title}</p>
-                  <p className="mt-2 font-bold text-3xl text-foreground transition-all duration-300">
-                    {stat.value}
-                  </p>
-                  <p className="mt-1 text-sm text-primary flex items-center gap-1">
-                    {stat.trend === "up" ? (
-                      <ArrowUp className="size-3 text-green-500 animate-bounce" />
-                    ) : (
-                      <ArrowDown className="size-3 text-red-500 animate-bounce" />
-                    )}
-                    {stat.change} {text.stats.changeFromLastWeek}
-                  </p>
-                </div>
-                <div className="flex size-12 items-center justify-center rounded-lg bg-primary/20 transition-all duration-300 hover:rotate-12 hover:scale-110">
-                  <stat.icon className="size-6 text-primary" />
-                </div>
-              </div>
-              <div className="-mx-6 -mb-6 mt-4" dir={isRTL ? "rtl" : "ltr"}>
-                <Progress
-                  value={(Number.parseInt(stat.value) / 10) * 100}
-                  dir={isRTL ? "rtl" : "ltr"}
-                  className="h-2 rounded-none transition-all duration-1000 ease-out"
-                  style={{
-                    width: isVisible.stats ? "100%" : "0%",
-                    transitionDelay: `${500 + index * 100}ms`,
-                  }}
-                />
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+        <StatCard
+          title={text.stats.scheduledPosts}
+          value={animatedValues.scheduledPosts.toString()}
+          description={`${stats?.scheduledChange ? `${stats.scheduledChange > 0 ? "+" : ""}${stats.scheduledChange}%` : "+0%"} ${text.stats.changeFromLastWeek}`}
+          icon={Clock}
+          progressValue={Math.min(
+            (animatedValues.scheduledPosts / 10) * 100,
+            100,
+          )}
+          animate={isVisible.stats}
+          animationDelay="0ms"
+          locale={locale}
+        />
+        <StatCard
+          title={text.stats.publishedThisWeek}
+          value={animatedValues.publishedThisWeek.toString()}
+          description={`${stats?.publishedChange ? `${stats.publishedChange > 0 ? "+" : ""}${stats.publishedChange}%` : "+0%"} ${text.stats.changeFromLastWeek}`}
+          icon={CheckCircle2}
+          progressValue={Math.min(
+            (animatedValues.publishedThisWeek / 10) * 100,
+            100,
+          )}
+          animate={isVisible.stats}
+          animationDelay="100ms"
+          locale={locale}
+        />
+        <StatCard
+          title={text.stats.connectedAccounts}
+          value={animatedValues.connectedAccounts.toString()}
+          description={`${stats?.accountsChange ? `+${stats.accountsChange}` : "+0"} ${text.stats.changeFromLastWeek}`}
+          icon={Users}
+          progressValue={Math.min(
+            (animatedValues.connectedAccounts / 10) * 100,
+            100,
+          )}
+          animate={isVisible.stats}
+          animationDelay="200ms"
+          locale={locale}
+        />
+        <StatCard
+          title={text.stats.avgEngagement}
+          value={
+            animatedValues.avgEngagement
+              ? `${animatedValues.avgEngagement.toFixed(1)}%`
+              : "0%"
+          }
+          description={`${stats?.engagementChange ? `${stats.engagementChange > 0 ? "+" : ""}${stats.engagementChange.toFixed(1)}%` : "+0%"} ${text.stats.changeFromLastWeek}`}
+          icon={TrendingUp}
+          progressValue={animatedValues.avgEngagement}
+          animate={isVisible.stats}
+          animationDelay="300ms"
+          locale={locale}
+        />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">

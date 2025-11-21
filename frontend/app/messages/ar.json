@@ -884,7 +884,21 @@
       "inputPlaceholder": "اسألني أي شيء...",
       "quickAction1": "أفضل وقت للنشر؟",
       "quickAction2": "تحليل الأداء",
-      "quickAction3": "أفكار محتوى"
+      "quickAction3": "أفكار محتوى",
+      "quickAction4": "رؤى الجمهور",
+      "conversation": "المحادثة",
+      "conversationDescription": "اسألني أي شيء عن استراتيجية المحتوى الخاصة بك",
+      "thinking": "الذكاء الاصطناعي يفكر...",
+      "responseGenerated": "تم إنشاء استجابة الذكاء الاصطناعي",
+      "preparingQuery": "جارٍ تحضير الاستعلام...",
+      "tryAsking": "جرب أن تسأل:",
+      "performanceInsights": "رؤى الأداء",
+      "performanceInsightsDesc": "احصل على تحليل تفصيلي لأداء المحتوى الخاص بك",
+      "contentSuggestions": "اقتراحات المحتوى",
+      "contentSuggestionsDesc": "احصل على أفكار محتوى مدعومة بالذكاء الاصطناعي مصممة خصيصاً لجمهورك",
+      "audienceAnalysis": "تحليل الجمهور",
+      "audienceAnalysisDesc": "فهم التركيبة السكانية وسلوك جمهورك",
+      "beta": "تجريبي"
     },
     "aiInsights": {
       "title": "رؤى الذكاء الاصطناعي",

@@ -17,20 +17,17 @@ import {
   Users,
   Activity,
 } from "lucide-react";
+import { StatCard } from "@/components/ui/stat-card";
 import {
-  Line,
-  LineChart,
   ResponsiveContainer,
+  LineChart,
+  CartesianGrid,
   XAxis,
   YAxis,
-  CartesianGrid,
   Legend,
+  Line,
 } from "recharts";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
+import { ChartContainer } from "@/components/ui/chart";
 import { cn } from "@/lib/utils";
 
 interface AnalyticsTabProps {
@@ -112,7 +109,6 @@ export function AnalyticsTab({
       0,
     );
 
-    // Find best posting time
     const hourCounts: Record<number, number> = {};
     posts.forEach((post) => {
       const hour = new Date(post.timestamp).getHours();
@@ -142,141 +138,47 @@ export function AnalyticsTab({
 
   return (
     <div className="space-y-6">
-      {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card
-          className={cn(
-            "border-l-4 border-l-primary hover:border-l-accent transition-all duration-300 hover:shadow-md hover:scale-[1.02]",
-            animateItems
-              ? "opacity-100 translate-y-0"
-              : "opacity-0 translate-y-4",
-          )}
-          style={{ animationDelay: "100ms" }}
-        >
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {text.analytics?.avgLikes || "Average Likes"}
-            </CardTitle>
-            <div className="p-2 bg-primary/10 rounded-lg transition-all duration-300 group-hover:scale-110">
-              <Heart className="size-5 text-primary" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {analytics.avgLikes.toLocaleString()}
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {text.stats?.posts || "per post"}
-            </p>
-            <div className="mt-2">
-              <Progress
-                value={Math.min(analytics.avgLikes * 2, 100)}
-                className="h-1"
-                dir={locale === "ar" ? "rtl" : "ltr"}
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card
-          className={cn(
-            "border-l-4 border-l-blue-500 hover:border-l-accent transition-all duration-300 hover:shadow-md hover:scale-[1.02]",
-            animateItems
-              ? "opacity-100 translate-y-0"
-              : "opacity-0 translate-y-4",
-          )}
-          style={{ animationDelay: "200ms" }}
-        >
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {text.analytics?.avgComments || "Average Comments"}
-            </CardTitle>
-            <div className="p-2 bg-blue-500/10 rounded-lg transition-all duration-300 group-hover:scale-110">
-              <MessageCircle className="size-5 text-blue-500" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {analytics.avgComments.toLocaleString()}
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {text.stats?.posts || "per post"}
-            </p>
-            <div className="mt-2">
-              <Progress
-                value={Math.min(analytics.avgComments * 5, 100)}
-                className="h-1"
-                dir={locale === "ar" ? "rtl" : "ltr"}
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card
-          className={cn(
-            "border-l-4 border-l-green-500 hover:border-l-accent transition-all duration-300 hover:shadow-md hover:scale-[1.02]",
-            animateItems
-              ? "opacity-100 translate-y-0"
-              : "opacity-0 translate-y-4",
-          )}
-          style={{ animationDelay: "300ms" }}
-        >
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {text.analytics?.avgShares || "Average Shares"}
-            </CardTitle>
-            <div className="p-2 bg-green-500/10 rounded-lg transition-all duration-300 group-hover:scale-110">
-              <Share2 className="size-5 text-green-500" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {analytics.avgShares.toLocaleString()}
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {text.stats?.posts || "per post"}
-            </p>
-            <div className="mt-2">
-              <Progress
-                value={Math.min(analytics.avgShares * 10, 100)}
-                className="h-1"
-                dir={locale === "ar" ? "rtl" : "ltr"}
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card
-          className={cn(
-            "border-l-4 border-l-orange-500 hover:border-l-accent transition-all duration-300 hover:shadow-md hover:scale-[1.02]",
-            animateItems
-              ? "opacity-100 translate-y-0"
-              : "opacity-0 translate-y-4",
-          )}
-          style={{ animationDelay: "400ms" }}
-        >
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {text.analytics?.bestPostTime || "Best Time to Post"}
-            </CardTitle>
-            <div className="p-2 bg-orange-500/10 rounded-lg transition-all duration-300 group-hover:scale-110">
-              <TrendingUp className="size-5 text-orange-500" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{analytics.bestTime}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {text.analytics?.bestPostTime || "peak engagement"}
-            </p>
-            <div className="mt-2">
-              <Progress
-                value={75}
-                className="h-1"
-                dir={locale === "ar" ? "rtl" : "ltr"}
-              />
-            </div>
-          </CardContent>
-        </Card>
+        <StatCard
+          title={text.analytics?.avgLikes || "Average Likes"}
+          value={analytics.avgLikes.toLocaleString()}
+          description={text.stats?.posts || "per post"}
+          icon={Heart}
+          progressValue={Math.min(analytics.avgLikes * 2, 100)}
+          animate={animateItems}
+          animationDelay="100ms"
+          locale={locale}
+        />
+        <StatCard
+          title={text.analytics?.avgComments || "Average Comments"}
+          value={analytics.avgComments.toLocaleString()}
+          description={text.stats?.posts || "per post"}
+          icon={MessageCircle}
+          progressValue={Math.min(analytics.avgComments * 5, 100)}
+          animate={animateItems}
+          animationDelay="200ms"
+          locale={locale}
+        />
+        <StatCard
+          title={text.analytics?.avgShares || "Average Shares"}
+          value={analytics.avgShares.toLocaleString()}
+          description={text.stats?.posts || "per post"}
+          icon={Share2}
+          progressValue={Math.min(analytics.avgShares * 10, 100)}
+          animate={animateItems}
+          animationDelay="300ms"
+          locale={locale}
+        />
+        <StatCard
+          title={text.analytics?.bestPostTime || "Best Time to Post"}
+          value={analytics.bestTime}
+          description={text.analytics?.bestPostTime || "peak engagement"}
+          icon={TrendingUp}
+          progressValue={75}
+          animate={animateItems}
+          animationDelay="400ms"
+          locale={locale}
+        />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
@@ -342,7 +244,6 @@ export function AnalyticsTab({
                       tickLine={false}
                       axisLine={false}
                     />
-                    <ChartTooltip content={<ChartTooltipContent />} />
                     <Legend
                       wrapperStyle={{ paddingTop: "20px" }}
                       iconType="line"
@@ -412,16 +313,13 @@ export function AnalyticsTab({
               <TrendingUp className="size-5 text-primary" />
               {text.analytics?.performanceOverview || "Performance Overview"}
             </CardTitle>
-            <CardDescription>
-              Detailed metrics for this platform
-            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors">
                 <div className="flex items-center gap-3">
-                  <div className="p-1.5 bg-chart-1/10 rounded-md">
-                    <Heart className="size-4 text-chart-1" />
+                  <div className="p-1.5 bg-accent  rounded-md">
+                    <Heart className="size-4 text-primary" />
                   </div>
                   <div>
                     <p className="font-medium text-sm">
@@ -451,7 +349,7 @@ export function AnalyticsTab({
               <div className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors">
                 <div className="flex items-center gap-3">
                   <div className="p-1.5 bg-chart-2/10 rounded-md">
-                    <MessageCircle className="size-4 text-chart-2" />
+                    <MessageCircle className="size-4 text-primary" />
                   </div>
                   <div>
                     <p className="font-medium text-sm">
@@ -480,8 +378,8 @@ export function AnalyticsTab({
 
               <div className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors">
                 <div className="flex items-center gap-3">
-                  <div className="p-1.5 bg-chart-3/10 rounded-md">
-                    <Share2 className="size-4 text-chart-3" />
+                  <div className="p-1.5 bg-accent rounded-md">
+                    <Share2 className="size-4 text-primary" />
                   </div>
                   <div>
                     <p className="font-medium text-sm">
@@ -554,7 +452,6 @@ export function AnalyticsTab({
               <Users className="size-5 text-primary" />
               {text.analytics?.audienceInsights || "Audience Insights"}
             </CardTitle>
-            <CardDescription>Demographic and behavioral data</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -578,7 +475,7 @@ export function AnalyticsTab({
                   <span className="font-semibold">58%</span>
                 </div>
                 <div className="h-2 bg-muted rounded-full overflow-hidden">
-                  <div className="h-full bg-chart-1" style={{ width: "58%" }} />
+                  <div className="h-full bg-primary" style={{ width: "58%" }} />
                 </div>
               </div>
               <div className="space-y-3">
@@ -589,7 +486,7 @@ export function AnalyticsTab({
                   <span className="font-semibold">42%</span>
                 </div>
                 <div className="h-2 bg-muted rounded-full overflow-hidden">
-                  <div className="h-full bg-chart-2" style={{ width: "42%" }} />
+                  <div className="h-full bg-primary" style={{ width: "42%" }} />
                 </div>
               </div>
             </div>

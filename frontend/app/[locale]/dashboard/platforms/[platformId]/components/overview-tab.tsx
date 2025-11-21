@@ -8,7 +8,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import {
   Users,
   FileText,
@@ -20,6 +19,7 @@ import {
   ExternalLink,
   Activity,
 } from "lucide-react";
+import { StatCard } from "@/components/ui/stat-card";
 import Link from "next/link";
 import Image from "next/image";
 import type { TConnectedAccount } from "@/types";
@@ -69,198 +69,50 @@ export function OverviewTab({
 
   return (
     <div className="space-y-6">
-      {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card
-          className={cn(
-            "border-l-4 border-l-primary hover:border-l-accent transition-all duration-300 hover:shadow-md hover:scale-[1.02]",
-            animateItems
-              ? "opacity-100 translate-y-0"
-              : "opacity-0 translate-y-4",
-          )}
-          style={{ animationDelay: "100ms" }}
-        >
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {text.stats.followers}
-            </CardTitle>
-            <div className="p-2 bg-primary/10 rounded-lg transition-all duration-300 group-hover:scale-110">
-              <Users className="size-5 text-primary" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {(account.followersCount || 0).toLocaleString()}
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              0% {text.stats?.fromLastMonth || ""}
-            </p>
-            <div className="mt-2">
-              <Progress
-                value={0}
-                className="h-1"
-                dir={locale === "ar" ? "rtl" : "ltr"}
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card
-          className={cn(
-            "border-l-4 border-l-blue-500 hover:border-l-accent transition-all duration-300 hover:shadow-md hover:scale-[1.02]",
-            animateItems
-              ? "opacity-100 translate-y-0"
-              : "opacity-0 translate-y-4",
-          )}
-          style={{ animationDelay: "200ms" }}
-        >
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {text.stats.posts}
-            </CardTitle>
-            <div className="p-2 bg-blue-500/10 rounded-lg transition-all duration-300 group-hover:scale-110">
-              <FileText className="size-5 text-blue-500" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{posts.length}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {text.stats?.thisMonth || "this month"}
-            </p>
-            <div className="mt-2">
-              <Progress
-                value={posts.length > 0 ? Math.min(posts.length * 10, 100) : 0}
-                className="h-1"
-                dir={locale === "ar" ? "rtl" : "ltr"}
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card
-          className={cn(
-            "border-l-4 border-l-green-500 hover:border-l-accent transition-all duration-300 hover:shadow-md hover:scale-[1.02]",
-            animateItems
-              ? "opacity-100 translate-y-0"
-              : "opacity-0 translate-y-4",
-          )}
-          style={{ animationDelay: "300ms" }}
-        >
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {text.stats.engagement}
-            </CardTitle>
-            <div className="p-2 bg-green-500/10 rounded-lg transition-all duration-300 group-hover:scale-110">
-              <TrendingUp className="size-5 text-green-500" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{avgEngagement}%</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              +0% {text.stats?.fromLastWeek || ""}
-            </p>
-            <div className="mt-2">
-              <Progress
-                value={avgEngagement}
-                className="h-1"
-                dir={locale === "ar" ? "rtl" : "ltr"}
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card
-          className={cn(
-            "border-l-4 border-l-orange-500 hover:border-l-accent transition-all duration-300 hover:shadow-md hover:scale-[1.02]",
-            animateItems
-              ? "opacity-100 translate-y-0"
-              : "opacity-0 translate-y-4",
-          )}
-          style={{ animationDelay: "400ms" }}
-        >
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {text.stats.reach}
-            </CardTitle>
-            <div className="p-2 bg-orange-500/10 rounded-lg transition-all duration-300 group-hover:scale-110">
-              <Eye className="size-5 text-orange-500" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">0</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              +0% {text.stats?.fromLastWeek || ""}
-            </p>
-            <div className="mt-2">
-              <Progress
-                value={0}
-                className="h-1"
-                dir={locale === "ar" ? "rtl" : "ltr"}
-              />
-            </div>
-          </CardContent>
-        </Card>
+        <StatCard
+          title={text.stats.followers}
+          value={(account.followersCount || 0).toLocaleString()}
+          description={`0% ${text.stats?.fromLastMonth || ""}`}
+          icon={Users}
+          progressValue={0}
+          animate={animateItems}
+          animationDelay="100ms"
+          locale={locale}
+        />
+        <StatCard
+          title={text.stats.posts}
+          value={posts.length.toString()}
+          description={text.stats?.thisMonth || "this month"}
+          icon={FileText}
+          progressValue={
+            posts.length > 0 ? Math.min(posts.length * 10, 100) : 0
+          }
+          animate={animateItems}
+          animationDelay="200ms"
+          locale={locale}
+        />
+        <StatCard
+          title={text.stats.engagement}
+          value={`${avgEngagement}%`}
+          description={`+0% ${text.stats?.fromLastWeek || ""}`}
+          icon={TrendingUp}
+          progressValue={avgEngagement}
+          animate={animateItems}
+          animationDelay="300ms"
+          locale={locale}
+        />
+        <StatCard
+          title={text.stats.reach}
+          value="0"
+          description={`+0% ${text.stats?.fromLastWeek || ""}`}
+          icon={Eye}
+          progressValue={0}
+          animate={animateItems}
+          animationDelay="400ms"
+          locale={locale}
+        />
       </div>
-
-      {/* Performance Summary */}
-      <Card
-        className={cn(
-          "transition-all duration-300 hover:shadow-md",
-          animateItems
-            ? "opacity-100 translate-y-0"
-            : "opacity-0 translate-y-4",
-        )}
-        style={{ animationDelay: "500ms" }}
-      >
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Activity className="size-5 text-primary" />
-            {text.performance?.title || "Performance Summary"}
-          </CardTitle>
-          <CardDescription>
-            {text.performance?.description || "Key metrics for your account"}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 md:grid-cols-3">
-            <div className="flex items-center gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20">
-              <div className="p-2 bg-primary/10 rounded-lg">
-                <Heart className="size-5 text-primary" />
-              </div>
-              <div>
-                <p className="text-sm font-medium">
-                  {totalLikes.toLocaleString()}
-                </p>
-                <p className="text-xs text-muted-foreground">Total Likes</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-500/5 border border-blue-500/20">
-              <div className="p-2 bg-blue-500/10 rounded-lg">
-                <MessageCircle className="size-5 text-blue-500" />
-              </div>
-              <div>
-                <p className="text-sm font-medium">
-                  {totalComments.toLocaleString()}
-                </p>
-                <p className="text-xs text-muted-foreground">Total Comments</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 p-3 rounded-lg bg-green-500/5 border border-green-500/20">
-              <div className="p-2 bg-green-500/10 rounded-lg">
-                <TrendingUp className="size-5 text-green-500" />
-              </div>
-              <div>
-                <p className="text-sm font-medium">
-                  {totalShares.toLocaleString()}
-                </p>
-                <p className="text-xs text-muted-foreground">Total Shares</p>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Recent Posts */}
       <Card
@@ -325,7 +177,7 @@ export function OverviewTab({
                   {post.mediaUrl && (
                     <div className="relative size-20 rounded-lg overflow-hidden shrink-0">
                       <Image
-                        src={post.mediaUrl || "/placeholder.svg"}
+                        src={post.mediaUrl}
                         alt={post.caption || "Post image"}
                         fill
                         className="object-cover transition-all duration-300 group-hover:scale-105"

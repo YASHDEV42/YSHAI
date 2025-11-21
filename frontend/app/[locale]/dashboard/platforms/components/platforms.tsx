@@ -1,10 +1,11 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
+import { StatCard } from "@/components/ui/stat-card";
 import {
   ArrowRight,
   Users,
@@ -16,8 +17,6 @@ import {
   CheckCircle,
   AlertCircle,
   Loader2,
-  Zap,
-  Activity,
 } from "lucide-react";
 import Link from "next/link";
 import type { TConnectedAccount } from "@/types";
@@ -184,126 +183,46 @@ export function Platforms({ text, locale, accounts }: PlatformsProps) {
             ref={statsRef}
             className="grid gap-4 md:grid-cols-2 lg:grid-cols-4"
           >
-            <Card
-              className={cn(
-                "border-l-4 border-l-primary hover:border-l-accent transition-all duration-300 hover:shadow-md hover:scale-[1.02]",
-                animateItems
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-4",
-              )}
-              style={{ animationDelay: "100ms" }}
-            >
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  {text.stats.totalAccounts}
-                </CardTitle>
-                <div className="p-2 bg-primary/10 rounded-lg transition-all duration-300 group-hover:scale-110">
-                  <Users className="size-5 text-primary" />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold">{accounts.length}</div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {connectedCount} {text.connected.toLowerCase()}
-                </p>
-                <div className="mt-2">
-                  <Progress
-                    value={connectionPercentage}
-                    className="h-1"
-                    dir={locale === "ar" ? "rtl" : "ltr"}
-                  />
-                </div>
-              </CardContent>
-            </Card>
+            <StatCard
+              title={text.stats.totalAccounts}
+              value={accounts.length.toString()}
+              description={`${connectedCount} ${text.connected.toLowerCase()}`}
+              icon={Users}
+              progressValue={connectionPercentage}
+              animate={animateItems}
+              animationDelay="100ms"
+              locale={locale}
+            />
 
-            <Card
-              className={cn(
-                "border-l-4 border-l-blue-500 hover:border-l-accent transition-all duration-300 hover:shadow-md hover:scale-[1.02]",
-                animateItems
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-4",
-              )}
-              style={{ animationDelay: "200ms" }}
-            >
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  {text.stats.totalFollowers}
-                </CardTitle>
-                <div className="p-2 bg-blue-500/10 rounded-lg transition-all duration-300 group-hover:scale-110">
-                  <Users className="size-5 text-blue-500" />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold">
-                  {totalFollowers.toLocaleString()}
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {text.followers}
-                </p>
-                <div className="mt-2 flex items-center text-xs text-green-600">
-                  <TrendingUp className="size-3 mr-1" />
-                  <span>+12% from last month</span>
-                </div>
-              </CardContent>
-            </Card>
+            <StatCard
+              title={text.stats.totalFollowers}
+              value={totalFollowers.toLocaleString()}
+              description={text.followers}
+              icon={Users}
+              animate={animateItems}
+              animationDelay="200ms"
+              locale={locale}
+            />
 
-            <Card
-              className={cn(
-                "border-l-4 border-l-green-500 hover:border-l-accent transition-all duration-300 hover:shadow-md hover:scale-[1.02]",
-                animateItems
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-4",
-              )}
-              style={{ animationDelay: "300ms" }}
-            >
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  {text.stats.totalPosts}
-                </CardTitle>
-                <div className="p-2 bg-green-500/10 rounded-lg transition-all duration-300 group-hover:scale-110">
-                  <FileText className="size-5 text-green-500" />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold">0</div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {text.posts}
-                </p>
-                <div className="mt-2 flex items-center text-xs text-muted-foreground">
-                  <Activity className="size-3 mr-1" />
-                  <span>No recent activity</span>
-                </div>
-              </CardContent>
-            </Card>
+            <StatCard
+              title={text.stats.totalPosts}
+              value="0"
+              description={text.posts}
+              icon={FileText}
+              animate={animateItems}
+              animationDelay="300ms"
+              locale={locale}
+            />
 
-            <Card
-              className={cn(
-                "border-l-4 border-l-orange-500 hover:border-l-accent transition-all duration-300 hover:shadow-md hover:scale-[1.02]",
-                animateItems
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-4",
-              )}
-              style={{ animationDelay: "400ms" }}
-            >
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  {text.stats.avgEngagement}
-                </CardTitle>
-                <div className="p-2 bg-orange-500/10 rounded-lg transition-all duration-300 group-hover:scale-110">
-                  <TrendingUp className="size-5 text-orange-500" />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold">0%</div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {text.engagement}
-                </p>
-                <div className="mt-2 flex items-center text-xs text-muted-foreground">
-                  <Zap className="size-3 mr-1" />
-                  <span>Not enough data</span>
-                </div>
-              </CardContent>
-            </Card>
+            <StatCard
+              title={text.stats.avgEngagement}
+              value="0%"
+              description={text.engagement}
+              icon={TrendingUp}
+              animate={animateItems}
+              animationDelay="400ms"
+              locale={locale}
+            />
           </div>
 
           {accounts.length > 0 && (
@@ -390,7 +309,7 @@ export function Platforms({ text, locale, accounts }: PlatformsProps) {
                   <Card
                     key={account.id}
                     className={cn(
-                      "group hover:shadow-xl hover:scale-[1.02] transition-all duration-300 overflow-hidden border-2 hover:border-primary",
+                      "group hover:shadow-xl hover:scale-[1.02] transition-all duration-150 overflow-hidden border-2 hover:border-primary",
                       animateItems
                         ? "opacity-100 translate-y-0"
                         : "opacity-0 translate-y-4",
@@ -400,14 +319,13 @@ export function Platforms({ text, locale, accounts }: PlatformsProps) {
                     <CardContent className="p-6">
                       <div className="flex items-start justify-between mb-4">
                         <div
-                          className={`p-3 rounded-xl ${platformColor} bg-opacity-10 transition-all duration-300 group-hover:scale-110`}
+                          className={`p-3 rounded-xl ${platformColor} bg-opacity-10 `}
                         >
                           <PlatformIcon className="size-8" />
                         </div>
                         <Badge
                           variant={account.active ? "default" : "secondary"}
                           className={cn(
-                            "transition-all duration-300 group-hover:scale-110",
                             account.active
                               ? "bg-green-500/15 text-green-700 dark:text-green-400 border-green-500/30"
                               : "bg-red-500/15 text-red-700 dark:text-red-400 border-red-500/30",
@@ -429,7 +347,7 @@ export function Platforms({ text, locale, accounts }: PlatformsProps) {
 
                       <div className="space-y-3 mb-5">
                         <div>
-                          <h3 className="font-semibold text-xl truncate mb-1 transition-colors group-hover:text-primary">
+                          <h3 className="font-semibold text-xl truncate mb-1 ">
                             {account.username}
                           </h3>
                           <p className="text-sm text-muted-foreground capitalize">
@@ -439,7 +357,7 @@ export function Platforms({ text, locale, accounts }: PlatformsProps) {
 
                         <div className="flex items-center gap-6 pt-2 border-t">
                           <div className="flex items-center gap-2 text-sm">
-                            <div className="p-1.5 bg-muted rounded-md transition-all duration-300 group-hover:scale-110">
+                            <div className="p-1.5 bg-muted rounded-md">
                               <Users className="size-4 text-muted-foreground" />
                             </div>
                             <div>
@@ -452,7 +370,7 @@ export function Platforms({ text, locale, accounts }: PlatformsProps) {
                             </div>
                           </div>
                           <div className="flex items-center gap-2 text-sm">
-                            <div className="p-1.5 bg-muted rounded-md transition-all duration-300 group-hover:scale-110">
+                            <div className="p-1.5 bg-muted rounded-md">
                               <FileText className="size-4 text-muted-foreground" />
                             </div>
                             <div>

@@ -37,6 +37,7 @@ import {
   Activity,
   Clock,
 } from "lucide-react";
+import { StatCard } from "@/components/ui/stat-card";
 import type { ICampaign } from "@/lib/campaign-helper";
 import { toast } from "sonner";
 import {
@@ -352,135 +353,48 @@ export default function CampaignsManagement({
 
         {/* Stats Cards */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
-          <Card
-            className={cn(
-              "border-l-4 border-l-primary transition-all duration-300 hover:shadow-md hover:scale-[1.02]",
-              animateItems
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-4",
-            )}
-            style={{ animationDelay: "100ms" }}
-          >
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">
-                    {text.totalCampaigns || "Total"}
-                  </p>
-                  <p className="text-2xl font-bold">{stats.total}</p>
-                </div>
-                <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-                  <FolderOpen className="size-6 text-primary" />
-                </div>
-              </div>
-              <div className="mt-2">
-                <Progress
-                  value={100}
-                  className="h-1"
-                  dir={locale === "ar" ? "rtl" : "ltr"}
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card
-            className={cn(
-              "border-l-4 border-l-green-500 transition-all duration-300 hover:shadow-md hover:scale-[1.02]",
-              animateItems
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-4",
-            )}
-            style={{ animationDelay: "200ms" }}
-          >
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">
-                    {text.activeCampaigns || "Active"}
-                  </p>
-                  <p className="text-2xl font-bold">{stats.active}</p>
-                </div>
-                <div className="flex size-12 items-center justify-center rounded-lg bg-green-500/10">
-                  <CheckCircle2 className="size-6 text-green-500" />
-                </div>
-              </div>
-              <div className="mt-2">
-                <Progress
-                  value={
-                    stats.total > 0 ? (stats.active / stats.total) * 100 : 0
-                  }
-                  className="h-1"
-                  dir={locale === "ar" ? "rtl" : "ltr"}
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card
-            className={cn(
-              "border-l-4 border-l-blue-500 transition-all duration-300 hover:shadow-md hover:scale-[1.02]",
-              animateItems
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-4",
-            )}
-            style={{ animationDelay: "300ms" }}
-          >
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">
-                    {text.draftCampaigns || "Draft"}
-                  </p>
-                  <p className="text-2xl font-bold">{stats.draft}</p>
-                </div>
-                <div className="flex size-12 items-center justify-center rounded-lg bg-blue-500/10">
-                  <Clock className="size-6 text-blue-500" />
-                </div>
-              </div>
-              <div className="mt-2">
-                <Progress
-                  value={
-                    stats.total > 0 ? (stats.draft / stats.total) * 100 : 0
-                  }
-                  className="h-1"
-                  dir={locale === "ar" ? "rtl" : "ltr"}
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card
-            className={cn(
-              "border-l-4 border-l-amber-500 transition-all duration-300 hover:shadow-md hover:scale-[1.02]",
-              animateItems
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-4",
-            )}
-            style={{ animationDelay: "400ms" }}
-          >
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">
-                    {text.thisMonth || "This Month"}
-                  </p>
-                  <p className="text-2xl font-bold">{stats.thisMonth}</p>
-                </div>
-                <div className="flex size-12 items-center justify-center rounded-lg bg-amber-500/10">
-                  <Calendar className="size-6 text-amber-500" />
-                </div>
-              </div>
-              <div className="mt-2">
-                <Progress
-                  value={
-                    stats.total > 0 ? (stats.thisMonth / stats.total) * 100 : 0
-                  }
-                  className="h-1"
-                  dir={locale === "ar" ? "rtl" : "ltr"}
-                />
-              </div>
-            </CardContent>
-          </Card>
+          <StatCard
+            title={text.totalCampaigns || "Total"}
+            value={stats.total.toString()}
+            icon={FolderOpen}
+            progressValue={100}
+            animate={animateItems}
+            animationDelay="100ms"
+            locale={locale}
+          />
+          <StatCard
+            title={text.activeCampaigns || "Active"}
+            value={stats.active.toString()}
+            icon={CheckCircle2}
+            progressValue={
+              stats.total > 0 ? (stats.active / stats.total) * 100 : 0
+            }
+            animate={animateItems}
+            animationDelay="200ms"
+            locale={locale}
+          />
+          <StatCard
+            title={text.draftCampaigns || "Draft"}
+            value={stats.draft.toString()}
+            icon={Clock}
+            progressValue={
+              stats.total > 0 ? (stats.draft / stats.total) * 100 : 0
+            }
+            animate={animateItems}
+            animationDelay="300ms"
+            locale={locale}
+          />
+          <StatCard
+            title={text.thisMonth || "This Month"}
+            value={stats.thisMonth.toString()}
+            icon={Calendar}
+            progressValue={
+              stats.total > 0 ? (stats.thisMonth / stats.total) * 100 : 0
+            }
+            animate={animateItems}
+            animationDelay="400ms"
+            locale={locale}
+          />
         </div>
 
         {/* Filters */}

@@ -61,26 +61,18 @@ export function AIAgentTab({
     {
       icon: TrendingUp,
       label: text.aiAdvisor?.quickAction1 || "Best time to post?",
-      color: "text-chart-1",
-      bgColor: "bg-chart-1/10",
     },
     {
       icon: Users,
       label: text.aiAdvisor?.quickAction2 || "Analyze performance",
-      color: "text-chart-2",
-      bgColor: "bg-chart-2/10",
     },
     {
       icon: Lightbulb,
       label: text.aiAdvisor?.quickAction3 || "Content ideas",
-      color: "text-chart-3",
-      bgColor: "bg-chart-3/10",
     },
     {
       icon: Target,
-      label: "Audience insights",
-      color: "text-chart-4",
-      bgColor: "bg-chart-4/10",
+      label: text.aiAdvisor?.quickAction4 || "Audience insights",
     },
   ];
 
@@ -93,7 +85,7 @@ export function AIAgentTab({
     setIsLoading(true);
     setThinkingProgress(0);
 
-    toast.loading("AI is thinking...", {
+    toast.loading(text.aiAdvisor?.thinking || "AI is thinking...", {
       id: "ai-thinking",
     });
 
@@ -122,11 +114,14 @@ export function AIAgentTab({
       setMessages((prev) => [...prev, aiResponse]);
       setIsLoading(false);
 
-      toast.success("AI response generated", {
-        id: "ai-thinking",
-        icon: <CheckCircle className="h-4 w-4" />,
-        duration: 2000,
-      });
+      toast.success(
+        text.aiAdvisor?.responseGenerated || "AI response generated",
+        {
+          id: "ai-thinking",
+          icon: <CheckCircle className="h-4 w-4" />,
+          duration: 2000,
+        },
+      );
 
       // Reset progress after a delay
       setTimeout(() => {
@@ -137,10 +132,14 @@ export function AIAgentTab({
 
   const handleQuickAction = (action: any) => {
     setInput(action.label);
-    toast.info(`Preparing ${action.label} query...`, {
-      icon: <Zap className="h-4 w-4" />,
-      duration: 1500,
-    });
+    toast.info(
+      text.aiAdvisor?.preparingQuery?.replace("{action}", action.label) ||
+        `Preparing ${action.label} query...`,
+      {
+        icon: <Zap className="h-4 w-4" />,
+        duration: 1500,
+      },
+    );
   };
 
   return (
@@ -166,7 +165,7 @@ export function AIAgentTab({
                   text.aiInsights?.title ||
                   "AI Content Advisor"}
                 <span className="text-xs font-normal px-2 py-1 rounded-full bg-primary/20 text-primary">
-                  Beta
+                  {text.aiAdvisor?.beta || "Beta"}
                 </span>
               </CardTitle>
               <CardDescription className="mt-1">
@@ -196,7 +195,7 @@ export function AIAgentTab({
             <Card
               key={index}
               className={cn(
-                "cursor-pointer hover:shadow-md transition-all duration-300 hover:scale-105 border-border/50",
+                "cursor-pointer hover:shadow-md transition-all duration-150 hover:scale-105 border-border/50",
                 animateItems
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 translate-y-4",
@@ -207,9 +206,9 @@ export function AIAgentTab({
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
                   <div
-                    className={`flex size-10 items-center justify-center rounded-lg ${action.bgColor} transition-all duration-300 hover:scale-110`}
+                    className={`flex size-10 items-center justify-center rounded-lg bg-accent transition-all duration-150 hover:scale-110`}
                   >
-                    <Icon className={`size-5 ${action.color}`} />
+                    <Icon className={`size-5 text-primary`} />
                   </div>
                   <p className="text-sm font-medium leading-tight">
                     {action.label}
@@ -224,7 +223,7 @@ export function AIAgentTab({
       {/* Chat Interface */}
       <Card
         className={cn(
-          "transition-all duration-300 hover:shadow-md",
+          "transition-all duration-150 hover:shadow-md",
           animateItems
             ? "opacity-100 translate-y-0"
             : "opacity-0 translate-y-4",
@@ -232,9 +231,12 @@ export function AIAgentTab({
         style={{ animationDelay: "500ms" }}
       >
         <CardHeader>
-          <CardTitle className="text-lg">Conversation</CardTitle>
+          <CardTitle className="text-lg">
+            {text.aiAdvisor?.conversation || "Conversation"}
+          </CardTitle>
           <CardDescription>
-            Ask me anything about your content strategy
+            {text.aiAdvisor?.conversationDescription ||
+              "Ask me anything about your content strategy"}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -260,7 +262,7 @@ export function AIAgentTab({
                   )}
                   <div
                     className={cn(
-                      "max-w-[80%] rounded-xl p-3 shadow-sm transition-all duration-300",
+                      "max-w-[80%] rounded-xl p-3 shadow-sm transition-all duration-150",
                       message.role === "user"
                         ? "bg-primary text-primary-foreground"
                         : "bg-background border border-border",
@@ -288,7 +290,9 @@ export function AIAgentTab({
                     {thinkingProgress !== null ? (
                       <div className="space-y-2">
                         <div className="flex items-center justify-between text-xs">
-                          <span>AI is thinking...</span>
+                          <span>
+                            {text.aiAdvisor?.thinking || "AI is thinking..."}
+                          </span>
                           <span>{thinkingProgress}%</span>
                         </div>
                         <Progress
@@ -319,13 +323,13 @@ export function AIAgentTab({
                     handleSendMessage();
                   }
                 }}
-                className="resize-none min-h-[60px] shadow-sm transition-all duration-300 focus:ring-2 focus:ring-primary/20"
+                className="resize-none min-h-8 shadow-sm transition-all duration-150 focus:ring-2 focus:ring-primary/20"
                 rows={2}
               />
               <Button
                 disabled={!input.trim() || isLoading}
                 size="icon"
-                className="shrink-0 size-12 shadow-sm transition-all duration-300 hover:scale-110"
+                className="shrink-0 size-12 shadow-sm transition-all duration-150 hover:scale-110"
                 onClick={handleSendMessage}
               >
                 {isLoading ? (
@@ -338,7 +342,9 @@ export function AIAgentTab({
 
             {/* Suggested Actions */}
             <div className="flex flex-wrap gap-2 pt-2">
-              <span className="text-xs text-muted-foreground">Try asking:</span>
+              <span className="text-xs text-muted-foreground">
+                {text.aiAdvisor?.tryAsking || "Try asking:"}
+              </span>
               {[
                 text.aiAdvisor?.quickAction1 || "Best time to post?",
                 text.aiAdvisor?.quickAction2 || "Analyze performance",
@@ -348,7 +354,7 @@ export function AIAgentTab({
                   key={index}
                   variant="outline"
                   size="sm"
-                  className="text-xs h-7 transition-all duration-300 hover:scale-105 bg-transparent"
+                  className="text-xs h-7 transition-all duration-150 hover:scale-105 bg-transparent"
                   onClick={() => setInput(suggestion)}
                 >
                   {suggestion}
@@ -369,48 +375,58 @@ export function AIAgentTab({
         )}
         style={{ animationDelay: "600ms" }}
       >
-        <Card className="border-border/50 transition-all duration-300 hover:shadow-md hover:scale-[1.02]">
+        <Card className="border-border/50 transition-all duration-150 hover:shadow-md hover:scale-[1.02]">
           <CardContent className="p-4">
             <div className="flex items-start gap-3">
-              <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 shrink-0 transition-all duration-300 hover:scale-110">
+              <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 shrink-0 transition-all duration-150 hover:scale-110">
                 <TrendingUp className="size-5 text-primary" />
               </div>
               <div className="space-y-1">
-                <p className="text-sm font-medium">Performance Insights</p>
+                <p className="text-sm font-medium">
+                  {text.aiAdvisor?.performanceInsights ||
+                    "Performance Insights"}
+                </p>
                 <p className="text-xs text-muted-foreground">
-                  Get detailed analysis of your content performance
+                  {text.aiAdvisor?.performanceInsightsDesc ||
+                    "Get detailed analysis of your content performance"}
                 </p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border-border/50 transition-all duration-300 hover:shadow-md hover:scale-[1.02]">
+        <Card className="border-border/50 transition-all duration-150 hover:shadow-md hover:scale-[1.02]">
           <CardContent className="p-4">
             <div className="flex items-start gap-3">
-              <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 shrink-0 transition-all duration-300 hover:scale-110">
+              <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 shrink-0 transition-all duration-150 hover:scale-110">
                 <Lightbulb className="size-5 text-primary" />
               </div>
               <div className="space-y-1">
-                <p className="text-sm font-medium">Content Suggestions</p>
+                <p className="text-sm font-medium">
+                  {text.aiAdvisor?.contentSuggestions || "Content Suggestions"}
+                </p>
                 <p className="text-xs text-muted-foreground">
-                  Receive AI-powered content ideas tailored to your audience
+                  {text.aiAdvisor?.contentSuggestionsDesc ||
+                    "Receive AI-powered content ideas tailored to your audience"}
                 </p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border-border/50 transition-all duration-300 hover:shadow-md hover:scale-[1.02]">
+        <Card className="border-border/50 transition-all duration-150 hover:shadow-md hover:scale-[1.02]">
           <CardContent className="p-4">
             <div className="flex items-start gap-3">
-              <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 shrink-0 transition-all duration-300 hover:scale-110">
+              <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 shrink-0 transition-all duration-150 hover:scale-110">
                 <Users className="size-5 text-primary" />
               </div>
               <div className="space-y-1">
-                <p className="text-sm font-medium">Audience Analysis</p>
+                <p className="text-sm font-medium">
+                  {text.aiAdvisor?.audienceAnalysis || "Audience Analysis"}
+                </p>
                 <p className="text-xs text-muted-foreground">
-                  Understand your audience demographics and behavior
+                  {text.aiAdvisor?.audienceAnalysisDesc ||
+                    "Understand your audience demographics and behavior"}
                 </p>
               </div>
             </div>

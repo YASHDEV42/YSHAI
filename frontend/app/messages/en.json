@@ -875,7 +875,21 @@
       "inputPlaceholder": "Ask me anything...",
       "quickAction1": "Best time to post?",
       "quickAction2": "Analyze performance",
-      "quickAction3": "Content ideas"
+      "quickAction3": "Content ideas",
+      "quickAction4": "Audience insights",
+      "conversation": "Conversation",
+      "conversationDescription": "Ask me anything about your content strategy",
+      "thinking": "AI is thinking...",
+      "responseGenerated": "AI response generated",
+      "preparingQuery": "Preparing query...",
+      "tryAsking": "Try asking:",
+      "performanceInsights": "Performance Insights",
+      "performanceInsightsDesc": "Get detailed analysis of your content performance",
+      "contentSuggestions": "Content Suggestions",
+      "contentSuggestionsDesc": "Receive AI-powered content ideas tailored to your audience",
+      "audienceAnalysis": "Audience Analysis",
+      "audienceAnalysisDesc": "Understand your audience demographics and behavior",
+      "beta": "Beta"
     },
     "aiInsights": {
       "title": "AI Insights",

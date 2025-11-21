@@ -18,11 +18,11 @@ import type { TConnectedAccount } from "@/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { OverviewTab } from "./overview-tab";
 import { ContentTab } from "./content-tab";
-import { AnalyticsTab } from "./analytics-tab";
 import { AIAgentTab } from "./ai-agent-tab";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { AnalyticsTab } from "./analytics-tab";
 
 interface PlatformDetailProps {
   text: any;
