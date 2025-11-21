@@ -21,7 +21,11 @@ export const CtaSection = ({
   text: CtaText;
 }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   return (
     <section className="container mx-auto px-4 py-20 overflow-hidden">
       <motion.div
@@ -48,32 +52,33 @@ export const CtaSection = ({
 
           {/* Subtle animated particles/dots */}
           <div className="absolute inset-0">
-            {[...Array(3)].map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute w-2 h-2 bg-primary/20 rounded-full"
-                initial={{
-                  x: Math.random() * 100,
-                  y: Math.random() * 100,
-                  scale: 0,
-                }}
-                animate={{
-                  x: [Math.random() * 100, Math.random() * 100],
-                  y: [Math.random() * 100, Math.random() * 100],
-                  scale: [0, 1, 0],
-                }}
-                transition={{
-                  duration: 3 + i,
-                  repeat: Infinity,
-                  delay: i * 0.5,
-                  ease: "easeInOut",
-                }}
-                style={{
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`,
-                }}
-              />
-            ))}
+            {mounted &&
+              [...Array(3)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute w-2 h-2 bg-primary/20 rounded-full"
+                  initial={{
+                    x: Math.random() * 100,
+                    y: Math.random() * 100,
+                    scale: 0,
+                  }}
+                  animate={{
+                    x: [Math.random() * 100, Math.random() * 100],
+                    y: [Math.random() * 100, Math.random() * 100],
+                    scale: [0, 1, 0],
+                  }}
+                  transition={{
+                    duration: 3 + i,
+                    repeat: Infinity,
+                    delay: i * 0.5,
+                    ease: "easeInOut",
+                  }}
+                  style={{
+                    left: `${Math.random() * 100}%`,
+                    top: `${Math.random() * 100}%`,
+                  }}
+                />
+              ))}
           </div>
 
           <div className="relative z-10">
