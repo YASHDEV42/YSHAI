@@ -162,7 +162,11 @@ export function PlatformDetail({
               {connectionProgress}%
             </span>
           </div>
-          <Progress value={connectionProgress} className="h-2" />
+          <Progress
+            value={connectionProgress}
+            className="h-2"
+            dir={locale === "ar" ? "rtl" : "ltr"}
+          />
         </div>
       )}
 
@@ -416,6 +420,7 @@ export function PlatformDetail({
             >
               <AIAgentTab
                 text={text}
+                locale={locale}
                 account={account}
                 animateItems={animateItems}
               />

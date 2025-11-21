@@ -31,7 +31,6 @@ import {
   Music2,
   Activity,
   Zap,
-  Loader2,
   CheckCircle,
 } from "lucide-react";
 import {
@@ -75,7 +74,8 @@ export default function AnalyticsClient({
   platformData,
   topPosts,
 }: AnalyticsClientProps) {
-  const [timeRange, setTimeRange] = useState("7d");
+  const locale = text.locale || "en";
+  const [timeRange, setTimeRange] = useState("week");
   const [selectedPlatform, setSelectedPlatform] = useState("all");
   const [animateItems, setAnimateItems] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -276,7 +276,11 @@ export default function AnalyticsClient({
               {loadingProgress}%
             </span>
           </div>
-          <Progress value={loadingProgress} className="h-2" />
+          <Progress
+            value={loadingProgress}
+            className="h-2"
+            dir={locale === "ar" ? "rtl" : "ltr"}
+          />
         </div>
       )}
 
@@ -305,10 +309,18 @@ export default function AnalyticsClient({
                   <SelectValue placeholder={text.timeRangeLabel} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="7d">{text.timeRanges["7d"]}</SelectItem>
-                  <SelectItem value="30d">{text.timeRanges["30d"]}</SelectItem>
-                  <SelectItem value="90d">{text.timeRanges["90d"]}</SelectItem>
-                  <SelectItem value="1y">{text.timeRanges["1y"]}</SelectItem>
+                  <SelectItem value="week">
+                    {text.timeRanges["week"]}
+                  </SelectItem>
+                  <SelectItem value="month">
+                    {text.timeRanges["month"]}
+                  </SelectItem>
+                  <SelectItem value="quarter">
+                    {text.timeRanges["quarter"]}
+                  </SelectItem>
+                  <SelectItem value="year">
+                    {text.timeRanges["year"]}
+                  </SelectItem>
                 </SelectContent>
               </Select>
               <Button
@@ -365,10 +377,13 @@ export default function AnalyticsClient({
                     <Progress
                       value={
                         Math.abs(
-                          parseFloat(stat.change.replace(/[^0-9.-]/g, "")),
+                          Number.parseFloat(
+                            stat.change.replace(/[^0-9.-]/g, ""),
+                          ),
                         ) * 10
                       }
                       className="h-2"
+                      dir={locale === "ar" ? "rtl" : "ltr"}
                     />
                   </div>
                 </CardContent>
@@ -652,7 +667,7 @@ export default function AnalyticsClient({
                   variant="outline"
                   size="sm"
                   onClick={handleExportData}
-                  className="transition-all duration-300 hover:scale-105"
+                  className="transition-all duration-300 hover:scale-105 bg-transparent"
                 >
                   <Activity className="mr-2 size-3" />
                   {text.export || "Export"}

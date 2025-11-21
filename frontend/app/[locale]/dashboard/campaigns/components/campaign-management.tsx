@@ -1,5 +1,7 @@
 "use client";
 
+import type React from "react";
+
 import { useState, useTransition, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,7 +23,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -34,11 +35,9 @@ import {
   CheckCircle2,
   AlertCircle,
   Activity,
-  Zap,
-  TrendingUp,
   Clock,
 } from "lucide-react";
-import { ICampaign } from "@/lib/campaign-helper";
+import type { ICampaign } from "@/lib/campaign-helper";
 import { toast } from "sonner";
 import {
   createCampaignAction,
@@ -319,7 +318,11 @@ export default function CampaignsManagement({
               {deleteProgress}%
             </span>
           </div>
-          <Progress value={deleteProgress} className="h-2" />
+          <Progress
+            value={deleteProgress}
+            className="h-2"
+            dir={locale === "ar" ? "rtl" : "ltr"}
+          />
         </div>
       )}
 
@@ -371,7 +374,11 @@ export default function CampaignsManagement({
                 </div>
               </div>
               <div className="mt-2">
-                <Progress value={100} className="h-1" />
+                <Progress
+                  value={100}
+                  className="h-1"
+                  dir={locale === "ar" ? "rtl" : "ltr"}
+                />
               </div>
             </CardContent>
           </Card>
@@ -403,6 +410,7 @@ export default function CampaignsManagement({
                     stats.total > 0 ? (stats.active / stats.total) * 100 : 0
                   }
                   className="h-1"
+                  dir={locale === "ar" ? "rtl" : "ltr"}
                 />
               </div>
             </CardContent>
@@ -435,6 +443,7 @@ export default function CampaignsManagement({
                     stats.total > 0 ? (stats.draft / stats.total) * 100 : 0
                   }
                   className="h-1"
+                  dir={locale === "ar" ? "rtl" : "ltr"}
                 />
               </div>
             </CardContent>
@@ -467,6 +476,7 @@ export default function CampaignsManagement({
                     stats.total > 0 ? (stats.thisMonth / stats.total) * 100 : 0
                   }
                   className="h-1"
+                  dir={locale === "ar" ? "rtl" : "ltr"}
                 />
               </div>
             </CardContent>

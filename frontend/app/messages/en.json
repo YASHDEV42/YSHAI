@@ -707,6 +707,12 @@
       "title": "Platform Details",
       "description": "Detailed metrics by platform"
     },
+    "platformBreakdown": {
+      "title": "Platform Breakdown",
+      "description": "Content distribution across platforms",
+      "posts": "posts",
+      "noData": "No platform data available"
+    },
     "toasts": {
       "loadingAnalytics": "Loading analytics data...",
       "analyticsLoaded": "Analytics data loaded successfully",
@@ -747,69 +753,140 @@
     "updating": "Updating..."
   },
   "PlatformsPage": {
-    "title": "Connected Platforms",
-    "subtitle": "Manage your social media accounts",
-    "connectNew": "Connect New Platform",
+    "title": "Platforms",
+    "subtitle": "Manage your connected social media platforms",
+    "connectPlatform": "Connect Platform",
+    "stats": {
+      "totalAccounts": "Total Accounts",
+      "totalFollowers": "Total Followers",
+      "totalPosts": "Total Posts",
+      "avgEngagement": "Avg. Engagement"
+    },
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "followers": "Followers",
+    "posts": "Posts",
+    "engagement": "Engagement",
     "searchPlaceholder": "Search platforms...",
+    "noPlatforms": "No platforms connected",
+    "noPlatformsDescription": "Connect your social media accounts to start managing your content across multiple platforms.",
     "noResults": "No results found",
     "noResultsDescription": "Try adjusting your search terms",
-    "toasts": {
-      "openingConnection": "Opening platform connection...",
-      "loading": "Loading",
-      "loadedSuccess": "Loaded successfully",
-      "disconnecting": "Disconnecting",
-      "disconnectSuccess": "disconnected successfully",
-      "noRecentActivity": "No recent activity",
-      "notEnoughData": "Not enough data"
-    }
+    "viewPlatform": "View Platform",
+    "disconnect": "Disconnect",
+    "openingConnection": "Opening platform connection...",
+    "loadingPlatform": "Loading",
+    "loadedSuccess": "Loaded successfully",
+    "disconnectConfirm": "Are you sure you want to disconnect",
+    "disconnectingPlatform": "Disconnecting",
+    "disconnectedSuccess": "disconnected successfully"
   },
   "PlatformDetailPage": {
+    "backToPlatforms": "Back to Platforms",
+    "back": "Back",
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "connecting": "Connecting...",
+    "connect": "Connect",
+    "disconnect": "Disconnect",
+    "createPost": "Create Post",
+    "quickActions": {
+      "createPost": "Create Post"
+    },
     "tabs": {
       "overview": "Overview",
       "content": "Content",
       "analytics": "Analytics",
-      "aiAgent": "AI Agent"
+      "aiAdvisor": "AI Advisor"
     },
-    "overview": {
-      "accountInfo": "Account Information",
-      "recentActivity": "Recent Activity",
-      "quickActions": "Quick Actions",
-      "createPost": "Create Post",
-      "viewAnalytics": "View Analytics",
-      "manageSettings": "Manage Settings"
+    "overview": "Overview",
+    "content": "Content",
+    "analytics": "Analytics",
+    "insights": "AI Insights",
+    "stats": {
+      "followers": "Followers",
+      "posts": "Posts",
+      "engagement": "Engagement",
+      "reach": "Reach",
+      "fromLastMonth": "from last month",
+      "thisMonth": "this month",
+      "fromLastWeek": "from last week"
     },
-    "content": {
-      "title": "Your Content",
-      "description": "Manage your posts on this platform",
-      "filterBy": "Filter by",
-      "all": "All",
+    "performance": {
+      "title": "Performance Summary",
+      "description": "Key metrics for your account"
+    },
+    "recentPosts": {
+      "title": "Recent Posts",
+      "description": "Your latest content",
+      "noPosts": "No posts yet",
+      "noPostsDescription": "Start creating content to see it here",
+      "noMatchingPosts": "No posts match your filters",
+      "adjustFilters": "Try adjusting your filters or clear them to see all posts"
+    },
+    "filters": {
+      "title": "Filters",
+      "description": "Filter posts by campaigns and status",
+      "clearAll": "Clear All",
+      "campaigns": "Campaigns",
+      "allCampaigns": "All campaigns",
+      "status": "Status",
+      "allStatuses": "All statuses",
       "published": "Published",
       "scheduled": "Scheduled",
-      "draft": "Draft"
+      "draft": "Draft",
+      "failed": "Failed"
     },
+    "contentLibrary": "Content Library",
+    "postsOf": "of",
+    "view": "View",
+    "repost": "Repost",
+    "clearFilters": "Clear Filters",
+    "reposting": "Reposting content...",
+    "repostSuccess": "Content reposted successfully",
+    "deleteConfirm": "Are you sure you want to delete this post?",
+    "deleting": "Deleting post...",
+    "deleteSuccess": "Post deleted successfully",
+    "applyingFilters": "Applying filters...",
+    "filtersApplied": "Filters applied successfully",
     "analytics": {
-      "recentPosts": {
-        "noPosts": "No data available"
-      }
+      "avgLikes": "Average Likes",
+      "avgComments": "Average Comments",
+      "avgShares": "Average Shares",
+      "bestPostTime": "Best Time to Post",
+      "performanceOverview": "Performance Overview",
+      "totalLikes": "Total Likes",
+      "totalComments": "Total Comments",
+      "totalShares": "Total Shares",
+      "audienceInsights": "Audience Insights",
+      "topLocation": "Top Location",
+      "topAgeGroup": "Top Age Group",
+      "maleAudience": "Male",
+      "femaleAudience": "Female"
     },
-    "aiAgent": {
-      "thinking": "AI is thinking...",
-      "responseGenerated": "AI response generated",
-      "preparingQuery": "Preparing query..."
+    "performanceChart": {
+      "title": "Engagement Over Time",
+      "description": "Monthly engagement metrics for your posts"
+    },
+    "aiAdvisor": {
+      "title": "AI Content Advisor",
+      "description": "Get personalized insights and recommendations",
+      "welcomeMessage": "Hello! How can I help you with your content strategy today?",
+      "inputPlaceholder": "Ask me anything...",
+      "quickAction1": "Best time to post?",
+      "quickAction2": "Analyze performance",
+      "quickAction3": "Content ideas"
+    },
+    "aiInsights": {
+      "title": "AI Insights",
+      "description": "Get AI-powered recommendations"
     },
     "toasts": {
       "disconnecting": "Disconnecting",
       "disconnectSuccess": "disconnected successfully",
       "connecting": "Connecting to",
       "connectSuccess": "connected successfully",
-      "loading": "Loading",
-      "reposting": "Reposting content...",
-      "repostSuccess": "Content reposted successfully",
-      "deleteConfirm": "Are you sure you want to delete this post?",
-      "deleting": "Deleting post...",
-      "deleteSuccess": "Post deleted successfully",
-      "applyingFilters": "Applying filters...",
-      "filtersApplied": "Filters applied successfully"
+      "loading": "Loading"
     }
   },
   "CampaignsPage": {

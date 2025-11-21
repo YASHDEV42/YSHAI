@@ -409,7 +409,11 @@ export default function CreatePage({
               {Math.round(progress)}% {text.complete || "Complete"}
             </span>
           </div>
-          <Progress value={progress} className="h-2" />
+          <Progress
+            value={progress}
+            className="h-2"
+            dir={locale === "ar" ? "rtl" : "ltr"}
+          />
 
           {/* Step Indicators */}
           <div className="flex justify-between mt-6">
@@ -653,7 +657,11 @@ export default function CreatePage({
                         <span>Uploading...</span>
                         <span>{uploadProgress}%</span>
                       </div>
-                      <Progress value={uploadProgress} className="h-2" />
+                      <Progress
+                        value={uploadProgress}
+                        className="h-2"
+                        dir={locale === "ar" ? "rtl" : "ltr"}
+                      />
                     </div>
                   )}
 

@@ -19,7 +19,6 @@ import {
   MessageCircle,
   ExternalLink,
   Activity,
-  Zap,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -97,7 +96,11 @@ export function OverviewTab({
               0% {text.stats?.fromLastMonth || ""}
             </p>
             <div className="mt-2">
-              <Progress value={0} className="h-1" />
+              <Progress
+                value={0}
+                className="h-1"
+                dir={locale === "ar" ? "rtl" : "ltr"}
+              />
             </div>
           </CardContent>
         </Card>
@@ -128,6 +131,7 @@ export function OverviewTab({
               <Progress
                 value={posts.length > 0 ? Math.min(posts.length * 10, 100) : 0}
                 className="h-1"
+                dir={locale === "ar" ? "rtl" : "ltr"}
               />
             </div>
           </CardContent>
@@ -156,7 +160,11 @@ export function OverviewTab({
               +0% {text.stats?.fromLastWeek || ""}
             </p>
             <div className="mt-2">
-              <Progress value={avgEngagement} className="h-1" />
+              <Progress
+                value={avgEngagement}
+                className="h-1"
+                dir={locale === "ar" ? "rtl" : "ltr"}
+              />
             </div>
           </CardContent>
         </Card>
@@ -184,7 +192,11 @@ export function OverviewTab({
               +0% {text.stats?.fromLastWeek || ""}
             </p>
             <div className="mt-2">
-              <Progress value={0} className="h-1" />
+              <Progress
+                value={0}
+                className="h-1"
+                dir={locale === "ar" ? "rtl" : "ltr"}
+              />
             </div>
           </CardContent>
         </Card>
@@ -271,7 +283,7 @@ export function OverviewTab({
             asChild
             variant="outline"
             size="sm"
-            className="transition-all duration-300 hover:scale-105"
+            className="transition-all duration-300 hover:scale-105 bg-transparent"
           >
             <Link href={`/${locale}/dashboard/create`}>
               <Plus className="mr-2 size-4" />

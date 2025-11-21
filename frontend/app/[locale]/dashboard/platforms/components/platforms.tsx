@@ -154,7 +154,11 @@ export function Platforms({ text, locale, accounts }: PlatformsProps) {
               {connectionProgress}%
             </span>
           </div>
-          <Progress value={connectionProgress} className="h-2" />
+          <Progress
+            value={connectionProgress}
+            className="h-2"
+            dir={locale === "ar" ? "rtl" : "ltr"}
+          />
         </div>
       )}
 
@@ -203,7 +207,11 @@ export function Platforms({ text, locale, accounts }: PlatformsProps) {
                   {connectedCount} {text.connected.toLowerCase()}
                 </p>
                 <div className="mt-2">
-                  <Progress value={connectionPercentage} className="h-1" />
+                  <Progress
+                    value={connectionPercentage}
+                    className="h-1"
+                    dir={locale === "ar" ? "rtl" : "ltr"}
+                  />
                 </div>
               </CardContent>
             </Card>
@@ -460,7 +468,7 @@ export function Platforms({ text, locale, accounts }: PlatformsProps) {
                       <div className="flex gap-2">
                         <Button
                           asChild
-                          className="flex-1 group-hover:bg-primary transition-colors"
+                          className="flex-1 group-hover:bg-primary transition-colors bg-transparent"
                           variant="outline"
                           onClick={() => handleViewPlatform(account.provider)}
                         >
@@ -480,7 +488,7 @@ export function Platforms({ text, locale, accounts }: PlatformsProps) {
                           <Button
                             size="icon"
                             variant="outline"
-                            className="transition-all duration-300 hover:bg-red-50 dark:hover:bg-red-950/20 hover:text-red-600 hover:border-red-300"
+                            className="transition-all duration-300 hover:bg-red-50 dark:hover:bg-red-950/20 hover:text-red-600 hover:border-red-300 bg-transparent"
                             onClick={() =>
                               handleDisconnectPlatform(
                                 account.provider,

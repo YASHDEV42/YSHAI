@@ -22,7 +22,6 @@ import {
   Target,
   Zap,
   CheckCircle,
-  AlertCircle,
 } from "lucide-react";
 import type { TConnectedAccount } from "@/types";
 import { toast } from "sonner";
@@ -35,12 +34,14 @@ interface Message {
 
 interface AIAgentTabProps {
   text: any;
+  locale?: string;
   account: TConnectedAccount;
   animateItems?: boolean;
 }
 
 export function AIAgentTab({
   text,
+  locale = "en",
   account,
   animateItems = false,
 }: AIAgentTabProps) {
@@ -293,6 +294,7 @@ export function AIAgentTab({
                         <Progress
                           value={thinkingProgress}
                           className="h-1 w-32"
+                          dir={locale === "ar" ? "rtl" : "ltr"}
                         />
                       </div>
                     ) : (
@@ -346,7 +348,7 @@ export function AIAgentTab({
                   key={index}
                   variant="outline"
                   size="sm"
-                  className="text-xs h-7 transition-all duration-300 hover:scale-105"
+                  className="text-xs h-7 transition-all duration-300 hover:scale-105 bg-transparent"
                   onClick={() => setInput(suggestion)}
                 >
                   {suggestion}

@@ -15,7 +15,6 @@ import {
   TrendingUp,
   Eye,
   Users,
-  Zap,
   Activity,
 } from "lucide-react";
 import {
@@ -173,6 +172,7 @@ export function AnalyticsTab({
               <Progress
                 value={Math.min(analytics.avgLikes * 2, 100)}
                 className="h-1"
+                dir={locale === "ar" ? "rtl" : "ltr"}
               />
             </div>
           </CardContent>
@@ -206,6 +206,7 @@ export function AnalyticsTab({
               <Progress
                 value={Math.min(analytics.avgComments * 5, 100)}
                 className="h-1"
+                dir={locale === "ar" ? "rtl" : "ltr"}
               />
             </div>
           </CardContent>
@@ -239,6 +240,7 @@ export function AnalyticsTab({
               <Progress
                 value={Math.min(analytics.avgShares * 10, 100)}
                 className="h-1"
+                dir={locale === "ar" ? "rtl" : "ltr"}
               />
             </div>
           </CardContent>
@@ -267,7 +269,11 @@ export function AnalyticsTab({
               {text.analytics?.bestPostTime || "peak engagement"}
             </p>
             <div className="mt-2">
-              <Progress value={75} className="h-1" />
+              <Progress
+                value={75}
+                className="h-1"
+                dir={locale === "ar" ? "rtl" : "ltr"}
+              />
             </div>
           </CardContent>
         </Card>
@@ -433,7 +439,11 @@ export function AnalyticsTab({
                       .toLocaleString()}
                   </p>
                   <div className="mt-1 w-16">
-                    <Progress value={75} className="h-1" />
+                    <Progress
+                      value={75}
+                      className="h-1"
+                      dir={locale === "ar" ? "rtl" : "ltr"}
+                    />
                   </div>
                 </div>
               </div>
@@ -459,7 +469,11 @@ export function AnalyticsTab({
                       .toLocaleString()}
                   </p>
                   <div className="mt-1 w-16">
-                    <Progress value={60} className="h-1" />
+                    <Progress
+                      value={60}
+                      className="h-1"
+                      dir={locale === "ar" ? "rtl" : "ltr"}
+                    />
                   </div>
                 </div>
               </div>
@@ -485,7 +499,11 @@ export function AnalyticsTab({
                       .toLocaleString()}
                   </p>
                   <div className="mt-1 w-16">
-                    <Progress value={45} className="h-1" />
+                    <Progress
+                      value={45}
+                      className="h-1"
+                      dir={locale === "ar" ? "rtl" : "ltr"}
+                    />
                   </div>
                 </div>
               </div>
@@ -509,7 +527,11 @@ export function AnalyticsTab({
                     {analytics.totalReach.toLocaleString()}
                   </p>
                   <div className="mt-1 w-16">
-                    <Progress value={30} className="h-1" />
+                    <Progress
+                      value={30}
+                      className="h-1"
+                      dir={locale === "ar" ? "rtl" : "ltr"}
+                    />
                   </div>
                 </div>
               </div>
