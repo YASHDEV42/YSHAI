@@ -70,9 +70,7 @@ export default function CampaignsManagement({
   const [searchQuery, setSearchQuery] = useState("");
 
   const campaignsRef = useRef<HTMLDivElement>(null);
-  const dialogRef = useRef<HTMLDivElement>(null);
 
-  // Trigger animations after component mounts
   useEffect(() => {
     const timer = setTimeout(() => {
       setAnimateItems(true);
@@ -81,7 +79,6 @@ export default function CampaignsManagement({
     return () => clearTimeout(timer);
   }, []);
 
-  // Filter campaigns based on status and search query
   const filteredCampaigns = campaigns.filter((campaign) => {
     const matchesStatus =
       filterStatus === "all" || campaign.status === filterStatus;
@@ -94,7 +91,6 @@ export default function CampaignsManagement({
     return matchesStatus && matchesSearch;
   });
 
-  // Calculate statistics
   const stats = {
     total: campaigns.length,
     active: campaigns.filter((c) => c.status === "active").length,
@@ -109,9 +105,6 @@ export default function CampaignsManagement({
     }).length,
   };
 
-  /**
-   * Correct campaign form model matching backend
-   */
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -126,7 +119,7 @@ export default function CampaignsManagement({
       description: "",
       startsAt: "",
       endsAt: "",
-      status: "active",
+      status: "active" as "active" | "draft",
     });
     setEditingCampaign(null);
   };
@@ -232,7 +225,6 @@ export default function CampaignsManagement({
       id: "delete-campaign",
     });
 
-    // Simulate progress
     const progressInterval = setInterval(() => {
       setDeleteProgress((prev) => {
         if (prev === null) return 20;
@@ -262,7 +254,6 @@ export default function CampaignsManagement({
 
         setCampaigns((prev) => prev.filter((c) => c.id !== id));
 
-        // Reset progress after a delay
         setTimeout(() => {
           setDeleteProgress(null);
         }, 1000);
@@ -310,7 +301,6 @@ export default function CampaignsManagement({
 
   return (
     <>
-      {/* Delete Progress */}
       {deleteProgress !== null && (
         <div className="fixed top-4 right-4 z-50 w-80 bg-background border rounded-lg shadow-lg p-4">
           <div className="flex items-center justify-between mb-2">
@@ -328,7 +318,6 @@ export default function CampaignsManagement({
       )}
 
       <div className="container mx-auto px-4 py-8">
-        {/* TITLE + CREATE BUTTON */}
         <div
           ref={campaignsRef}
           className={cn(
@@ -344,14 +333,13 @@ export default function CampaignsManagement({
           </div>
           <Button
             onClick={handleCreate}
-            className="transition-all duration-300 hover:scale-105"
+            className="transition-all duration-150 hover:scale-105"
           >
             <Plus className="w-4 h-4 mr-2" />
             {text.createCampaign}
           </Button>
         </div>
 
-        {/* Stats Cards */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
           <StatCard
             title={text.totalCampaigns || "Total"}
@@ -397,10 +385,9 @@ export default function CampaignsManagement({
           />
         </div>
 
-        {/* Filters */}
         <div
           className={cn(
-            "flex gap-4 mb-6 transition-all duration-300",
+            "flex gap-4 mb-6 transition-all duration-150",
             animateItems
               ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-4",
@@ -415,7 +402,7 @@ export default function CampaignsManagement({
               placeholder={text.searchPlaceholder || "Search campaigns..."}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 transition-all duration-300 focus:ring-2 focus:ring-primary/20"
+              className="pl-10 transition-all duration-150 focus:ring-2 focus:ring-primary/20"
             />
           </div>
           <div className="flex gap-2">
@@ -423,7 +410,7 @@ export default function CampaignsManagement({
               variant={filterStatus === "all" ? "default" : "outline"}
               size="sm"
               onClick={() => setFilterStatus("all")}
-              className="transition-all duration-300 hover:scale-105"
+              className="transition-all duration-150 hover:scale-105"
             >
               {text.all || "All"}
             </Button>
@@ -431,7 +418,7 @@ export default function CampaignsManagement({
               variant={filterStatus === "active" ? "default" : "outline"}
               size="sm"
               onClick={() => setFilterStatus("active")}
-              className="transition-all duration-300 hover:scale-105"
+              className="transition-all duration-150 hover:scale-105"
             >
               {text.active || "Active"}
             </Button>
@@ -439,18 +426,17 @@ export default function CampaignsManagement({
               variant={filterStatus === "draft" ? "default" : "outline"}
               size="sm"
               onClick={() => setFilterStatus("draft")}
-              className="transition-all duration-300 hover:scale-105"
+              className="transition-all duration-150 hover:scale-105"
             >
               {text.draft || "Draft"}
             </Button>
           </div>
         </div>
 
-        {/* CAMPAIGN CARDS */}
         {filteredCampaigns.length === 0 ? (
           <Card
             className={cn(
-              "border-dashed transition-all duration-300",
+              "border-dashed transition-all duration-150",
               animateItems ? "opacity-100 scale-100" : "opacity-0 scale-95",
             )}
             style={{ animationDelay: "600ms" }}
@@ -472,7 +458,7 @@ export default function CampaignsManagement({
               </p>
               <Button
                 onClick={handleCreate}
-                className="transition-all duration-300 hover:scale-105"
+                className="transition-all duration-150 hover:scale-105"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 {text.createCampaign}
@@ -485,7 +471,7 @@ export default function CampaignsManagement({
               <Card
                 key={campaign.id}
                 className={cn(
-                  "transition-all duration-300 hover:shadow-md hover:scale-[1.02] group overflow-hidden",
+                  "transition-all duration-150 hover:shadow-md hover:scale-[1.02] group overflow-hidden",
                   animateItems
                     ? "opacity-100 translate-y-0"
                     : "opacity-0 translate-y-4",
@@ -534,7 +520,7 @@ export default function CampaignsManagement({
                       variant="outline"
                       size="sm"
                       onClick={() => handleEdit(campaign)}
-                      className="flex-1 transition-all duration-300 hover:scale-105 hover:bg-blue-50 dark:hover:bg-blue-950/20"
+                      className="flex-1 transition-all duration-150 hover:scale-105 hover:bg-blue-50 dark:hover:bg-blue-950/20"
                     >
                       <Pencil className="w-3 h-3 mr-1" />
                       {text.edit}
@@ -543,7 +529,7 @@ export default function CampaignsManagement({
                       variant="outline"
                       size="sm"
                       onClick={() => handleDelete(campaign.id, campaign.name)}
-                      className="flex-1 transition-all duration-300 hover:scale-105 hover:bg-red-50 dark:hover:bg-red-950/20 hover:text-red-600 hover:border-red-300"
+                      className="flex-1 transition-all duration-150 hover:scale-105 hover:bg-red-50 dark:hover:bg-red-950/20 hover:text-red-600 hover:border-red-300"
                     >
                       {deleteProgress !== null ? (
                         <Loader2 className="w-3 h-3 animate-spin" />
@@ -560,9 +546,8 @@ export default function CampaignsManagement({
         )}
       </div>
 
-      {/* DIALOG */}
-      <Dialog ref={dialogRef} open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-[425px] transition-all duration-300">
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="sm:max-w-[425px] transition-all duration-150">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <FolderOpen className="w-5 h-5 text-primary" />
@@ -582,7 +567,7 @@ export default function CampaignsManagement({
                     setFormData((prev) => ({ ...prev, name: e.target.value }))
                   }
                   required
-                  className="transition-all duration-300 focus:ring-2 focus:ring-primary/20"
+                  className="transition-all duration-150 focus:ring-2 focus:ring-primary/20"
                 />
               </div>
 
@@ -597,11 +582,10 @@ export default function CampaignsManagement({
                     }))
                   }
                   rows={3}
-                  className="transition-all duration-300 focus:ring-2 focus:ring-primary/20"
+                  className="transition-all duration-150 focus:ring-2 focus:ring-primary/20"
                 />
               </div>
 
-              {/* FIXED DATES */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label>{text.startDate}</Label>
@@ -615,7 +599,7 @@ export default function CampaignsManagement({
                       }))
                     }
                     required
-                    className="transition-all duration-300 focus:ring-2 focus:ring-primary/20"
+                    className="transition-all duration-150 focus:ring-2 focus:ring-primary/20"
                   />
                 </div>
                 <div>
@@ -629,12 +613,11 @@ export default function CampaignsManagement({
                         endsAt: e.target.value,
                       }))
                     }
-                    className="transition-all duration-300 focus:ring-2 focus:ring-primary/20"
+                    className="transition-all duration-150 focus:ring-2 focus:ring-primary/20"
                   />
                 </div>
               </div>
 
-              {/* FIXED STATUS TOGGLE */}
               <div className="flex items-center justify-between">
                 <Label>{text.active}</Label>
                 <Switch
@@ -654,14 +637,14 @@ export default function CampaignsManagement({
                 type="button"
                 variant="outline"
                 onClick={() => setDialogOpen(false)}
-                className="transition-all duration-300 hover:scale-105"
+                className="transition-all duration-150 hover:scale-105"
               >
                 {text.cancel}
               </Button>
               <Button
                 type="submit"
                 disabled={isPending}
-                className="transition-all duration-300 hover:scale-105"
+                className="transition-all duration-150 hover:scale-105"
               >
                 {isPending ? (
                   <>

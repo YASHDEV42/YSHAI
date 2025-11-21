@@ -102,43 +102,4 @@ export class UsersController {
   ): Promise<{ message: string }> {
     return this.usersService.updatePreferences(req.user.id, body);
   }
-
-  @Post('me/avatar')
-  @ApiOperation({ summary: 'Upload or update current user avatar' })
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        file: {
-          type: 'string',
-          format: 'binary',
-          description: 'Avatar image file (PNG or JPEG)',
-        },
-      },
-      required: ['file'],
-    },
-  })
-  @ApiOkResponse({
-    description: 'Avatar uploaded successfully.',
-    type: UserResponseDto,
-  })
-  async uploadAvatar(
-    @Req() req: { user: { id: number } },
-    @UploadedFile() file: { path?: string; buffer?: Buffer },
-  ): Promise<UserResponseDto> {
-    return await this.usersService.uploadAvatarFromFile(req.user.id, file);
-  }
-
-  @Delete('me/avatar')
-  @ApiOperation({ summary: 'Remove current user avatar' })
-  @ApiOkResponse({
-    description: 'Avatar removed successfully.',
-    type: UserResponseDto,
-  })
-  async removeAvatar(
-    @Req() req: { user: { id: number } },
-  ): Promise<UserResponseDto> {
-    return this.usersService.updateAvatarUrl(req.user.id, null);
-  }
 }

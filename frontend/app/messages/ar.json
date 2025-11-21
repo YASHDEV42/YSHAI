@@ -677,10 +677,10 @@
     "subtitle": "تتبع أدائك عبر جميع المنصات",
     "timeRangeLabel": "الفترة الزمنية",
     "timeRanges": {
-      "7d": "آخر 7 أيام",
-      "30d": "آخر 30 يوماً",
-      "90d": "آخر 90 يوماً",
-      "1y": "آخر سنة"
+      "week": "آخر 7 أيام",
+      "month": "آخر 30 يوماً",
+      "quarter": "آخر 90 يوماً",
+      "year": "آخر سنة"
     },
     "export": "تصدير",
     "stats": {
@@ -689,6 +689,7 @@
       "newFollowers": "متابعون جدد",
       "avgEngagementRate": "متوسط معدل التفاعل"
     },
+    "fromLastPeriod": "من الفترة السابقة",
     "charts": {
       "engagementOverTime": "التفاعل عبر الوقت",
       "engagementOverTimeDesc": "تتبع الإعجابات والتعليقات والمشاركات",

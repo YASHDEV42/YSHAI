@@ -305,11 +305,6 @@ export function DashboardSidebar({
         <SidebarFooter className="border-t border-border p-4">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3 flex-1 min-w-0">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
-                <span className="text-primary font-semibold text-sm">
-                  {user?.name?.[0]?.toUpperCase() || "U"}
-                </span>
-              </div>
               <div className="flex flex-col min-w-0">
                 <span className="font-medium text-sm truncate transition-colors hover:text-foreground">
                   {user?.name || "User"}

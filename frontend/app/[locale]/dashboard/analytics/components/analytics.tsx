@@ -98,7 +98,7 @@ export default function AnalyticsClient({
     setIsLoading(true);
     setLoadingProgress(0);
 
-    toast.loading("Loading analytics data...", {
+    toast.loading(text.toasts.loadingAnalytics, {
       id: "load-analytics",
     });
 
@@ -121,7 +121,7 @@ export default function AnalyticsClient({
       setTimeRange(value);
       setIsLoading(false);
 
-      toast.success("Analytics data loaded successfully", {
+      toast.success(text.toasts.analyticsLoaded, {
         id: "load-analytics",
         icon: <CheckCircle className="h-4 w-4" />,
         duration: 2000,
@@ -135,13 +135,13 @@ export default function AnalyticsClient({
   };
 
   const handleExportData = () => {
-    toast.loading("Preparing export...", {
+    toast.loading(text.toasts.preparingExport, {
       id: "export-data",
     });
 
     // Simulate export process
     setTimeout(() => {
-      toast.success("Analytics data exported successfully", {
+      toast.success(text.toasts.exportSuccess, {
         id: "export-data",
         icon: <CheckCircle className="h-4 w-4" />,
         duration: 2000,
@@ -210,7 +210,9 @@ export default function AnalyticsClient({
       {loadingProgress !== null && (
         <div className="fixed top-4 right-4 z-50 w-80 bg-background border rounded-lg shadow-lg p-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium">Loading analytics...</span>
+            <span className="text-sm font-medium">
+              {text.toasts.loadingAnalytics}
+            </span>
             <span className="text-sm text-muted-foreground">
               {loadingProgress}%
             </span>
@@ -244,7 +246,7 @@ export default function AnalyticsClient({
             <div className="flex items-center gap-3">
               <SidebarTrigger className="lg:hidden" />
               <Select value={timeRange} onValueChange={handleTimeRangeChange}>
-                <SelectTrigger className="w-[180px] transition-all duration-300 hover:ring-2 hover:ring-primary/20">
+                <SelectTrigger className="w-[180px] transition-all duration-150 hover:ring-2 hover:ring-primary/20">
                   <SelectValue placeholder={text.timeRangeLabel} />
                 </SelectTrigger>
                 <SelectContent>
@@ -264,7 +266,7 @@ export default function AnalyticsClient({
               </Select>
               <Button
                 onClick={handleExportData}
-                className="transition-all duration-300 hover:scale-105"
+                className="transition-all duration-150 hover:scale-105"
               >
                 <Activity className="mr-2 size-4" />
                 {text.export || "Export"}
@@ -281,9 +283,12 @@ export default function AnalyticsClient({
                   ? formatNumber(analytics.totalEngagement)
                   : "0"
               }
-              description={`${analytics?.engagementChange ? `${analytics.engagementChange > 0 ? "+" : ""}${analytics.engagementChange.toFixed(1)}%` : "+0%"} from last period`}
+              description={`${analytics?.engagementChange ? `${analytics.engagementChange > 0 ? "+" : ""}${analytics.engagementChange.toFixed(1)}%` : "+0%"} ${text.fromLastPeriod}`}
               icon={Heart}
               progressValue={Math.abs(analytics?.engagementChange || 0) * 10}
+              borderColor="border-l-pink-500"
+              iconColor="text-pink-500"
+              iconBgColor="bg-pink-500/10"
               animate={animateItems}
               animationDelay="100ms"
               locale={locale}
@@ -293,9 +298,12 @@ export default function AnalyticsClient({
               value={
                 analytics?.totalReach ? formatNumber(analytics.totalReach) : "0"
               }
-              description={`${analytics?.reachChange ? `${analytics.reachChange > 0 ? "+" : ""}${analytics.reachChange.toFixed(1)}%` : "+0%"} from last period`}
+              description={`${analytics?.reachChange ? `${analytics.reachChange > 0 ? "+" : ""}${analytics.reachChange.toFixed(1)}%` : "+0%"} ${text.fromLastPeriod}`}
               icon={Eye}
               progressValue={Math.abs(analytics?.reachChange || 0) * 10}
+              borderColor="border-l-blue-500"
+              iconColor="text-blue-500"
+              iconBgColor="bg-blue-500/10"
               animate={animateItems}
               animationDelay="200ms"
               locale={locale}
@@ -307,9 +315,12 @@ export default function AnalyticsClient({
                   ? formatNumber(analytics.newFollowers)
                   : "0"
               }
-              description={`${analytics?.followersChange ? `${analytics.followersChange > 0 ? "+" : ""}${analytics.followersChange.toFixed(1)}%` : "+0%"} from last period`}
+              description={`${analytics?.followersChange ? `${analytics.followersChange > 0 ? "+" : ""}${analytics.followersChange.toFixed(1)}%` : "+0%"} ${text.fromLastPeriod}`}
               icon={Users}
               progressValue={Math.abs(analytics?.followersChange || 0) * 10}
+              borderColor="border-l-green-500"
+              iconColor="text-green-500"
+              iconBgColor="bg-green-500/10"
               animate={animateItems}
               animationDelay="300ms"
               locale={locale}
@@ -321,11 +332,14 @@ export default function AnalyticsClient({
                   ? `${analytics.avgEngagementRate.toFixed(1)}%`
                   : "0%"
               }
-              description={`${analytics?.engagementRateChange ? `${analytics.engagementRateChange > 0 ? "+" : ""}${analytics.engagementRateChange.toFixed(1)}%` : "+0%"} from last period`}
+              description={`${analytics?.engagementRateChange ? `${analytics.engagementRateChange > 0 ? "+" : ""}${analytics.engagementRateChange.toFixed(1)}%` : "+0%"} ${text.fromLastPeriod}`}
               icon={TrendingUp}
               progressValue={
                 Math.abs(analytics?.engagementRateChange || 0) * 10
               }
+              borderColor="border-l-amber-500"
+              iconColor="text-amber-500"
+              iconBgColor="bg-amber-500/10"
               animate={animateItems}
               animationDelay="400ms"
               locale={locale}
@@ -344,7 +358,7 @@ export default function AnalyticsClient({
             style={{ animationDelay: "500ms" }}
           >
             {/* Engagement Over Time */}
-            <Card className="border-border bg-card transition-all duration-300 hover:shadow-md">
+            <Card className="border-border bg-card transition-all duration-150 hover:shadow-md">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Activity className="size-5 text-primary" />
@@ -452,7 +466,7 @@ export default function AnalyticsClient({
             </Card>
 
             {/* Platform Performance */}
-            <Card className="border-border bg-card transition-all duration-300 hover:shadow-md">
+            <Card className="border-border bg-card transition-all duration-150 hover:shadow-md">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Zap className="size-5 text-primary" />
@@ -536,7 +550,7 @@ export default function AnalyticsClient({
             style={{ animationDelay: "700ms" }}
           >
             {/* Platform Details */}
-            <Card className="border-border bg-card transition-all duration-300 hover:shadow-md">
+            <Card className="border-border bg-card transition-all duration-150 hover:shadow-md">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Users className="size-5 text-primary" />
@@ -552,7 +566,7 @@ export default function AnalyticsClient({
                     <div
                       key={item.platform}
                       className={cn(
-                        "flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted/50 transition-all duration-300 hover:scale-[1.02]",
+                        "flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted/50 transition-all duration-150 hover:scale-[1.02]",
                         animateItems
                           ? "opacity-100 translate-x-0"
                           : "opacity-0 -translate-x-4",
@@ -595,7 +609,7 @@ export default function AnalyticsClient({
             </Card>
 
             {/* Top Posts */}
-            <Card className="border-border bg-card lg:col-span-2 transition-all duration-300 hover:shadow-md">
+            <Card className="border-border bg-card lg:col-span-2 transition-all duration-150 hover:shadow-md">
               <CardHeader className="flex items-center justify-between">
                 <div>
                   <CardTitle className="flex items-center gap-2">
@@ -608,7 +622,7 @@ export default function AnalyticsClient({
                   variant="outline"
                   size="sm"
                   onClick={handleExportData}
-                  className="transition-all duration-300 hover:scale-105 bg-transparent"
+                  className="transition-all duration-150 hover:scale-105 bg-transparent"
                 >
                   <Activity className="mr-2 size-3" />
                   {text.export || "Export"}
@@ -621,7 +635,7 @@ export default function AnalyticsClient({
                       <div
                         key={post.id}
                         className={cn(
-                          "flex items-start gap-4 p-4 rounded-lg border border-border bg-card hover:bg-muted/50 transition-all duration-300 hover:scale-[1.01] group",
+                          "flex items-start gap-4 p-4 rounded-lg border border-border bg-card hover:bg-muted/50 transition-all duration-150 hover:scale-[1.01] group",
                           animateItems
                             ? "opacity-100 translate-y-0"
                             : "opacity-0 translate-y-4",

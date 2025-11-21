@@ -116,34 +116,6 @@ export class UsersService {
     return { message: 'Account deleted' };
   }
 
-  async updateAvatarUrl(
-    id: number,
-    avatarUrl: string | null,
-  ): Promise<UserResponseDto> {
-    const user = await this.em.findOne(User, { id });
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    user.avatarUrl = avatarUrl ?? undefined;
-    await this.em.flush();
-
-    return this.toDto(user);
-  }
-
-  async uploadAvatarFromFile(
-    userId: number,
-    file: { path?: string; buffer?: Buffer },
-  ): Promise<UserResponseDto> {
-    if (!file?.path && !file?.buffer) {
-      throw new BadRequestException('No valid file provided');
-    }
-
-    // Reuse MediaService + Cloudinary to upload avatar
-    const media = await this.mediaService.upload(file);
-    return this.updateAvatarUrl(userId, media.url);
-  }
-
   private toDto(user: User): UserResponseDto {
     return UserResponseDto.fromEntity(user);
   }

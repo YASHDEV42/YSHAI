@@ -668,10 +668,10 @@
     "subtitle": "Track your performance across all platforms",
     "timeRangeLabel": "Time Range",
     "timeRanges": {
-      "7d": "Last 7 days",
-      "30d": "Last 30 days",
-      "90d": "Last 90 days",
-      "1y": "Last year"
+      "week": "Last 7 days",
+      "month": "Last 30 days",
+      "quarter": "Last 90 days",
+      "year": "Last year"
     },
     "export": "Export",
     "stats": {
@@ -680,6 +680,7 @@
       "newFollowers": "New Followers",
       "avgEngagementRate": "Avg. Engagement Rate"
     },
+    "fromLastPeriod": "from last period",
     "charts": {
       "engagementOverTime": "Engagement Over Time",
       "engagementOverTimeDesc": "Track likes, comments, and shares",
@@ -879,235 +880,7 @@
       "quickAction4": "Audience insights",
       "conversation": "Conversation",
       "conversationDescription": "Ask me anything about your content strategy",
-      "thinking": "AI is thinking...",
-      "responseGenerated": "AI response generated",
-      "preparingQuery": "Preparing query...",
-      "tryAsking": "Try asking:",
-      "performanceInsights": "Performance Insights",
-      "performanceInsightsDesc": "Get detailed analysis of your content performance",
-      "contentSuggestions": "Content Suggestions",
-      "contentSuggestionsDesc": "Receive AI-powered content ideas tailored to your audience",
-      "audienceAnalysis": "Audience Analysis",
-      "audienceAnalysisDesc": "Understand your audience demographics and behavior",
-      "beta": "Beta"
-    },
-    "aiInsights": {
-      "title": "AI Insights",
-      "description": "Get AI-powered recommendations"
-    },
-    "toasts": {
-      "disconnecting": "Disconnecting",
-      "disconnectSuccess": "disconnected successfully",
-      "connecting": "Connecting to",
-      "connectSuccess": "connected successfully",
-      "loading": "Loading"
-    }
-  },
-  "CampaignsPage": {
-    "title": "Campaign Management",
-    "subtitle": "Create and manage your marketing campaigns",
-    "createCampaign": "Create Campaign",
-    "totalCampaigns": "Total Campaigns",
-    "activeCampaigns": "Active Campaigns",
-    "draftCampaigns": "Draft Campaigns",
-    "thisMonth": "This Month",
-    "searchPlaceholder": "Search campaigns...",
-    "all": "All",
-    "active": "Active",
-    "draft": "Draft",
-    "noCampaigns": "No campaigns yet",
-    "noCampaignsDescription": "Create your first campaign to get started",
-    "noMatchingCampaigns": "No campaigns match your filters",
-    "noMatchingDescription": "Try adjusting your filters or search terms",
-    "startDate": "Start Date",
-    "endDate": "End Date",
-    "edit": "Edit",
-    "delete": "Delete",
-    "name": "Campaign Name",
-    "namePlaceholder": "Enter campaign name",
-    "description": "Description",
-    "descriptionPlaceholder": "Enter campaign description (optional)",
-    "startsAt": "Start Date",
-    "endsAt": "End Date",
-    "status": "Status",
-    "cancel": "Cancel",
-    "create": "Create Campaign",
-    "update": "Update Campaign",
-    "toasts": {
-      "openingCreator": "Opening campaign creator...",
-      "editing": "Editing",
-      "creating": "Creating campaign...",
-      "updating": "Updating campaign...",
-      "deleting": "Deleting",
-      "deleteConfirm": "Are you sure you want to delete"
-    }
-  },
-  "TagsPage": {
-    "title": "Tags",
-    "subtitle": "Manage tags to organize your content",
-    "createTag": "Create Tag",
-    "noTags": "No tags yet",
-    "noTagsDescription": "Create your first tag to organize and categorize your posts.",
-    "tagName": "Tag Name",
-    "tagPlaceholder": "e.g., Product Launch, Marketing, Events",
-    "allTags": "All Tags",
-    "cancel": "Cancel",
-    "create": "Create",
-    "creating": "Creating...",
-    "createDescription": "Create a new tag to categorize your posts"
-  },
-  "SettingsPage": {
-    "title": "Settings",
-    "subtitle": "Manage your account and preferences",
-    "tabs": {
-      "profile": "Profile",
-      "platforms": "Platforms",
-      "notifications": "Notifications",
-      "billing": "Billing"
-    },
-    "profile": {
-      "title": "Profile Information",
-      "description": "Update your personal information and profile picture",
-      "changePhoto": "Change Photo",
-      "photoHelp": "JPG, PNG or GIF. Max size 2MB",
-      "name": "Full Name",
-      "email": "Email",
-      "bio": "Bio",
-      "timezone": "Timezone",
-      "saveChanges": "Save Changes",
-      "cancel": "Cancel",
-      "security": {
-        "title": "Security",
-        "description": "Manage your password and security settings",
-        "currentPassword": "Current Password",
-        "newPassword": "New Password",
-        "confirmPassword": "Confirm New Password",
-        "updatePassword": "Update Password"
-      }
-    },
-    "platforms": {
-      "title": "Connected Platforms",
-      "description": "Manage your social media account connections",
-      "connected": "Connected",
-      "followers": "followers",
-      "reconnect": "Reconnect",
-      "disconnect": "Disconnect",
-      "connectNew": "Connect New Platform",
-      "noConnected": "No platforms connected yet",
-      "disconnected": "Inactive",
-      "postingPreferences": {
-        "title": "Posting Preferences",
-        "description": "Configure default settings for your posts",
-        "autoPublish": {
-          "label": "Auto-publish scheduled posts",
-          "description": "Automatically publish posts at scheduled time"
-        },
-        "watermark": {
-          "label": "Add watermark to images",
-          "description": "Add your brand watermark to uploaded images"
-        },
-        "crossPost": {
-          "label": "Cross-post to all platforms",
-          "description": "Post to all connected platforms by default"
-        }
-      }
-    },
-    "notifications": {
-      "title": "Notification Preferences",
-      "description": "Choose how you want to be notified",
-      "email": {
-        "label": "Email Notifications",
-        "description": "Receive notifications via email"
-      },
-      "push": {
-        "label": "Push Notifications",
-        "description": "Receive push notifications in your browser"
-      },
-      "weeklyReport": {
-        "label": "Weekly Report",
-        "description": "Get a weekly summary of your performance"
-      },
-      "postReminders": {
-        "label": "Post Reminders",
-        "description": "Remind me before scheduled posts go live"
-      },
-      "types": {
-        "title": "Notification Types",
-        "description": "Select which events trigger notifications",
-        "published": "Post published successfully",
-        "failed": "Post failed to publish",
-        "comments": "New comments on posts",
-        "milestones": "Engagement milestones",
-        "connectionIssues": "Platform connection issues"
-      }
-    },
-    "billing": {
-      "title": "Billing & Subscription",
-      "description": "Manage your subscription and billing",
-      "currentPlan": "Current Plan",
-      "planFeatures": "Plan Features",
-      "noPlan": "No Active Plan",
-      "freePlan": "Free Plan",
-      "proPlan": "Pro Plan",
-      "businessPlan": "Business Plan",
-      "status": {
-        "active": "Active",
-        "canceled": "Canceled",
-        "past_due": "Past Due",
-        "trialing": "Trial",
-        "incomplete": "Incomplete"
-      },
-      "periodEnds": "Period ends",
-      "periodStarts": "Period starts",
-      "paymentMethod": "Payment method",
-      "changePlan": "Change Plan",
-      "cancelPlan": "Cancel Plan",
-      "updatePayment": "Update Payment",
-      "availablePlans": "Available Plans",
-      "choosePlan": "Choose Plan",
-      "currentPlanBadge": "Current Plan",
-      "selectPlan": "Select Plan",
-      "upgradeNow": "Upgrade Now",
-      "perMonth": "/month",
-      "perYear": "/year",
-      "billingHistory": "Billing History",
-      "invoice": "Invoice",
-      "amount": "Amount",
-      "date": "Date",
-      "Status": "Status",
-      "download": "Download",
-      "noInvoices": "No invoices yet",
-      "invoiceStatus": {
-        "paid": "Paid",
-        "unpaid": "Unpaid",
-        "refunded": "Refunded",
-        "failed": "Failed"
-      },
-      "dangerZone": "Danger Zone",
-      "dangerDescription": "Irreversible actions for your account",
-      "cancelSubscription": "Cancel Subscription",
-      "cancelSubscriptionDescription": "You will lose access to Pro features at the end of your billing period.",
-      "deleteAccount": "Delete Account",
-      "deleteAccountDescription": "Permanently delete your account and all data. This cannot be undone.",
-      "confirmCancel": "Are you sure you want to cancel your subscription?",
-      "confirmDelete": "Are you sure you want to delete your account? This action cannot be undone.",
-      "cancelConfirm": "Yes, Cancel Subscription",
-      "deleteConfirm": "Yes, Delete Account",
-      "keep": "Keep Plan",
-      "loading": "Loading..."
-    },
-    "platformsNames": {
-      "twitter": "X (Twitter)",
-      "instagram": "Instagram",
-      "linkedin": "LinkedIn",
-      "tiktok": "TikTok"
-    },
-    "timezones": {
-      "riyadh": "Asia/Riyadh (GMT+3)",
-      "dubai": "Asia/Dubai (GMT+4)",
-      "cairo": "Africa/Cairo (GMT+2)",
-      "london": "Europe/London (GMT+0)",
-      "newyork": "America/New_York (GMT-5)"
+      "thinking": "AI is thinking..."
     }
   }
 }
