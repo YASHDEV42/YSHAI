@@ -10,6 +10,7 @@ import {
 import { User } from './user.entity';
 import { Plan } from './plan.entity';
 import { Invoice } from './invoice.entity';
+import type { WrapperType } from 'src/types/relation-wrapper';
 
 @Entity()
 export class Subscription {
@@ -18,11 +19,11 @@ export class Subscription {
 
   @Index()
   @ManyToOne(() => User, { fieldName: 'userId' })
-  user!: User;
+  user!: WrapperType<User>;
 
   @Index()
   @ManyToOne(() => Plan, { fieldName: 'planId' })
-  plan!: Plan;
+  plan!: WrapperType<Plan>;
 
   @Property()
   status!:

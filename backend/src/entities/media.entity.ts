@@ -1,5 +1,6 @@
 import { Entity, PrimaryKey, Property, ManyToOne } from '@mikro-orm/core';
 import { Post } from './post.entity';
+import type { WrapperType } from 'src/types/relation-wrapper';
 
 @Entity()
 export class Media {
@@ -10,7 +11,7 @@ export class Media {
     nullable: true,
     fieldName: 'postId',
   })
-  post?: Post | null;
+  post?: WrapperType<Post | null>;
 
   @Property()
   url!: string;

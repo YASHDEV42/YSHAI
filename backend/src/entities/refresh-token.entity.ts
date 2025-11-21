@@ -6,6 +6,7 @@ import {
   Index,
 } from '@mikro-orm/core';
 import { User } from './user.entity';
+import type { WrapperType } from 'src/types/relation-wrapper';
 
 @Entity()
 export class RefreshToken {
@@ -14,7 +15,7 @@ export class RefreshToken {
 
   @Index()
   @ManyToOne(() => User, { fieldName: 'userId' })
-  user!: User;
+  user!: WrapperType<User>;
 
   // Hashed token (NOT raw token)
   @Property()

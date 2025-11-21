@@ -10,7 +10,6 @@ import {
 
 import { Post } from './post.entity';
 import { SocialAccount } from './social-account.entity';
-import { Membership } from './membership.entity';
 import { Invoice } from './invoice.entity';
 import { Notification } from './notification.entity';
 import { AuditLog } from './audit-log.entity';
@@ -19,7 +18,8 @@ import { PasswordResetToken } from './password-reset-token.entity';
 import { WebhookSubscription } from './webhook-subscription.entity';
 import { AIUsageLog } from './ai-usage-log.entity';
 import { Campaign } from './campaign.entity';
-import { Template } from './template.entity';
+import type { WrapperType } from 'src/types/relation-wrapper';
+import { Membership } from './membership.entity';
 
 @Entity()
 export class User {
@@ -76,7 +76,9 @@ export class User {
   socialAccounts = new Collection<SocialAccount>(this);
 
   @OneToMany(() => Membership, (membership) => membership.user)
-  memberships = new Collection<Membership>(this);
+  memberships: WrapperType<Collection<Membership>> = new Collection<Membership>(
+    this,
+  );
 
   @OneToMany(() => Invoice, (invoice) => invoice.user)
   invoices = new Collection<Invoice>(this);
@@ -101,7 +103,4 @@ export class User {
 
   @OneToMany(() => Campaign, (campaign) => campaign.owner)
   campaigns = new Collection<Campaign>(this);
-
-  @OneToMany(() => Template, (template) => template.owner)
-  templates = new Collection<Template>(this);
 }

@@ -7,6 +7,7 @@ import {
 } from '@mikro-orm/core';
 import { Post } from './post.entity';
 import { PostTarget } from './post-target.entity';
+import type { WrapperType } from 'src/types/relation-wrapper';
 
 @Entity()
 export class Job {
@@ -14,10 +15,10 @@ export class Job {
   id!: number;
 
   @ManyToOne(() => Post, { fieldName: 'postId' })
-  post!: Post;
+  post!: WrapperType<Post>;
 
   @ManyToOne(() => PostTarget, { nullable: true, fieldName: 'postTargetId' })
-  target?: PostTarget;
+  target?: WrapperType<PostTarget>;
 
   @Property()
   provider!: 'x' | 'instagram' | 'linkedin' | 'tiktok';

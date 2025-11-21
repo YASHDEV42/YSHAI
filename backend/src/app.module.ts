@@ -1,8 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
-import mikroOrmConfig from '../mikro-orm.config';
-
+import mikroOrmConfig from './mikro-orm.config';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { PostsModule } from './posts/posts.module';
@@ -20,7 +19,6 @@ import { BillingModule } from './billing/billing.module';
 import { AdminModule } from './admin/admin.module';
 import { PublisherModule } from './publisher/publisher.module';
 import { CampaignsModule } from './campaigns/campaigns.module';
-import { TemplatesModule } from './templates/templates.module';
 import { PostTargetsModule } from './post-targets/post-targets.module';
 
 @Module({
@@ -35,7 +33,6 @@ import { PostTargetsModule } from './post-targets/post-targets.module';
     PostsModule,
     JobsModule,
     CampaignsModule,
-    TemplatesModule,
     PostTargetsModule,
     MediaModule,
     TeamsModule,

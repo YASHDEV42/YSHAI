@@ -6,6 +6,7 @@ import {
   Index,
 } from '@mikro-orm/core';
 import { User } from './user.entity';
+import type { WrapperType } from 'src/types/relation-wrapper';
 
 @Entity()
 export class PasswordResetToken {
@@ -14,7 +15,7 @@ export class PasswordResetToken {
 
   @Index()
   @ManyToOne(() => User, { fieldName: 'userId' })
-  user!: User;
+  user!: WrapperType<User>;
 
   // Store ONLY a HASH of the token
   @Property()

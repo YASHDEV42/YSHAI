@@ -8,8 +8,9 @@ loadEnv({ path: envPath });
 
 const config: Options = {
   driver: PostgreSqlDriver,
-  entities: ['./dist/src/entities'],
-  entitiesTs: ['./src/entities'],
+  clientUrl: process.env.DATABASE_URL,
+  entities: ['dist/entities/**/*.entity.js'],
+  entitiesTs: ['src/entities/**/*.entity.ts'],
   driverOptions: {
     connection: {
       ssl: {
@@ -17,7 +18,6 @@ const config: Options = {
       },
     },
   },
-  clientUrl: process.env.DATABASE_URL,
 };
 
 export default config;

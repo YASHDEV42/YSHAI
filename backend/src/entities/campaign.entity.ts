@@ -9,6 +9,7 @@ import {
 import { User } from './user.entity';
 import { Team } from './team.entity';
 import { Post } from './post.entity';
+import type { WrapperType } from 'src/types/relation-wrapper';
 
 @Entity()
 export class Campaign {
@@ -22,10 +23,10 @@ export class Campaign {
   description?: string;
 
   @ManyToOne(() => User, { fieldName: 'ownerId' })
-  owner!: User;
+  owner!: WrapperType<User>;
 
   @ManyToOne(() => Team, { fieldName: 'teamId', nullable: true })
-  team?: Team;
+  team?: WrapperType<Team>;
 
   @Property()
   status!: 'draft' | 'active' | 'completed' | 'cancelled';

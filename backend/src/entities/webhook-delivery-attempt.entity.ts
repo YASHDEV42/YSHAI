@@ -6,6 +6,7 @@ import {
   Index,
 } from '@mikro-orm/core';
 import { WebhookSubscription } from './webhook-subscription.entity';
+import type { WrapperType } from 'src/types/relation-wrapper';
 
 @Entity()
 export class WebhookDeliveryAttempt {
@@ -14,7 +15,7 @@ export class WebhookDeliveryAttempt {
 
   @Index()
   @ManyToOne(() => WebhookSubscription, { fieldName: 'subscriptionId' })
-  subscription!: WebhookSubscription;
+  subscription!: WrapperType<WebhookSubscription>;
 
   // We keep this only if you want to log the exact URL at delivery time.
   @Property()

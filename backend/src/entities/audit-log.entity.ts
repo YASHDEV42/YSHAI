@@ -6,6 +6,7 @@ import {
   Index,
 } from '@mikro-orm/core';
 import { User } from './user.entity';
+import type { WrapperType } from 'src/types/relation-wrapper';
 
 @Entity()
 export class AuditLog {
@@ -14,7 +15,7 @@ export class AuditLog {
 
   @Index() // most queries filter by user
   @ManyToOne(() => User, { fieldName: 'userId', nullable: true })
-  user?: User;
+  user?: WrapperType<User>;
 
   @Index() // frequently queried
   @Property()

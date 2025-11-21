@@ -7,6 +7,7 @@ import {
 } from '@mikro-orm/core';
 import { User } from './user.entity';
 import { Subscription } from './subscription.entity';
+import type { WrapperType } from 'src/types/relation-wrapper';
 
 @Entity()
 export class Invoice {
@@ -15,14 +16,14 @@ export class Invoice {
 
   @ManyToOne(() => User, { fieldName: 'userId' })
   @Index({ name: 'invoice_user_idx' })
-  user!: User;
+  user!: WrapperType<User>;
 
   @ManyToOne(() => Subscription, {
     fieldName: 'subscriptionId',
     nullable: true,
   })
   @Index({ name: 'invoice_subscription_idx' })
-  subscription?: Subscription;
+  subscription?: WrapperType<Subscription>;
 
   @Property()
   amount!: number; // Store as float or integer cents

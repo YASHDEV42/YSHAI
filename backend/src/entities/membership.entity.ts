@@ -8,6 +8,7 @@ import {
 } from '@mikro-orm/core';
 import { User } from './user.entity';
 import { Team } from './team.entity';
+import type { WrapperType } from 'src/types/relation-wrapper';
 
 @Entity()
 @Unique({ properties: ['user', 'team'] })
@@ -17,11 +18,11 @@ export class Membership {
 
   @Index()
   @ManyToOne(() => User, { fieldName: 'userId' })
-  user!: User;
+  user!: WrapperType<User>;
 
   @Index()
   @ManyToOne(() => Team, { fieldName: 'teamId' })
-  team!: Team;
+  team!: WrapperType<Team>;
 
   @Property()
   role!: 'owner' | 'admin' | 'editor' | 'viewer';

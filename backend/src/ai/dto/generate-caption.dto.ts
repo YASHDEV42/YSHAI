@@ -12,7 +12,11 @@ export class GenerateCaptionDto {
   @IsString()
   tone?: string;
 
-  @ApiProperty({ description: 'Number of captions to generate', default: 1 })
+  @ApiProperty({
+    description: 'Number of captions to generate',
+    default: 1,
+    type: Number,
+  })
   @IsOptional()
   @IsInt()
   @Min(1)

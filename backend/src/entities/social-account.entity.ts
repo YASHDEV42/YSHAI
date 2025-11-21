@@ -9,6 +9,7 @@ import {
 import { User } from './user.entity';
 import { AccountToken } from './account-token.entity';
 import { PostTarget } from './post-target.entity';
+import type { WrapperType } from 'src/types/relation-wrapper';
 
 @Entity()
 export class SocialAccount {
@@ -22,7 +23,7 @@ export class SocialAccount {
   providerAccountId!: string;
 
   @ManyToOne(() => User, { fieldName: 'userId' })
-  user!: User;
+  user!: WrapperType<User>;
 
   @Property({ nullable: true })
   username?: string;
@@ -49,7 +50,9 @@ export class SocialAccount {
   disconnectedAt?: Date;
 
   @OneToMany(() => AccountToken, (token) => token.account)
-  tokens = new Collection<AccountToken>(this);
+  tokens: WrapperType<Collection<AccountToken>> = new Collection<AccountToken>(
+    this,
+  );
 
   @OneToMany(() => PostTarget, (target) => target.socialAccount)
   postTargets = new Collection<PostTarget>(this);

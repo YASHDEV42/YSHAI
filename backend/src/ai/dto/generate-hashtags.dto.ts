@@ -7,7 +7,11 @@ export class GenerateHashtagsDto {
   @IsNotEmpty()
   text: string;
 
-  @ApiProperty({ description: 'Number of hashtags to generate', default: 5 })
+  @ApiProperty({
+    description: 'Number of hashtags to generate',
+    default: 5,
+    type: Number,
+  })
   @IsOptional()
   @IsInt()
   @Min(1)

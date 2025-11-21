@@ -7,6 +7,7 @@ import {
 } from '@mikro-orm/core';
 import { Post } from './post.entity';
 import { Generation } from './generation.entity';
+import type { WrapperType } from 'src/types/relation-wrapper';
 
 @Entity()
 export class ModerationResult {
@@ -18,14 +19,14 @@ export class ModerationResult {
     fieldName: 'generationId',
     nullable: true,
   })
-  generation?: Generation;
+  generation?: WrapperType<Generation>;
 
   @Index()
   @ManyToOne(() => Post, {
     fieldName: 'postId',
     nullable: true,
   })
-  post?: Post;
+  post?: WrapperType<Post>;
 
   @Property()
   provider!: 'openai' | 'meta' | 'tiktok' | 'internal';

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CountDto {
-  @ApiProperty()
+  @ApiProperty({ type: Number })
   count!: number;
 }

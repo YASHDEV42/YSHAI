@@ -1,5 +1,6 @@
 import { Entity, PrimaryKey, Property, ManyToOne } from '@mikro-orm/core';
 import { SocialAccount } from './social-account.entity';
+import type { WrapperType } from 'src/types/relation-wrapper';
 
 @Entity()
 export class AccountToken {
@@ -7,7 +8,7 @@ export class AccountToken {
   id!: number;
 
   @ManyToOne(() => SocialAccount, { fieldName: 'socialAccountId' })
-  account!: SocialAccount;
+  account!: WrapperType<SocialAccount>;
 
   @Property()
   tokenType!: 'access' | 'refresh';

@@ -1,0 +1,19 @@
+{
+  "jsc": {
+    "target": "es2021",
+    "parser": {
+      "syntax": "typescript",
+      "decorators": true
+    },
+    "transform": {
+      "decoratorMetadata": true
+    },
+    "keepClassNames": true,
+    "loose": true
+  },
+  "module": {
+    "type": "commonjs"
+  },
+  "minify": false,
+  "sourceMaps": true
+}

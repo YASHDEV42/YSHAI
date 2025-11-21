@@ -7,6 +7,7 @@ import {
 } from '@mikro-orm/core';
 import { Post } from './post.entity';
 import { SocialAccount } from './social-account.entity';
+import type { WrapperType } from 'src/types/relation-wrapper';
 
 @Entity()
 export class PostTarget {
@@ -15,11 +16,11 @@ export class PostTarget {
 
   @ManyToOne(() => Post, { fieldName: 'postId' })
   @Index({ name: 'post_target_post_idx' })
-  post!: Post;
+  post!: WrapperType<Post>;
 
   @ManyToOne(() => SocialAccount, { fieldName: 'socialAccountId' })
   @Index({ name: 'post_target_account_idx' })
-  socialAccount!: SocialAccount;
+  socialAccount!: WrapperType<SocialAccount>;
 
   @Property({
     default: 'pending',

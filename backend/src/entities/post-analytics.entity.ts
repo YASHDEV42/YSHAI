@@ -7,6 +7,7 @@ import {
 } from '@mikro-orm/core';
 import { Post } from './post.entity';
 import { SocialAccount } from './social-account.entity';
+import type { WrapperType } from 'src/types/relation-wrapper';
 
 @Entity()
 export class PostAnalytics {
@@ -15,14 +16,14 @@ export class PostAnalytics {
 
   @Index({ name: 'post_analytics_post_idx' })
   @ManyToOne(() => Post, { fieldName: 'postId' })
-  post!: Post;
+  post!: WrapperType<Post>;
 
   // Which social account was this fetched from?
   @ManyToOne(() => SocialAccount, {
     fieldName: 'socialAccountId',
     nullable: true,
   })
-  socialAccount?: SocialAccount;
+  socialAccount?: WrapperType<SocialAccount>;
 
   // Platform provider is needed because metrics differ per provider
   @Property()

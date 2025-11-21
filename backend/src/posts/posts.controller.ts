@@ -63,7 +63,6 @@ export class PostsController {
       authorId: p.author.id,
       teamId: p.team ? p.team.id : null,
       campaignId: p.campaign ? p.campaign.id : null,
-      templateId: p.template ? p.template.id : null,
       targets: p.targets?.getItems().map((t) => ({
         id: t.id,
         provider: t.socialAccount.provider,

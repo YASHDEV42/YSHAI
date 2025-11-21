@@ -9,7 +9,7 @@ import {
 import { User } from './user.entity';
 import { Membership } from './membership.entity';
 import { Post } from './post.entity';
-import { Template } from './template.entity';
+import type { WrapperType } from 'src/types/relation-wrapper';
 
 @Entity()
 export class Team {
@@ -20,7 +20,7 @@ export class Team {
   name!: string;
 
   @ManyToOne(() => User, { fieldName: 'ownerId' })
-  owner!: User;
+  owner!: WrapperType<User>;
 
   @Property({ nullable: true })
   description?: string;
@@ -42,7 +42,4 @@ export class Team {
 
   @OneToMany(() => Post, (post) => post.team)
   posts = new Collection<Post>(this);
-
-  @OneToMany(() => Template, (template) => template.team)
-  templates = new Collection<Template>(this);
 }

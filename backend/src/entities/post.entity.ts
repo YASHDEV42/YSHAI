@@ -16,8 +16,8 @@ import { Job } from './job.entity';
 import { Generation } from './generation.entity';
 import { PostAnalytics } from './post-analytics.entity';
 import { Campaign } from './campaign.entity';
-import { Template } from './template.entity';
 import { PostTarget } from './post-target.entity';
+import type { WrapperType } from 'src/types/relation-wrapper';
 
 @Entity()
 export class Post {
@@ -25,10 +25,10 @@ export class Post {
   id!: number;
 
   @ManyToOne(() => User, { fieldName: 'authorId' })
-  author!: User;
+  author!: WrapperType<User>;
 
   @ManyToOne(() => Team, { fieldName: 'teamId', nullable: true })
-  team?: Team;
+  team?: WrapperType<Team>;
 
   @Property()
   contentAr?: string;
@@ -75,7 +75,4 @@ export class Post {
 
   @ManyToOne(() => Campaign, { fieldName: 'campaignId', nullable: true })
   campaign?: Campaign;
-
-  @ManyToOne(() => Template, { fieldName: 'templateId', nullable: true })
-  template?: Template;
 }

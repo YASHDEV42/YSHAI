@@ -8,6 +8,7 @@ import {
 import { User } from './user.entity';
 import { Subscription } from './subscription.entity';
 import { Generation } from './generation.entity';
+import type { WrapperType } from 'src/types/relation-wrapper';
 
 @Entity()
 export class AIUsageLog {
@@ -16,20 +17,20 @@ export class AIUsageLog {
 
   @Index()
   @ManyToOne(() => User, { fieldName: 'userId' })
-  user!: User;
+  user!: WrapperType<User>;
 
   @Index()
   @ManyToOne(() => Subscription, {
     fieldName: 'subscriptionId',
     nullable: true,
   })
-  subscription?: Subscription;
+  subscription?: WrapperType<Subscription>;
 
   @ManyToOne(() => Generation, {
     fieldName: 'generationId',
     nullable: true,
   })
-  generation?: Generation;
+  generation?: WrapperType<Generation>;
 
   @Property()
   modelUsed!: string; // "gpt-4.1-mini", "llama3-70b", ...

@@ -9,7 +9,6 @@ import { User } from 'src/entities/user.entity';
 import { Team } from 'src/entities/team.entity';
 import { SocialAccount } from 'src/entities/social-account.entity';
 import { Campaign } from 'src/entities/campaign.entity';
-import { Template } from 'src/entities/template.entity';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { BulkCreatePostsDto } from './dto/bulk-create-posts.dto';
@@ -55,7 +54,7 @@ export class PostsService {
     }
 
     const posts = await this.em.find(Post, where, {
-      populate: ['campaign', 'template', 'targets.socialAccount', 'media'],
+      populate: ['campaign', 'targets.socialAccount', 'media'],
     });
     return posts;
   }
@@ -64,7 +63,7 @@ export class PostsService {
     return await this.em.findOne(
       Post,
       { id, deletedAt: null },
-      { populate: ['campaign', 'template', 'targets.socialAccount', 'media'] },
+      { populate: ['campaign', 'targets.socialAccount', 'media'] },
     );
   }
 
@@ -93,11 +92,10 @@ export class PostsService {
     }
 
     // 2. FETCH RELATED ENTITIES (IN PARALLEL)
-    const [author, team, campaign, template] = await Promise.all([
+    const [author, team, campaign] = await Promise.all([
       this.em.findOne(User, { id: authorId }),
       teamId ? this.em.findOne(Team, { id: teamId }) : null,
       campaignId ? this.em.findOne(Campaign, { id: campaignId }) : null,
-      templateId ? this.em.findOne(Template, { id: templateId }) : null,
     ]);
 
     if (!author) {
@@ -108,9 +106,6 @@ export class PostsService {
     }
     if (campaignId && !campaign) {
       throw new NotFoundException(`Campaign with ID "${campaignId}" not found`);
-    }
-    if (templateId && !template) {
-      throw new NotFoundException(`Template with ID "${templateId}" not found`);
     }
 
     // 3. PARSE & VALIDATE scheduledAt (ONLY FOR SCHEDULED POSTS)
@@ -159,7 +154,6 @@ export class PostsService {
       author,
       team,
       campaign,
-      template,
       status,
       isRecurring,
       scheduledAt: scheduledAtDate,
@@ -320,12 +314,6 @@ export class PostsService {
     if (campaignId !== undefined) {
       post.campaign = campaignId
         ? ((await this.em.findOne(Campaign, { id: campaignId })) ?? undefined)
-        : undefined;
-    }
-
-    if (templateId !== undefined) {
-      post.template = templateId
-        ? ((await this.em.findOne(Template, { id: templateId })) ?? undefined)
         : undefined;
     }
 

@@ -10,6 +10,7 @@ import {
 } from '@mikro-orm/core';
 import { User } from './user.entity';
 import { WebhookDeliveryAttempt } from './webhook-delivery-attempt.entity';
+import type { WrapperType } from 'src/types/relation-wrapper';
 
 @Entity()
 @Unique({ properties: ['user', 'event', 'url'] })
@@ -18,7 +19,7 @@ export class WebhookSubscription {
   id!: number;
 
   @ManyToOne(() => User, { fieldName: 'userId' })
-  user!: User;
+  user!: WrapperType<User>;
 
   @Property()
   url!: string;

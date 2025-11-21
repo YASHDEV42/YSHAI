@@ -1,6 +1,7 @@
 import { Entity, PrimaryKey, Property, ManyToOne } from '@mikro-orm/core';
 import { Post } from './post.entity';
 import { User } from './user.entity';
+import type { WrapperType } from 'src/types/relation-wrapper';
 
 @Entity()
 export class Generation {
@@ -8,10 +9,10 @@ export class Generation {
   id!: number;
 
   @ManyToOne(() => Post, { fieldName: 'postId' })
-  post!: Post;
+  post!: WrapperType<Post>;
 
   @ManyToOne(() => User, { fieldName: 'userId' })
-  user!: User; // who triggered generation
+  user!: WrapperType<User>;
 
   @Property()
   prompt!: string;
