@@ -126,3 +126,8 @@ export async function extractFeatureDetailText(
 
   return featureData;
 }
+
+export async function extractAboutPageText(locale: string) {
+  const messages = await getMessages({ locale });
+  return messages.AboutPage;
+}

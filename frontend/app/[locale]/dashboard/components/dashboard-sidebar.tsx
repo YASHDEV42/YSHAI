@@ -74,30 +74,6 @@ export function DashboardSidebar({
   const sidebarRef = useRef<HTMLDivElement>(null);
   const notificationsRef = useRef<HTMLDivElement>(null);
 
-  // Simulate receiving notifications
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      // Simulate receiving a new notification
-      const newNotification: NotificationResponseDto = {
-        id: Date.now(),
-        title: "New follower",
-        type: "approved",
-        message: "Someone just followed your account",
-        read: false,
-        createdAt: new Date().toISOString(),
-      };
-
-      setNotifications((prev) => [newNotification, ...prev].slice(0, 10));
-
-      toast.info("New notification received", {
-        icon: <Bell className="h-4 w-4" />,
-        duration: 3000,
-      });
-    }, 3000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
   const menuItems = [
     {
       href: "/dashboard",

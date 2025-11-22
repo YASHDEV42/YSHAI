@@ -48,7 +48,7 @@ export function Navbar({ text, user }: { text: any; user: any }) {
             {text.pricing}
           </Link>
           <Link
-            href="#about"
+            href="/about"
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             {text.about}

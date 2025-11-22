@@ -64,14 +64,14 @@ const StepIndicator = ({
   return (
     <div
       className={cn(
-        "flex items-center cursor-pointer transition-all duration-300",
+        "flex items-center cursor-pointer transition-all duration-100",
         isActive ? "scale-105" : "",
       )}
       onClick={onClick}
     >
       <div
         className={cn(
-          "flex h-8 w-8 items-center justify-center rounded-full border-2 transition-all duration-300",
+          "flex h-8 w-8 items-center justify-center rounded-full border-2 transition-all duration-100",
           isCompleted
             ? "border-primary bg-primary text-primary-foreground"
             : isActive
@@ -113,7 +113,9 @@ export default function CreatePage({
   // STATE
   const [contentAr, setContentAr] = useState("");
   const [contentEn, setContentEn] = useState("");
-  const [contentTab, setContentTab] = useState<"ar" | "en">("en");
+  const [contentTab, setContentTab] = useState<"ar" | "en">(
+    locale === "ar" ? "ar" : "en",
+  );
 
   const [error, setError] = useState("");
 
@@ -173,7 +175,6 @@ export default function CreatePage({
 
   // EFFECTS
   useEffect(() => {
-    // Show welcome toast
     toast.info(
       locale === "ar"
         ? "مرحباً! ابدأ بإنشاء منشور جديد"
@@ -328,9 +329,9 @@ export default function CreatePage({
   }) => {
     const PlatformIcon = getPlatformIcon(platform.id);
     return (
-      <div className="border rounded-lg p-4 bg-card transition-all duration-300 hover:shadow-md">
+      <div className="border rounded-lg p-4 bg-card transition-all duration-100 hover:shadow-md">
         <div className="flex gap-3 mb-3">
-          <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center transition-all duration-300 hover:scale-110">
+          <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center transition-all duration-100 hover:scale-110">
             <span className="font-semibold text-sm">Y</span>
           </div>
           <div>
@@ -354,7 +355,7 @@ export default function CreatePage({
               <img
                 src={uploadedMedia[0] || "/placeholder.svg"}
                 alt="Post media"
-                className="w-full rounded-lg object-cover max-h-80 transition-all duration-300 hover:scale-105"
+                className="w-full rounded-lg object-cover max-h-80 transition-all duration-100 hover:scale-105"
               />
             ) : (
               <Carousel className="w-full">
@@ -364,7 +365,7 @@ export default function CreatePage({
                       <img
                         src={m || "/placeholder.svg"}
                         alt={`Post media ${i + 1}`}
-                        className="w-full rounded-lg object-cover max-h-80 transition-all duration-300 hover:scale-105"
+                        className="w-full rounded-lg object-cover max-h-80 transition-all duration-100 hover:scale-105"
                       />
                     </CarouselItem>
                   ))}
@@ -481,7 +482,7 @@ export default function CreatePage({
             {/* LEFT SIDE */}
             <div
               className={cn(
-                "space-y-4 transition-all duration-300",
+                "space-y-4 transition-all duration-100",
                 isAnimating
                   ? "opacity-0 translate-x-4"
                   : "opacity-100 translate-x-0",
@@ -490,7 +491,7 @@ export default function CreatePage({
               {/* PLATFORM SELECTOR */}
               <Card
                 className={cn(
-                  "transition-all duration-300",
+                  "transition-all duration-100",
                   currentStep === 1
                     ? "ring-2 ring-primary shadow-lg"
                     : "hover:shadow-md",
@@ -519,7 +520,7 @@ export default function CreatePage({
                           variant={isSelected ? "default" : "outline"}
                           className={cn(
                             isSelected ? getPlatformColor(p.id) : "",
-                            "transition-all duration-300 hover:scale-105",
+                            "transition-all duration-100 hover:scale-105",
                             isSelected ? "shadow-md" : "",
                           )}
                           size="sm"
@@ -540,7 +541,7 @@ export default function CreatePage({
               {/* CAMPAIGN SELECTOR */}
               <Card
                 className={cn(
-                  "transition-all duration-300",
+                  "transition-all duration-100",
                   currentStep === 2
                     ? "ring-2 ring-primary shadow-lg"
                     : "hover:shadow-md",
@@ -563,7 +564,7 @@ export default function CreatePage({
                     value={selectedCampaign}
                     onValueChange={setSelectedCampaign}
                   >
-                    <SelectTrigger className="transition-all duration-300 focus:ring-2 focus:ring-primary/20">
+                    <SelectTrigger className="transition-all duration-100 focus:ring-2 focus:ring-primary/20">
                       <SelectValue placeholder={text.campaigns.placeholder} />
                     </SelectTrigger>
                     <SelectContent>
@@ -591,7 +592,7 @@ export default function CreatePage({
               {/* MEDIA UPLOAD */}
               <Card
                 className={cn(
-                  "transition-all duration-300",
+                  "transition-all duration-100",
                   currentStep === 3
                     ? "ring-2 ring-primary shadow-lg"
                     : "hover:shadow-md",
@@ -609,7 +610,7 @@ export default function CreatePage({
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="grid grid-cols-2 gap-2">
-                    <label className="border-dashed border-2 rounded-lg p-4 text-center cursor-pointer hover:border-primary transition-all duration-300 hover:bg-primary/5">
+                    <label className="border-dashed border-2 rounded-lg p-4 text-center cursor-pointer hover:border-primary transition-all duration-100 hover:bg-primary/5">
                       <ImageIcon className="w-5 h-5 mx-auto text-muted-foreground" />
                       <span className="text-xs">{text.media.uploadImage}</span>
                       <input
@@ -621,7 +622,7 @@ export default function CreatePage({
                       />
                     </label>
 
-                    <label className="border-dashed border-2 rounded-lg p-4 text-center cursor-pointer hover:border-primary transition-all duration-300 hover:bg-primary/5">
+                    <label className="border-dashed border-2 rounded-lg p-4 text-center cursor-pointer hover:border-primary transition-all duration-100 hover:bg-primary/5">
                       <Video className="w-5 h-5 mx-auto text-muted-foreground" />
                       <span className="text-xs">{text.media.uploadVideo}</span>
                       <input
@@ -654,7 +655,7 @@ export default function CreatePage({
                       {uploadedMedia.map((media, i) => (
                         <div
                           key={i}
-                          className="relative group overflow-hidden rounded-lg transition-all duration-300 hover:scale-105"
+                          className="relative group overflow-hidden rounded-lg transition-all duration-100 hover:scale-105"
                           style={{
                             animationDelay: `${i * 100}ms`,
                             animation: "fadeIn 0.5s ease-out forwards",
@@ -682,7 +683,7 @@ export default function CreatePage({
               {/* CONTENT EDITOR */}
               <Card
                 className={cn(
-                  "transition-all duration-300",
+                  "transition-all duration-100",
                   currentStep === 4
                     ? "ring-2 ring-primary shadow-lg"
                     : "hover:shadow-md",
@@ -716,7 +717,7 @@ export default function CreatePage({
                         onChange={(e) => setContentEn(e.target.value)}
                         placeholder={text.contentEditor.placeholder}
                         rows={6}
-                        className="transition-all duration-300 focus:ring-2 focus:ring-primary/20"
+                        className="transition-all duration-100 focus:ring-2 focus:ring-primary/20"
                       />
                     </TabsContent>
 
@@ -728,7 +729,7 @@ export default function CreatePage({
                         onChange={(e) => setContentAr(e.target.value)}
                         placeholder="اكتب المحتوى هنا..."
                         rows={6}
-                        className="transition-all duration-300 focus:ring-2 focus:ring-primary/20"
+                        className="transition-all duration-100 focus:ring-2 focus:ring-primary/20"
                       />
                     </TabsContent>
                   </Tabs>
@@ -739,20 +740,17 @@ export default function CreatePage({
             {/* RIGHT SIDE */}
             <div
               className={cn(
-                "space-y-4 transition-all duration-300",
+                "space-y-4 transition-all duration-100",
                 isAnimating
                   ? "opacity-0 translate-x-4"
                   : "opacity-100 translate-x-0",
               )}
             >
               {/* PREVIEW */}
-              <Card className="transition-all duration-300 hover:shadow-md">
+              <Card className="transition-all duration-100 hover:shadow-md">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     {text.preview.title}
-                    <Badge variant="outline" className="ml-auto">
-                      Live Preview
-                    </Badge>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -765,7 +763,7 @@ export default function CreatePage({
                             key={p.id}
                             value={p.id}
                             disabled={!selectedPlatforms.includes(p.id)}
-                            className="transition-all duration-300"
+                            className="transition-all duration-100"
                           >
                             <Icon className="w-3 h-3 mr-1" />
                             {p.username}
@@ -786,7 +784,7 @@ export default function CreatePage({
               {/* SCHEDULE SECTION */}
               <Card
                 className={cn(
-                  "transition-all duration-300",
+                  "transition-all duration-100",
                   currentStep === 5
                     ? "ring-2 ring-primary shadow-lg"
                     : "hover:shadow-md",
@@ -797,9 +795,12 @@ export default function CreatePage({
                     {text.schedule.title}
                     {(scheduleType === "now" ||
                       (scheduleDate && scheduleTime)) && (
-                      <Badge variant="secondary" className="ml-auto">
-                        <CheckCircle className="w-3 h-3 mr-1" />
-                        Set
+                      <Badge
+                        variant="secondary"
+                        className="ml-auto text-primary"
+                      >
+                        <CheckCircle className="w-3 h-3 mr-1 text-primary" />
+                        {locale === "ar" ? "محدد" : "Set"}
                       </Badge>
                     )}
                   </CardTitle>
@@ -812,14 +813,14 @@ export default function CreatePage({
                     <TabsList className="grid grid-cols-2">
                       <TabsTrigger
                         value="now"
-                        className="transition-all duration-300"
+                        className="transition-all duration-100"
                       >
                         <Clock className="w-3 h-3 mr-1" />
                         {text.schedule.publishNowTab}
                       </TabsTrigger>
                       <TabsTrigger
                         value="later"
-                        className="transition-all duration-300"
+                        className="transition-all duration-100"
                       >
                         <Calendar className="w-3 h-3 mr-1" />
                         {text.schedule.scheduleLaterTab}
@@ -841,7 +842,7 @@ export default function CreatePage({
                             required
                             value={scheduleDate}
                             onChange={(e) => setScheduleDate(e.target.value)}
-                            className="transition-all duration-300 focus:ring-2 focus:ring-primary/20"
+                            className="transition-all duration-100 focus:ring-2 focus:ring-primary/20"
                           />
                         </div>
                         <div>
@@ -851,7 +852,7 @@ export default function CreatePage({
                             required
                             value={scheduleTime}
                             onChange={(e) => setScheduleTime(e.target.value)}
-                            className="transition-all duration-300 focus:ring-2 focus:ring-primary/20"
+                            className="transition-all duration-100 focus:ring-2 focus:ring-primary/20"
                           />
                         </div>
                       </div>
@@ -866,7 +867,7 @@ export default function CreatePage({
                   <Button
                     type="submit"
                     disabled={isPending || selectedPlatforms.length === 0}
-                    className="w-full mt-4 transition-all duration-300 hover:scale-[1.02]"
+                    className="w-full mt-4 transition-all duration-100 hover:scale-[1.02]"
                   >
                     {isPending ? (
                       <>

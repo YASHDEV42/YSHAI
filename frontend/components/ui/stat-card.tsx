@@ -36,7 +36,7 @@ export function StatCard({
   return (
     <Card
       className={cn(
-        "border-l-4 hover:border-l-primary transition-all duration-300 hover:shadow-md hover:scale-[1.02]",
+        "border-l-4 hover:border-l-primary transition-all duration-100 hover:shadow-md hover:scale-[1.02]",
         animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4",
         className,
       )}
@@ -47,7 +47,7 @@ export function StatCard({
         {Icon && (
           <div
             className={cn(
-              "p-2 rounded-lg transition-all bg-accent duration-300 group-hover:scale-110",
+              "p-2 rounded-lg transition-all bg-accent duration-100 group-hover:scale-110",
             )}
           >
             <Icon className={cn("size-5 opacity-80")} />

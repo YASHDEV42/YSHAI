@@ -44,7 +44,7 @@ export default async function RootLayout({ children, params }: Props) {
   return (
     <html lang={locale} dir={locale === "ar" ? "rtl" : "ltr"}>
       <body
-        className={`${manrope.className}  ${ibm_Plex_Sans_Arabic.className} antialiased`}
+        className={`${manrope.className}  ${ibm_Plex_Sans_Arabic.className} scroll-smooth antialiased`}
       >
         <ThemeProvider
           attribute="class"
