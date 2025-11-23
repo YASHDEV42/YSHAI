@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import { listCampaigns } from "@/lib/campaign-helper";
 import { routing } from "@/app/i18n/routing";
 import { Suspense } from "react";
+import { CreateSkeleton } from "@/components/skeletons/create-skeleton";
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -19,7 +20,7 @@ export default async function CreatePageRoute({
   const { locale } = await params;
   setRequestLocale(locale);
   return (
-    <Suspense fallback={<div>loading...</div>}>
+    <Suspense fallback={<CreateSkeleton />}>
       <CreateServerPage locale={locale} />
     </Suspense>
   );

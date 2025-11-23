@@ -1,10 +1,10 @@
-import { TUser } from "@/types";
+import type { TUser } from "@/types";
 import { me } from "@/lib/user-helper";
 import { ModeToggle } from "../../components/toggleTheme";
 import { LanguageToggle } from "../../components/LanguageToggle";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Loader2, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { Suspense } from "react";
 import { Logo } from "./Logo";
 
@@ -79,7 +79,14 @@ export function Navbar({ text }: { text: any }) {
         </nav>
 
         <div className="flex items-center justify-end gap-3 w-[320px]">
-          <Suspense fallback={<Loader2 />}>
+          <Suspense
+            fallback={
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-20 bg-accent animate-pulse rounded-md" />
+                <div className="h-9 w-20 bg-accent animate-pulse rounded-md" />
+              </div>
+            }
+          >
             <UserMenu text={text} />
           </Suspense>
           <LanguageToggle />

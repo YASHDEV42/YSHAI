@@ -671,7 +671,10 @@
       "scheduleLaterTab": "Schedule Later",
       "publishNowDescription": "Post will be published immediately",
       "dateLabel": "Date",
-      "timeLabel": "Time"
+      "timeLabel": "Time",
+      "publishNowButton": "Publish Now",
+      "scheduleButton": "Schedule Post",
+      "creating": "Creating..."
     },
     "preview": {
       "title": "Preview",

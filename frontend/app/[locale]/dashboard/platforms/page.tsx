@@ -5,6 +5,7 @@ import { listMyAccounts } from "@/lib/accounts-helper";
 import { getInstagramPosts, getInstagramProfile } from "@/lib/meta-helper";
 import { routing } from "@/app/i18n/routing";
 import { Suspense } from "react";
+import { PlatformsSkeleton } from "@/components/skeletons/platforms-skeleton";
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -17,7 +18,7 @@ export default async function PlatformsPage({
   const { locale } = await params;
   setRequestLocale(locale);
   return (
-    <Suspense fallback={<div>loading...</div>}>
+    <Suspense fallback={<PlatformsSkeleton />}>
       <PlatformsServerPage locale={locale} />
     </Suspense>
   );

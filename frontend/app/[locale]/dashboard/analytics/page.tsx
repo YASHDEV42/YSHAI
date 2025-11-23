@@ -8,6 +8,7 @@ import {
   getTopPosts,
 } from "@/lib/analytics-helper";
 import { Suspense } from "react";
+import { AnalyticsSkeleton } from "@/components/skeletons/analytics-skeleton";
 
 export default async function AnalyticsPage({
   params,
@@ -17,7 +18,7 @@ export default async function AnalyticsPage({
   const { locale } = await params;
   setRequestLocale(locale);
   return (
-    <Suspense fallback={<div>loading...</div>}>
+    <Suspense fallback={<AnalyticsSkeleton />}>
       <AnalyticsServerPage locale={locale} />
     </Suspense>
   );
@@ -30,7 +31,6 @@ async function AnalyticsServerPage({ locale }: { locale: string }) {
       getAnalytics({ timeRange: "7d" }),
       getEngagementData({ timeRange: "7d" }),
       getPlatformPerformance({ timeRange: "7d" }),
-
       getTopPosts({ limit: 4, timeRange: "7d" }),
     ]);
 

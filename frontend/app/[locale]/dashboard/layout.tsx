@@ -3,6 +3,7 @@ import { DashboardSidebar } from "./components/dashboard-sidebar";
 import { setRequestLocale } from "next-intl/server";
 import { extractSidebarText } from "@/app/i18n/extractTexts";
 import { Suspense } from "react";
+import { SidebarSkeleton } from "@/components/skeletons/sidebar-skeleton";
 
 export default async function DashboardLayout({
   children,
@@ -15,7 +16,7 @@ export default async function DashboardLayout({
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-background">
-        <Suspense fallback={<div>loading...</div>}>
+        <Suspense fallback={<SidebarSkeleton />}>
           <DashboardSidebar locale={locale} text={text} />
         </Suspense>
         <main className="flex-1 overflow-auto">{children}</main>

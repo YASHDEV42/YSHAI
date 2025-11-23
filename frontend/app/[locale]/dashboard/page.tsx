@@ -6,6 +6,7 @@ import { list as listPosts } from "@/lib/post-helper";
 import { routing } from "@/app/i18n/routing";
 import { Suspense } from "react";
 import DashboardPage from "./components/dashboard";
+import { DashboardSkeleton } from "@/components/skeletons/dashboard-skeleton";
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -20,7 +21,7 @@ export default async function DashboardPageRoute({
   setRequestLocale(locale);
 
   return (
-    <Suspense fallback={<div>loading...</div>}>
+    <Suspense fallback={<DashboardSkeleton />}>
       <DashboardServerPage locale={locale} />
     </Suspense>
   );

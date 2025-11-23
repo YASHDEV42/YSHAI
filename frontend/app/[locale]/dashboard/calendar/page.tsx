@@ -5,6 +5,7 @@ import { list as listPosts } from "@/lib/post-helper";
 import { listMyAccounts } from "@/lib/accounts-helper";
 import { routing } from "@/app/i18n/routing";
 import { Suspense } from "react";
+import { CalendarSkeleton } from "@/components/skeletons/calendar-skeleton";
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -17,7 +18,7 @@ export default async function CalendarPageRoute({
   const { locale } = await params;
   setRequestLocale(locale);
   return (
-    <Suspense fallback={<div>loading...</div>}>
+    <Suspense fallback={<CalendarSkeleton />}>
       <CalendarServerPage locale={locale} />
     </Suspense>
   );

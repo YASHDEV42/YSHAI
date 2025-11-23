@@ -671,7 +671,10 @@
       "scheduleLaterTab": "جدولة لاحقاً",
       "publishNowDescription": "سيتم نشر المنشور فوراً",
       "dateLabel": "التاريخ",
-      "timeLabel": "الوقت"
+      "timeLabel": "الوقت",
+      "publishNowButton": "نشر الآن",
+      "scheduleButton": "جدولة المنشور",
+      "creating": "جارٍ الإنشاء..."
     },
     "preview": {
       "title": "معاينة",

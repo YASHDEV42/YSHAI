@@ -6,6 +6,7 @@ import { listMyAccounts } from "@/lib/accounts-helper";
 import { getInstagramPosts } from "@/lib/meta-helper";
 import { Suspense } from "react";
 import { routing } from "@/app/i18n/routing";
+import { PlatformDetailSkeleton } from "@/components/skeletons/platform-detail-skeleton";
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({
@@ -22,7 +23,7 @@ export default async function PlatformDetailPage({
   const { locale, platformId } = await params;
   setRequestLocale(locale);
   return (
-    <Suspense fallback={<div>loading...</div>}>
+    <Suspense fallback={<PlatformDetailSkeleton />}>
       <PlatformDetailServerPage locale={locale} platformId={platformId} />
     </Suspense>
   );

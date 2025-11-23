@@ -3,6 +3,7 @@ import { extractCampaignsPageText } from "@/app/i18n/extractTexts";
 import CampaignsManagement from "./components/campaign-management";
 import { routing } from "@/app/i18n/routing";
 import { Suspense } from "react";
+import { CampaignsSkeleton } from "@/components/skeletons/campaigns-skeleton";
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -15,7 +16,7 @@ export default async function CampaignsPage({
   const { locale } = await params;
 
   return (
-    <Suspense fallback={<div>loading...</div>}>
+    <Suspense fallback={<CampaignsSkeleton />}>
       <CampaignsServerPage locale={locale} />
     </Suspense>
   );
