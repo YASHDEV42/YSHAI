@@ -1,52 +1,66 @@
-"use client"
-import { Earth, Check } from "lucide-react"
-import { Button } from "@/components/ui/button"
+"use client";
+
+import { Earth, Check } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Link } from "../i18n/navigation"
-import { useParams, usePathname } from "next/navigation"
+} from "@/components/ui/dropdown-menu";
+import { useParams, usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
 
 const languages = [
   { code: "ar", label: "العربية", shortLabel: "AR" },
   { code: "en", label: "English", shortLabel: "EN" },
-]
+];
 
 export function LanguageToggle() {
-  const params = useParams()
-  const pathname = usePathname()
-  const currentLocale = (params?.locale as string) || "en"
+  const params = useParams();
+  const pathname = usePathname();
+  const router = useRouter();
 
-  const pathnameWithoutLocale = pathname.replace(/^\/(ar|en)/, "") || "/"
+  const currentLocale = (params?.locale as string) || "en";
+  const [open, setOpen] = useState(false);
+
+  const pathnameWithoutLocale = pathname.replace(/^\/(ar|en)/, "") || "/";
 
   return (
-    <DropdownMenu>
+    <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label="Toggle language">
-          <Earth className="h-[1.2rem] w-[1.2rem]" />
-          <span className="sr-only">Toggle language</span>
+        <Button variant="ghost" size="icon">
+          <Earth className="h-5 w-5" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="min-w-[140px]">
+
+      <DropdownMenuContent align="end">
         {languages.map((language) => (
-          <DropdownMenuItem key={language.code} asChild>
-            <Link
-              href={pathnameWithoutLocale} // ✅ Now locale-free
-              locale={language.code}
-              className="flex items-center justify-between w-full cursor-pointer"
-            >
-              <span className="flex items-center gap-2">
-                <span className="font-medium">{language.shortLabel}</span>
-                <span className="text-muted-foreground text-sm">{language.label}</span>
+          <DropdownMenuItem
+            key={language.code}
+            // Very important fix:
+            onSelect={(e) => {
+              e.preventDefault();
+              setOpen(false);
+
+              setTimeout(() => {
+                router.push(`/${language.code}${pathnameWithoutLocale}`);
+              }, 100); // allows Radix to close BEFORE navigation
+            }}
+            className="flex items-center justify-between"
+          >
+            <span className="flex items-center gap-2">
+              <span className="font-medium">{language.shortLabel}</span>
+              <span className="text-sm text-muted-foreground">
+                {language.label}
               </span>
-              {currentLocale === language.code && <Check className="h-4 w-4 text-primary" />}
-            </Link>
+            </span>
+            {currentLocale === language.code && (
+              <Check className="h-4 w-4 text-primary" />
+            )}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }

@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import Link from "next/link";
+import { useState, useRef } from "react";
 import { usePathname } from "next/navigation";
 import {
   Calendar,
@@ -37,6 +36,7 @@ import { LanguageToggle } from "@/app/components/LanguageToggle";
 import Image from "next/image";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
+import { Link } from "@/app/i18n/navigation";
 
 type NotificationResponseDto = {
   title: string | null;

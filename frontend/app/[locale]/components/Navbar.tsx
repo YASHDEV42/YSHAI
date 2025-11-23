@@ -3,10 +3,10 @@ import { me } from "@/lib/user-helper";
 import { ModeToggle } from "../../components/toggleTheme";
 import { LanguageToggle } from "../../components/LanguageToggle";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import { LogOut } from "lucide-react";
 import { Suspense } from "react";
 import { Logo } from "./Logo";
+import { Link } from "@/app/i18n/navigation";
 
 async function UserMenu({ text }: { text: any }) {
   let user: TUser | null = null;
