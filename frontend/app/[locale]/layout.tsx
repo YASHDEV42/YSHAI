@@ -10,6 +10,7 @@ import { Navbar } from "./components/Navbar";
 import { Toaster } from "../../components/ui/sonner";
 import { extractNavbarText } from "../i18n/extractTexts";
 import { NavbarWrapper } from "./components/NavbarWrapper";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "YSHAI",
@@ -27,6 +28,10 @@ const ibm_Plex_Sans_Arabic = IBM_Plex_Sans_Arabic({
   weight: ["100", "200", "300", "400", "500", "600", "700"],
   subsets: ["arabic"],
 });
+
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
 export default async function RootLayout({ children, params }: Props) {
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) {
@@ -49,9 +54,11 @@ export default async function RootLayout({ children, params }: Props) {
           disableTransitionOnChange
         >
           <NextIntlClientProvider locale={locale} messages={messages}>
-            <NavbarWrapper>
-              <Navbar text={text} />
-            </NavbarWrapper>
+            <Suspense fallback={<div>loading...</div>}>
+              <NavbarWrapper>
+                <Navbar text={text} />
+              </NavbarWrapper>
+            </Suspense>
             {children}
             <Toaster position="bottom-right" />
           </NextIntlClientProvider>

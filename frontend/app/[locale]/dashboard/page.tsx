@@ -1,9 +1,15 @@
 import { setRequestLocale } from "next-intl/server";
-import DashboardPage from "./components/dashboard";
 import { extractDashboardText } from "@/app/i18n/extractTexts";
 import { getDashboardStats } from "@/lib/analytics-helper";
 import { listMyAccounts } from "@/lib/accounts-helper";
 import { list as listPosts } from "@/lib/post-helper";
+import { routing } from "@/app/i18n/routing";
+import { Suspense } from "react";
+import DashboardPage from "./components/dashboard";
+
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
 
 export default async function DashboardPageRoute({
   params,
@@ -12,6 +18,15 @@ export default async function DashboardPageRoute({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
+
+  return (
+    <Suspense fallback={<div>loading...</div>}>
+      <DashboardServerPage locale={locale} />
+    </Suspense>
+  );
+}
+
+async function DashboardServerPage({ locale }: { locale: string }) {
   const text = await extractDashboardText(locale);
 
   const [statsResult, accountsResult, postsResult] = await Promise.all([
@@ -24,7 +39,6 @@ export default async function DashboardPageRoute({
       scheduledTo: "",
     }),
   ]);
-
   return (
     <DashboardPage
       text={text}

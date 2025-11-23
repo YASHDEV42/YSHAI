@@ -3,7 +3,12 @@ import { Platforms } from "./components/platforms";
 import { extractPlatformsPageText } from "@/app/i18n/extractTexts";
 import { listMyAccounts } from "@/lib/accounts-helper";
 import { getInstagramPosts, getInstagramProfile } from "@/lib/meta-helper";
+import { routing } from "@/app/i18n/routing";
+import { Suspense } from "react";
 
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
 export default async function PlatformsPage({
   params,
 }: {
@@ -11,6 +16,13 @@ export default async function PlatformsPage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  return (
+    <Suspense fallback={<div>loading...</div>}>
+      <PlatformsServerPage locale={locale} />
+    </Suspense>
+  );
+}
+async function PlatformsServerPage({ locale }: { locale: string }) {
   const text = await extractPlatformsPageText(locale);
 
   const accountsData = await listMyAccounts();

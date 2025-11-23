@@ -8,8 +8,6 @@ import { CtaSection } from "./components/cta-section";
 import { FooterSection } from "./components/footer-section";
 import LenisProvider from "@/components/LenisProvider";
 import { routing } from "../i18n/routing";
-export const dynamic = "force-static";
-export const dynamicParams = false;
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));

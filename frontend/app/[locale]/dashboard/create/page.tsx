@@ -5,7 +5,12 @@ import { listMyAccounts } from "@/lib/accounts-helper";
 import { me } from "@/lib/user-helper";
 import { redirect } from "next/navigation";
 import { listCampaigns } from "@/lib/campaign-helper";
+import { routing } from "@/app/i18n/routing";
+import { Suspense } from "react";
 
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
 export default async function CreatePageRoute({
   params,
 }: {
@@ -13,7 +18,13 @@ export default async function CreatePageRoute({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
-
+  return (
+    <Suspense fallback={<div>loading...</div>}>
+      <CreateServerPage locale={locale} />
+    </Suspense>
+  );
+}
+async function CreateServerPage({ locale }: { locale: string }) {
   const userRes = await me();
   const user = userRes.success ? userRes.data : null;
   if (!user) {

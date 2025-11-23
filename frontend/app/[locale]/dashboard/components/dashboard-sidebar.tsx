@@ -17,12 +17,10 @@ import {
   Share2,
   FolderKanban,
   Activity,
-  Zap,
   Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Sidebar,
@@ -52,14 +50,13 @@ type NotificationResponseDto = {
 interface DashboardSidebarProps {
   locale?: string;
   text: any;
-  user: any;
 }
 
 export function DashboardSidebar({
   locale = "en",
   text,
-  user,
 }: DashboardSidebarProps) {
+  let user = { email: "", name: "" };
   const pathname = usePathname();
   const { theme } = useTheme();
   const [notifications, setNotifications] = useState<NotificationResponseDto[]>(

@@ -47,8 +47,6 @@ const featureDetails = {
   },
 };
 
-export const dynamic = "force-static";
-export const dynamicParams = false;
 export function generateStaticParams() {
   return Object.keys(featureDetails).flatMap((feature) =>
     routing.locales.map((locale) => ({ feature, locale })),

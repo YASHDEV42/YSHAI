@@ -5,13 +5,31 @@ import EditPostForm from "./components/edit-post-form";
 import { listMyAccounts } from "@/lib/accounts-helper";
 import { listCampaigns } from "@/lib/campaign-helper";
 import { getUserProfile } from "@/lib/user-helper";
+import { Suspense } from "react";
+import { routing } from "@/app/i18n/routing";
 
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale, postId: "1" }));
+}
 export default async function EditPostPage({
   params,
 }: {
   params: Promise<{ postId: string; locale: string }>;
 }) {
   const { postId, locale } = await params;
+  return (
+    <Suspense>
+      <EditPostServerPage locale={locale} postId={postId} />
+    </Suspense>
+  );
+}
+async function EditPostServerPage({
+  locale,
+  postId,
+}: {
+  locale: string;
+  postId: string;
+}) {
   const text = await extractEditPostPageText(locale);
 
   const [postResult, userResult, accountsResult, campaignsResult] =

@@ -4,7 +4,12 @@ import { TConnectedAccount, TUser } from "@/types";
 import { extractSettingsPageText } from "@/app/i18n/extractTexts";
 import { me } from "@/lib/user-helper";
 import { fetchSubscriptionData } from "./actions";
+import { Suspense } from "react";
+import { routing } from "@/app/i18n/routing";
 
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
 export default async function SettingsPage({
   params,
 }: {
@@ -12,7 +17,13 @@ export default async function SettingsPage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
-
+  return (
+    <Suspense fallback={<div>loading...</div>}>
+      <SettingsServerPage locale={locale} />
+    </Suspense>
+  );
+}
+async function SettingsServerPage({ locale }: { locale: string }) {
   const text = await extractSettingsPageText(locale);
 
   const [userResponse, subscriptionData] = await Promise.all([

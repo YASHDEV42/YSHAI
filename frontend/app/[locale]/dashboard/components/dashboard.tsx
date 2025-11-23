@@ -29,54 +29,8 @@ import { StatCard } from "@/components/ui/stat-card";
 import type { IDashboardStats } from "@/lib/analytics-helper";
 import type { ISocialAccount, IPost } from "@/interfaces";
 
-export interface DashboardPageText {
-  welcomeMessage: string;
-  welcomeSubtitle: string;
-  stats: {
-    scheduledPosts: string;
-    publishedThisWeek: string;
-    connectedAccounts: string;
-    avgEngagement: string;
-    changeFromLastWeek: string;
-  };
-  recentActivity: {
-    title: string;
-    description: string;
-    viewAll: string;
-  };
-  quickActions: {
-    title: string;
-    createPost: string;
-    viewCalendar: string;
-    viewAnalytics: string;
-  };
-  connectedPlatforms: {
-    title: string;
-    description: string;
-    connected: string;
-    connect: string;
-    addPlatform: string;
-  };
-  sidebar: {
-    overview: string;
-    createPost: string;
-    calendar: string;
-    analytics: string;
-    settings: string;
-  };
-  user: {
-    name: string;
-    email: string;
-  };
-  activityStatus: {
-    published: string;
-    scheduled: string;
-    failed: string;
-  };
-}
-
 interface DashboardPageProps {
-  text: DashboardPageText;
+  text: any;
   locale: string;
   stats?: IDashboardStats;
   accounts: ISocialAccount[];

@@ -22,6 +22,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  cacheComponents: true,
 };
 
 const withNextIntl = createNextIntlPlugin("./app/i18n/request.ts");
