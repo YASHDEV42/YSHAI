@@ -2,8 +2,19 @@ import { extractForgotPasswordPageText } from "@/app/i18n/extractTexts";
 import ForgotPasswordPage from "./components/forgot-password";
 import { setRequestLocale } from "next-intl/server";
 
+import { routing } from "@/app/i18n/routing";
+
 export const dynamic = "force-static";
-export default async function Page({ params }: { params: { locale: string } }) {
+export const dynamicParams = false;
+
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
   const { locale } = await params;
   setRequestLocale(locale);
   const text = await extractForgotPasswordPageText(locale);

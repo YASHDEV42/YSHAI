@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Loader2, LogOut } from "lucide-react";
 import { Suspense } from "react";
 import { Logo } from "./Logo";
+
 async function UserMenu({ text }: { text: any }) {
   let user: TUser | null = null;
   const response = await me();

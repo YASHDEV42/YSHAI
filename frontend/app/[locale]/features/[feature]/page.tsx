@@ -9,13 +9,13 @@ import {
   Users,
   Zap,
   Globe,
-  ArrowLeft,
   CheckCircle2,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { extractFeatureDetailText } from "@/app/i18n/extractTexts";
 import LenisProvider from "@/components/LenisProvider";
+import { routing } from "@/app/i18n/routing";
 
 const featureDetails = {
   ai: {
@@ -48,9 +48,13 @@ const featureDetails = {
 };
 
 export const dynamic = "force-static";
+export const dynamicParams = false;
 export function generateStaticParams() {
-  return Object.keys(featureDetails).map((feature) => ({ feature }));
+  return Object.keys(featureDetails).flatMap((feature) =>
+    routing.locales.map((locale) => ({ feature, locale })),
+  );
 }
+
 export default async function FeatureDetailPage({
   params,
 }: {
