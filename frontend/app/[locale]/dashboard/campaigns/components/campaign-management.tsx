@@ -97,8 +97,8 @@ export default function CampaignsManagement({
     draft: campaigns.filter((c) => c.status === "draft").length,
     thisMonth: campaigns.filter((c) => {
       const now = new Date();
-      const campaignMonth = new Date(c.startsAt).getMonth();
-      const campaignYear = new Date(c.startsAt).getFullYear();
+      const campaignMonth = new Date(c.startsAt ?? 0).getMonth();
+      const campaignYear = new Date(c.startsAt ?? 0).getFullYear();
       return (
         campaignMonth === now.getMonth() && campaignYear === now.getFullYear()
       );

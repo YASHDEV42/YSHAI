@@ -47,6 +47,10 @@ const featureDetails = {
   },
 };
 
+export const dynamic = "force-static";
+export function generateStaticParams() {
+  return Object.keys(featureDetails).map((feature) => ({ feature }));
+}
 export default async function FeatureDetailPage({
   params,
 }: {

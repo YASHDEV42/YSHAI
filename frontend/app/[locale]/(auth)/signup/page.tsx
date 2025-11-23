@@ -2,6 +2,7 @@ import { extractSignUpPageText } from "@/app/i18n/extractTexts";
 import SignUpPage from "./components/signup";
 import { setRequestLocale } from "next-intl/server";
 
+export const dynamic = "force-static";
 const page = async ({ params: { locale } }: { params: { locale: string } }) => {
   setRequestLocale(locale);
 

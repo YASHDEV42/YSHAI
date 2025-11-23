@@ -559,6 +559,16 @@
     "needHelp": "Need help?",
     "contactSupport": "Contact support"
   },
+  "ForgotPasswordPage": {
+    "title": "Reset your password",
+    "subtitle": "Enter your email to receive password reset instructions",
+    "emailLabel": "Email",
+    "emailPlaceholder": "ahmed@example.com",
+    "sendResetLink": "Send Reset Instructions",
+    "sendingResetLink": "Sending...",
+    "backToLogin": "Back to Login",
+    "contactSupport": "Contact support"
+  },
   "DashboardPage": {
     "welcomeMessage": "Welcome back, John",
     "welcomeSubtitle": "Here's what's happening with your social media today",

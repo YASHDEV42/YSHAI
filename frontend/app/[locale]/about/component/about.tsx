@@ -13,7 +13,13 @@ import {
   Zap,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { motion, useInView, useScroll, useTransform } from "framer-motion";
+import {
+  easeInOut,
+  motion,
+  useInView,
+  useScroll,
+  useTransform,
+} from "framer-motion";
 import { cn } from "@/lib/utils";
 import { CtaSection } from "../../components/cta-section";
 
@@ -138,7 +144,7 @@ export default function AboutContent({ text, locale }: AboutContentProps) {
     visible: {
       y: 0,
       opacity: 1,
-      transition: { duration: 0.5, ease: "easeOut" },
+      transition: { duration: 0.5 },
     },
   };
 
@@ -147,7 +153,7 @@ export default function AboutContent({ text, locale }: AboutContentProps) {
     visible: {
       scale: 1,
       opacity: 1,
-      transition: { duration: 0.5, ease: "easeOut" },
+      transition: { duration: 0.5 },
     },
   };
 

@@ -8,11 +8,6 @@ import { ArrowLeft, ArrowRight, Loader } from "lucide-react";
 import { useActionState } from "react";
 import { forgotPasswordAction } from "../actions";
 
-interface ForgotPasswordPageProps {
-  text: any;
-  locale: string;
-}
-
 const initialState = {
   arMessage: "",
   enMessage: "",
@@ -22,7 +17,10 @@ const initialState = {
 export default function ForgotPasswordPage({
   text,
   locale,
-}: ForgotPasswordPageProps) {
+}: {
+  text: any;
+  locale: string;
+}) {
   const [state, formAction, pending] = useActionState(
     forgotPasswordAction,
     initialState,

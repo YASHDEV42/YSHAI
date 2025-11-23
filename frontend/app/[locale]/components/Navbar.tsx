@@ -1,19 +1,50 @@
-"use client";
+import { TUser } from "@/types";
+import { me } from "@/lib/user-helper";
 import { ModeToggle } from "../../components/toggleTheme";
 import { LanguageToggle } from "../../components/LanguageToggle";
-import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Codesandbox, LogOut } from "lucide-react";
-import Image from "next/image";
-import { useTheme } from "next-themes";
-export function Navbar({ text, user }: { text: any; user: any }) {
-  const theme = useTheme();
-  console.log("Current theme:", theme.theme);
-  const pathname = usePathname();
+import { Loader2, LogOut } from "lucide-react";
+import { Suspense } from "react";
+import { Logo } from "./Logo";
+async function UserMenu({ text }: { text: any }) {
+  let user: TUser | null = null;
+  const response = await me();
+  user = response.success ? response.data : null;
+  return (
+    <>
+      {user ? (
+        <>
+          <Button asChild>
+            <Link href="/dashboard">{text.dashboard}</Link>
+          </Button>
+          <form>
+            <Button variant="ghost" type="submit" className="cursor-pointer">
+              {text.logout}
+              <LogOut />
+            </Button>
+          </form>
+        </>
+      ) : (
+        <>
+          <Button variant="ghost" asChild>
+            <Link href="/login">{text.login}</Link>
+          </Button>
+          <Button asChild>
+            <Link href="/signup">{text.register}</Link>
+          </Button>
+        </>
+      )}
+    </>
+  );
+}
+export function Navbar({ text }: { text: any }) {
+  const pathname =
+    typeof window !== "undefined" ? window.location.pathname : "";
+  console.log("Current pathname:", pathname);
   if (
-    pathname?.startsWith("/ar/dashboard") ||
-    pathname?.startsWith("/en/dashboard")
+    pathname.startsWith("/en/dashboard") ||
+    pathname.startsWith("/ar/dashboard")
   ) {
     return null;
   }
@@ -22,16 +53,7 @@ export function Navbar({ text, user }: { text: any; user: any }) {
     <nav className="fixed top-0 left-0 right-0 z-50 border-b bg-background/80 backdrop-blur-sm">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <div className="flex items-center w-[320px]">
-          <Link
-            href="/"
-            className="text-xl font-bold flex flex-row items-center gap-2"
-          >
-            {theme.theme === "dark" ? (
-              <Image src="/bitmap-dark.svg" alt="Logo" width={35} height={35} />
-            ) : (
-              <Image src="/bitmap.svg" alt="Logo" width={35} height={35} />
-            )}
-          </Link>
+          <Logo />
         </div>
 
         <nav className="hidden md:flex items-center gap-6">
@@ -56,32 +78,9 @@ export function Navbar({ text, user }: { text: any; user: any }) {
         </nav>
 
         <div className="flex items-center justify-end gap-3 w-[320px]">
-          {user ? (
-            <>
-              <Button asChild>
-                <Link href="/dashboard">{text.dashboard}</Link>
-              </Button>
-              <form>
-                <Button
-                  variant="ghost"
-                  type="submit"
-                  className="cursor-pointer"
-                >
-                  {text.logout}
-                  <LogOut />
-                </Button>
-              </form>
-            </>
-          ) : (
-            <>
-              <Button variant="ghost" asChild>
-                <Link href="/login">{text.login}</Link>
-              </Button>
-              <Button asChild>
-                <Link href="/signup">{text.register}</Link>
-              </Button>
-            </>
-          )}
+          <Suspense fallback={<Loader2 />}>
+            <UserMenu text={text} />
+          </Suspense>
           <LanguageToggle />
           <ModeToggle />
         </div>

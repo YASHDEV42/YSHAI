@@ -559,6 +559,16 @@
     "needHelp": "هل تحتاج مساعدة؟",
     "contactSupport": "اتصل بالدعم"
   },
+  "ForgotPasswordPage": {
+    "title": "نسيت كلمة المرور",
+    "subtitle": "أدخل بريدك الإلكتروني لاستعادة حسابك",
+    "emailLabel": "البريد الإلكتروني",
+    "emailPlaceholder": "أدخل بريدك الإلكتروني",
+    "sendResetLink": "إرسال رابط إعادة التعيين",
+    "sendingResetLink": "جارٍ إرسال رابط إعادة التعيين...",
+    "backToLogin": "العودة إلى تسجيل الدخول",
+    "contactSupport": "اتصل بالدعم إذا كنت بحاجة إلى مساعدة إضافية."
+  },
   "DashboardPage": {
     "welcomeMessage": "مرحباً بك مجدداً، يحيى",
     "welcomeSubtitle": "هذا ما يحدث مع وسائل التواصل الاجتماعي الخاصة بك اليوم",
