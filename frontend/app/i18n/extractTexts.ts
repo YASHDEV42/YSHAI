@@ -4,7 +4,7 @@ import { getMessages } from "next-intl/server";
 
 export async function extractNavbarText(locale: string) {
   const messages = await getMessages({ locale });
-  return messages.Navbar;
+  return messages.Navbar as Record<string, any>;
 }
 
 export async function extractLandingPageText(locale: string) {
@@ -24,62 +24,62 @@ export async function extractLandingPageText(locale: string) {
 
 export async function extractCreatePageText(locale: string) {
   const messages = await getMessages({ locale });
-  return messages.CreatePage;
+  return messages.CreatePage as Record<string, any>;
 }
 
 export async function extractDashboardText(locale: string) {
   const messages = await getMessages({ locale });
-  return messages.DashboardPage;
+  return messages.DashboardPage as Record<string, any>;
 }
 
 export async function extractSidebarText(locale: string) {
   const messages = await getMessages({ locale });
-  return messages.DashboardSidebar;
+  return messages.DashboardSidebar as Record<string, any>;
 }
 
 export async function extractCalendarPageText(locale: string) {
   const messages = await getMessages({ locale });
-  return messages.CalendarPage;
+  return messages.CalendarPage as Record<string, any>;
 }
 
 export async function extractAnalyticsPageText(locale: string) {
   const messages = await getMessages({ locale });
-  return messages.AnalyticsPage;
+  return messages.AnalyticsPage as Record<string, any>;
 }
 
 export async function extractSettingsPageText(locale: string) {
   const messages = await getMessages({ locale });
-  return messages.SettingsPage;
+  return messages.SettingsPage as Record<string, any>;
 }
 
 export async function extractPlatformDetailPageText(locale: string) {
   const messages = await getMessages({ locale });
-  return messages.PlatformDetailPage;
+  return messages.PlatformDetailPage as Record<string, any>;
 }
 
 export async function extractSignUpPageText(locale: string) {
   const messages = await getMessages({ locale });
-  return messages.SignUpPage;
+  return messages.SignUpPage as Record<string, any>;
 }
 
 export async function extractLoginPageText(locale: string) {
   const messages = await getMessages({ locale });
-  return messages.LoginPage;
+  return messages.LoginPage as Record<string, any>;
 }
 
 export async function extractForgotPasswordPageText(locale: string) {
   const messages = await getMessages({ locale });
-  return messages.ForgotPasswordPage;
+  return messages.ForgotPasswordPage as Record<string, any>;
 }
 
 export async function extractResetPasswordPageText(locale: string) {
   const messages = await getMessages({ locale });
-  return messages.ResetPasswordPage;
+  return messages.ResetPasswordPage as Record<string, any>;
 }
 
 export async function extractVerifyEmailPageText(locale: string) {
   const messages = await getMessages({ locale });
-  return messages.VerifyEmailPage;
+  return messages.VerifyEmailPage as Record<string, any>;
 }
 
 export async function extractPlatformsPageText(locale: string) {
@@ -87,17 +87,17 @@ export async function extractPlatformsPageText(locale: string) {
   return {
     ...messages.PlatformsPage,
     platforms: messages.SettingsPage?.platforms,
-  };
+  } as Record<string, any>;
 }
 
 export async function extractCampaignsPageText(locale: string) {
   const messages = await getMessages({ locale });
-  return messages.CampaignsPage;
+  return messages.CampaignsPage as Record<string, any>;
 }
 
 export async function extractEditPostPageText(locale: string) {
   const messages = await getMessages({ locale });
-  return messages.EditPostPage;
+  return messages.EditPostPage as Record<string, any>;
 }
 
 export async function extractFeatureDetailText(
@@ -129,5 +129,5 @@ export async function extractFeatureDetailText(
 
 export async function extractAboutPageText(locale: string) {
   const messages = await getMessages({ locale });
-  return messages.AboutPage;
+  return messages.AboutPage as Record<string, any>;
 }

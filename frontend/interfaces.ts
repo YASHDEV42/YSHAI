@@ -421,23 +421,6 @@ export type NotificationDataPayload =
 /**
  * NotificationResponseDto
  */
-export interface INotification {
-  id: number;
-  type: NotificationType;
-  title: INotificationMessage;
-  message: INotificationMessage;
-  data?: NotificationDataPayload | null;
-  /**
-   * OpenAPI: link is `nullable` and has uri format; we treat as URL string or null.
-   */
-  link?: string | null;
-  read: boolean;
-  createdAt: string;
-  // If you track these client-side:
-  readAt?: string;
-  deletedAt?: string;
-}
-
 // =========================
 // Audit logs
 // =========================
