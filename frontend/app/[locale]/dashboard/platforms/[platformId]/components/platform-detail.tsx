@@ -204,7 +204,7 @@ export function PlatformDetail({
                   <Avatar className="w-16 h-16 border-2 border-primary">
                     {account.profilePictureUrl ? (
                       <AvatarImage
-                        src={account.profilePictureUrl || "/placeholder.svg"}
+                        src={account.profilePictureUrl}
                         alt={account.provider}
                         className="rounded-full object-cover"
                         width={64}
