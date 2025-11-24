@@ -20,9 +20,11 @@ import { AdminModule } from './admin/admin.module';
 import { PublisherModule } from './publisher/publisher.module';
 import { CampaignsModule } from './campaigns/campaigns.module';
 import { PostTargetsModule } from './post-targets/post-targets.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({ isGlobal: true }),
     // Allow generating Swagger without DB by setting SKIP_DB=true
     ...(process.env.SKIP_DB === 'true'

@@ -27,7 +27,6 @@ export class MediaService {
     file: { path?: string; buffer?: Buffer },
     postId?: number,
   ): Promise<MediaResponseDto> {
-    this.logger.log('uploading media file to Cloudinary');
     let post: Post | null = null;
     if (postId !== undefined) {
       post = await this.em.findOne(Post, { id: postId });

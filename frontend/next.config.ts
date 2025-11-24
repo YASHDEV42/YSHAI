@@ -23,6 +23,11 @@ const nextConfig: NextConfig = {
     ],
   },
   cacheComponents: true,
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "20mb",
+    },
+  },
 };
 
 const withNextIntl = createNextIntlPlugin("./app/i18n/request.ts");

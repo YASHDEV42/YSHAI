@@ -7,6 +7,7 @@ import { AuditLog } from 'src/entities/audit-log.entity';
 import { User } from 'src/entities/user.entity';
 import { WebhookEventsListener } from './listeners/webhook-events.listener';
 import { NotificationEventsListener } from './listeners/notification-events.listener';
+import { MediaEventsListener } from './listeners/media-events.listener';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { NotificationEventsListener } from './listeners/notification-events.list
     // Auto-scalable list of listeners:
     WebhookEventsListener,
     NotificationEventsListener,
+    MediaEventsListener,
   ],
   exports: [EventBusService],
 })

@@ -341,32 +341,6 @@ export class MetaService {
     };
   }
 
-  private async waitForMediaReady(creationId: string, accessToken: string) {
-    let attempts = 0;
-    let status = 'IN_PROGRESS';
-
-    while (status === 'IN_PROGRESS' && attempts < 10) {
-      const delay = Math.round(2000 * Math.pow(1.5, attempts));
-      await new Promise((r) => setTimeout(r, delay));
-      attempts++;
-
-      const check = await this.graphGet<{ status_code: string }>(
-        `/${creationId}`,
-        {
-          fields: 'status_code',
-          access_token: accessToken,
-        },
-      );
-      status = check.status_code;
-    }
-
-    if (status !== 'FINISHED') {
-      throw new BadRequestException(
-        `Media processing did not finish (status=${status})`,
-      );
-    }
-  }
-
   private async mintPageAccessTokenFromUser(
     account: SocialAccount,
     userLongLived: string,
@@ -569,5 +543,150 @@ export class MetaService {
       data: items,
       paging: data.paging ?? {},
     };
+  }
+
+  async createMediaContainer(params: {
+    accessToken: string;
+    caption?: string;
+    mediaUrl: string;
+    providerAccountId: string; // ig_user_id
+    kind: 'feed' | 'reel';
+    mediaType: 'image' | 'video';
+    isCarouselItem?: boolean;
+  }) {
+    const {
+      accessToken,
+      caption,
+      mediaUrl,
+      providerAccountId,
+      kind,
+      mediaType,
+      isCarouselItem,
+    } = params;
+
+    const payload: Record<string, any> = {
+      access_token: accessToken,
+    };
+
+    if (caption) {
+      payload.caption = caption;
+    }
+
+    // image vs video payload
+    if (mediaType === 'image') {
+      payload.image_url = mediaUrl;
+    } else {
+      payload.video_url = mediaUrl;
+    }
+
+    // Reel vs normal feed post
+    if (kind === 'reel') {
+      payload.media_type = 'REELS';
+      // you can add `payload.share_to_feed = true` if you want it also on grid
+    }
+
+    // carousel item flag
+    if (isCarouselItem) {
+      payload.is_carousel_item = 'true';
+    }
+
+    const res = await this.graphPost<{ id: string }>(
+      `/${providerAccountId}/media`,
+      payload,
+    );
+
+    if (!res?.id) {
+      throw new BadRequestException('Failed to create media container');
+    }
+
+    return { creationId: res.id };
+  }
+
+  async createCarouselMedia(params: {
+    accessToken: string;
+    caption: string;
+    children: string[];
+    providerAccountId: string;
+  }) {
+    const { accessToken, caption, children, providerAccountId } = params;
+
+    const res = await this.graphPost<{ id: string }>(
+      `/${providerAccountId}/media`,
+      {
+        caption,
+        media_type: 'CAROUSEL',
+        children: children.join(','),
+        access_token: accessToken,
+      },
+    );
+
+    if (!res?.id) {
+      throw new BadRequestException('Failed to create carousel media');
+    }
+
+    return { creationId: res.id };
+  }
+
+  async publishContainer(params: {
+    accessToken: string;
+    creationId: string;
+    providerAccountId: string;
+  }) {
+    const { accessToken, creationId, providerAccountId } = params;
+
+    const publishRes = await this.graphPost<{ id: string }>(
+      `/${providerAccountId}/media_publish`,
+      {
+        creation_id: creationId,
+        access_token: accessToken,
+      },
+    );
+
+    const igPostId = publishRes?.id;
+    if (!igPostId) {
+      throw new BadRequestException('Failed to publish media');
+    }
+
+    // Fetch details
+    const details = await this.graphGet<{
+      id: string;
+      permalink: string;
+      timestamp: string;
+    }>(`/${igPostId}`, {
+      fields: 'id,permalink,timestamp',
+      access_token: accessToken,
+    });
+
+    return {
+      externalPostId: details.id,
+      externalUrl: details.permalink,
+      publishedAt: new Date(details.timestamp),
+    };
+  }
+
+  async waitForMediaReady(creationId: string, accessToken: string) {
+    let attempts = 0;
+    let status = 'IN_PROGRESS';
+
+    while (status === 'IN_PROGRESS' && attempts < 10) {
+      const delay = Math.round(2000 * Math.pow(1.5, attempts));
+      await new Promise((r) => setTimeout(r, delay));
+      attempts++;
+
+      const check = await this.graphGet<{ status_code: string }>(
+        `/${creationId}`,
+        {
+          fields: 'status_code',
+          access_token: accessToken,
+        },
+      );
+      status = check.status_code;
+    }
+
+    if (status !== 'FINISHED') {
+      throw new BadRequestException(
+        `Media processing did not finish (status=${status})`,
+      );
+    }
   }
 }

@@ -157,24 +157,30 @@ export class PublisherService implements OnModuleInit {
 
       // Build content
       const text = [post.contentAr, post.contentEn].filter(Boolean).join('\n');
-      const mediaUrls = mediaList.map((m) => m.url);
+      const media = mediaList
+        .sort((a, b) => a.orderIndex - b.orderIndex)
+        .map((m) => ({
+          url: m.url,
+          kind: m.type, // 'image' | 'video'
+        }));
+      let kind: 'feed' | 'reel' | 'carousel' = 'feed';
 
-      if (!mediaUrls.length) {
-        this.log.warn(
-          `⚠️ Post ${post.id} has no media; will attempt text-only publish`,
-        );
+      if (media.length > 1) {
+        kind = 'carousel';
+      } else if (media.length === 1 && media[0].kind === 'video') {
+        // you can choose: treat single video as reel or feed
+        kind = 'feed';
       }
-
       const publisher = this.providers.get(account.provider);
 
       // Call provider on every attempt (network errors can be transient).
       const result = await publisher.publish({
         text,
-        mediaUrls,
+        media,
+        kind,
         accessToken,
         providerAccountId: account.providerAccountId,
       });
-
       // Success path
       const now = new Date();
       target.externalPostId =

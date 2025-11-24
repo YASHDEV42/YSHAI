@@ -1,21 +1,27 @@
-export type ProviderName = 'x' | 'instagram' | 'linkedin' | 'tiktok';
+export type ProviderName = 'instagram' | 'x' | 'linkedin' | 'tiktok';
+
+export type MediaKind = 'image' | 'video';
+
+export type PostKind = 'feed' | 'reel' | 'carousel';
+
+export interface MediaItemInput {
+  url: string;
+  kind: MediaKind; // 'image' | 'video'
+}
 
 export interface PublishInput {
-  text: string;
-  mediaUrls?: string[];
-  scheduledAt?: Date;
-  // Opaque token string after decryption
   accessToken: string;
-  // Provider-specific account id (e.g., user id, page id)
-  providerAccountId: string;
+  text: string;
+  providerAccountId: string; // ig_user_id
+  media: MediaItemInput[]; // instead of mediaUrls: string[]
+  kind: PostKind; // 'feed' | 'reel' | 'carousel'
 }
 
 export interface PublishResult {
   externalPostId: string;
-  externalUrl?: string;
-  publishedAt?: Date;
+  externalUrl: string;
+  publishedAt: Date;
 }
-
 export interface ProviderPublisher {
   publish(input: PublishInput): Promise<PublishResult>;
 }
