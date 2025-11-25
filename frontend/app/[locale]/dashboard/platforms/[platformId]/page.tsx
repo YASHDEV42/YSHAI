@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { extractPlatformDetailPageText } from "@/app/i18n/extractTexts";
 import { listMyAccounts } from "@/lib/accounts-helper";
 import { getInstagramPosts } from "@/lib/meta-helper";
+import { list as listPosts } from "@/lib/post-helper";
 import { Suspense } from "react";
 import { routing } from "@/app/i18n/routing";
 import { PlatformDetailSkeleton } from "@/components/skeletons/platform-detail-skeleton";
@@ -47,21 +48,47 @@ async function PlatformDetailServerPage({
   if (!account) {
     notFound();
   }
-  console.log("Rendering PlatformDetailPage for account:", account);
-  const instagramPostsResponse = await getInstagramPosts(
-    account.providerAccountId,
-  );
-  console.log("Fetched posts response:", instagramPostsResponse);
-  const posts = instagramPostsResponse.success
+
+  const [instagramPostsResponse, databasePostsResponse] = await Promise.all([
+    getInstagramPosts(account.providerAccountId),
+    listPosts({
+      teamId: "",
+      campaignId: "",
+      scheduledFrom: "",
+      scheduledTo: "",
+    }),
+  ]);
+
+  const instagramPosts = instagramPostsResponse.success
     ? instagramPostsResponse.data.data
     : [];
+  const databasePosts = databasePostsResponse.success
+    ? databasePostsResponse.data
+    : [];
+
+  const accountDatabasePosts = databasePosts.filter((post: any) => {
+    const isForThisAccount = post.targets?.some(
+      (target: any) => target.socialAccountId === account.id,
+    );
+    const isDraftOrScheduled =
+      post.status === "draft" || post.status === "scheduled";
+    return isForThisAccount && isDraftOrScheduled;
+  });
+
+  const allPosts = [...accountDatabasePosts, ...instagramPosts];
+
+  console.log("[v0] Platform content breakdown:", {
+    draftsAndScheduled: accountDatabasePosts.length,
+    instagramPublished: instagramPosts.length,
+    total: allPosts.length,
+  });
 
   return (
     <PlatformDetail
       text={text}
       locale={locale}
       account={account}
-      posts={posts}
+      posts={allPosts}
     />
   );
 }

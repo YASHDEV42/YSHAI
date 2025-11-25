@@ -68,8 +68,10 @@ export function ContentTab({
   const filteredPosts = posts.filter((post) => {
     const matchesCampaign =
       selectedCampaign === "all" || post.campaign?.name === selectedCampaign;
+
+    const postStatus = post.status || "published";
     const matchesStatus =
-      selectedStatus === "all" || post.status === selectedStatus;
+      selectedStatus === "all" || postStatus === selectedStatus;
 
     return matchesCampaign && matchesStatus;
   });
@@ -87,6 +89,48 @@ export function ContentTab({
       month: "short",
       day: "numeric",
     });
+  };
+
+  const isDatabasePost = (post: any) => {
+    return post.contentAr || post.contentEn || post.targets;
+  };
+
+  const getPostContent = (post: any) => {
+    if (isDatabasePost(post)) {
+      return locale === "ar"
+        ? post.contentAr
+        : post.contentEn || post.contentAr;
+    }
+    return post.caption;
+  };
+
+  const getPostMedia = (post: any) => {
+    if (isDatabasePost(post)) {
+      return post.media?.[0]?.url;
+    }
+    return post.mediaUrl || post.media_url;
+  };
+
+  const getPostDate = (post: any) => {
+    if (isDatabasePost(post)) {
+      return post.scheduledAt || post.publishedAt || post.createdAt;
+    }
+    return post.timestamp;
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "draft":
+        return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200";
+      case "scheduled":
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200";
+      case "published":
+        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
+      case "failed":
+        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200";
+      default:
+        return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200";
+    }
   };
 
   const handleRepost = async (postId: number) => {
@@ -135,13 +179,13 @@ export function ContentTab({
   };
 
   const handleFilterChange = () => {
+    setCurrentPage(1);
     setIsLoading(true);
 
     toast.loading(text.applyingFilters || "Applying filters...", {
       id: "filter-posts",
     });
 
-    // Simulate API call
     setTimeout(() => {
       setIsLoading(false);
 
@@ -316,105 +360,141 @@ export function ContentTab({
           ) : (
             <div className="space-y-6">
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {currentPosts.map((post, index) => (
-                  <Card
-                    key={post.id}
-                    className={cn(
-                      "overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-[1.02] group",
-                      animateItems
-                        ? "opacity-100 translate-y-0"
-                        : "opacity-0 translate-y-4",
-                    )}
-                    style={{ animationDelay: `${300 + index * 100}ms` }}
-                  >
-                    <CardContent className="p-0">
-                      {post.mediaUrl && (
-                        <Carousel className="w-full">
-                          <CarouselContent>
-                            <CarouselItem>
-                              <div className="relative aspect-square w-full">
-                                <Image
-                                  src={post.mediaUrl || "/placeholder.svg"}
-                                  alt={post.caption || "Post image"}
-                                  fill
-                                  className="object-cover transition-all duration-300 group-hover:scale-105"
-                                />
-                              </div>
-                            </CarouselItem>
-                          </CarouselContent>
-                          <CarouselPrevious className="left-2" />
-                          <CarouselNext className="right-2" />
-                        </Carousel>
+                {currentPosts.map((post, index) => {
+                  const postContent = getPostContent(post);
+                  const postMedia = getPostMedia(post);
+                  const postDate = getPostDate(post);
+                  const postStatus = post.status || "published";
+                  const isDbPost = isDatabasePost(post);
+
+                  return (
+                    <Card
+                      key={post.id}
+                      className={cn(
+                        "overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-[1.02] group",
+                        animateItems
+                          ? "opacity-100 translate-y-0"
+                          : "opacity-0 translate-y-4",
                       )}
-                      <div className="p-4 space-y-3">
-                        <p className="text-sm line-clamp-3 transition-colors group-hover:text-foreground">
-                          {post.caption}
-                        </p>
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                          <span className="flex items-center gap-1">
-                            <Heart className="size-4" />
-                            {post.likeCount || 0}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <MessageCircle className="size-4" />
-                            {post.commentsCount || 0}
-                          </span>
-                          <span className="ml-auto">
-                            {formatDate(post.timestamp)}
-                          </span>
-                        </div>
-                        <div className="flex gap-2">
-                          {post.permalink && (
+                      style={{ animationDelay: `${300 + index * 100}ms` }}
+                    >
+                      <CardContent className="p-0">
+                        {postMedia && (
+                          <Carousel className="w-full">
+                            <CarouselContent>
+                              <CarouselItem>
+                                <div className="relative aspect-square w-full">
+                                  <Image
+                                    src={postMedia || "/placeholder.svg"}
+                                    alt={postContent || "Post image"}
+                                    fill
+                                    className="object-cover transition-all duration-300 group-hover:scale-105"
+                                  />
+                                  {isDbPost && (
+                                    <div className="absolute top-2 right-2">
+                                      <span
+                                        className={cn(
+                                          "px-2 py-1 rounded-full text-xs font-medium",
+                                          getStatusColor(postStatus),
+                                        )}
+                                      >
+                                        {postStatus}
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
+                              </CarouselItem>
+                            </CarouselContent>
+                            <CarouselPrevious className="left-2" />
+                            <CarouselNext className="right-2" />
+                          </Carousel>
+                        )}
+                        <div className="p-4 space-y-3">
+                          <p className="text-sm line-clamp-3 transition-colors group-hover:text-foreground">
+                            {postContent}
+                          </p>
+                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                            <span className="flex items-center gap-1">
+                              <Heart className="size-4" />
+                              {post.likeCount || post.like_count || 0}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <MessageCircle className="size-4" />
+                              {post.commentsCount || post.comments_count || 0}
+                            </span>
+                            <span className="ml-auto">
+                              {formatDate(postDate)}
+                            </span>
+                          </div>
+                          <div className="flex gap-2">
+                            {post.permalink && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="flex-1 bg-transparent transition-all duration-300 hover:scale-105 hover:bg-primary/10"
+                                asChild
+                              >
+                                <a
+                                  href={post.permalink}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  <ExternalLink className="mr-2 size-3" />
+                                  {text.view || "View"}
+                                </a>
+                              </Button>
+                            )}
+                            {isDbPost && postStatus === "draft" && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="flex-1 bg-transparent transition-all duration-300 hover:scale-105 hover:bg-primary/10"
+                                asChild
+                              >
+                                <Link
+                                  href={`/${locale}/dashboard/edit/${post.id}`}
+                                >
+                                  {text.edit || "Edit"}
+                                </Link>
+                              </Button>
+                            )}
+                            {!isDbPost && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="flex-1 bg-transparent transition-all duration-300 hover:scale-105 hover:bg-blue-50 dark:hover:bg-blue-950/20"
+                                onClick={() => handleRepost(post.id)}
+                                disabled={repostingPostId === post.id}
+                              >
+                                {repostingPostId === post.id ? (
+                                  <Loader2 className="mr-2 size-3 animate-spin" />
+                                ) : (
+                                  <>
+                                    <ExternalLink className="mr-2 size-3" />
+                                    {text.repost || "Repost"}
+                                  </>
+                                )}
+                              </Button>
+                            )}
                             <Button
                               size="sm"
                               variant="outline"
-                              className="flex-1 bg-transparent transition-all duration-300 hover:scale-105 hover:bg-primary/10"
-                              asChild
+                              className="transition-all duration-300 hover:scale-105 hover:bg-red-50 dark:hover:bg-red-950/20 hover:text-red-600 hover:border-red-300 bg-transparent"
+                              onClick={() => handleDelete(post.id)}
+                              disabled={deletingPostId === post.id}
                             >
-                              <a
-                                href={post.permalink}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                <ExternalLink className="mr-2 size-3" />
-                                {text.view || "View"}
-                              </a>
+                              {deletingPostId === post.id ? (
+                                <Loader2 className="size-3 animate-spin" />
+                              ) : (
+                                <AlertCircle className="size-3" />
+                              )}
                             </Button>
-                          )}
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="flex-1 bg-transparent transition-all duration-300 hover:scale-105 hover:bg-blue-50 dark:hover:bg-blue-950/20"
-                            onClick={() => handleRepost(post.id)}
-                            disabled={repostingPostId === post.id}
-                          >
-                            {repostingPostId === post.id ? (
-                              <Loader2 className="mr-2 size-3 animate-spin" />
-                            ) : (
-                              <>
-                                <ExternalLink className="mr-2 size-3" />
-                                {text.repost || "Repost"}
-                              </>
-                            )}
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="transition-all duration-300 hover:scale-105 hover:bg-red-50 dark:hover:bg-red-950/20 hover:text-red-600 hover:border-red-300 bg-transparent"
-                            onClick={() => handleDelete(post.id)}
-                            disabled={deletingPostId === post.id}
-                          >
-                            {deletingPostId === post.id ? (
-                              <Loader2 className="size-3 animate-spin" />
-                            ) : (
-                              <AlertCircle className="size-3" />
-                            )}
-                          </Button>
+                          </div>
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </div>
 
               {/* Pagination */}

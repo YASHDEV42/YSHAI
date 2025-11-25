@@ -14,6 +14,8 @@ import {
   Trash2,
   Copy,
   CalendarIcon,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,11 +30,22 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { format, isSameDay } from "date-fns";
+import {
+  format,
+  isSameDay,
+  startOfWeek,
+  addDays,
+  addWeeks,
+  subWeeks,
+} from "date-fns";
 import { EmptyState } from "@/components/empty-state";
-import { IPost, ISocialAccount } from "@/interfaces";
+import type { IPost, ISocialAccount } from "@/interfaces";
 import { useToast } from "@/hooks/use-toast";
-import { remove as deletePost } from "@/lib/post-helper";
+import {
+  remove as deletePost,
+  reschedule,
+  publishNow,
+} from "@/lib/post-helper";
 
 interface CalendarPageProps {
   text: any;
@@ -47,6 +60,9 @@ export default function CalendarPage({
 }: CalendarPageProps) {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
     new Date(),
+  );
+  const [currentWeekStart, setCurrentWeekStart] = useState<Date>(
+    startOfWeek(new Date(), { weekStartsOn: 0 }),
   );
   const [view, setView] = useState<"month" | "week" | "list">("month");
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([
@@ -174,16 +190,69 @@ export default function CalendarPage({
     }
   };
 
-  // Map weekDays to react-day-picker format (starting Sunday)
-  const weekdayLabels = text.weekDays || [
-    "Sun",
-    "Mon",
-    "Tue",
-    "Wed",
-    "Thu",
-    "Fri",
-    "Sat",
-  ];
+  const handlePreviousWeek = () => {
+    setCurrentWeekStart(subWeeks(currentWeekStart, 1));
+  };
+
+  const handleNextWeek = () => {
+    setCurrentWeekStart(addWeeks(currentWeekStart, 1));
+  };
+
+  const handleToday = () => {
+    const today = new Date();
+    setCurrentWeekStart(startOfWeek(today, { weekStartsOn: 0 }));
+    setSelectedDate(today);
+  };
+
+  const weekDays = useMemo(() => {
+    return Array.from({ length: 7 }, (_, i) => addDays(currentWeekStart, i));
+  }, [currentWeekStart]);
+
+  const handleReschedule = async (postId: number, newDate: string) => {
+    try {
+      const result = await reschedule(postId, newDate);
+      if (result.success) {
+        toast({
+          title: "Success",
+          description: "Post rescheduled successfully",
+        });
+        window.location.reload();
+      } else {
+        throw new Error(result.error || "Failed to reschedule post");
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error ? error.message : "Failed to reschedule post",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handlePublishNow = async (postId: number) => {
+    if (!confirm("Are you sure you want to publish this post now?")) return;
+
+    try {
+      const result = await publishNow(postId);
+      if (result.success) {
+        toast({
+          title: "Success",
+          description: "Post published successfully",
+        });
+        window.location.reload();
+      } else {
+        throw new Error(result.error || "Failed to publish post");
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error ? error.message : "Failed to publish post",
+        variant: "destructive",
+      });
+    }
+  };
 
   const formatters = {
     formatWeekdayName: (date: Date) => {
@@ -381,6 +450,130 @@ export default function CalendarPage({
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
+
+        {/* Week View */}
+        <TabsContent value="week" className="mt-6">
+          <Card className="border-border bg-card">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-foreground">
+                  {format(currentWeekStart, "MMMM yyyy")}
+                </CardTitle>
+                <div className="flex items-center gap-2">
+                  <Button variant="outline" size="sm" onClick={handleToday}>
+                    Today
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={handlePreviousWeek}
+                  >
+                    <ChevronLeft className="size-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={handleNextWeek}
+                  >
+                    <ChevronRight className="size-4" />
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-7 gap-2">
+                {weekDays.map((day, index) => {
+                  const dayPosts = getPostsForDate(day);
+                  const isToday = isSameDay(day, new Date());
+
+                  return (
+                    <div
+                      key={index}
+                      className={`min-h-[200px] rounded-lg border border-border p-3 ${
+                        isToday ? "bg-primary/10 border-primary" : "bg-card"
+                      }`}
+                    >
+                      <div className="mb-3 text-center">
+                        <p className="text-xs font-medium text-muted-foreground">
+                          {text.weekDays?.[day.getDay()] || format(day, "EEE")}
+                        </p>
+                        <p
+                          className={`text-lg font-bold ${isToday ? "text-primary" : "text-foreground"}`}
+                        >
+                          {format(day, "d")}
+                        </p>
+                      </div>
+                      <div className="space-y-2">
+                        {dayPosts.length > 0 ? (
+                          dayPosts.map((post) => (
+                            <div
+                              key={post.id}
+                              className="group relative rounded-md border border-border bg-background p-2 transition-all hover:shadow-md"
+                            >
+                              <div className="mb-1 flex items-center gap-1">
+                                {post.targets.slice(0, 2).map((target, idx) => (
+                                  <div
+                                    key={idx}
+                                    className={`flex size-5 items-center justify-center rounded ${getPlatformColor(target.provider)}`}
+                                  >
+                                    {getPlatformIcon(target.provider)}
+                                  </div>
+                                ))}
+                                {post.targets.length > 2 && (
+                                  <span className="text-xs text-muted-foreground">
+                                    +{post.targets.length - 2}
+                                  </span>
+                                )}
+                              </div>
+                              <p className="mb-1 text-xs font-medium text-foreground">
+                                {format(new Date(post.scheduledAt), "h:mm a")}
+                              </p>
+                              <p className="text-xs text-muted-foreground line-clamp-2">
+                                {post.contentAr}
+                              </p>
+
+                              {/* Action buttons on hover */}
+                              <div className="absolute inset-0 flex items-center justify-center gap-1 rounded-md bg-background/95 opacity-0 transition-opacity group-hover:opacity-100">
+                                <Button
+                                  size="icon"
+                                  variant="ghost"
+                                  className="size-7"
+                                  onClick={() => handleEdit(post.id)}
+                                >
+                                  <Edit className="size-3" />
+                                </Button>
+                                <Button
+                                  size="icon"
+                                  variant="ghost"
+                                  className="size-7"
+                                  onClick={() => handleDuplicate(post.id)}
+                                >
+                                  <Copy className="size-3" />
+                                </Button>
+                                <Button
+                                  size="icon"
+                                  variant="ghost"
+                                  className="size-7 text-destructive"
+                                  onClick={() => handleDelete(post.id)}
+                                >
+                                  <Trash2 className="size-3" />
+                                </Button>
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <p className="text-center text-xs text-muted-foreground">
+                            No posts
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         {/* List View */}

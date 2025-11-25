@@ -3,11 +3,18 @@
 import type { IPost } from "@/interfaces";
 import { apiRequest, type ApiResult } from "./api-requester";
 
+type PostStatus =
+  | "draft"
+  | "scheduled"
+  | "published"
+  | "failed"
+  | "pending_approval";
+
 interface CreatePostDto {
   contentAr?: string;
   contentEn?: string;
   scheduledAt?: string;
-  status?: "draft" | "scheduled" | "published" | "failed" | "pending_approval";
+  status?: PostStatus;
   isRecurring?: boolean;
   authorId: number;
   teamId?: number;
@@ -20,12 +27,35 @@ interface UpdatePostDto {
   contentAr?: string;
   contentEn?: string;
   scheduledAt?: string;
-  status?: "draft" | "scheduled" | "published" | "failed" | "pending_approval";
+  status?: PostStatus;
   isRecurring?: boolean;
   teamId?: number;
   socialAccountIds?: number[];
   campaignId?: number;
   templateId?: number;
+}
+
+interface BulkCreatePostsDto {
+  posts: CreatePostDto[];
+}
+
+interface RecurringPostDto {
+  contentAr?: string;
+  contentEn?: string;
+  interval: string;
+  authorId: number;
+  teamId?: number;
+}
+
+interface DraftPostDto {
+  contentAr?: string;
+  contentEn?: string;
+  authorId: number;
+  teamId?: number;
+}
+
+interface ReschedulePostDto {
+  scheduledAt: string;
 }
 
 export async function create(dto: CreatePostDto): Promise<ApiResult<IPost>> {
@@ -95,6 +125,49 @@ export async function reschedule(
     method: "PUT",
     path: `/posts/${id}/reschedule`,
     body: { scheduleAt },
+    cache: "no-store",
+  });
+}
+
+export async function getStatus(
+  id: number,
+): Promise<ApiResult<{ id: number; status: string; scheduledAt: string }>> {
+  return apiRequest({
+    method: "GET",
+    path: `/posts/${id}/status`,
+    cache: "no-store",
+  });
+}
+
+export async function createRecurring(
+  dto: RecurringPostDto,
+): Promise<ApiResult<IPost>> {
+  return apiRequest<IPost, RecurringPostDto>({
+    method: "POST",
+    path: `/posts/recurring`,
+    body: dto,
+    cache: "no-store",
+  });
+}
+
+export async function createDraft(
+  dto: DraftPostDto,
+): Promise<ApiResult<IPost>> {
+  return apiRequest<IPost, DraftPostDto>({
+    method: "POST",
+    path: `/posts/draft`,
+    body: dto,
+    cache: "no-store",
+  });
+}
+
+export async function bulkCreate(
+  posts: CreatePostDto[],
+): Promise<ApiResult<IPost[]>> {
+  return apiRequest<IPost[], BulkCreatePostsDto>({
+    method: "POST",
+    path: "/posts/bulk",
+    body: { posts },
     cache: "no-store",
   });
 }

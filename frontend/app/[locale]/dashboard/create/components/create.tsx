@@ -5,7 +5,6 @@ import { useState, useTransition, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -33,15 +32,16 @@ import {
   CheckCircle,
   AlertCircle,
   Info,
-  Zap,
   Calendar,
+  Save,
+  Send,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
   getPlatformColor,
   getPlatformIcon,
 } from "@/components/icons/platforms-icons";
-import { createPostAction } from "../actions";
+import { createPostAction, createDraftPostAction } from "../actions";
 import type { IUser, ISocialAccount } from "@/interfaces";
 import type { ICampaign } from "@/lib/campaign-helper";
 import { cn } from "@/lib/utils";
@@ -122,7 +122,7 @@ export default function CreatePage({
   const [uploadedMedia, setUploadedMedia] = useState<string[]>([]);
   const [files, setFiles] = useState<File[]>([]);
 
-  const [scheduleType, setScheduleType] = useState<"now" | "later" | "draft">(
+  const [scheduleType, setScheduleType] = useState<"draft" | "now" | "later">(
     "draft",
   );
   const [scheduleDate, setScheduleDate] = useState("");
@@ -290,10 +290,21 @@ export default function CreatePage({
     files.forEach((file) => form.append("files", file));
 
     startTransition(async () => {
-      const result = await createPostAction(
-        { success: false, enMessage: "", arMessage: "" },
-        form,
-      );
+      let result;
+
+      if (scheduleType === "draft") {
+        // Use createDraftPostAction for drafts - simpler, no platforms needed
+        result = await createDraftPostAction(
+          { success: false, enMessage: "", arMessage: "" },
+          form,
+        );
+      } else {
+        // Use regular createPostAction for published and scheduled posts
+        result = await createPostAction(
+          { success: false, enMessage: "", arMessage: "" },
+          form,
+        );
+      }
 
       if (result.success) {
         setError("");
@@ -310,11 +321,14 @@ export default function CreatePage({
         setFiles([]);
         setSelectedPlatforms([]);
         setSelectedCampaign("");
+        setScheduleType("draft");
+        setScheduleDate("");
+        setScheduleTime("");
         setCurrentStep(1);
       } else {
         const message = locale === "ar" ? result.arMessage : result.enMessage;
 
-        setError(message); // SET ERROR STATE
+        setError(message);
 
         toast.error(message, {
           icon: <AlertCircle className="h-4 w-4" />,
@@ -468,7 +482,7 @@ export default function CreatePage({
             }
           />
 
-          {scheduleDate && scheduleTime && (
+          {scheduleDate && scheduleTime && scheduleType === "later" && (
             <input
               type="hidden"
               name="scheduledAt"
@@ -480,16 +494,17 @@ export default function CreatePage({
             <input type="hidden" name="campaignId" value={selectedCampaign} />
           )}
 
-          {platforms.map((p) =>
-            selectedPlatforms.includes(p.id) ? (
-              <input
-                key={p.id}
-                type="hidden"
-                name="socialAccountIds"
-                value={p.socialAccountId}
-              />
-            ) : null,
-          )}
+          {scheduleType !== "draft" &&
+            platforms.map((p) =>
+              selectedPlatforms.includes(p.id) ? (
+                <input
+                  key={p.id}
+                  type="hidden"
+                  name="socialAccountIds"
+                  value={p.socialAccountId}
+                />
+              ) : null,
+            )}
 
           <div className="grid lg:grid-cols-2 gap-6">
             {/* LEFT SIDE */}
@@ -805,16 +820,14 @@ export default function CreatePage({
               >
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4" />
                     {text.schedule.title}
                     {(scheduleType === "now" ||
                       scheduleType === "draft" ||
                       (scheduleDate && scheduleTime)) && (
-                      <Badge
-                        variant="secondary"
-                        className="ml-auto text-primary"
-                      >
+                      <Badge variant="secondary" className="ml-auto">
                         <CheckCircle className="w-3 h-3 mr-1 text-primary" />
-                        {locale === "ar" ? "محدد" : "Set"}
+                        Set
                       </Badge>
                     )}
                   </CardTitle>
@@ -823,121 +836,157 @@ export default function CreatePage({
                   <Tabs
                     value={scheduleType}
                     onValueChange={(v) => setScheduleType(v as any)}
+                    className="w-full"
                   >
-                    <TabsList className="grid grid-cols-3">
+                    <TabsList className="grid w-full grid-cols-3">
                       <TabsTrigger
                         value="draft"
                         className="transition-all duration-100"
                       >
-                        <FolderOpen className="w-3 h-3 mr-1" />
-                        {text.schedule?.saveDraftTab || "Draft"}
+                        <Save className="w-3 h-3 mr-1" />
+                        {text.schedule.draft || "Draft"}
                       </TabsTrigger>
                       <TabsTrigger
                         value="now"
                         className="transition-all duration-100"
                       >
-                        <Zap className="w-3 h-3 mr-1" />
-                        {text.schedule.publishNowTab}
+                        <Send className="w-3 h-3 mr-1" />
+                        {text.schedule.publishNow}
                       </TabsTrigger>
                       <TabsTrigger
                         value="later"
                         className="transition-all duration-100"
                       >
                         <Calendar className="w-3 h-3 mr-1" />
-                        {text.schedule.scheduleLaterTab}
+                        {text.schedule.schedule}
                       </TabsTrigger>
                     </TabsList>
 
-                    <TabsContent value="draft">
-                      <p className="text-xs text-muted-foreground">
-                        {text.schedule?.saveDraftDescription ||
-                          "Save this post as a draft to publish later"}
-                      </p>
+                    <TabsContent value="draft" className="space-y-3">
+                      <div className="p-4 rounded-lg bg-muted/50 space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Save className="w-4 h-4 text-primary" />
+                          <span className="font-medium">
+                            {text.schedule.draftTitle || "Save as Draft"}
+                          </span>
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          {text.schedule.draftDescription ||
+                            "Save your work and continue editing later. Drafts won't be published to any platforms."}
+                        </p>
+                      </div>
                     </TabsContent>
 
-                    <TabsContent value="now">
-                      <p className="text-xs text-muted-foreground">
-                        {text.schedule.publishNowDescription}
-                      </p>
+                    <TabsContent value="now" className="space-y-3">
+                      <div className="p-4 rounded-lg bg-primary/10 space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Send className="w-4 h-4 text-primary" />
+                          <span className="font-medium">
+                            {text.schedule.publishNowTitle}
+                          </span>
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          {text.schedule.publishNowDescription}
+                        </p>
+                      </div>
                     </TabsContent>
 
                     <TabsContent value="later" className="space-y-3">
-                      <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-3">
                         <div>
-                          <Label>{text.schedule.dateLabel}</Label>
-                          <Input
+                          <Label>{text.schedule.date}</Label>
+                          <input
                             type="date"
-                            required
                             value={scheduleDate}
                             onChange={(e) => setScheduleDate(e.target.value)}
-                            className="transition-all duration-100 focus:ring-2 focus:ring-primary/20"
+                            className="w-full px-3 py-2 rounded-md border bg-background transition-all duration-100 focus:ring-2 focus:ring-primary/20"
+                            min={new Date().toISOString().split("T")[0]}
                           />
                         </div>
+
                         <div>
-                          <Label>{text.schedule.timeLabel}</Label>
-                          <Input
+                          <Label>{text.schedule.time}</Label>
+                          <input
                             type="time"
-                            required
                             value={scheduleTime}
                             onChange={(e) => setScheduleTime(e.target.value)}
-                            className="transition-all duration-100 focus:ring-2 focus:ring-primary/20"
+                            className="w-full px-3 py-2 rounded-md border bg-background transition-all duration-100 focus:ring-2 focus:ring-primary/20"
                           />
                         </div>
+
+                        {scheduleDate && scheduleTime && (
+                          <div className="p-3 bg-primary/10 rounded-lg">
+                            <p className="text-sm">
+                              <span className="font-medium">
+                                {text.schedule.scheduledFor}:{" "}
+                              </span>
+                              {new Date(
+                                `${scheduleDate}T${scheduleTime}`,
+                              ).toLocaleString(locale, {
+                                dateStyle: "medium",
+                                timeStyle: "short",
+                              })}
+                            </p>
+                          </div>
+                        )}
                       </div>
                     </TabsContent>
                   </Tabs>
-                  {error && (
-                    <p className="text-sm text-destructive mt-2 animate-pulse">
-                      {error}
-                    </p>
-                  )}
-
-                  <Button
-                    type="submit"
-                    disabled={isPending || selectedPlatforms.length === 0}
-                    className="w-full mt-4 transition-all duration-100 hover:scale-[1.02]"
-                  >
-                    {isPending ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                        {text.schedule.creating}
-                      </>
-                    ) : scheduleType === "draft" ? (
-                      <>
-                        <FolderOpen className="w-4 h-4 mr-2" />
-                        {text.schedule?.saveDraftButton || "Save Draft"}
-                      </>
-                    ) : scheduleType === "now" ? (
-                      <>
-                        <Zap className="w-4 h-4 mr-2" />
-                        {text.schedule.publishNowButton}
-                      </>
-                    ) : (
-                      <>
-                        <Calendar className="w-4 h-4 mr-2" />
-                        {text.schedule.scheduleButton}
-                      </>
-                    )}
-                  </Button>
                 </CardContent>
               </Card>
             </div>
           </div>
+
+          {/* SUBMIT BUTTON */}
+          <div className="mt-6 flex justify-end gap-3">
+            {error && (
+              <div className="flex-1 p-3 bg-destructive/10 text-destructive rounded-lg text-sm flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                {error}
+              </div>
+            )}
+
+            <Button
+              type="submit"
+              size="lg"
+              disabled={
+                isPending ||
+                (!contentEn && !contentAr) ||
+                (scheduleType !== "draft" && selectedPlatforms.length === 0)
+              }
+              className="min-w-[200px] transition-all duration-100 hover:scale-105 shadow-lg"
+            >
+              {isPending ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  {locale === "ar" ? "جاري المعالجة..." : "Processing..."}
+                </>
+              ) : (
+                <>
+                  {scheduleType === "draft" && (
+                    <>
+                      <Save className="w-4 h-4 mr-2" />
+                      {text.schedule.saveDraft || "Save Draft"}
+                    </>
+                  )}
+                  {scheduleType === "now" && (
+                    <>
+                      <Send className="w-4 h-4 mr-2" />
+                      {text.schedule.publishNow}
+                    </>
+                  )}
+                  {scheduleType === "later" && (
+                    <>
+                      <Calendar className="w-4 h-4 mr-2" />
+                      {text.schedule.schedulePost}
+                    </>
+                  )}
+                </>
+              )}
+            </Button>
+          </div>
         </form>
       </div>
-
-      <style jsx>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
     </div>
   );
 }

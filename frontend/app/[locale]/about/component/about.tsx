@@ -23,38 +23,13 @@ import {
 import { cn } from "@/lib/utils";
 import { CtaSection } from "../../components/cta-section";
 
-interface AboutContentProps {
-  text: {
-    badge: string;
-    heading: string;
-    subHeading: string;
-    missionTitle: string;
-    missionDescription: string;
-    storyTitle: string;
-    storyDescription: string;
-    statsTitle: string;
-    stats: {
-      users: { value: string; label: string };
-      posts: { value: string; label: string };
-      countries: { value: string; label: string };
-      satisfaction: { value: string; label: string };
-    };
-    valuesTitle: string;
-    teamDescription: string;
-    values: {
-      innovation: { title: string; description: string };
-      simplicity: { title: string; description: string };
-      quality: { title: string; description: string };
-      support: { title: string; description: string };
-    };
-    ctaTitle: string;
-    ctaDescription: string;
-    ctaButton: string;
-  };
+export default function AboutContent({
+  text,
+  locale,
+}: {
+  text: any;
   locale: string;
-}
-
-export default function AboutContent({ text, locale }: AboutContentProps) {
+}) {
   const [counters, setCounters] = useState({
     users: 0,
     posts: 0,
