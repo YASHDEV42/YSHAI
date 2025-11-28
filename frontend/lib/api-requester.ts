@@ -26,7 +26,14 @@ export type ApiResult<T> = ApiSuccess<T> | ApiError;
 interface ApiRequestOptions<TBody> {
   method?: ApiMethod;
   path: string;
-  query?: Record<string, string | number | boolean | undefined>;
+  query?: Record<
+    string,
+    | string
+    | number
+    | boolean
+    | undefined
+    | (string | number | boolean | undefined)[]
+  >;
   body?: TBody;
   formData?: FormData;
   cache?:
@@ -55,13 +62,23 @@ export async function apiRequest<TResponse, TBody = any>(
   }
 
   // BUILD QUERY STRING
+
   const qs =
     query &&
     Object.entries(query)
       .filter(([, v]) => v !== undefined)
-      .map(
-        ([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(String(v))}`,
-      )
+      .flatMap(([key, value]) => {
+        if (Array.isArray(value)) {
+          // multiple ?key=value parameters
+          return value.map(
+            (item) =>
+              `${encodeURIComponent(key)}=${encodeURIComponent(String(item))}`,
+          );
+        }
+
+        // single parameter
+        return `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`;
+      })
       .join("&");
 
   const url = `${APP_URL}${path}${qs ? `?${qs}` : ""}`;

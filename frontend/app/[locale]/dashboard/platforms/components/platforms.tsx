@@ -80,24 +80,6 @@ export function Platforms({ text, locale, accounts }: PlatformsProps) {
     });
   };
 
-  const handleViewPlatform = (platformName: string) => {
-    setIsLoading(true);
-
-    toast.loading(`Loading ${platformName}...`, {
-      id: "load-platform",
-    });
-
-    // Simulate loading
-    setTimeout(() => {
-      setIsLoading(false);
-      toast.success(`Loaded ${platformName} successfully`, {
-        id: "load-platform",
-        icon: <CheckCircle className="h-4 w-4" />,
-        duration: 2000,
-      });
-    }, 1000);
-  };
-
   const handleDisconnectPlatform = (
     platformName: string,
     platformId: number,
@@ -388,7 +370,6 @@ export function Platforms({ text, locale, accounts }: PlatformsProps) {
                           asChild
                           className="flex-1 group-hover:bg-primary transition-colors bg-transparent"
                           variant="outline"
-                          onClick={() => handleViewPlatform(account.provider)}
                         >
                           <Link
                             href={`/${locale}/dashboard/platforms/${account.provider.toLowerCase()}-${account.id}`}
