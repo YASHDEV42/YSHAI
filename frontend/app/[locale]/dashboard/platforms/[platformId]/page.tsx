@@ -52,6 +52,7 @@ async function PlatformDetailServerPage({
   const [instagramPostsResponse, databasePostsResponse] = await Promise.all([
     getInstagramPosts(account.providerAccountId),
     listPosts({
+      status: ["draft", "failed", "scheduled", "pending_approval"],
       teamId: "",
       campaignId: "",
       scheduledFrom: "",
@@ -66,19 +67,12 @@ async function PlatformDetailServerPage({
     ? databasePostsResponse.data
     : [];
 
-  const accountDatabasePosts = databasePosts.filter((post: any) => {
-    const isForThisAccount = post.targets?.some(
-      (target: any) => target.socialAccountId === account.id,
-    );
-    const isDraftOrScheduled =
-      post.status === "draft" || post.status === "scheduled";
-    return isForThisAccount && isDraftOrScheduled;
-  });
-
-  const allPosts = [...accountDatabasePosts, ...instagramPosts];
+  console.log(databasePosts);
+  console.log(instagramPosts);
+  const allPosts = [...databasePosts, ...instagramPosts];
 
   console.log("[v0] Platform content breakdown:", {
-    draftsAndScheduled: accountDatabasePosts.length,
+    draftsAndScheduled: databasePosts.length,
     instagramPublished: instagramPosts.length,
     total: allPosts.length,
   });

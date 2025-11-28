@@ -22,7 +22,7 @@ export class PostsService {
   constructor(private readonly em: EntityManager) {}
 
   async findAll(filters?: {
-    status?: Post['status'];
+    status?: Post['status'][];
     teamId?: number;
     campaignId?: number;
     scheduledFrom?: Date;

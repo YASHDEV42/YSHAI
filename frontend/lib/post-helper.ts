@@ -2,7 +2,6 @@
 
 import type { IPost } from "@/interfaces";
 import { apiRequest, type ApiResult } from "./api-requester";
-
 type PostStatus =
   | "draft"
   | "scheduled"
@@ -68,6 +67,7 @@ export async function create(dto: CreatePostDto): Promise<ApiResult<IPost>> {
 }
 
 export async function list(params: {
+  status?: PostStatus[];
   teamId: string;
   campaignId: string;
   scheduledFrom: string;

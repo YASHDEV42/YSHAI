@@ -83,7 +83,7 @@ export class PostsController {
   @ApiOperation({ summary: 'List posts with optional filters' })
   @ApiResponse({ status: 200, type: [PostResponseDto] })
   async findAll(
-    @Query('status') status?: PostEntity['status'],
+    @Query('status') status?: PostEntity['status'][],
     @Query('teamId') teamId?: string,
     @Query('campaignId') campaignId?: string,
     @Query('scheduledFrom') scheduledFrom?: string,
