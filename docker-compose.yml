@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    container_name: yshai-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: yshai_db
+      POSTGRES_USER: yshai_user
+      POSTGRES_PASSWORD: supersecretpassword
+    # For production, you can omit ports to keep DB internal-only.
+    # Uncomment if you want to access DB from outside (e.g. from your laptop):
+    # ports:
+    #   - "5432:5432"
+    volumes:
+      - yshai_db_data:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    container_name: yshai-backend
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - db
+    ports:
+      - "4000:5000" # host:container
+
+  frontend:
+    build: ./frontend
+    container_name: yshai-frontend
+    restart: unless-stopped
+    env_file:
+      - ./frontend/.env
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000" # host:container
+
+volumes:
+  yshai_db_data:
