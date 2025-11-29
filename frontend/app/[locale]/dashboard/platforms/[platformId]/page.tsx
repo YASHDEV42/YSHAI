@@ -67,15 +67,7 @@ async function PlatformDetailServerPage({
     ? databasePostsResponse.data
     : [];
 
-  console.log(databasePosts);
-  console.log(instagramPosts);
   const allPosts = [...databasePosts, ...instagramPosts];
-
-  console.log("[v0] Platform content breakdown:", {
-    draftsAndScheduled: databasePosts.length,
-    instagramPublished: instagramPosts.length,
-    total: allPosts.length,
-  });
 
   return (
     <PlatformDetail

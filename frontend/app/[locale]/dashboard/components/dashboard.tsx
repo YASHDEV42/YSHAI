@@ -6,12 +6,7 @@ import {
   Calendar,
   TrendingUp,
   Users,
-  FileText,
   Plus,
-  Twitter,
-  Instagram,
-  Linkedin,
-  Music2,
   BarChart3,
   Clock,
   CheckCircle2,
@@ -28,6 +23,10 @@ import { Badge } from "@/components/ui/badge";
 import { StatCard } from "@/components/ui/stat-card";
 import type { IDashboardStats } from "@/lib/analytics-helper";
 import type { ISocialAccount, IPost } from "@/interfaces";
+import {
+  getPlatformColor,
+  getPlatformIcon,
+} from "@/components/icons/platforms-icons";
 
 interface DashboardPageProps {
   text: any;
@@ -58,8 +57,6 @@ export default function DashboardPage({
     connectedAccounts: 0,
     avgEngagement: 0,
   });
-
-  const isRTL = locale === "ar";
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -154,50 +151,37 @@ export default function DashboardPage({
   const connectedPlatforms = [
     {
       name: "Twitter",
-      icon: Twitter,
+      icon: getPlatformIcon("x"),
       connected: accounts.some((a) => a.provider === "x"),
-      color: "text-blue-400",
+      color: getPlatformColor("x"),
       provider: "x",
     },
     {
       name: "Instagram",
-      icon: Instagram,
+      icon: getPlatformIcon("instagram"),
       connected: accounts.some((a) => a.provider === "instagram"),
-      color: "text-pink-400",
+      color: getPlatformColor("instagram"),
       provider: "instagram",
     },
     {
       name: "LinkedIn",
-      icon: Linkedin,
+      icon: getPlatformIcon("linkedin"),
       connected: accounts.some((a) => a.provider === "linkedin"),
-      color: "text-blue-600",
+      color: getPlatformColor("linkedin"),
       provider: "linkedin",
     },
     {
       name: "TikTok",
-      icon: Music2,
+      icon: getPlatformIcon("tiktok"),
       connected: accounts.some((a) => a.provider === "tiktok"),
-      color: "text-gray-400",
+      color: getPlatformColor("tiktok"),
       provider: "tiktok",
     },
   ];
 
-  const getPlatformIcon = (platform: string) => {
-    switch (platform) {
-      case "x":
-      case "twitter":
-        return <Twitter className="size-4" />;
-      case "instagram":
-        return <Instagram className="size-4" />;
-      case "linkedin":
-        return <Linkedin className="size-4" />;
-      case "tiktok":
-        return <Music2 className="size-4" />;
-      default:
-        return <FileText className="size-4" />;
-    }
+  const getPlatformIconToDisplay = (platform: string) => {
+    return <>{getPlatformIcon(platform)}</>;
   };
-
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "success":
@@ -335,7 +319,7 @@ export default function DashboardPage({
                     }}
                   >
                     <div className="flex size-10 items-center justify-center rounded-lg bg-muted transition-all duration-100 hover:scale-110 hover:rotate-6">
-                      {getPlatformIcon(activity.platform)}
+                      {getPlatformIconToDisplay(activity.platform)}
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between">

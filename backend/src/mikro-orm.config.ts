@@ -8,7 +8,11 @@ loadEnv({ path: envPath });
 
 const config: Options = {
   driver: PostgreSqlDriver,
-  clientUrl: process.env.DATABASE_URL,
+  host: process.env.DB_HOST,
+  port: Number(process.env.DB_PORT),
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  dbName: process.env.DB_NAME,
   entities: ['dist/entities/**/*.entity.js'],
   entitiesTs: ['src/entities/**/*.entity.ts'],
   driverOptions: {
