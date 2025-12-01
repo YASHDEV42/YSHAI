@@ -15,13 +15,6 @@ const config: Options = {
   dbName: process.env.DB_NAME,
   entities: ['dist/entities/**/*.entity.js'],
   entitiesTs: ['src/entities/**/*.entity.ts'],
-  driverOptions: {
-    connection: {
-      ssl: {
-        rejectUnauthorized: false,
-      },
-    },
-  },
 };
 
 export default config;

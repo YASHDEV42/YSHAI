@@ -3,7 +3,7 @@
 import { cookies } from "next/headers";
 import type { ValidationErrorDto, ErrorResponseDto } from "@/interfaces";
 
-const APP_URL = process.env.NEXT_PUBLIC_PROTECTED_API_KEY ?? "";
+const APP_URL = "/api/protected";
 
 type ApiMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
