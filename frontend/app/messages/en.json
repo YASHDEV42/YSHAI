@@ -505,6 +505,144 @@
       "ctaSubheading": "Manage your Arabic social media with a platform built for your language."
     }
   },
+  "PrivacyPolicy": {
+    "badge": "Privacy Policy",
+    "title": "Privacy Policy",
+    "lastUpdated": "Last Updated",
+    "date": "January 2025",
+    "introduction": "At YSHAI, we take your privacy seriously. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our social media management platform. Please read this privacy policy carefully.",
+    "sections": {
+      "dataCollection": {
+        "title": "Information We Collect",
+        "content": [
+          "Account Information: Name, email address, password, and profile information",
+          "Social Media Data: Access tokens, connected social media accounts, and content you create or schedule",
+          "Usage Data: Information about how you use our platform, including features accessed and actions taken",
+          "Device Information: IP address, browser type, operating system, and device identifiers",
+          "Payment Information: Billing details and transaction history (processed securely through third-party payment processors)"
+        ]
+      },
+      "dataUsage": {
+        "title": "How We Use Your Information",
+        "content": [
+          "Provide and maintain our social media management services",
+          "Process your transactions and manage your subscriptions",
+          "Send you technical notices, updates, security alerts, and support messages",
+          "Respond to your comments, questions, and customer service requests",
+          "Generate AI-powered content suggestions and analytics based on your data",
+          "Improve and personalize your experience on our platform",
+          "Monitor and analyze usage patterns and trends to enhance our services"
+        ]
+      },
+      "dataSecurity": {
+        "title": "Data Security",
+        "content": "We implement industry-standard security measures to protect your information, including encryption, secure servers, and regular security audits. However, no method of transmission over the Internet is 100% secure, and we cannot guarantee absolute security. We use OAuth 2.0 for social media account connections and never store your social media passwords."
+      },
+      "dataSharing": {
+        "title": "Information Sharing",
+        "content": [
+          "Service Providers: We share data with third-party vendors who perform services on our behalf, such as payment processing and analytics",
+          "Social Media Platforms: We share content with social media platforms as directed by you when you schedule and publish posts",
+          "Legal Requirements: We may disclose information when required by law or to protect our rights and safety",
+          "Business Transfers: In the event of a merger, acquisition, or sale of assets, your information may be transferred",
+          "We do not sell your personal information to third parties for marketing purposes"
+        ]
+      },
+      "userRights": {
+        "title": "Your Rights and Choices",
+        "content": [
+          "Access: Request access to the personal information we hold about you",
+          "Correction: Request correction of inaccurate or incomplete information",
+          "Deletion: Request deletion of your personal information, subject to legal obligations",
+          "Export: Download your data in a portable format",
+          "Opt-Out: Unsubscribe from marketing communications at any time",
+          "Revoke Consent: Disconnect social media accounts or withdraw consent for data processing"
+        ]
+      },
+      "cookies": {
+        "title": "Cookies and Tracking",
+        "content": "We use cookies and similar tracking technologies to enhance your experience, analyze usage patterns, and deliver personalized content. You can control cookie preferences through your browser settings. Essential cookies required for platform functionality cannot be disabled."
+      }
+    },
+    "contact": {
+      "title": "Contact Us",
+      "description": "If you have questions or concerns about this Privacy Policy or our data practices, please contact us:",
+      "email": "Email"
+    }
+  },
+  "TermsOfService": {
+    "badge": "Terms of Service",
+    "title": "Terms of Service",
+    "lastUpdated": "Last Updated",
+    "date": "January 2025",
+    "introduction": "Welcome to YSHAI. These Terms of Service govern your use of our social media management platform. By creating an account or using our services, you agree to be bound by these terms. If you do not agree to these terms, please do not use our services.",
+    "sections": {
+      "acceptance": {
+        "title": "Acceptance of Terms",
+        "content": "By accessing or using YSHAI, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service and our Privacy Policy. We reserve the right to modify these terms at any time, and your continued use of the service constitutes acceptance of any changes."
+      },
+      "services": {
+        "title": "Description of Services",
+        "content": [
+          "YSHAI provides a cloud-based social media management platform that enables users to create, schedule, publish, and analyze content across multiple social media platforms",
+          "Our services include AI-powered content generation, multi-platform scheduling, analytics dashboards, and team collaboration tools",
+          "We continuously update and improve our services, and features may be added or removed at our discretion",
+          "Service availability is subject to scheduled maintenance and may be interrupted for updates or technical issues"
+        ]
+      },
+      "subscription": {
+        "title": "Subscription and Payment",
+        "content": [
+          "YSHAI offers various subscription plans with different features and pricing",
+          "Subscriptions are billed on a recurring basis (monthly or annually) until cancelled",
+          "You are responsible for providing accurate billing information and maintaining valid payment methods",
+          "Prices are subject to change with 30 days notice to existing subscribers",
+          "Refunds are provided according to our refund policy, typically within 14 days of initial subscription for new users",
+          "Failure to pay may result in service suspension or account termination"
+        ]
+      },
+      "prohibitedUse": {
+        "title": "Prohibited Use",
+        "content": [
+          "You may not use YSHAI to create, schedule, or publish illegal, harmful, or offensive content",
+          "Spam, automated bot activity, or any form of platform manipulation is strictly prohibited",
+          "You may not attempt to reverse engineer, decompile, or extract source code from our platform",
+          "Sharing account credentials or reselling access to the platform is not permitted",
+          "You must comply with all applicable laws and the terms of service of connected social media platforms",
+          "Violations may result in immediate account termination without refund"
+        ]
+      },
+      "intellectualProperty": {
+        "title": "Intellectual Property",
+        "content": [
+          "You retain all rights to the content you create and upload to YSHAI",
+          "By using our services, you grant us a limited license to store, process, and display your content as necessary to provide our services",
+          "YSHAI and all related trademarks, logos, and service marks are the property of YSHAI",
+          "Our platform, including all software, algorithms, and AI models, is protected by copyright and other intellectual property laws",
+          "AI-generated content suggestions are provided as-is, and you are responsible for reviewing and approving all published content"
+        ]
+      },
+      "limitation": {
+        "title": "Limitation of Liability",
+        "content": "YSHAI is provided 'as is' without warranties of any kind. We are not liable for any damages arising from your use of the service, including but not limited to loss of data, lost profits, or service interruptions. Our total liability shall not exceed the amount you paid for the service in the preceding 12 months. Some jurisdictions do not allow certain liability limitations, so these may not apply to you."
+      },
+      "termination": {
+        "title": "Account Termination",
+        "content": [
+          "You may cancel your account at any time through your account settings",
+          "We reserve the right to suspend or terminate accounts that violate these terms",
+          "Upon termination, you will lose access to your account and any associated data",
+          "We may retain certain information as required by law or for legitimate business purposes",
+          "Prepaid subscription fees are non-refundable except as required by law or our refund policy"
+        ]
+      }
+    },
+    "contact": {
+      "title": "Contact Us",
+      "description": "If you have questions about these Terms of Service, please contact us:",
+      "email": "Email"
+    }
+  },
   "SignUpPage": {
     "title": "Create your account",
     "subtitle": "Start scheduling smarter with AI-powered Arabic content",

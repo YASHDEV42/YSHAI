@@ -21,6 +21,14 @@ export async function extractLandingPageText(locale: string) {
     FooterText: messages.FooterSection,
   };
 }
+export async function extractPrivacyPolicyPageText(locale: string) {
+  const messages = await getMessages({ locale });
+  return messages.PrivacyPolicy as Record<string, any>;
+}
+export async function extractTermsOfServicePageText(locale: string) {
+  const messages = await getMessages({ locale });
+  return messages.TermsOfService as Record<string, any>;
+}
 
 export async function extractCreatePageText(locale: string) {
   const messages = await getMessages({ locale });
