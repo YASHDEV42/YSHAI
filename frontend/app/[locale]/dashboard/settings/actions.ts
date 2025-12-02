@@ -9,6 +9,7 @@ import {
   getMyInvoices,
 } from "@/lib/subscription-helper";
 
+import { handleOAuthCallback } from "@/lib/meta-helper";
 const BaseURL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
 type initialStateType = {
   arMessage: string;
@@ -70,30 +71,25 @@ export const changeNameAction = async (
 export async function connectInstagram(shortToken: string, expiry?: any) {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("accessToken");
-
   if (!accessToken) {
-    throw new Error("Not authenticated");
+    return {
+      success: false,
+      error: "Not authenticated",
+    };
   }
 
-  try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_PROTECTED_API_KEY}/meta/oauth/callback`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Cookie: cookieStore.toString(),
-        },
-        body: JSON.stringify({
-          shortToken,
-        }),
-      },
-    );
-    return await res.json();
-  } catch (error) {
-    console.error("Error during fetch:", error);
-    return { error: "Failed to connect Instagram account" };
+  // Delegate to the meta-helper (which uses apiRequest and ApiResult)
+  const result = await handleOAuthCallback(shortToken);
+
+  // Optionally log on failure
+  if (!result.success) {
+    console.error("❌ Meta OAuth callback failed:", result.error);
+  } else {
+    console.log("✅ Meta OAuth callback success:", result.data);
   }
+
+  // Just return the ApiResult; client already expects { success, data?, error? }
+  return result;
 }
 
 export async function fetchSubscriptionData() {

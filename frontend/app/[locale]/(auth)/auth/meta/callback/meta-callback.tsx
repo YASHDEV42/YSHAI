@@ -15,10 +15,8 @@ export default function MetaCallbackClient() {
       const result = await connectInstagram(token, expiry);
 
       if (result?.success) {
-        console.log("✅ Instagram connected successfully:", result.data);
         router.replace("/dashboard/settings?connected=instagram");
       } else {
-        console.error("❌ Failed to connect Instagram:", result?.error);
         router.replace("/dashboard/settings?error=connection_failed");
       }
     } catch (err) {
