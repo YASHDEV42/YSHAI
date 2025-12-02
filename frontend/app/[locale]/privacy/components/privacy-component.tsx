@@ -2,7 +2,16 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { Shield, Lock, Eye, Database, Users, AlertCircle } from "lucide-react";
+import {
+  Shield,
+  Lock,
+  Eye,
+  Database,
+  Users,
+  AlertCircle,
+  Globe2,
+  FileText,
+} from "lucide-react";
 
 interface PrivacyContentProps {
   text: any;
@@ -17,9 +26,19 @@ export default function PrivacyContent({ text, locale }: PrivacyContentProps) {
       content: text.sections.dataCollection.content,
     },
     {
+      icon: FileText,
+      title: text.sections.legalBasis.title,
+      content: text.sections.legalBasis.content,
+    },
+    {
       icon: Lock,
       title: text.sections.dataUsage.title,
       content: text.sections.dataUsage.content,
+    },
+    {
+      icon: Shield,
+      title: text.sections.dataRetention.title,
+      content: text.sections.dataRetention.content,
     },
     {
       icon: Shield,
@@ -32,20 +51,41 @@ export default function PrivacyContent({ text, locale }: PrivacyContentProps) {
       content: text.sections.dataSharing.content,
     },
     {
+      icon: Globe2,
+      title: text.sections.internationalTransfers.title,
+      content: text.sections.internationalTransfers.content,
+    },
+    {
       icon: Eye,
       title: text.sections.userRights.title,
       content: text.sections.userRights.content,
+    },
+    {
+      icon: Eye,
+      title: text.sections.dataDeletionProcess.title,
+      content: text.sections.dataDeletionProcess.content,
     },
     {
       icon: AlertCircle,
       title: text.sections.cookies.title,
       content: text.sections.cookies.content,
     },
+    {
+      icon: AlertCircle,
+      title: text.sections.children.title,
+      content: text.sections.children.content,
+    },
+    {
+      icon: FileText,
+      title: text.sections.changesToPolicy.title,
+      content: text.sections.changesToPolicy.content,
+    },
   ];
 
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-16 max-w-4xl">
+        {/* Header */}
         <div className="text-center mb-12">
           <Badge variant="secondary" className="mb-4">
             {text.badge}
@@ -56,10 +96,12 @@ export default function PrivacyContent({ text, locale }: PrivacyContentProps) {
           </p>
         </div>
 
+        {/* Intro */}
         <Card className="p-8 mb-8 bg-muted/50">
           <p className="text-lg leading-relaxed">{text.introduction}</p>
         </Card>
 
+        {/* Sections */}
         <div className="space-y-8">
           {sections.map((section, index) => (
             <Card key={index} className="p-8">
@@ -90,20 +132,24 @@ export default function PrivacyContent({ text, locale }: PrivacyContentProps) {
           ))}
         </div>
 
+        {/* Contact */}
         <Card className="p-8 mt-8 bg-primary/5 border-primary/20">
           <h2 className="text-2xl font-bold mb-4">{text.contact.title}</h2>
           <p className="text-muted-foreground mb-4">
             {text.contact.description}
           </p>
-          <p className="font-medium">
+          <p className="font-medium mb-2">
             {text.contact.email}:{" "}
             <a
-              href="mailto:privacy@yshai.com"
+              href={`mailto:${text.contact.email}`}
               className="text-primary hover:underline"
             >
-              privacy@yshai.com
+              {text.contact.email}
             </a>
           </p>
+          {text.contact.address && (
+            <p className="text-muted-foreground">{text.contact.address}</p>
+          )}
         </Card>
       </div>
     </div>

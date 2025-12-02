@@ -16,7 +16,6 @@ export default async function TermsPage({
   setRequestLocale(locale);
 
   const text = await extractTermsOfServicePageText(locale);
-  console.log("Terms of Service Text:", text);
 
   return <TermsContent text={text} locale={locale} />;
 }

@@ -29,6 +29,10 @@ export async function extractTermsOfServicePageText(locale: string) {
   const messages = await getMessages({ locale });
   return messages.TermsOfService as Record<string, any>;
 }
+export async function extractSupportPageText(locale: string) {
+  const messages = await getMessages({ locale });
+  return messages.Support as Record<string, any>;
+}
 
 export async function extractCreatePageText(locale: string) {
   const messages = await getMessages({ locale });

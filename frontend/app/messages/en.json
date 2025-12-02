@@ -510,64 +510,105 @@
     "title": "Privacy Policy",
     "lastUpdated": "Last Updated",
     "date": "January 2025",
-    "introduction": "At YSHAI, we take your privacy seriously. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our social media management platform. Please read this privacy policy carefully.",
+    "introduction": "At YSHAI, we take your privacy seriously. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our social media management platform (the \"Service\"). By using YSHAI, you agree to the practices described in this Privacy Policy.",
     "sections": {
       "dataCollection": {
         "title": "Information We Collect",
         "content": [
-          "Account Information: Name, email address, password, and profile information",
-          "Social Media Data: Access tokens, connected social media accounts, and content you create or schedule",
-          "Usage Data: Information about how you use our platform, including features accessed and actions taken",
-          "Device Information: IP address, browser type, operating system, and device identifiers",
-          "Payment Information: Billing details and transaction history (processed securely through third-party payment processors)"
+          "Account Information: Name, email address, password, profile information, and account settings you provide when you register or update your account.",
+          "Social Media Data: Access tokens, connected social media accounts, and the content you create, upload, schedule, or publish using the Service, as well as associated metadata.",
+          "Usage Data: Information about how you use our platform, such as pages viewed, features accessed, actions taken, timestamps, and interaction logs.",
+          "Device and Technical Information: IP address, browser type, operating system, device identifiers, language preferences, and other technical details collected through server logs and similar technologies.",
+          "Payment Information: Billing details, subscription plan, and transaction history. Payment card details are processed securely by third-party payment processors and are not stored by YSHAI."
+        ]
+      },
+      "legalBasis": {
+        "title": "Legal Basis for Processing (Where Applicable)",
+        "content": [
+          "Contract: To provide and operate the Service, maintain your account, and fulfill our contractual obligations.",
+          "Legitimate Interests: To improve and secure the Service, prevent abuse, and analyze usage to enhance performance and user experience.",
+          "Consent: For certain optional activities such as marketing communications, where we rely on your explicit consent.",
+          "Legal Obligations: To comply with applicable laws, regulations, and legal processes."
         ]
       },
       "dataUsage": {
         "title": "How We Use Your Information",
         "content": [
-          "Provide and maintain our social media management services",
-          "Process your transactions and manage your subscriptions",
-          "Send you technical notices, updates, security alerts, and support messages",
-          "Respond to your comments, questions, and customer service requests",
-          "Generate AI-powered content suggestions and analytics based on your data",
-          "Improve and personalize your experience on our platform",
-          "Monitor and analyze usage patterns and trends to enhance our services"
+          "Provide, operate, and maintain our social media management services, including content creation, scheduling, publishing, and analytics.",
+          "Process your transactions, manage your subscriptions, and handle billing and invoicing.",
+          "Send you technical notices, product updates, security alerts, and administrative messages related to your account and the Service.",
+          "Respond to your comments, questions, and customer support requests.",
+          "Generate AI-powered content suggestions, recommendations, and analytics based on your data and usage patterns.",
+          "Improve, personalize, and optimize your experience on our platform, including feature development and usability enhancements.",
+          "Monitor and analyze usage patterns and trends to operate, maintain, secure, and improve the Service.",
+          "Detect, investigate, and prevent fraudulent, abusive, or unauthorized activity."
+        ]
+      },
+      "dataRetention": {
+        "title": "Data Retention",
+        "content": [
+          "We retain your personal information for as long as your account is active or as needed to provide the Service and fulfill the purposes described in this Privacy Policy.",
+          "We may retain certain information after account closure where necessary to comply with legal obligations, resolve disputes, enforce our agreements, or maintain business records.",
+          "Social media tokens and connections are retained only as long as necessary to operate the features you have enabled. If you disconnect an account or request deletion, we remove or anonymize associated data where technically feasible and not required by law to retain.",
+          "When we no longer need your information for the purposes for which it was collected, we will delete or anonymize it in a secure manner."
         ]
       },
       "dataSecurity": {
         "title": "Data Security",
-        "content": "We implement industry-standard security measures to protect your information, including encryption, secure servers, and regular security audits. However, no method of transmission over the Internet is 100% secure, and we cannot guarantee absolute security. We use OAuth 2.0 for social media account connections and never store your social media passwords."
+        "content": "We implement industry-standard technical and organizational security measures to help protect your information, including encryption in transit, secure servers, access controls, and periodic security reviews. However, no method of transmission over the Internet or method of electronic storage is 100% secure, and we cannot guarantee absolute security. We use OAuth 2.0 and other secure authorization mechanisms for social media account connections and never store your social media passwords."
       },
       "dataSharing": {
         "title": "Information Sharing",
         "content": [
-          "Service Providers: We share data with third-party vendors who perform services on our behalf, such as payment processing and analytics",
-          "Social Media Platforms: We share content with social media platforms as directed by you when you schedule and publish posts",
-          "Legal Requirements: We may disclose information when required by law or to protect our rights and safety",
-          "Business Transfers: In the event of a merger, acquisition, or sale of assets, your information may be transferred",
-          "We do not sell your personal information to third parties for marketing purposes"
+          "Service Providers: We share information with third-party vendors who perform services on our behalf, such as payment processing, hosting, analytics, email delivery, and customer support. These providers are authorized to use your information only as necessary to provide services to YSHAI.",
+          "Social Media Platforms: We share content and related data with social media platforms (e.g., to publish posts, retrieve analytics, or manage comments and messages) strictly as directed by you through the Service.",
+          "Legal Requirements and Protection: We may disclose information where required by law, regulation, legal process, or governmental request, or to protect our rights, property, safety, or the rights, property, and safety of others.",
+          "Business Transfers: In connection with a merger, acquisition, reorganization, sale of assets, or similar transaction, your information may be transferred as part of the business assets. We will take reasonable steps to ensure the recipient continues to protect your information in line with this Privacy Policy.",
+          "No Sale of Personal Information: We do not sell your personal information to third parties for their own marketing purposes."
         ]
+      },
+      "internationalTransfers": {
+        "title": "International Data Transfers",
+        "content": "Depending on your location, your information may be transferred to and processed in countries other than your own, which may have data protection laws that differ from those in your country. Where required by applicable law, we take appropriate safeguards to ensure that such transfers are conducted in a manner that provides adequate protection for your personal information."
       },
       "userRights": {
         "title": "Your Rights and Choices",
         "content": [
-          "Access: Request access to the personal information we hold about you",
-          "Correction: Request correction of inaccurate or incomplete information",
-          "Deletion: Request deletion of your personal information, subject to legal obligations",
-          "Export: Download your data in a portable format",
-          "Opt-Out: Unsubscribe from marketing communications at any time",
-          "Revoke Consent: Disconnect social media accounts or withdraw consent for data processing"
+          "Access: You may request access to the personal information we hold about you and obtain a copy of that information.",
+          "Correction: You may request correction of inaccurate, incomplete, or outdated information.",
+          "Deletion: You may request deletion of your personal information, subject to legal obligations and our legitimate interests (for example, to comply with record-keeping requirements).",
+          "Export (Data Portability): You may request a copy of your data in a portable and, where technically feasible, machine-readable format.",
+          "Opt-Out of Marketing: You may unsubscribe from marketing communications at any time by using the \"unsubscribe\" link in our emails or adjusting your communication preferences in your account settings.",
+          "Revoke Consent and Disconnect Accounts: You may disconnect social media accounts at any time from within the platform and/or revoke permissions directly from the social media platform's settings. You may also withdraw consent for specific data processing activities where we rely on consent."
+        ]
+      },
+      "dataDeletionProcess": {
+        "title": "How to Request Data Deletion or Disconnection",
+        "content": [
+          "You can delete or deactivate your YSHAI account from your account settings where this option is available.",
+          "To request deletion of your personal data or removal of specific information, you can contact us at the email address provided in the Contact Us section of this Privacy Policy.",
+          "You may disconnect your social media accounts at any time from within the YSHAI dashboard or directly within the respective social media platform's settings.",
+          "Upon receiving a verified deletion request, we will delete or anonymize your personal information, except where we are required or permitted by law to retain certain data."
         ]
       },
       "cookies": {
-        "title": "Cookies and Tracking",
-        "content": "We use cookies and similar tracking technologies to enhance your experience, analyze usage patterns, and deliver personalized content. You can control cookie preferences through your browser settings. Essential cookies required for platform functionality cannot be disabled."
+        "title": "Cookies and Tracking Technologies",
+        "content": "We use cookies and similar tracking technologies (such as web beacons and local storage) to recognize you, remember your preferences, enhance your experience, analyze usage patterns, and deliver personalized content. You can control cookie preferences through your browser settings, including blocking or deleting cookies. However, certain essential cookies required for core platform functionality cannot be disabled, as they are necessary for the Service to operate correctly."
+      },
+      "children": {
+        "title": "Children's Privacy",
+        "content": "The Service is not directed to, and we do not knowingly collect personal information from, individuals under the age of 13 (or a higher age where required by applicable law). If we become aware that we have collected personal information from a child without appropriate consent, we will take steps to delete such information. If you believe that a child has provided us with personal information, please contact us using the details in the Contact Us section."
+      },
+      "changesToPolicy": {
+        "title": "Changes to This Privacy Policy",
+        "content": "We may update this Privacy Policy from time to time to reflect changes in our practices, technologies, legal requirements, or other factors. When we make material changes, we will update the \"Last Updated\" date at the top of this page and, where appropriate, provide additional notice (such as a notice within the Service or by email). Your continued use of the Service after any changes become effective signifies your acceptance of the updated Privacy Policy."
       }
     },
     "contact": {
       "title": "Contact Us",
-      "description": "If you have questions or concerns about this Privacy Policy or our data practices, please contact us:",
-      "email": "Email"
+      "description": "If you have questions or concerns about this Privacy Policy, our data practices, or your rights, please contact us:",
+      "email": "support@yshai.cloud",
+      "address": "YSHAI, [Insert Your Legal Entity Name and Registered Address Here]"
     }
   },
   "TermsOfService": {
@@ -575,72 +616,214 @@
     "title": "Terms of Service",
     "lastUpdated": "Last Updated",
     "date": "January 2025",
-    "introduction": "Welcome to YSHAI. These Terms of Service govern your use of our social media management platform. By creating an account or using our services, you agree to be bound by these terms. If you do not agree to these terms, please do not use our services.",
+    "introduction": "Welcome to YSHAI. These Terms of Service (\"Terms\") govern your access to and use of our social media management platform and related services (collectively, the \"Service\"). By creating an account, accessing, or using the Service, you agree to be bound by these Terms and our Privacy Policy. If you do not agree to these Terms, you must not use the Service.",
     "sections": {
       "acceptance": {
         "title": "Acceptance of Terms",
-        "content": "By accessing or using YSHAI, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service and our Privacy Policy. We reserve the right to modify these terms at any time, and your continued use of the service constitutes acceptance of any changes."
+        "content": "By accessing or using YSHAI, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service and our Privacy Policy, which is incorporated by reference. If you are using the Service on behalf of an organization, you represent and warrant that you have the authority to bind that organization to these Terms. We may modify these Terms from time to time, and your continued use of the Service after any changes become effective constitutes your acceptance of the revised Terms."
+      },
+      "eligibility": {
+        "title": "Eligibility",
+        "content": [
+          "You must be at least 18 years old, or the age of majority in your jurisdiction, to use the Service.",
+          "By using the Service, you represent and warrant that you have the legal capacity to enter into a binding agreement and are not prohibited from using the Service under any applicable laws.",
+          "If you register an account on behalf of a business or other legal entity, you represent that you are authorized to accept these Terms on its behalf."
+        ]
       },
       "services": {
         "title": "Description of Services",
         "content": [
-          "YSHAI provides a cloud-based social media management platform that enables users to create, schedule, publish, and analyze content across multiple social media platforms",
-          "Our services include AI-powered content generation, multi-platform scheduling, analytics dashboards, and team collaboration tools",
-          "We continuously update and improve our services, and features may be added or removed at our discretion",
-          "Service availability is subject to scheduled maintenance and may be interrupted for updates or technical issues"
+          "YSHAI provides a cloud-based social media management platform that enables users to create, schedule, publish, and analyze content across multiple social media platforms.",
+          "Our services may include AI-powered content generation, content suggestions, multi-platform scheduling, analytics dashboards, comment and message management, and team collaboration tools, depending on your subscription plan.",
+          "We may update, enhance, or modify the Service from time to time, including introducing new features, improving performance, or removing or changing existing features.",
+          "Service availability may be subject to scheduled maintenance, updates, or technical interruptions. We will use reasonable efforts to minimize disruption and provide notice of major changes where practical."
+        ]
+      },
+      "accountRegistration": {
+        "title": "Account Registration and Security",
+        "content": [
+          "You must create an account to access most features of the Service. You agree to provide accurate, current, and complete information during registration and to keep your account information up to date.",
+          "You are responsible for maintaining the confidentiality of your login credentials and for all activities that occur under your account.",
+          "You agree to notify us promptly of any unauthorized access to or use of your account, or any other breach of security.",
+          "We reserve the right to refuse registration, suspend, or terminate accounts at our discretion, including where we suspect fraudulent or abusive activity."
         ]
       },
       "subscription": {
         "title": "Subscription and Payment",
         "content": [
-          "YSHAI offers various subscription plans with different features and pricing",
-          "Subscriptions are billed on a recurring basis (monthly or annually) until cancelled",
-          "You are responsible for providing accurate billing information and maintaining valid payment methods",
-          "Prices are subject to change with 30 days notice to existing subscribers",
-          "Refunds are provided according to our refund policy, typically within 14 days of initial subscription for new users",
-          "Failure to pay may result in service suspension or account termination"
+          "YSHAI offers various subscription plans with different features, limits, and pricing, as described on our website or within the Service.",
+          "Subscriptions are billed on a recurring basis (e.g., monthly or annually) until cancelled by you or terminated in accordance with these Terms.",
+          "You are responsible for providing accurate billing information and maintaining valid payment methods. By subscribing, you authorize us and our payment processors to charge your payment method for all applicable fees.",
+          "Prices and subscription plans are subject to change. If we change pricing for existing subscribers, we will provide at least 30 days advance notice, and the changes will apply from your next billing cycle unless you cancel prior to renewal.",
+          "Refunds, if any, are provided according to our refund policy. Typically, new users may be eligible for a limited refund period (for example, within 14 days of initial subscription), subject to specific terms published on our website.",
+          "Failure to pay fees when due may result in suspension or termination of your access to the Service."
+        ]
+      },
+      "userResponsibilities": {
+        "title": "User Responsibilities",
+        "content": [
+          "You are solely responsible for the content you create, upload, schedule, or publish through the Service, and for ensuring that such content complies with applicable laws and the terms of any third-party platforms.",
+          "You are responsible for configuring your social media connections, permissions, and settings, and for reviewing any AI-generated content before it is published.",
+          "You must ensure that your use of the Service and any automated posting or messaging complies with the terms and policies of connected social media platforms and with anti-spam and data protection laws where applicable."
         ]
       },
       "prohibitedUse": {
         "title": "Prohibited Use",
         "content": [
-          "You may not use YSHAI to create, schedule, or publish illegal, harmful, or offensive content",
-          "Spam, automated bot activity, or any form of platform manipulation is strictly prohibited",
-          "You may not attempt to reverse engineer, decompile, or extract source code from our platform",
-          "Sharing account credentials or reselling access to the platform is not permitted",
-          "You must comply with all applicable laws and the terms of service of connected social media platforms",
-          "Violations may result in immediate account termination without refund"
+          "You may not use the Service to create, schedule, or publish illegal, harmful, abusive, harassing, defamatory, discriminatory, or otherwise offensive content.",
+          "You may not use the Service to send unsolicited or unauthorized advertising, promotional materials, spam, or bulk messages in violation of applicable laws or platform policies.",
+          "You may not attempt to interfere with, disrupt, or compromise the security, integrity, or performance of the Service or its infrastructure.",
+          "You may not attempt to reverse engineer, decompile, disassemble, modify, or otherwise attempt to extract source code or underlying algorithms from our platform, except to the extent that such restrictions are expressly prohibited by applicable law.",
+          "You may not share your account credentials, resell access to the Service, or use the Service on behalf of third parties in a way that violates these Terms.",
+          "You must comply with all applicable laws, regulations, and the terms of service of connected social media platforms. Violations may result in immediate suspension or termination of your account, without refund."
         ]
       },
       "intellectualProperty": {
         "title": "Intellectual Property",
         "content": [
-          "You retain all rights to the content you create and upload to YSHAI",
-          "By using our services, you grant us a limited license to store, process, and display your content as necessary to provide our services",
-          "YSHAI and all related trademarks, logos, and service marks are the property of YSHAI",
-          "Our platform, including all software, algorithms, and AI models, is protected by copyright and other intellectual property laws",
-          "AI-generated content suggestions are provided as-is, and you are responsible for reviewing and approving all published content"
+          "You retain all rights to the content you create, upload, or publish using the Service. You are responsible for ensuring that you have all necessary rights to such content.",
+          "By using the Service, you grant YSHAI a limited, non-exclusive, worldwide license to host, store, process, display, and transmit your content as necessary to operate and provide the Service, and to generate analytics and AI-powered suggestions for your account.",
+          "All rights, title, and interest in and to the Service, including all software, user interfaces, designs, graphics, algorithms, AI models, and related intellectual property, are and will remain the exclusive property of YSHAI and its licensors.",
+          "YSHAI and all related trademarks, logos, and service marks are the property of YSHAI or its licensors. You may not use these marks without our prior written consent.",
+          "AI-generated content and suggestions are provided \"as is\" and are intended to assist you. You are responsible for reviewing, editing, and approving all content before publishing it via the Service."
+        ]
+      },
+      "thirdPartyServices": {
+        "title": "Third-Party Services and Platforms",
+        "content": [
+          "The Service integrates with third-party social media platforms and other services. Your use of such third-party services is subject to their own terms and policies.",
+          "YSHAI does not control and is not responsible for third-party services, content, or actions. We provide integrations for your convenience, and the presence of an integration does not imply endorsement.",
+          "If a third-party platform modifies its APIs, terms, or functionality, it may impact your use of the Service. We are not liable for any resulting limitations or interruptions."
         ]
       },
       "limitation": {
         "title": "Limitation of Liability",
-        "content": "YSHAI is provided 'as is' without warranties of any kind. We are not liable for any damages arising from your use of the service, including but not limited to loss of data, lost profits, or service interruptions. Our total liability shall not exceed the amount you paid for the service in the preceding 12 months. Some jurisdictions do not allow certain liability limitations, so these may not apply to you."
+        "content": "To the maximum extent permitted by applicable law, YSHAI and its owners, directors, employees, and affiliates shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits, revenue, data, or business opportunities, arising out of or in connection with your use of or inability to use the Service, even if we have been advised of the possibility of such damages. Our total cumulative liability for any claims arising out of or related to the Service shall not exceed the amount you paid to us for the Service in the twelve (12) months preceding the event giving rise to the claim. Some jurisdictions do not allow certain limitations of liability, so some of the above limitations may not apply to you."
+      },
+      "disclaimer": {
+        "title": "Disclaimer of Warranties",
+        "content": "The Service is provided on an \"as is\" and \"as available\" basis, without warranties of any kind, whether express, implied, or statutory. To the fullest extent permitted by law, we disclaim all warranties, including implied warranties of merchantability, fitness for a particular purpose, title, and non-infringement, and any warranties arising out of course of dealing or usage of trade. We do not warrant that the Service will be uninterrupted, error-free, secure, or free from harmful components, or that any content or results obtained through the Service will be accurate, reliable, or meet your requirements."
+      },
+      "indemnification": {
+        "title": "Indemnification",
+        "content": "You agree to defend, indemnify, and hold harmless YSHAI and its owners, directors, employees, and affiliates from and against any claims, liabilities, damages, losses, and expenses, including reasonable attorneys' fees, arising out of or in any way connected with: (a) your access to or use of the Service; (b) your content; (c) your violation of these Terms; or (d) your violation of any third-party rights, including the terms and policies of connected social media platforms."
       },
       "termination": {
         "title": "Account Termination",
         "content": [
-          "You may cancel your account at any time through your account settings",
-          "We reserve the right to suspend or terminate accounts that violate these terms",
-          "Upon termination, you will lose access to your account and any associated data",
-          "We may retain certain information as required by law or for legitimate business purposes",
-          "Prepaid subscription fees are non-refundable except as required by law or our refund policy"
+          "You may cancel your account at any time through your account settings or by contacting us using the details provided in the Contact Us section.",
+          "We reserve the right to suspend or terminate your access to the Service, with or without notice, if we reasonably believe that you have violated these Terms, engaged in fraudulent or abusive activity, or pose a risk to the security or integrity of the Service or others.",
+          "Upon termination of your account, your right to access and use the Service will cease. We may delete or disable access to your content stored on the Service, subject to applicable law and our data retention practices.",
+          "Prepaid subscription fees are generally non-refundable except as required by law or as expressly set out in our refund policy."
         ]
+      },
+      "governingLaw": {
+        "title": "Governing Law and Dispute Resolution",
+        "content": [
+          "These Terms and any dispute arising out of or relating to them or the Service shall be governed by and construed in accordance with the laws of [Insert Applicable Jurisdiction], without regard to its conflict of law rules.",
+          "You agree to submit to the exclusive jurisdiction of the courts located in [Insert Applicable Jurisdiction] to resolve any legal matter arising from these Terms or the Service, unless a different forum is required by applicable law.",
+          "Nothing in this section limits any rights you may have under consumer protection laws in your country of residence."
+        ]
+      },
+      "changesToTerms": {
+        "title": "Changes to These Terms",
+        "content": "We may update or modify these Terms from time to time, for example to reflect changes in our Service, legal requirements, or business practices. When we make material changes, we will update the \"Last Updated\" date at the top of this page and, where appropriate, provide additional notice (such as by email or within the Service). Your continued use of the Service after the effective date of any changes constitutes your acceptance of the revised Terms. If you do not agree to the updated Terms, you must stop using the Service."
       }
     },
     "contact": {
       "title": "Contact Us",
-      "description": "If you have questions about these Terms of Service, please contact us:",
-      "email": "Email"
+      "description": "If you have questions about these Terms of Service or need assistance with your account, please contact us:",
+      "email": "support@yshai.cloud",
+      "address": "YSHAI, [Insert Your Legal Entity Name and Registered Address Here]"
+    }
+  },
+  "Support": {
+    "metaTitle": "Support & FAQ - YSHAI",
+    "metaDescription": "Find answers to frequently asked questions about YSHAI social media management platform",
+    "title": "How can we help you?",
+    "subtitle": "Search our knowledge base for answers to common questions",
+    "searchPlaceholder": "Search for answers...",
+    "stillNeedHelp": "Still need help?",
+    "contactSupport": "Contact Support",
+    "categories": {
+      "gettingStarted": {
+        "title": "Getting Started",
+        "description": "Learn the basics of using YSHAI"
+      },
+      "account": {
+        "title": "Account & Settings",
+        "description": "Manage your account and preferences"
+      },
+      "billing": {
+        "title": "Billing & Pricing",
+        "description": "Questions about plans and payments"
+      },
+      "features": {
+        "title": "Features & Tools",
+        "description": "Learn about our powerful features"
+      }
+    },
+    "faqs": {
+      "0": {
+        "question": "How do I connect my social media accounts?",
+        "answer": "To connect your social media accounts:\n1. Go to Dashboard > Platforms\n2. Click on 'Connect New Platform'\n3. Select the social network you want to connect\n4. Follow the authentication process\n5. Grant the necessary permissions\n\nYour account will be connected and ready to use within seconds.",
+        "category": "Getting Started"
+      },
+      "1": {
+        "question": "What social media platforms does YSHAI support?",
+        "answer": "YSHAI currently supports:\n- Instagram (Feed, Stories, Reels)\n- Facebook (Posts, Stories)\n- Twitter/X (Tweets, Threads)\n- LinkedIn (Posts, Articles)\n- TikTok (Videos)\n- YouTube (Videos, Shorts)\n\nWe're constantly adding support for more platforms based on user feedback.",
+        "category": "Features & Tools"
+      },
+      "2": {
+        "question": "How does AI content generation work?",
+        "answer": "Our AI content generation feature uses advanced language models to help you create engaging posts:\n\n1. Describe your topic or provide keywords\n2. Select your tone and style preferences\n3. Choose the target platform\n4. Review and customize the AI-generated content\n5. Add your own personal touch\n\nThe AI learns from your edits and preferences to provide better suggestions over time.",
+        "category": "Features & Tools"
+      },
+      "3": {
+        "question": "Can I schedule posts for multiple platforms at once?",
+        "answer": "Yes! YSHAI allows you to create one post and schedule it across multiple platforms simultaneously. Simply:\n\n1. Create your content\n2. Select all the platforms you want to publish to\n3. Customize the content for each platform if needed\n4. Choose your schedule time\n5. Click 'Schedule'\n\nThe system will automatically optimize your post for each platform's requirements.",
+        "category": "Features & Tools"
+      },
+      "4": {
+        "question": "How do I upgrade or downgrade my subscription?",
+        "answer": "To change your subscription plan:\n\n1. Go to Dashboard > Settings > Billing\n2. Click 'Change Plan'\n3. Select your new plan\n4. Confirm the changes\n\nUpgrades take effect immediately. Downgrades will take effect at the end of your current billing period. You'll be prorated for any differences.",
+        "category": "Billing & Pricing"
+      },
+      "5": {
+        "question": "What payment methods do you accept?",
+        "answer": "We accept the following payment methods:\n- Credit cards (Visa, Mastercard, American Express)\n- Debit cards\n- PayPal\n- Bank transfers (for annual plans)\n\nAll payments are processed securely through Stripe, and we never store your payment information on our servers.",
+        "category": "Billing & Pricing"
+      },
+      "6": {
+        "question": "How do I reset my password?",
+        "answer": "To reset your password:\n\n1. Go to the login page\n2. Click 'Forgot Password?'\n3. Enter your email address\n4. Check your email for a reset link\n5. Click the link and create a new password\n\nIf you don't receive the email within 5 minutes, check your spam folder or contact support.",
+        "category": "Account & Settings"
+      },
+      "7": {
+        "question": "Can I invite team members to my account?",
+        "answer": "Yes! Team collaboration is available on Professional and Enterprise plans:\n\n1. Go to Dashboard > Settings > Team\n2. Click 'Invite Team Member'\n3. Enter their email address\n4. Assign their role (Admin, Editor, or Viewer)\n5. Send the invitation\n\nTeam members will receive an email to join your workspace with the appropriate permissions.",
+        "category": "Features & Tools"
+      },
+      "8": {
+        "question": "What happens to my scheduled posts if I cancel?",
+        "answer": "If you cancel your subscription:\n\n- Posts scheduled within your current billing period will still be published\n- Posts scheduled beyond that will be saved as drafts\n- You'll have 30 days to export your data\n- Your account will be downgraded to the free plan\n\nYou can reactivate your subscription at any time to restore full functionality.",
+        "category": "Billing & Pricing"
+      },
+      "9": {
+        "question": "How accurate are the analytics and insights?",
+        "answer": "Our analytics are pulled directly from each platform's official APIs, ensuring:\n\n- Real-time data updates\n- 99.9% accuracy\n- Comprehensive metrics (engagement, reach, impressions)\n- Historical data tracking\n- Comparative analysis\n\nData is refreshed every hour and you can manually refresh at any time from the analytics dashboard.",
+        "category": "Features & Tools"
+      },
+      "10": {
+        "question": "Is my data secure and private?",
+        "answer": "Absolutely. We take security seriously:\n\n- All data is encrypted in transit (SSL/TLS) and at rest (AES-256)\n- We're GDPR and CCPA compliant\n- Regular security audits and penetration testing\n- No third-party access to your data\n- 2-factor authentication available\n- Automatic backups every 24 hours\n\nRead our full Privacy Policy for detailed information.",
+        "category": "Account & Settings"
+      },
+      "11": {
+        "question": "Do you offer refunds?",
+        "answer": "We offer a 14-day money-back guarantee on all paid plans:\n\n- No questions asked within the first 14 days\n- Full refund processed within 5-7 business days\n- Annual plans are prorated after 14 days\n- Contact support@yshai.com to request a refund\n\nWe're confident you'll love YSHAI, but if not, we'll make it right.",
+        "category": "Billing & Pricing"
+      }
     }
   },
   "SignUpPage": {
