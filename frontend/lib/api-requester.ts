@@ -1,9 +1,9 @@
 "use server";
 
 import { cookies } from "next/headers";
-import type { ValidationErrorDto, ErrorResponseDto } from "@/interfaces";
+import type { ValidationErrorDto } from "@/interfaces";
 
-const APP_URL = "/api/protected";
+const APP_URL = "http://localhost:3000/api/protected";
 
 type ApiMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 

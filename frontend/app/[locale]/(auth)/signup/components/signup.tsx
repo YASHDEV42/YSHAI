@@ -21,28 +21,42 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 import Link from "next/link";
-import { useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { registerAction } from "../action";
 
 interface SignUpPageProps {
   text: any;
   locale: string;
 }
+type ActionState = {
+  arMessage: string;
+  enMessage: string;
+  success: boolean;
+};
 
+const initialState: ActionState = {
+  arMessage: "",
+  enMessage: "",
+  success: false,
+};
 export default function SignUpPage({ text, locale }: SignUpPageProps) {
-  const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    name: "",
-  });
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [showVerificationMessage, setShowVerificationMessage] = useState(false);
   const router = useRouter();
 
-  console.log("[v0] Signup form submitted:", formData);
-  console.log(JSON.stringify(formData));
+  const [state, formAction, isPending] = useActionState(
+    registerAction,
+    initialState,
+  );
+
+  const [showVerificationMessage, setShowVerificationMessage] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    if (state.success) {
+      setShowVerificationMessage(true);
+    }
+  }, [state.success]);
 
   const handleVerificationComplete = () => {
     setShowVerificationMessage(false);
@@ -50,17 +64,17 @@ export default function SignUpPage({ text, locale }: SignUpPageProps) {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    if (errors[name]) {
-      setErrors((prev) => {
+    const { name } = e.target;
+    if (fieldErrors[name]) {
+      setFieldErrors((prev) => {
         const newErrors = { ...prev };
         delete newErrors[name];
         return newErrors;
       });
     }
   };
-
+  const globalMessage =
+    locale === "ar" ? state.arMessage || "" : state.enMessage || "";
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <AlertDialog
@@ -96,7 +110,7 @@ export default function SignUpPage({ text, locale }: SignUpPageProps) {
             <div className="space-y-3 mb-2">
               <Button
                 variant="outline"
-                className="w-full bg-transparent"
+                className="w-full bg-transparent cursor-not-allowed"
                 type="button"
               >
                 <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -128,53 +142,65 @@ export default function SignUpPage({ text, locale }: SignUpPageProps) {
               </span>
             </div>
 
-            <form className="space-y-4">
-              <Field data-invalid={!!errors.name}>
+            <form className="space-y-4" action={formAction}>
+              <Field data-invalid={!!fieldErrors.name}>
                 <FieldLabel htmlFor="name">{text.nameLabel}</FieldLabel>
                 <Input
                   id="name"
                   name="name"
                   type="text"
                   placeholder={text.namePlaceholder}
-                  value={formData.name}
                   onChange={handleChange}
-                  aria-invalid={!!errors.name}
-                  disabled={isLoading}
+                  aria-invalid={!!fieldErrors.name}
+                  disabled={isPending}
                 />
-                {errors.name && <FieldError>{errors.name}</FieldError>}
+                {fieldErrors.name && (
+                  <FieldError>{fieldErrors.name}</FieldError>
+                )}
               </Field>
 
-              <Field data-invalid={!!errors.email}>
+              <Field data-invalid={!!fieldErrors.email}>
                 <FieldLabel htmlFor="email">{text.emailLabel}</FieldLabel>
                 <Input
                   id="email"
                   name="email"
                   type="email"
                   placeholder={text.emailPlaceholder}
-                  value={formData.email}
                   onChange={handleChange}
-                  aria-invalid={!!errors.email}
-                  disabled={isLoading}
+                  aria-invalid={!!fieldErrors.email}
+                  disabled={isPending}
                 />
-                {errors.email && <FieldError>{errors.email}</FieldError>}
+                {fieldErrors.email && (
+                  <FieldError>{fieldErrors.email}</FieldError>
+                )}
               </Field>
 
-              <Field data-invalid={!!errors.password}>
+              <Field data-invalid={!!fieldErrors.password}>
                 <FieldLabel htmlFor="password">{text.passwordLabel}</FieldLabel>
                 <Input
                   id="password"
                   name="password"
                   type="password"
                   placeholder={text.passwordPlaceholder}
-                  value={formData.password}
                   onChange={handleChange}
-                  aria-invalid={!!errors.password}
-                  disabled={isLoading}
+                  aria-invalid={!!fieldErrors.password}
+                  disabled={isPending}
                 />
                 <FieldDescription>{text.passwordHint}</FieldDescription>
-                {errors.password && <FieldError>{errors.password}</FieldError>}
+                {fieldErrors.password && (
+                  <FieldError>{fieldErrors.password}</FieldError>
+                )}
               </Field>
-
+              <input
+                type="hidden"
+                name="timezone"
+                value={Intl.DateTimeFormat().resolvedOptions().timeZone}
+              />
+              <input
+                type="hidden"
+                name="timeFormat"
+                value="24h" // or from user preference / toggle
+              />
               <div className="flex items-center justify-center gap-2 text-sm pt-2">
                 <span className="text-muted-foreground">
                   {text.haveAccount}
@@ -187,17 +213,19 @@ export default function SignUpPage({ text, locale }: SignUpPageProps) {
                 </Link>
               </div>
 
-              {errors.form && (
+              {/* Server/global message */}
+              {globalMessage && !state.success && (
                 <p className="text-base text-red-600 text-center font-bold">
-                  {errors.form}
+                  {globalMessage}
                 </p>
               )}
+
               <Button
                 type="submit"
                 className="w-full bg-primary hover:bg-primary/90"
-                disabled={isLoading}
+                disabled={isPending}
               >
-                {isLoading ? (
+                {isPending ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                     {text.creatingAccountButton}

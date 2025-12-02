@@ -7,7 +7,10 @@ const intlMiddleware = createIntlMiddleware(routing);
 export default async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  if (!pathname.startsWith("/api/auth")) {
+  if (
+    !pathname.startsWith("/api/auth") &&
+    !pathname.startsWith("/api/protected")
+  ) {
     return intlMiddleware(req);
   }
 }
