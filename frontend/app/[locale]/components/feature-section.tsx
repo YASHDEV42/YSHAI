@@ -2,6 +2,7 @@
 
 import type React from "react";
 
+import { Link } from "@/app/i18n/navigation";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,7 +18,6 @@ import {
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import Link from "next/link";
 
 interface FeatureSectionText {
   badge: string;
@@ -115,7 +115,11 @@ const FeatureCard = ({
             {feature.description}
           </p>
 
-          <Link href={`/features/${featureKey}`} className="w-full">
+          <Link
+            href={`/features/${featureKey}`}
+            className="w-full"
+            scroll={true}
+          >
             <Button
               variant="ghost"
               className="w-full group/btn hover:bg-primary/10 hover:text-primary transition-all duration-300"

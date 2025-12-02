@@ -142,10 +142,6 @@ export function PlatformDetail({
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
-    toast.info(`Loading ${value}...`, {
-      icon: <Activity className="h-4 w-4" />,
-      duration: 1000,
-    });
   };
 
   return (

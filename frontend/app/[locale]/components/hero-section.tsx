@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight, Sparkles, ChevronDown } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { motion, useScroll, useTransform, useInView } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { Link } from "@/app/i18n/navigation";
 
 interface HeroSectionText {
   heading: string;
@@ -172,45 +173,47 @@ const ActionButtons = ({
         onHoverStart={() => setPrimaryHovered(true)}
         onHoverEnd={() => setPrimaryHovered(false)}
       >
-        <Button
-          size="lg"
-          className="text-base pr-8 pl-8 h-12 group flex items-center justify-center relative overflow-hidden shadow-lg hover:shadow-xl transition-all"
-          aria-label={primaryButton}
-        >
-          <span className="relative z-10 flex items-center  gap-5 w-full justify-between">
-            {locale === "ar" ? (
-              <>
-                {primaryButton}
-                <motion.div
-                  animate={{ x: primaryHovered ? -3 : 0 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                  className="ml-2"
-                >
-                  <ArrowLeft className="w-5 h-5" />
-                </motion.div>
-              </>
-            ) : (
-              <>
-                {primaryButton}
-                <motion.div
-                  animate={{ x: primaryHovered ? 3 : 0 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                  className="ml-2"
-                >
-                  <ArrowRight className="w-5 h-5" />
-                </motion.div>
-              </>
-            )}
-          </span>
+        <Link href="/signup">
+          <Button
+            size="lg"
+            className="text-base pr-8 pl-8 h-12 group flex items-center justify-center relative overflow-hidden shadow-lg hover:shadow-xl transition-all"
+            aria-label={primaryButton}
+          >
+            <span className="relative z-10 flex items-center  gap-5 w-full justify-between">
+              {locale === "ar" ? (
+                <>
+                  {primaryButton}
+                  <motion.div
+                    animate={{ x: primaryHovered ? -3 : 0 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                    className="ml-2"
+                  >
+                    <ArrowLeft className="w-5 h-5" />
+                  </motion.div>
+                </>
+              ) : (
+                <>
+                  {primaryButton}
+                  <motion.div
+                    animate={{ x: primaryHovered ? 3 : 0 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                    className="ml-2"
+                  >
+                    <ArrowRight className="w-5 h-5" />
+                  </motion.div>
+                </>
+              )}
+            </span>
 
-          {/* Animated background effect */}
-          <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-primary/20 to-primary/10"
-            initial={{ x: "-100%" }}
-            animate={{ x: primaryHovered ? "0%" : "-100%" }}
-            transition={{ duration: 0.3 }}
-          />
-        </Button>
+            {/* Animated background effect */}
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-primary/20 to-primary/10"
+              initial={{ x: "-100%" }}
+              animate={{ x: primaryHovered ? "0%" : "-100%" }}
+              transition={{ duration: 0.3 }}
+            />
+          </Button>
+        </Link>
       </motion.div>
 
       <motion.div

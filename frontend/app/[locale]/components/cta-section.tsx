@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { Link } from "@/app/i18n/navigation";
 
 type CtaText = {
   ctaTitle: string;
@@ -67,38 +68,40 @@ export const CtaSection = ({
                 whileTap={{ scale: 0.98 }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
               >
-                <Button
-                  size="lg"
-                  className="bg-background hover:bg-background/90 text-accent-foreground px-8 relative overflow-hidden group/btn shadow-lg hover:shadow-xl transition-shadow"
-                >
-                  <span className="relative z-10 flex items-center">
-                    {text.ctaButton}
-                    {locale === "ar" ? (
-                      <motion.div
-                        initial={{ x: 0 }}
-                        whileHover={{ x: -3 }}
-                        transition={{ type: "spring", stiffness: 400 }}
-                      >
-                        <ArrowLeft className="mr-2 w-4 h-4" />
-                      </motion.div>
-                    ) : (
-                      <motion.div
-                        initial={{ x: 0 }}
-                        whileHover={{ x: 3 }}
-                        transition={{ type: "spring", stiffness: 400 }}
-                      >
-                        <ArrowRight className="ml-2 w-4 h-4" />
-                      </motion.div>
-                    )}
-                  </span>
-                  {/* Button shine effect */}
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/10 to-transparent -skew-x-12"
-                    initial={{ x: "-100%" }}
-                    whileHover={{ x: "100%" }}
-                    transition={{ duration: 0.6 }}
-                  />
-                </Button>
+                <Link href="/signup">
+                  <Button
+                    size="lg"
+                    className="bg-background hover:bg-background/90 text-accent-foreground px-8 relative overflow-hidden group/btn shadow-lg hover:shadow-xl transition-shadow"
+                  >
+                    <span className="relative z-10 flex items-center">
+                      {text.ctaButton}
+                      {locale === "ar" ? (
+                        <motion.div
+                          initial={{ x: 0 }}
+                          whileHover={{ x: -3 }}
+                          transition={{ type: "spring", stiffness: 400 }}
+                        >
+                          <ArrowLeft className="mr-2 w-4 h-4" />
+                        </motion.div>
+                      ) : (
+                        <motion.div
+                          initial={{ x: 0 }}
+                          whileHover={{ x: 3 }}
+                          transition={{ type: "spring", stiffness: 400 }}
+                        >
+                          <ArrowRight className="ml-2 w-4 h-4" />
+                        </motion.div>
+                      )}
+                    </span>
+                    {/* Button shine effect */}
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/10 to-transparent -skew-x-12"
+                      initial={{ x: "-100%" }}
+                      whileHover={{ x: "100%" }}
+                      transition={{ duration: 0.6 }}
+                    />
+                  </Button>
+                </Link>
               </motion.div>
             </motion.div>
           </div>

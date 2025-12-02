@@ -1,7 +1,6 @@
 import { extractSignUpPageText } from "@/app/i18n/extractTexts";
 import SignUpPage from "./components/signup";
 import { setRequestLocale } from "next-intl/server";
-
 import { routing } from "@/app/i18n/routing";
 
 export function generateStaticParams() {
@@ -10,7 +9,6 @@ export function generateStaticParams() {
 const page = async ({ params }: { params: Promise<{ locale: string }> }) => {
   const { locale } = await params;
   setRequestLocale(locale);
-
   const text = await extractSignUpPageText(locale);
   return <SignUpPage text={text} locale={locale} />;
 };

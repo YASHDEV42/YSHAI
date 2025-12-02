@@ -7,6 +7,7 @@ import { CheckCircle2, Star, TrendingUp } from "lucide-react";
 import { useState, useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { Link } from "@/app/i18n/navigation";
 
 interface PricingPlan {
   title: string;
@@ -205,17 +206,21 @@ const PricingCard = ({
             whileTap={{ scale: 0.98 }}
             className="w-full mt-auto"
           >
-            <Button
-              variant={isPopular ? "default" : "outline"}
-              className={cn(
-                "w-full transition-all duration-300",
-                isPopular ? "bg-primary hover:bg-primary/90" : "bg-transparent",
-                isHovered && isPopular && "shadow-lg",
-              )}
-              aria-label={`Select ${plan.title} plan`}
-            >
-              {plan.button}
-            </Button>
+            <Link href="/signup">
+              <Button
+                variant={isPopular ? "default" : "outline"}
+                className={cn(
+                  "w-full transition-all duration-300",
+                  isPopular
+                    ? "bg-primary hover:bg-primary/90"
+                    : "bg-transparent",
+                  isHovered && isPopular && "shadow-lg",
+                )}
+                aria-label={`Select ${plan.title} plan`}
+              >
+                {plan.button}
+              </Button>
+            </Link>
           </motion.div>
         </div>
 

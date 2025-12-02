@@ -11,7 +11,7 @@ import {
   Globe,
   CheckCircle2,
 } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/app/i18n/navigation";
 import Image from "next/image";
 import { extractFeatureDetailText } from "@/app/i18n/extractTexts";
 import LenisProvider from "@/components/LenisProvider";
@@ -95,21 +95,6 @@ export default async function FeatureDetailPage({
             <p className="text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto">
               {text.description}
             </p>
-          </div>
-        </section>
-
-        {/* Feature Image */}
-        <section className="container mx-auto px-4 pb-16">
-          <div className="max-w-5xl mx-auto">
-            <Card className="overflow-hidden border-2">
-              <Image
-                src="/bitmap.svg"
-                alt={text.title}
-                width={1200}
-                height={600}
-                className="w-full"
-              />
-            </Card>
           </div>
         </section>
 

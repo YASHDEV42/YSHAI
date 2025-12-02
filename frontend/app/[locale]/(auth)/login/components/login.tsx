@@ -1,12 +1,11 @@
 "use client";
-import type React from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Loader } from "lucide-react";
+import { Loader } from "lucide-react";
 import { useActionState } from "react";
 import { loginAction } from "../actions";
 
@@ -39,7 +38,7 @@ export default function LoginPage({ text, locale }: LoginPageProps) {
             <div className="space-y-3 mb-2">
               <Button
                 variant="outline"
-                className="w-full bg-transparent"
+                className="w-full bg-transparent cursor-not-allowed"
                 type="button"
               >
                 <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
