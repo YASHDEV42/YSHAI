@@ -39,7 +39,7 @@ export default function SettingsClient({
       </div>
 
       <Tabs defaultValue="profile" className="space-y-6" dir={dir}>
-        <TabsList className="grid w-full grid-cols-4 lg:w-[600px]">
+        <TabsList className="grid w-full grid-cols-3 lg:w-[600px]">
           <TabsTrigger value="profile">
             <User className="mr-2 size-4" />
             {text.tabs.profile}

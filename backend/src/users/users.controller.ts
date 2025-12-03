@@ -6,8 +6,6 @@ import {
   Put,
   Body,
   Delete,
-  Post,
-  UploadedFile,
 } from '@nestjs/common';
 import {
   ApiCookieAuth,
@@ -15,8 +13,6 @@ import {
   ApiResponse,
   ApiTags,
   ApiOkResponse,
-  ApiConsumes,
-  ApiBody,
 } from '@nestjs/swagger';
 import { UserResponseDto } from './dto/user-response.dto';
 import { UsersService } from './users.service';

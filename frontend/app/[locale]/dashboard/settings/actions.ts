@@ -1,6 +1,8 @@
 "use server";
+
 import { updateTag, revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
+
 import {
   getMySubscription,
   cancelSubscription as cancelUserSubscription,
@@ -10,20 +12,23 @@ import {
 } from "@/lib/subscription-helper";
 
 import { handleOAuthCallback } from "@/lib/meta-helper";
-const BaseURL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
-type initialStateType = {
+import { updateProfile } from "@/lib/user-helper"; // adjust path if different
+
+type InitialStateType = {
   arMessage: string;
   enMessage: string;
   success: boolean;
 };
 
 export const changeNameAction = async (
-  _: initialStateType,
+  _prevState: InitialStateType,
   formData: FormData,
-) => {
-  const name = formData.get("name") as string;
-  const timezone = formData.get("timezone") as string;
+): Promise<InitialStateType> => {
+  const name = formData.get("name") as string | null;
+  const timezone = formData.get("timezone") as string | null;
+
   console.log("Form Data Received:", { name, timezone });
+
   if (!name || !timezone) {
     return {
       arMessage: "الاسم والمنطقة الزمنية مطلوبان!",
@@ -31,6 +36,7 @@ export const changeNameAction = async (
       success: false,
     };
   }
+
   if (name.length < 3 || name.length > 15) {
     return {
       arMessage: "يجب أن يكون الاسم بين 3 و 15 حرفًا.",
@@ -38,27 +44,35 @@ export const changeNameAction = async (
       success: false,
     };
   }
-  const cookieStore = await cookies();
+
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_PROTECTED_API_KEY}/users/me`,
-      {
-        method: "PUT",
-        credentials: "include",
-        headers: {
-          Cookie: cookieStore.toString(),
-        },
-        body: JSON.stringify({ name, timezone }),
-      },
-    );
-    updateTag("current-user");
+    const result = await updateProfile({
+      name,
+      timezone,
+    });
+
+    if (!result.success) {
+      console.error("Error changing profile:", result.error);
+
+      return {
+        arMessage: "فشل تغيير الاسم",
+        enMessage: "Failed to change name",
+        success: false,
+      };
+    }
+
+    // user-helper already calls updateTag("user"), but calling again is harmless.
+    updateTag("user");
+    // Optionally revalidate the settings page if needed
+    revalidatePath("/dashboard/settings");
+
     return {
       arMessage: "تم تغيير الاسم بنجاح",
       enMessage: "Name changed successfully",
       success: true,
     };
   } catch (error) {
-    console.error("Error changing name:", error);
+    console.error("Unexpected error changing name:", error);
 
     return {
       arMessage: "فشل تغيير الاسم",
@@ -81,14 +95,12 @@ export async function connectInstagram(shortToken: string, expiry?: any) {
   // Delegate to the meta-helper (which uses apiRequest and ApiResult)
   const result = await handleOAuthCallback(shortToken);
 
-  // Optionally log on failure
   if (!result.success) {
     console.error("❌ Meta OAuth callback failed:", result.error);
   } else {
     console.log("✅ Meta OAuth callback success:", result.data);
   }
 
-  // Just return the ApiResult; client already expects { success, data?, error? }
   return result;
 }
 
