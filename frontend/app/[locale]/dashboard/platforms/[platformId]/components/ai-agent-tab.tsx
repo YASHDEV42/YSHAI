@@ -26,6 +26,7 @@ import {
 import type { TConnectedAccount } from "@/types";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { Input } from "@/components/ui/input";
 
 interface Message {
   role: "user" | "assistant";
@@ -76,72 +77,6 @@ export function AIAgentTab({
     },
   ];
 
-  const handleSendMessage = async () => {
-    if (!input.trim()) return;
-
-    const userMessage = { role: "user" as const, content: input };
-    setMessages((prev) => [...prev, userMessage]);
-    setInput("");
-    setIsLoading(true);
-    setThinkingProgress(0);
-
-    toast.loading(text.aiAdvisor?.thinking || "AI is thinking...", {
-      id: "ai-thinking",
-    });
-
-    // Simulate thinking progress
-    const progressInterval = setInterval(() => {
-      setThinkingProgress((prev) => {
-        if (prev === null) return 20;
-        if (prev >= 90) {
-          clearInterval(progressInterval);
-          return 90;
-        }
-        return prev + 10;
-      });
-    }, 100);
-
-    // Simulate AI response
-    setTimeout(() => {
-      clearInterval(progressInterval);
-      setThinkingProgress(100);
-
-      const aiResponse = {
-        role: "assistant" as const,
-        content: `Based on your recent content performance, I recommend posting at 2 PM on weekdays for maximum engagement. Your audience is most active during this time, and your posts tend to get 30% more interactions when published then.`,
-      };
-
-      setMessages((prev) => [...prev, aiResponse]);
-      setIsLoading(false);
-
-      toast.success(
-        text.aiAdvisor?.responseGenerated || "AI response generated",
-        {
-          id: "ai-thinking",
-          icon: <CheckCircle className="h-4 w-4" />,
-          duration: 2000,
-        },
-      );
-
-      // Reset progress after a delay
-      setTimeout(() => {
-        setThinkingProgress(null);
-      }, 1000);
-    }, 2000);
-  };
-
-  const handleQuickAction = (action: any) => {
-    setInput(action.label);
-    toast.info(
-      text.aiAdvisor?.preparingQuery?.replace("{action}", action.label) ||
-        `Preparing ${action.label} query...`,
-      {
-        icon: <Zap className="h-4 w-4" />,
-        duration: 1500,
-      },
-    );
-  };
-
   return (
     <div className="space-y-6">
       {/* AI Agent Header Card */}
@@ -178,47 +113,6 @@ export function AIAgentTab({
           </div>
         </CardHeader>
       </Card>
-
-      {/* Quick Actions Grid */}
-      <div
-        className={cn(
-          "grid gap-3 md:grid-cols-2 lg:grid-cols-4",
-          animateItems
-            ? "opacity-100 translate-y-0"
-            : "opacity-0 translate-y-4",
-        )}
-        style={{ animationDelay: "200ms" }}
-      >
-        {quickActions.map((action, index) => {
-          const Icon = action.icon;
-          return (
-            <Card
-              key={index}
-              className={cn(
-                "cursor-pointer hover:shadow-md transition-all duration-150 hover:scale-105 border-border/50",
-                animateItems
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-4",
-              )}
-              style={{ animationDelay: `${300 + index * 100}ms` }}
-              onClick={() => handleQuickAction(action)}
-            >
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <div
-                    className={`flex size-10 items-center justify-center rounded-lg bg-accent transition-all duration-150 hover:scale-110`}
-                  >
-                    <Icon className={`size-5 text-primary`} />
-                  </div>
-                  <p className="text-sm font-medium leading-tight">
-                    {action.label}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
 
       {/* Chat Interface */}
       <Card
@@ -311,7 +205,7 @@ export function AIAgentTab({
 
             {/* Input Area */}
             <div className="flex gap-2 items-end">
-              <Textarea
+              <Input
                 placeholder={
                   text.aiAdvisor?.inputPlaceholder || "Ask me anything..."
                 }
@@ -320,17 +214,14 @@ export function AIAgentTab({
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
-                    handleSendMessage();
                   }
                 }}
                 className="resize-none min-h-8 shadow-sm transition-all duration-150 focus:ring-2 focus:ring-primary/20"
-                rows={2}
               />
               <Button
                 disabled={!input.trim() || isLoading}
                 size="icon"
-                className="shrink-0 size-12 shadow-sm transition-all duration-150 hover:scale-110"
-                onClick={handleSendMessage}
+                className="shrink-0  shadow-sm transition-all duration-150 hover:scale-110"
               >
                 {isLoading ? (
                   <Loader2 className="size-4 animate-spin" />
