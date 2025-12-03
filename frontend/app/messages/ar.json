@@ -926,12 +926,18 @@
     },
     "schedule": {
       "title": "الجدولة",
+      "draftTab": "مسودة",
       "publishNowTab": "نشر الآن",
       "scheduleLaterTab": "جدولة لاحقاً",
       "publishNowDescription": "سيتم نشر المنشور فوراً",
+      "draftTitle": "عنوان المسودة",
+      "draftDescription": "احفظ المنشور كمسودة للعودة إليه لاحقاً",
+      "saveDraftButton": "حفظ كمسودة",
+      "savingDraftButton": "جارٍ الحفظ كمسودة...",
       "dateLabel": "التاريخ",
       "timeLabel": "الوقت",
       "publishNowButton": "نشر الآن",
+      "publishNowTitle": "نشر المنشور الآن",
       "scheduleButton": "جدولة المنشور",
       "creating": "جارٍ الإنشاء..."
     },
@@ -947,7 +953,8 @@
       "mediaRemoved": "تم حذف الوسائط"
     },
     "submit": "إنشاء منشور",
-    "updating": "جارٍ التحديث..."
+    "updating": "جارٍ التحديث...",
+    "complete": "مكتمل"
   },
   "CalendarPage": {
     "title": "تقويم المحتوى",

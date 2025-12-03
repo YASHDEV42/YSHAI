@@ -988,12 +988,18 @@
     },
     "schedule": {
       "title": "Schedule",
+      "draftTab": "Save as Draft",
       "publishNowTab": "Publish Now",
       "scheduleLaterTab": "Schedule Later",
       "publishNowDescription": "Post will be published immediately",
+      "draftTitle": "Save as Draft",
+      "draftDescription": "Save your post to edit and publish later",
+      "saveDraftButton": "Save Draft",
+      "savingDraftButton": "Saving Draft...",
       "dateLabel": "Date",
       "timeLabel": "Time",
       "publishNowButton": "Publish Now",
+      "publishNowTitle": "Publish post immediately",
       "scheduleButton": "Schedule Post",
       "creating": "Creating..."
     },

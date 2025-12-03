@@ -110,11 +110,7 @@ export default function CreatePage({
   campaigns: ICampaign[];
 }) {
   // STATE
-  const [contentAr, setContentAr] = useState("");
-  const [contentEn, setContentEn] = useState("");
-  const [contentTab, setContentTab] = useState<"ar" | "en">(
-    locale === "ar" ? "ar" : "en",
-  );
+  const [content, setContent] = useState("");
 
   const [error, setError] = useState("");
 
@@ -157,7 +153,7 @@ export default function CreatePage({
     if (selectedPlatforms.length > 0) progress += stepWeight;
 
     // Step 2: Content (20%)
-    if (contentEn || contentAr) progress += stepWeight;
+    if (content) progress += stepWeight;
 
     // Step 3: Media (20%)
     if (uploadedMedia.length > 0) progress += stepWeight;
@@ -233,11 +229,7 @@ export default function CreatePage({
         if (prev >= 100) {
           clearInterval(interval);
           setIsUploading(false);
-
-          // Store real Files for upload
           setFiles((prevFiles) => [...prevFiles, ...selected]);
-
-          // Store preview URLs
           setUploadedMedia((prev) => [
             ...prev,
             ...selected.map((file) => URL.createObjectURL(file)),
@@ -314,9 +306,7 @@ export default function CreatePage({
           duration: 3000,
         });
 
-        // Reset form
-        setContentAr("");
-        setContentEn("");
+        setContent("");
         setUploadedMedia([]);
         setFiles([]);
         setSelectedPlatforms([]);
@@ -338,9 +328,6 @@ export default function CreatePage({
     });
   };
 
-  // PREVIEW COMPONENT
-  const currentContent = contentTab === "ar" ? contentAr : contentEn;
-
   const UnifiedPreview = ({
     platform,
   }: {
@@ -348,15 +335,27 @@ export default function CreatePage({
   }) => {
     const PlatformIcon = getPlatformIcon(platform.id);
     return (
-      <div className="border rounded-lg p-4 bg-card transition-all duration-100 hover:shadow-md">
+      <div
+        className="border rounded-lg p-4 bg-card transition-all duration-100 hover:shadow-md"
+        dir={locale === "ar" ? "rtl" : "ltr"}
+      >
         <div className="flex gap-3 mb-3">
           <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center transition-all duration-100 hover:scale-110">
             <span className="font-semibold text-sm">Y</span>
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-semibold">{platform.username}</span>
-              <PlatformIcon className="w-4 h-4" />
+              {locale === "ar" ? (
+                <>
+                  <PlatformIcon className="w-4 h-4" />
+                  <span className="font-semibold">{platform.username}</span>
+                </>
+              ) : (
+                <>
+                  <span className="font-semibold">{platform.username}</span>
+                  <PlatformIcon className="w-4 h-4" />
+                </>
+              )}
             </div>
             <span className="text-xs text-muted-foreground">
               {platform.name}
@@ -365,7 +364,7 @@ export default function CreatePage({
         </div>
 
         <p className="whitespace-pre-wrap">
-          {currentContent || text.preview.noContent}
+          {content || text.preview.noContent}
         </p>
 
         {uploadedMedia.length > 0 && (
@@ -432,7 +431,7 @@ export default function CreatePage({
               step={2}
               title={text.campaigns.title || "Campaign"}
               isActive={currentStep === 2}
-              isCompleted={contentEn || contentAr ? true : false}
+              isCompleted={content ? true : false}
               onClick={() => navigateToStep(2)}
             />
             <StepIndicator
@@ -530,7 +529,8 @@ export default function CreatePage({
                     {text.platforms.title}
                     {selectedPlatforms.length > 0 && (
                       <Badge variant="secondary" className="ml-auto">
-                        {selectedPlatforms.length} selected
+                        {selectedPlatforms.length}{" "}
+                        {locale === "ar" ? "منصات" : "Platforms"}
                       </Badge>
                     )}
                   </CardTitle>
@@ -582,7 +582,6 @@ export default function CreatePage({
                     {selectedCampaign && (
                       <Badge variant="secondary" className="ml-auto">
                         <CheckCircle className="w-3 h-3 mr-1" />
-                        Selected
                       </Badge>
                     )}
                   </CardTitle>
@@ -631,7 +630,8 @@ export default function CreatePage({
                     {text.media.title}
                     {uploadedMedia.length > 0 && (
                       <Badge variant="secondary" className="ml-auto">
-                        {uploadedMedia.length} files
+                        {uploadedMedia.length}{" "}
+                        {locale === "ar" ? "ملفات" : "Files"}
                       </Badge>
                     )}
                   </CardTitle>
@@ -720,47 +720,23 @@ export default function CreatePage({
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     {text.contentEditor.title}
-                    {(contentEn || contentAr) && (
+                    {content && (
                       <Badge variant="secondary" className="ml-auto">
                         <CheckCircle className="w-3 h-3 mr-1" />
-                        Filled
+                        {locale === "ar" ? "معبأ" : "Filled"}
                       </Badge>
                     )}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <Tabs
-                    value={contentTab}
-                    onValueChange={(v) => setContentTab(v as any)}
-                  >
-                    <TabsList className="grid grid-cols-2">
-                      <TabsTrigger value="en">English</TabsTrigger>
-                      <TabsTrigger value="ar">العربية</TabsTrigger>
-                    </TabsList>
-
-                    <TabsContent value="en">
-                      <Textarea
-                        name="contentEn"
-                        value={contentEn}
-                        onChange={(e) => setContentEn(e.target.value)}
-                        placeholder={text.contentEditor.placeholder}
-                        rows={6}
-                        className="transition-all duration-100 focus:ring-2 focus:ring-primary/20"
-                      />
-                    </TabsContent>
-
-                    <TabsContent value="ar">
-                      <Textarea
-                        name="contentAr"
-                        dir="rtl"
-                        value={contentAr}
-                        onChange={(e) => setContentAr(e.target.value)}
-                        placeholder="اكتب المحتوى هنا..."
-                        rows={6}
-                        className="transition-all duration-100 focus:ring-2 focus:ring-primary/20"
-                      />
-                    </TabsContent>
-                  </Tabs>
+                  <Textarea
+                    name="contentEn"
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    placeholder={text.contentEditor.placeholder}
+                    rows={6}
+                    className="transition-all duration-100 focus:ring-2 focus:ring-primary/20"
+                  />
                 </CardContent>
               </Card>
             </div>
@@ -783,7 +759,7 @@ export default function CreatePage({
                 </CardHeader>
                 <CardContent>
                   <Tabs defaultValue={platforms[0]?.id}>
-                    <TabsList className="grid grid-cols-4">
+                    <TabsList className="grid grid-cols-5">
                       {platforms.map((p) => {
                         const Icon = getPlatformIcon(p.id);
                         return (
@@ -793,7 +769,7 @@ export default function CreatePage({
                             disabled={!selectedPlatforms.includes(p.id)}
                             className="transition-all duration-100"
                           >
-                            <Icon className="w-3 h-3 mr-1" />
+                            <Icon className="w-3 h-3" />
                             {p.username}
                           </TabsTrigger>
                         );
@@ -827,7 +803,7 @@ export default function CreatePage({
                       (scheduleDate && scheduleTime)) && (
                       <Badge variant="secondary" className="ml-auto">
                         <CheckCircle className="w-3 h-3 mr-1 text-primary" />
-                        Set
+                        {locale === "ar" ? "محدد" : "Set"}
                       </Badge>
                     )}
                   </CardTitle>
@@ -844,25 +820,29 @@ export default function CreatePage({
                         className="transition-all duration-100"
                       >
                         <Save className="w-3 h-3 mr-1" />
-                        {text.schedule.draft || "Draft"}
+                        {text.schedule.draftTab || "Draft"}
                       </TabsTrigger>
                       <TabsTrigger
                         value="now"
                         className="transition-all duration-100"
                       >
                         <Send className="w-3 h-3 mr-1" />
-                        {text.schedule.publishNow}
+                        {text.schedule.publishNowTab}
                       </TabsTrigger>
                       <TabsTrigger
                         value="later"
                         className="transition-all duration-100"
                       >
                         <Calendar className="w-3 h-3 mr-1" />
-                        {text.schedule.schedule}
+                        {text.schedule.scheduleLaterTab}
                       </TabsTrigger>
                     </TabsList>
 
-                    <TabsContent value="draft" className="space-y-3">
+                    <TabsContent
+                      value="draft"
+                      className="space-y-3"
+                      dir={`${locale === "ar" ? "rtl" : "ltr"}`}
+                    >
                       <div className="p-4 rounded-lg bg-muted/50 space-y-2">
                         <div className="flex items-center gap-2">
                           <Save className="w-4 h-4 text-primary" />
@@ -877,8 +857,12 @@ export default function CreatePage({
                       </div>
                     </TabsContent>
 
-                    <TabsContent value="now" className="space-y-3">
-                      <div className="p-4 rounded-lg bg-primary/10 space-y-2">
+                    <TabsContent
+                      value="now"
+                      className="space-y-3"
+                      dir={`${locale === "ar" ? "rtl" : "ltr"}`}
+                    >
+                      <div className="p-4 rounded-lg bg-primary/10 space-y-2 flex items-start justify-center flex-col">
                         <div className="flex items-center gap-2">
                           <Send className="w-4 h-4 text-primary" />
                           <span className="font-medium">
@@ -891,7 +875,11 @@ export default function CreatePage({
                       </div>
                     </TabsContent>
 
-                    <TabsContent value="later" className="space-y-3">
+                    <TabsContent
+                      value="later"
+                      className="space-y-3"
+                      dir={`${locale === "ar" ? "rtl" : "ltr"}`}
+                    >
                       <div className="space-y-3">
                         <div>
                           <Label>{text.schedule.date}</Label>
@@ -932,58 +920,60 @@ export default function CreatePage({
                       </div>
                     </TabsContent>
                   </Tabs>
+
+                  <div className="mt-6 w-full flex  gap-3">
+                    {error && (
+                      <div className="flex-1 p-3 bg-destructive/10 text-destructive rounded-lg text-sm flex items-center gap-2">
+                        <AlertCircle className="w-4 h-4 shrink-0" />
+                        {error}
+                      </div>
+                    )}
+
+                    <Button
+                      type="submit"
+                      size="lg"
+                      disabled={
+                        isPending ||
+                        !content ||
+                        (scheduleType !== "draft" &&
+                          selectedPlatforms.length === 0)
+                      }
+                      className="w-full transition-all duration-100 hover:scale-105 shadow-lg"
+                    >
+                      {isPending ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          {locale === "ar"
+                            ? "جاري المعالجة..."
+                            : "Processing..."}
+                        </>
+                      ) : (
+                        <>
+                          {scheduleType === "draft" && (
+                            <>
+                              <Save className="w-4 h-4 mr-2" />
+                              {text.schedule.saveDraftButton || "Save Draft"}
+                            </>
+                          )}
+                          {scheduleType === "now" && (
+                            <>
+                              <Send className="w-4 h-4 mr-2" />
+                              {text.schedule.publishNowButton}
+                            </>
+                          )}
+                          {scheduleType === "later" && (
+                            <>
+                              <Calendar className="w-4 h-4 mr-2" />
+                              {text.schedule.scheduleButton}
+                            </>
+                          )}
+                        </>
+                      )}
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             </div>
-          </div>
-
-          {/* SUBMIT BUTTON */}
-          <div className="mt-6 flex justify-end gap-3">
-            {error && (
-              <div className="flex-1 p-3 bg-destructive/10 text-destructive rounded-lg text-sm flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 shrink-0" />
-                {error}
-              </div>
-            )}
-
-            <Button
-              type="submit"
-              size="lg"
-              disabled={
-                isPending ||
-                (!contentEn && !contentAr) ||
-                (scheduleType !== "draft" && selectedPlatforms.length === 0)
-              }
-              className="min-w-[200px] transition-all duration-100 hover:scale-105 shadow-lg"
-            >
-              {isPending ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  {locale === "ar" ? "جاري المعالجة..." : "Processing..."}
-                </>
-              ) : (
-                <>
-                  {scheduleType === "draft" && (
-                    <>
-                      <Save className="w-4 h-4 mr-2" />
-                      {text.schedule.saveDraft || "Save Draft"}
-                    </>
-                  )}
-                  {scheduleType === "now" && (
-                    <>
-                      <Send className="w-4 h-4 mr-2" />
-                      {text.schedule.publishNow}
-                    </>
-                  )}
-                  {scheduleType === "later" && (
-                    <>
-                      <Calendar className="w-4 h-4 mr-2" />
-                      {text.schedule.schedulePost}
-                    </>
-                  )}
-                </>
-              )}
-            </Button>
           </div>
         </form>
       </div>
