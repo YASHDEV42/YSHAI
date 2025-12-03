@@ -45,10 +45,6 @@ export default function SettingsClient({
             <User className="mr-2 size-4" />
             {text.tabs.profile}
           </TabsTrigger>
-          <TabsTrigger value="platforms">
-            <CircleFadingPlus className="mr-2 size-4" />
-            {text.tabs.platforms}
-          </TabsTrigger>
           <TabsTrigger value="notifications">
             <Bell className="mr-2 size-4" />
             {text.tabs.notifications}
@@ -62,11 +58,6 @@ export default function SettingsClient({
         {/* Profile Tab */}
         <TabsContent value="profile" className="space-y-6">
           <ProfileTab text={text} user={user} locale={locale} />
-        </TabsContent>
-
-        {/* Platforms Tab */}
-        <TabsContent value="platforms" className="space-y-6">
-          <PlatformsTab text={text} locale={locale} accounts={accounts} />
         </TabsContent>
 
         {/* Notifications Tab */}
