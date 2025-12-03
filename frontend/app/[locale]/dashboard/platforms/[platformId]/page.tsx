@@ -68,6 +68,7 @@ async function PlatformDetailServerPage({
     : [];
 
   const allPosts = [...databasePosts, ...instagramPosts];
+  console.log("All Posts:", allPosts);
 
   return (
     <PlatformDetail

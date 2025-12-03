@@ -104,11 +104,31 @@ export function ContentTab({
     return post.caption;
   };
 
-  const getPostMedia = (post: any) => {
+  const getPostMediaUrls = (post: any): string[] => {
+    // DB posts
     if (isDatabasePost(post)) {
-      return post.media?.[0]?.url;
+      if (Array.isArray(post.media) && post.media.length > 0) {
+        return post.media
+          .map((m: any) => m.url)
+          .filter((url: unknown): url is string => typeof url === "string");
+      }
+      return [];
     }
-    return post.mediaUrl || post.media_url;
+
+    // Instagram / external posts
+    if (Array.isArray(post.mediaUrls) && post.mediaUrls.length > 0) {
+      return post.mediaUrls;
+    }
+
+    if (typeof post.mediaUrl === "string" && post.mediaUrl.length > 0) {
+      return [post.mediaUrl];
+    }
+
+    if (typeof post.media_url === "string" && post.media_url.length > 0) {
+      return [post.media_url];
+    }
+
+    return [];
   };
 
   const getPostDate = (post: any) => {
@@ -362,54 +382,58 @@ export function ContentTab({
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {currentPosts.map((post, index) => {
                   const postContent = getPostContent(post);
-                  const postMedia = getPostMedia(post);
                   const postDate = getPostDate(post);
                   const postStatus = post.status || "published";
                   const isDbPost = isDatabasePost(post);
-
+                  const mediaUrls = getPostMediaUrls(post);
                   return (
                     <Card
                       key={post.id}
                       className={cn(
-                        "overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-[1.02] group",
+                        "overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-[1.02] group pb-0 h-full flex flex-col",
                         animateItems
                           ? "opacity-100 translate-y-0"
                           : "opacity-0 translate-y-4",
                       )}
                       style={{ animationDelay: `${300 + index * 100}ms` }}
                     >
-                      <CardContent className="p-0">
-                        {postMedia && (
+                      <CardContent className="p-0 flex flex-col flex-1">
+                        {mediaUrls.length > 0 && (
                           <Carousel className="w-full">
                             <CarouselContent>
-                              <CarouselItem>
-                                <div className="relative aspect-square w-full">
-                                  <Image
-                                    src={postMedia || "/placeholder.svg"}
-                                    alt={postContent || "Post image"}
-                                    fill
-                                    className="object-cover transition-all duration-300 group-hover:scale-105"
-                                  />
-                                  {isDbPost && (
-                                    <div className="absolute top-2 right-2">
-                                      <span
-                                        className={cn(
-                                          "px-2 py-1 rounded-full text-xs font-medium",
-                                          getStatusColor(postStatus),
-                                        )}
-                                      >
-                                        {postStatus}
-                                      </span>
-                                    </div>
-                                  )}
-                                </div>
-                              </CarouselItem>
+                              {mediaUrls.map((url, i) => (
+                                <CarouselItem key={i}>
+                                  <div className="relative w-full aspect-square overflow-hidden">
+                                    <Image
+                                      src={url || "/placeholder.svg"}
+                                      alt={postContent || "Post image"}
+                                      width={800}
+                                      height={800}
+                                      className="h-full w-full object-cover transition-all duration-300 group-hover:scale-105"
+                                    />
+                                    {isDbPost && (
+                                      <div className="absolute top-2 right-2">
+                                        <span
+                                          className={cn(
+                                            "px-2 py-1 rounded-full text-xs font-medium",
+                                            getStatusColor(postStatus),
+                                          )}
+                                        >
+                                          {postStatus}
+                                        </span>
+                                      </div>
+                                    )}
+                                  </div>
+                                </CarouselItem>
+                              ))}
                             </CarouselContent>
                             <CarouselPrevious className="left-2" />
                             <CarouselNext className="right-2" />
                           </Carousel>
                         )}
-                        <div className="p-4 space-y-3">
+
+                        {/* Text + stats + actions */}
+                        <div className="p-4 space-y-3 flex flex-col flex-1">
                           <p className="text-sm line-clamp-3 transition-colors group-hover:text-foreground">
                             {postContent}
                           </p>
@@ -426,7 +450,8 @@ export function ContentTab({
                               {formatDate(postDate)}
                             </span>
                           </div>
-                          <div className="flex gap-2">
+
+                          <div className="mt-auto flex gap-2">
                             {post.permalink && (
                               <Button
                                 size="sm"
@@ -456,24 +481,6 @@ export function ContentTab({
                                 >
                                   {text.edit || "Edit"}
                                 </Link>
-                              </Button>
-                            )}
-                            {!isDbPost && (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="flex-1 bg-transparent transition-all duration-300 hover:scale-105 hover:bg-blue-50 dark:hover:bg-blue-950/20"
-                                onClick={() => handleRepost(post.id)}
-                                disabled={repostingPostId === post.id}
-                              >
-                                {repostingPostId === post.id ? (
-                                  <Loader2 className="mr-2 size-3 animate-spin" />
-                                ) : (
-                                  <>
-                                    <ExternalLink className="mr-2 size-3" />
-                                    {text.repost || "Repost"}
-                                  </>
-                                )}
                               </Button>
                             )}
                             <Button

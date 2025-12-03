@@ -16,7 +16,30 @@ import { AccountToken } from 'src/entities/account-token.entity';
 const GRAPH_VERSION = process.env.META_GRAPH_VERSION ?? 'v24.0';
 const G = (p: string) => `https://graph.facebook.com/${GRAPH_VERSION}${p}`;
 const logger = new Logger('mets.service');
+export interface InstagramPostItem {
+  id: string;
+  caption: string;
+  mediaUrl: string | null;
+  mediaUrls: string[]; // all media (for carousels etc.)
+  permalink: string;
+  timestamp: string;
+  likeCount: number;
+  commentsCount: number;
+  mediaType: string;
+}
 
+export interface InstagramPostsResult {
+  success: boolean;
+  data: InstagramPostItem[];
+  paging: {
+    next?: string;
+    previous?: string;
+    cursors?: {
+      before?: string;
+      after?: string;
+    };
+  };
+}
 @Injectable()
 export class MetaService {
   private readonly logger = new Logger(MetaService.name);
@@ -480,7 +503,15 @@ export class MetaService {
     userId: number;
     limit?: number;
     after?: string;
-  }) {
+  }): Promise<{
+    success: boolean;
+    data: InstagramPostItem[];
+    paging: {
+      next?: string;
+      previous?: string;
+      cursors?: { before?: string; after?: string };
+    };
+  }> {
     const { igUserId, userId, limit, after } = params;
 
     const account = await this.em.findOne(
@@ -496,7 +527,6 @@ export class MetaService {
     if (!userLongLived)
       throw new BadRequestException('Missing long-lived user token');
 
-    // get page token for the page that owns this igUserId
     const pageAccessToken = await this.mintPageAccessTokenFromUser(
       account,
       userLongLived,
@@ -513,6 +543,14 @@ export class MetaService {
         timestamp: string;
         like_count?: number;
         comments_count?: number;
+        children?: {
+          data: Array<{
+            id: string;
+            media_type: string;
+            media_url?: string;
+            thumbnail_url?: string;
+          }>;
+        };
       }>;
       paging?: {
         next?: string;
@@ -521,27 +559,42 @@ export class MetaService {
       };
     }>(`/${igUserId}/media`, {
       fields:
-        'id,caption,media_type,media_url,permalink,timestamp,like_count,comments_count,thumbnail_url',
+        'id,caption,media_type,media_url,permalink,timestamp,like_count,comments_count,thumbnail_url,children{media_type,media_url,thumbnail_url}',
       access_token: pageAccessToken,
       limit: limit ?? 20,
       after,
     });
 
-    const items = (data.data ?? []).map((p) => ({
-      id: p.id,
-      caption: p.caption ?? '',
-      mediaUrl: p.media_url ?? p.thumbnail_url ?? null,
-      permalink: p.permalink,
-      timestamp: p.timestamp,
-      likeCount: p.like_count ?? 0,
-      commentsCount: p.comments_count ?? 0,
-      mediaType: p.media_type,
-    }));
+    const items: InstagramPostItem[] = (data.data ?? []).map((p) => {
+      const baseMediaUrl = p.media_url ?? p.thumbnail_url ?? null;
+
+      let mediaUrls: string[] = [];
+
+      if (p.media_type === 'CAROUSEL_ALBUM' && p.children?.data?.length) {
+        mediaUrls = p.children.data
+          .map((child) => child.media_url ?? child.thumbnail_url ?? null)
+          .filter((url): url is string => !!url);
+      } else if (baseMediaUrl) {
+        mediaUrls = [baseMediaUrl];
+      }
+
+      return {
+        id: p.id,
+        caption: p.caption ?? '',
+        mediaUrl: mediaUrls[0] ?? null,
+        mediaUrls,
+        permalink: p.permalink,
+        timestamp: p.timestamp,
+        likeCount: p.like_count ?? 0,
+        commentsCount: p.comments_count ?? 0,
+        mediaType: p.media_type,
+      };
+    });
 
     return {
       success: true,
-      data: items,
-      paging: data.paging ?? {},
+      data: items, // <-- matches type (array)
+      paging: data.paging ?? {}, // <-- top-level paging
     };
   }
 

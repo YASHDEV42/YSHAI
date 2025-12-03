@@ -178,6 +178,6 @@ export class MetaController {
       limit: q.limit,
       after: q.after,
     });
-    return { ...res };
+    return res;
   }
 }
