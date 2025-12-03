@@ -1140,23 +1140,23 @@
   },
   "CreatePage": {
     "createPost": "Create Post",
+    "complete": "Complete",
     "platforms": {
       "title": "Select Platforms"
     },
     "campaigns": {
       "title": "Campaign",
-      "placeholder": "Select a campaign (optional)",
-      "noCampaigns": "No campaigns available"
-    },
-    "tags": {
-      "title": "Tags",
-      "noTags": "No tags available"
+      "placeholder": "Select campaign (optional)",
+      "noCampaigns": "No active campaigns available"
     },
     "media": {
-      "title": "Upload Media",
-      "uploadButton": "Upload Files",
-      "dragDrop": "or drag and drop",
-      "supportedFormats": "PNG, JPG, GIF, MP4 up to 10MB"
+      "title": "Media",
+      "upload": "Upload Media",
+      "uploading": "Uploading...",
+      "images": "Images",
+      "videos": "Videos",
+      "addMore": "Add More",
+      "mediaRemoved": "Media removed"
     },
     "contentEditor": {
       "title": "Content",
@@ -1164,8 +1164,17 @@
     },
     "aiGenerator": {
       "title": "AI Content Generator",
-      "placeholder": "Describe what you want to post...",
-      "generate": "Generate Content"
+      "placeholder": "Describe what you want to post... (e.g., 'Promote our new product launch' or 'Share tips about healthy eating')",
+      "generate": "Generate Content",
+      "generating": "Generating...",
+      "toneLabel": "Tone",
+      "tones": {
+        "professional": "Professional",
+        "casual": "Casual",
+        "friendly": "Friendly",
+        "excited": "Excited",
+        "informative": "Informative"
+      }
     },
     "schedule": {
       "title": "Schedule",
@@ -1193,7 +1202,11 @@
       "platformSelected": "Platform selected successfully!",
       "uploadingMedia": "Uploading media...",
       "mediaUploaded": "Media uploaded successfully!",
-      "mediaRemoved": "Media removed"
+      "mediaRemoved": "Media removed",
+      "aiGenerating": "Generating content with AI...",
+      "aiSuccess": "Content generated successfully!",
+      "aiFailed": "Failed to generate content. Please try again.",
+      "aiPromptRequired": "Please enter a content description"
     },
     "submit": "Create Post",
     "updating": "Updating..."

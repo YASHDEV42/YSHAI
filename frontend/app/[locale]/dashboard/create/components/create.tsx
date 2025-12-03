@@ -35,6 +35,7 @@ import {
   Calendar,
   Save,
   Send,
+  Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -45,6 +46,7 @@ import { createPostAction, createDraftPostAction } from "../actions";
 import type { IUser, ISocialAccount } from "@/interfaces";
 import type { ICampaign } from "@/lib/campaign-helper";
 import { cn } from "@/lib/utils";
+import { generateAIContent } from "../ai-action";
 
 // Step indicator component
 const StepIndicator = ({
@@ -126,6 +128,8 @@ export default function CreatePage({
 
   const [aiPrompt, setAiPrompt] = useState("");
   const [isPending, startTransition] = useTransition();
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [selectedTone, setSelectedTone] = useState("professional");
 
   const [selectedCampaign, setSelectedCampaign] = useState<string>("");
   const [currentStep, setCurrentStep] = useState(1);
@@ -270,6 +274,69 @@ export default function CreatePage({
       setCurrentStep(step);
       setIsAnimating(false);
     }, 300);
+  };
+
+  const handleGenerateAI = async () => {
+    if (!aiPrompt.trim()) {
+      toast.error(
+        locale === "ar"
+          ? "الرجاء إدخال وصف للمحتوى"
+          : "Please enter a content description",
+      );
+      return;
+    }
+
+    setIsGenerating(true);
+    toast.loading(
+      locale === "ar" ? "جاري توليد المحتوى..." : "Generating content...",
+      { id: "ai-generate" },
+    );
+
+    try {
+      // Get the first selected platform for optimization
+      const targetPlatform =
+        selectedPlatforms.length > 0
+          ? platforms.find((p) => p.id === selectedPlatforms[0])?.name
+          : undefined;
+
+      const result = await generateAIContent(
+        aiPrompt,
+        targetPlatform,
+        locale,
+        selectedTone,
+      );
+
+      if (result.success && result.content) {
+        // Combine content with hashtags if available
+        const fullContent = result.hashtags
+          ? `${result.content}\n\n${result.hashtags}`
+          : result.content;
+
+        setContent(fullContent);
+        toast.success(
+          locale === "ar"
+            ? "تم توليد المحتوى بنجاح!"
+            : "Content generated successfully!",
+          {
+            id: "ai-generate",
+            icon: <Sparkles className="h-4 w-4" />,
+          },
+        );
+        setAiPrompt(""); // Clear the prompt
+      } else {
+        throw new Error(result.error || "Failed to generate content");
+      }
+    } catch (error) {
+      console.error("[v0] AI generation failed:", error);
+      toast.error(
+        locale === "ar"
+          ? "فشل توليد المحتوى. حاول مرة أخرى."
+          : "Failed to generate content. Please try again.",
+        { id: "ai-generate" },
+      );
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   // FORM SUBMISSION
@@ -728,7 +795,81 @@ export default function CreatePage({
                     )}
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-4">
+                  {/* AI Content Generator Section */}
+                  <div className="p-4 border rounded-lg bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-950/20 dark:to-blue-950/20">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                      <Label className="text-sm font-semibold">
+                        {text.aiGenerator?.title || "AI Content Generator"}
+                      </Label>
+                    </div>
+
+                    <div className="space-y-3">
+                      <Textarea
+                        value={aiPrompt}
+                        onChange={(e) => setAiPrompt(e.target.value)}
+                        placeholder={
+                          text.aiGenerator?.placeholder ||
+                          "Describe what you want to post..."
+                        }
+                        rows={3}
+                        className="bg-background"
+                        disabled={isGenerating}
+                      />
+
+                      <div className="flex items-center gap-2">
+                        <Select
+                          value={selectedTone}
+                          onValueChange={setSelectedTone}
+                        >
+                          <SelectTrigger className="w-[180px] bg-background">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="professional">
+                              {locale === "ar" ? "احترافي" : "Professional"}
+                            </SelectItem>
+                            <SelectItem value="casual">
+                              {locale === "ar" ? "عادي" : "Casual"}
+                            </SelectItem>
+                            <SelectItem value="friendly">
+                              {locale === "ar" ? "ودود" : "Friendly"}
+                            </SelectItem>
+                            <SelectItem value="excited">
+                              {locale === "ar" ? "متحمس" : "Excited"}
+                            </SelectItem>
+                            <SelectItem value="informative">
+                              {locale === "ar" ? "معلوماتي" : "Informative"}
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+
+                        <Button
+                          type="button"
+                          onClick={handleGenerateAI}
+                          disabled={isGenerating || !aiPrompt.trim()}
+                          className="flex-1"
+                          size="sm"
+                        >
+                          {isGenerating ? (
+                            <>
+                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              {locale === "ar"
+                                ? "جاري التوليد..."
+                                : "Generating..."}
+                            </>
+                          ) : (
+                            <>
+                              <Sparkles className="w-4 h-4 mr-2" />
+                              {text.aiGenerator?.generate || "Generate Content"}
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+
                   <Textarea
                     name="contentEn"
                     value={content}
