@@ -1,5 +1,7 @@
 "use client";
 
+import { Link } from "@/app/i18n/navigation";
+
 type FooterText = {
   description: string;
   product: {
@@ -57,30 +59,36 @@ export const FooterSection = ({
             <h4 className="font-semibold mb-4">{text.product.title}</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
-                <a href="#" className="hover:text-foreground transition-colors">
+                <Link
+                  href={`/features`}
+                  className="hover:text-foreground transition-colors"
+                >
                   {text.product.features}
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-foreground transition-colors">
+                <Link
+                  href={`/pricing`}
+                  className="hover:text-foreground transition-colors"
+                >
                   {text.product.pricing}
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href={`/${locale}/dashboard`}
+                <Link
+                  href={`/dashboard`}
                   className="hover:text-foreground transition-colors"
                 >
                   {text.product.dashboard}
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href={`/${locale}/dashboard/analytics`}
+                <Link
+                  href={`/dashboard/analytics`}
                   className="hover:text-foreground transition-colors"
                 >
                   {text.product.analytics}
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -90,24 +98,36 @@ export const FooterSection = ({
             <h4 className="font-semibold mb-4">{text.company.title}</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
-                <a href="#" className="hover:text-foreground transition-colors">
+                <Link
+                  href={`/about`}
+                  className="hover:text-foreground transition-colors"
+                >
                   {text.company.about}
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-foreground transition-colors">
+                <Link
+                  href={`/blog`}
+                  className="hover:text-foreground transition-colors"
+                >
                   {text.company.blog}
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-foreground transition-colors">
+                <Link
+                  href={`/careers`}
+                  className="hover:text-foreground transition-colors"
+                >
                   {text.company.careers}
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-foreground transition-colors">
+                <Link
+                  href={`/support`}
+                  className="hover:text-foreground transition-colors"
+                >
                   {text.company.contact}
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -117,19 +137,28 @@ export const FooterSection = ({
             <h4 className="font-semibold mb-4">{text.legal.title}</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
-                <a href="#" className="hover:text-foreground transition-colors">
+                <Link
+                  href={`/privacy`}
+                  className="hover:text-foreground transition-colors"
+                >
                   {text.legal.privacy}
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-foreground transition-colors">
+                <Link
+                  href={`/terms`}
+                  className="hover:text-foreground transition-colors"
+                >
                   {text.legal.terms}
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-foreground transition-colors">
+                <Link
+                  href={`/security`}
+                  className="hover:text-foreground transition-colors"
+                >
                   {text.legal.security}
-                </a>
+                </Link>
               </li>
             </ul>
           </div>

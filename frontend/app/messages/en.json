@@ -281,6 +281,7 @@
       "title": "AI Content Generation",
       "description": "Transform your content creation with cutting-edge AI technology. Generate engaging captions, hashtags, and full posts in seconds while maintaining your unique brand voice.",
       "cta": "Start Creating with AI",
+      "viewAllFeatures": "View All Features",
       "benefitsHeading": "What you can do with AI Content Generation",
       "benefitsSubheading": "Unlock powerful capabilities to streamline your content workflow",
       "benefits": [
@@ -319,6 +320,8 @@
       "title": "Intelligent Post Scheduling",
       "description": "Schedule your content at the perfect time for maximum engagement. Our smart scheduling algorithm analyzes your audience behavior to recommend optimal posting times across all platforms.",
       "cta": "Start Scheduling Smarter",
+
+      "viewAllFeatures": "View All Features",
       "benefitsHeading": "Benefits of Smart Scheduling",
       "benefitsSubheading": "Maximize your reach with intelligent timing",
       "benefits": [
@@ -357,6 +360,8 @@
       "title": "Advanced Analytics & Reporting",
       "description": "Get deep insights into your social media performance with comprehensive analytics. Track engagement, reach, audience demographics, and ROI across all your platforms in one unified dashboard.",
       "cta": "Start Analyzing Your Data",
+
+      "viewAllFeatures": "View All Features",
       "benefitsHeading": "Powerful Analytics Features",
       "benefitsSubheading": "Make data-driven decisions with comprehensive insights",
       "benefits": [
@@ -395,6 +400,8 @@
       "title": "Team Collaboration Tools",
       "description": "Work seamlessly with your team or clients. Assign roles, manage approval workflows, and collaborate on content creation all in one centralized platform.",
       "cta": "Start Collaborating",
+
+      "viewAllFeatures": "View All Features",
       "benefitsHeading": "Streamline Team Workflows",
       "benefitsSubheading": "Collaborate efficiently with powerful team features",
       "benefits": [
@@ -433,6 +440,8 @@
       "title": "Multi-Platform Publishing",
       "description": "Publish to all major social networks from one central dashboard. Save time, ensure consistency, and reach your entire audience across Facebook, Instagram, Twitter, LinkedIn, and more.",
       "cta": "Start Publishing Everywhere",
+
+      "viewAllFeatures": "View All Features",
       "benefitsHeading": "Simplify Multi-Platform Publishing",
       "benefitsSubheading": "Reach your audience wherever they are",
       "benefits": [
@@ -471,6 +480,8 @@
       "title": "Full RTL Language Support",
       "description": "Complete support for right-to-left languages including Arabic, Hebrew, Persian, and Urdu. Our platform adapts the entire interface and content flow for perfect RTL experience.",
       "cta": "Explore RTL Features",
+
+      "viewAllFeatures": "View All Features",
       "benefitsHeading": "Comprehensive RTL Support",
       "benefitsSubheading": "Perfect experience for right-to-left languages",
       "benefits": [

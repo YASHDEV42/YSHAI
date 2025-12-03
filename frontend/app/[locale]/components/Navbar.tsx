@@ -59,13 +59,13 @@ export function Navbar({ text }: { text: any }) {
 
         <nav className="hidden md:flex items-center gap-6">
           <Link
-            href="#features"
+            href="/#features"
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             {text.features}
           </Link>
           <Link
-            href="#pricing"
+            href="/#pricing"
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             {text.pricing}
