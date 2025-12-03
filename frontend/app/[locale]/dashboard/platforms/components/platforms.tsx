@@ -351,17 +351,6 @@ export function Platforms({ text, locale, accounts }: PlatformsProps) {
                               </p>
                             </div>
                           </div>
-                          <div className="flex items-center gap-2 text-sm">
-                            <div className="p-1.5 bg-muted rounded-md">
-                              <FileText className="size-4 text-muted-foreground" />
-                            </div>
-                            <div>
-                              <p className="font-semibold">0</p>
-                              <p className="text-xs text-muted-foreground">
-                                {text.posts}
-                              </p>
-                            </div>
-                          </div>
                         </div>
                       </div>
 

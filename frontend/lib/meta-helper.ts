@@ -13,12 +13,6 @@ interface InstagramProfileDto {
   profilePicture: string;
 }
 
-interface PublishDto {
-  caption: string;
-  // On backend you are actually passing media via multipart,
-  // but OpenAPI shows only caption – we keep this DTO for clarity.
-}
-
 export async function handleOAuthCallback(
   shortToken: string,
 ): Promise<ApiResult<any>> {
