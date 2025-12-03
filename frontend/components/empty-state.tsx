@@ -1,19 +1,26 @@
+"use client";
 
-"use client"
+import type { LucideIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
-import type { LucideIcon } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
-
-
-export function EmptyState({ icon: Icon, title, description, actionLabel, actionHref, onAction }: any) {
+export function EmptyState({
+  icon: Icon,
+  title,
+  description,
+  actionLabel,
+  actionHref,
+  onAction,
+}: any) {
   return (
     <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
       <div className="mb-4 rounded-full bg-muted p-6">
         <Icon className="size-12 text-muted-foreground" />
       </div>
       <h3 className="mb-2 font-semibold text-lg text-foreground">{title}</h3>
-      <p className="mb-6 max-w-sm text-sm text-muted-foreground">{description}</p>
+      <p className="mb-6 max-w-sm text-sm text-muted-foreground">
+        {description}
+      </p>
       {(actionLabel && actionHref) || onAction ? (
         actionHref ? (
           <Button asChild>
@@ -24,5 +31,5 @@ export function EmptyState({ icon: Icon, title, description, actionLabel, action
         )
       ) : null}
     </div>
-  )
+  );
 }

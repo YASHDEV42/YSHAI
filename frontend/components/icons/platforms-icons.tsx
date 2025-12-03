@@ -1,5 +1,7 @@
 "use client";
 
+import { FC } from "react";
+
 type IconProps = { className?: string };
 
 // --------------------
@@ -63,7 +65,6 @@ export const FacebookIcon = ({ className }: IconProps) => (
 // --------------------
 // Platform Helpers
 // --------------------
-
 export const getPlatformIcon = (provider: string) => {
   const p = provider.toLowerCase();
   if (p.includes("facebook")) return FacebookIcon;
@@ -71,7 +72,7 @@ export const getPlatformIcon = (provider: string) => {
   if (p.includes("instagram")) return InstagramIcon;
   if (p.includes("linkedin")) return LinkedInIcon;
   if (p.includes("tiktok")) return TikTokIcon;
-  return TwitterIcon; // fallback
+  return TwitterIcon;
 };
 
 export const getPlatformColor = (provider: string) => {

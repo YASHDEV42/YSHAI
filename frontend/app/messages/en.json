@@ -1036,7 +1036,8 @@
     "selectedDate": {
       "title": "Selected Date",
       "noPosts": "No posts scheduled",
-      "schedulePost": "Schedule a Post"
+      "schedulePost": "Schedule a Post",
+      "noPostsDescription": "Start creating content to see it here"
     },
     "status": {
       "scheduled": "Scheduled"

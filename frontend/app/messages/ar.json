@@ -975,7 +975,8 @@
     "selectedDate": {
       "title": "التاريخ المحدد",
       "noPosts": "لا توجد منشورات مجدولة",
-      "schedulePost": "جدولة منشور"
+      "schedulePost": "جدولة منشور",
+      "noPostsDescription": "ابدأ في إنشاء المحتوى لرؤيته هنا"
     },
     "status": {
       "scheduled": "مجدول"

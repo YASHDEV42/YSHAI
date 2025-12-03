@@ -3,12 +3,7 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import {
-  Filter,
   Plus,
-  Twitter,
-  Instagram,
-  Linkedin,
-  Music2,
   Clock,
   Edit,
   Trash2,
@@ -22,13 +17,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import {
   format,
@@ -39,25 +27,30 @@ import {
   subWeeks,
 } from "date-fns";
 import { EmptyState } from "@/components/empty-state";
-import type { IPost, ISocialAccount } from "@/interfaces";
+import type { IPost } from "@/interfaces";
 import { useToast } from "@/hooks/use-toast";
 import {
   remove as deletePost,
   reschedule,
   publishNow,
 } from "@/lib/post-helper";
+import {
+  getPlatformColor,
+  getPlatformIcon,
+} from "@/components/icons/platforms-icons";
 
 interface CalendarPageProps {
   text: any;
+  locale: string;
   posts: IPost[];
-  accounts: ISocialAccount[];
 }
 
 export default function CalendarPage({
   text,
+  locale,
   posts,
-  accounts,
 }: CalendarPageProps) {
+  const isRTL = locale === "ar";
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
     new Date(),
   );
@@ -75,37 +68,33 @@ export default function CalendarPage({
 
   const platforms = [
     {
-      id: "x",
+      id: "twitter",
       name: text.platforms.twitter,
-      icon: Twitter,
-      color: "bg-blue-500",
+      icon: getPlatformIcon("twitter"),
+      color: getPlatformColor("twitter"),
     },
     {
       id: "instagram",
       name: text.platforms.instagram,
-      icon: Instagram,
-      color: "bg-pink-500",
+      icon: getPlatformIcon("instagram"),
+      color: getPlatformColor("instagram"),
     },
     {
       id: "linkedin",
       name: text.platforms.linkedin,
-      icon: Linkedin,
-      color: "bg-blue-600",
+      icon: getPlatformIcon("linkedin"),
+      color: getPlatformColor("linkedin"),
     },
     {
       id: "tiktok",
       name: text.platforms.tiktok,
-      icon: Music2,
-      color: "bg-gray-800",
+      icon: getPlatformIcon("tiktok"),
+      color: getPlatformColor("tiktok"),
     },
   ];
 
-  const togglePlatform = (platformId: string) => {
-    setSelectedPlatforms((prev) =>
-      prev.includes(platformId)
-        ? prev.filter((id) => id !== platformId)
-        : [...prev, platformId],
-    );
+  const getPlatformIconToDisplay = (platform: string) => {
+    return <>{getPlatformIcon(platform)}</>;
   };
 
   const scheduledPosts = useMemo(() => {
@@ -126,18 +115,6 @@ export default function CalendarPage({
       const postDate = new Date(post.scheduledAt);
       return isSameDay(postDate, date);
     });
-  };
-
-  const getPlatformIcon = (platformId: string) => {
-    const platform = platforms.find((p) => p.id === platformId);
-    if (!platform) return null;
-    const Icon = platform.icon;
-    return <Icon className="size-3 text-white" />;
-  };
-
-  const getPlatformColor = (platformId: string) => {
-    const platform = platforms.find((p) => p.id === platformId);
-    return platform?.color || "bg-muted";
   };
 
   const handleEdit = (postId: number) => {
@@ -205,8 +182,11 @@ export default function CalendarPage({
   };
 
   const weekDays = useMemo(() => {
-    return Array.from({ length: 7 }, (_, i) => addDays(currentWeekStart, i));
-  }, [currentWeekStart]);
+    const days = Array.from({ length: 7 }, (_, i) =>
+      addDays(currentWeekStart, i),
+    );
+    return isRTL ? days.reverse() : days;
+  }, [currentWeekStart, isRTL, currentWeekStart]);
 
   const handleReschedule = async (postId: number, newDate: string) => {
     try {
@@ -274,52 +254,6 @@ export default function CalendarPage({
         </div>
         <div className="flex items-center gap-3">
           <SidebarTrigger className="lg:hidden" />
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className="border-border bg-card text-foreground"
-              >
-                <Filter className="mr-2 size-4" />
-                {text.filterButton}
-                {selectedPlatforms.length < platforms.length && (
-                  <Badge
-                    variant="secondary"
-                    className="ml-2 bg-primary/20 text-primary"
-                  >
-                    {selectedPlatforms.length}
-                  </Badge>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-64 border-border bg-background">
-              <div className="space-y-4">
-                <h4 className="font-semibold text-sm text-foreground">
-                  Filter by Platform
-                </h4>
-                {platforms.map((platform) => (
-                  <div key={platform.id} className="flex items-center gap-2">
-                    <Checkbox
-                      id={platform.id}
-                      checked={selectedPlatforms.includes(platform.id)}
-                      onCheckedChange={() => togglePlatform(platform.id)}
-                    />
-                    <Label
-                      htmlFor={platform.id}
-                      className="flex items-center gap-2 text-sm text-foreground cursor-pointer"
-                    >
-                      <div
-                        className={`flex size-5 items-center justify-center rounded ${platform.color}`}
-                      >
-                        <platform.icon className="size-3 text-white" />
-                      </div>
-                      {platform.name}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-            </PopoverContent>
-          </Popover>
           <Button
             className="bg-primary text-primary-foreground hover:bg-primary/90"
             asChild
@@ -337,8 +271,9 @@ export default function CalendarPage({
         value={view}
         onValueChange={(v) => setView(v as "month" | "week" | "list")}
         className="mb-6"
+        dir={locale === "ar" ? "rtl" : "ltr"}
       >
-        <TabsList className="bg-card">
+        <TabsList className="bg-card" dir={locale === "ar" ? "rtl" : "ltr"}>
           <TabsTrigger value="month">{text.views.month}</TabsTrigger>
           <TabsTrigger value="week">{text.views.week}</TabsTrigger>
           <TabsTrigger value="list">{text.views.list}</TabsTrigger>
@@ -389,7 +324,7 @@ export default function CalendarPage({
                                 key={idx}
                                 className={`flex size-8 items-center justify-center rounded-lg ${getPlatformColor(target.provider)}`}
                               >
-                                {getPlatformIcon(target.provider)}
+                                {getPlatformIconToDisplay(target.provider)}
                               </div>
                             ))}
                           </div>
@@ -442,7 +377,7 @@ export default function CalendarPage({
                   <EmptyState
                     icon={Clock}
                     title={text.selectedDate.noPosts}
-                    description="Schedule a post for this date to see it here"
+                    description={text.selectedDate.noPostsDescription}
                     actionLabel={text.selectedDate.schedulePost}
                     actionHref="/dashboard/create"
                   />
@@ -453,28 +388,39 @@ export default function CalendarPage({
         </TabsContent>
 
         {/* Week View */}
-        <TabsContent value="week" className="mt-6">
+        <TabsContent
+          value="week"
+          className="mt-6"
+          dir={locale === "ar" ? "rtl" : "ltr"}
+        >
           <Card className="border-border bg-card">
             <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-foreground">
-                  {format(currentWeekStart, "MMMM yyyy")}
-                </CardTitle>
-                <div className="flex items-center gap-2">
+              <div
+                className={`flex items-center justify-between ${
+                  isRTL ? "flex-row-reverse" : ""
+                }`}
+              >
+                <CardTitle className="text-foreground"></CardTitle>
+                <div
+                  className={`flex items-center gap-2 ${
+                    isRTL ? "flex-row-reverse" : ""
+                  }`}
+                >
                   <Button variant="outline" size="sm" onClick={handleToday}>
-                    Today
+                    {isRTL ? "اليوم" : "Today"}
                   </Button>
                   <Button
                     variant="outline"
                     size="icon"
-                    onClick={handlePreviousWeek}
+                    // in RTL, left arrow still means "backward", but backward is "nextWeek" visually
+                    onClick={isRTL ? handleNextWeek : handlePreviousWeek}
                   >
                     <ChevronLeft className="size-4" />
                   </Button>
                   <Button
                     variant="outline"
                     size="icon"
-                    onClick={handleNextWeek}
+                    onClick={isRTL ? handlePreviousWeek : handleNextWeek}
                   >
                     <ChevronRight className="size-4" />
                   </Button>
@@ -483,94 +429,101 @@ export default function CalendarPage({
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-7 gap-2">
-                {weekDays.map((day, index) => {
-                  const dayPosts = getPostsForDate(day);
-                  const isToday = isSameDay(day, new Date());
+                {(isRTL ? [...weekDays].reverse() : weekDays).map(
+                  (day, index) => {
+                    const dayPosts = getPostsForDate(day);
+                    const isToday = isSameDay(day, new Date());
 
-                  return (
-                    <div
-                      key={index}
-                      className={`min-h-[200px] rounded-lg border border-border p-3 ${
-                        isToday ? "bg-primary/10 border-primary" : "bg-card"
-                      }`}
-                    >
-                      <div className="mb-3 text-center">
-                        <p className="text-xs font-medium text-muted-foreground">
-                          {text.weekDays?.[day.getDay()] || format(day, "EEE")}
-                        </p>
-                        <p
-                          className={`text-lg font-bold ${isToday ? "text-primary" : "text-foreground"}`}
-                        >
-                          {format(day, "d")}
-                        </p>
-                      </div>
-                      <div className="space-y-2">
-                        {dayPosts.length > 0 ? (
-                          dayPosts.map((post) => (
-                            <div
-                              key={post.id}
-                              className="group relative rounded-md border border-border bg-background p-2 transition-all hover:shadow-md"
-                            >
-                              <div className="mb-1 flex items-center gap-1">
-                                {post.targets.slice(0, 2).map((target, idx) => (
-                                  <div
-                                    key={idx}
-                                    className={`flex size-5 items-center justify-center rounded ${getPlatformColor(target.provider)}`}
-                                  >
-                                    {getPlatformIcon(target.provider)}
-                                  </div>
-                                ))}
-                                {post.targets.length > 2 && (
-                                  <span className="text-xs text-muted-foreground">
-                                    +{post.targets.length - 2}
-                                  </span>
-                                )}
-                              </div>
-                              <p className="mb-1 text-xs font-medium text-foreground">
-                                {format(new Date(post.scheduledAt), "h:mm a")}
-                              </p>
-                              <p className="text-xs text-muted-foreground line-clamp-2">
-                                {post.contentAr}
-                              </p>
-
-                              {/* Action buttons on hover */}
-                              <div className="absolute inset-0 flex items-center justify-center gap-1 rounded-md bg-background/95 opacity-0 transition-opacity group-hover:opacity-100">
-                                <Button
-                                  size="icon"
-                                  variant="ghost"
-                                  className="size-7"
-                                  onClick={() => handleEdit(post.id)}
-                                >
-                                  <Edit className="size-3" />
-                                </Button>
-                                <Button
-                                  size="icon"
-                                  variant="ghost"
-                                  className="size-7"
-                                  onClick={() => handleDuplicate(post.id)}
-                                >
-                                  <Copy className="size-3" />
-                                </Button>
-                                <Button
-                                  size="icon"
-                                  variant="ghost"
-                                  className="size-7 text-destructive"
-                                  onClick={() => handleDelete(post.id)}
-                                >
-                                  <Trash2 className="size-3" />
-                                </Button>
-                              </div>
-                            </div>
-                          ))
-                        ) : (
-                          <p className="text-center text-xs text-muted-foreground">
-                            No posts
+                    return (
+                      <div
+                        key={index}
+                        className={`min-h-[200px] rounded-lg border border-border p-3 ${
+                          isToday ? "bg-primary/10 border-primary" : "bg-card"
+                        }`}
+                      >
+                        <div className="mb-3 text-center">
+                          <p className="text-xs font-medium text-muted-foreground">
+                            {text.weekDays?.[day.getDay()] ||
+                              format(day, "EEE")}
                           </p>
-                        )}
+                          <p
+                            className={`text-lg font-bold ${isToday ? "text-primary" : "text-foreground"}`}
+                          >
+                            {format(day, "d")}
+                          </p>
+                        </div>
+                        <div className="space-y-2">
+                          {dayPosts.length > 0 ? (
+                            dayPosts.map((post) => (
+                              <div
+                                key={post.id}
+                                className="group relative rounded-md border border-border bg-background p-2 transition-all hover:shadow-md"
+                              >
+                                <div className="mb-1 flex items-center gap-1">
+                                  {post.targets
+                                    .slice(0, 2)
+                                    .map((target, idx) => (
+                                      <div
+                                        key={idx}
+                                        className={`flex size-5 items-center justify-center rounded ${getPlatformColor(target.provider)}`}
+                                      >
+                                        {getPlatformIconToDisplay(
+                                          target.provider,
+                                        )}
+                                      </div>
+                                    ))}
+                                  {post.targets.length > 2 && (
+                                    <span className="text-xs text-muted-foreground">
+                                      +{post.targets.length - 2}
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="mb-1 text-xs font-medium text-foreground">
+                                  {format(new Date(post.scheduledAt), "h:mm a")}
+                                </p>
+                                <p className="text-xs text-muted-foreground line-clamp-2">
+                                  {post.contentAr}
+                                </p>
+
+                                {/* Action buttons on hover */}
+                                <div className="absolute inset-0 flex items-center justify-center gap-1 rounded-md bg-background/95 opacity-0 transition-opacity group-hover:opacity-100">
+                                  <Button
+                                    size="icon"
+                                    variant="ghost"
+                                    className="size-7"
+                                    onClick={() => handleEdit(post.id)}
+                                  >
+                                    <Edit className="size-3" />
+                                  </Button>
+                                  <Button
+                                    size="icon"
+                                    variant="ghost"
+                                    className="size-7"
+                                    onClick={() => handleDuplicate(post.id)}
+                                  >
+                                    <Copy className="size-3" />
+                                  </Button>
+                                  <Button
+                                    size="icon"
+                                    variant="ghost"
+                                    className="size-7 text-destructive"
+                                    onClick={() => handleDelete(post.id)}
+                                  >
+                                    <Trash2 className="size-3" />
+                                  </Button>
+                                </div>
+                              </div>
+                            ))
+                          ) : (
+                            <p className="text-center text-xs text-muted-foreground">
+                              {text.selectedDate.noPosts}
+                            </p>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  },
+                )}
               </div>
             </CardContent>
           </Card>
@@ -588,9 +541,8 @@ export default function CalendarPage({
               {scheduledPosts.length === 0 ? (
                 <EmptyState
                   icon={CalendarIcon}
-                  title="No posts found"
-                  description="Try adjusting your filters or create a new post"
-                  actionLabel="Create Post"
+                  title={text.selectedDate.noPosts}
+                  description={text.selectedDate.noPostsDescription}
                   actionHref="/dashboard/create"
                 />
               ) : (
@@ -613,7 +565,7 @@ export default function CalendarPage({
                                 key={idx}
                                 className={`flex size-10 items-center justify-center rounded-lg ${getPlatformColor(target.provider)}`}
                               >
-                                {getPlatformIcon(target.provider)}
+                                {getPlatformIconToDisplay(target.provider)}
                               </div>
                             ))}
                           </div>
