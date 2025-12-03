@@ -46,6 +46,7 @@ import {
   deleteCampaignAction,
 } from "../actions";
 import { cn } from "@/lib/utils";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function CampaignsManagement({
   text,
@@ -70,7 +71,7 @@ export default function CampaignsManagement({
   const [searchQuery, setSearchQuery] = useState("");
 
   const campaignsRef = useRef<HTMLDivElement>(null);
-
+  const toastMsg = (en: string, ar: string) => (locale === "ar" ? ar : en);
   useEffect(() => {
     const timer = setTimeout(() => {
       setAnimateItems(true);
@@ -129,10 +130,13 @@ export default function CampaignsManagement({
     resetForm();
     setDialogOpen(true);
 
-    toast.info("Opening campaign creator...", {
-      icon: <Plus className="h-4 w-4" />,
-      duration: 1500,
-    });
+    toast.info(
+      toastMsg("Opening campaign creator...", "جارٍ فتح منشئ الحملة..."),
+      {
+        icon: <Plus className="h-4 w-4" />,
+        duration: 1500,
+      },
+    );
   };
 
   const handleEdit = (campaign: ICampaign) => {
@@ -146,10 +150,16 @@ export default function CampaignsManagement({
     });
     setDialogOpen(true);
 
-    toast.info(`Editing ${campaign.name}...`, {
-      icon: <Pencil className="h-4 w-4" />,
-      duration: 1500,
-    });
+    toast.info(
+      toastMsg(
+        `Editing ${campaign.name}...`,
+        `جارٍ تعديل الحملة ${campaign.name}...`,
+      ),
+      {
+        icon: <Pencil className="h-4 w-4" />,
+        duration: 1500,
+      },
+    );
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -165,7 +175,9 @@ export default function CampaignsManagement({
 
     startTransition(async () => {
       toast.loading(
-        editingCampaign ? "Updating campaign..." : "Creating campaign...",
+        editingCampaign
+          ? toastMsg("Updating campaign...", "جارٍ تحديث الحملة...")
+          : toastMsg("Creating campaign...", "جارٍ إنشاء الحملة..."),
         {
           id: "campaign-action",
         },
@@ -221,9 +233,12 @@ export default function CampaignsManagement({
 
     setDeleteProgress(0);
 
-    toast.loading(`Deleting ${name}...`, {
-      id: "delete-campaign",
-    });
+    toast.loading(
+      toastMsg(`Deleting ${name}...`, `جارٍ حذف الحملة ${name}...`),
+      {
+        id: "delete-campaign",
+      },
+    );
 
     const progressInterval = setInterval(() => {
       setDeleteProgress((prev) => {
@@ -560,7 +575,7 @@ export default function CampaignsManagement({
           <form onSubmit={handleSubmit}>
             <div className="space-y-4 py-4">
               <div>
-                <Label>{text.campaignName}</Label>
+                <Label>{text.name}</Label>
                 <Input
                   value={formData.name}
                   onChange={(e) =>
@@ -570,7 +585,6 @@ export default function CampaignsManagement({
                   className="transition-all duration-150 focus:ring-2 focus:ring-primary/20"
                 />
               </div>
-
               <div>
                 <Label>{text.description}</Label>
                 <Textarea
@@ -585,7 +599,6 @@ export default function CampaignsManagement({
                   className="transition-all duration-150 focus:ring-2 focus:ring-primary/20"
                 />
               </div>
-
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label>{text.startDate}</Label>
@@ -617,46 +630,65 @@ export default function CampaignsManagement({
                   />
                 </div>
               </div>
-
-              <div className="flex items-center justify-between">
-                <Label>{text.active}</Label>
-                <Switch
-                  checked={formData.status === "active"}
-                  onCheckedChange={(checked) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      status: checked ? "active" : "draft",
-                    }))
-                  }
-                />
+              <div
+                className={cn(
+                  "flex items-center justify-between gap-3",
+                  locale === "ar" && "flex-row-reverse",
+                )}
+              >
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id="campaign-status"
+                    checked={formData.status === "active"}
+                    onCheckedChange={(checked) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        status: checked ? "active" : "draft",
+                      }))
+                    }
+                  />
+                  <Label htmlFor="campaign-status" className="cursor-pointer">
+                    {formData.status === "active"
+                      ? (text.activeLabel ??
+                        (locale === "ar" ? "نشط" : "Active"))
+                      : (text.draftLabel ??
+                        (locale === "ar" ? "مسودة" : "Draft"))}
+                  </Label>
+                </div>
               </div>
             </div>
-
             <DialogFooter className="mt-6">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setDialogOpen(false)}
-                className="transition-all duration-150 hover:scale-105"
-              >
-                {text.cancel}
-              </Button>
-              <Button
-                type="submit"
-                disabled={isPending}
-                className="transition-all duration-150 hover:scale-105"
-              >
-                {isPending ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                    {text.saving}
-                  </>
-                ) : editingCampaign ? (
-                  text.save
-                ) : (
-                  text.create
+              <div
+                className={cn(
+                  "flex w-full justify-end gap-2",
+                  locale === "ar" && "flex-row-reverse",
                 )}
-              </Button>
+              >
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setDialogOpen(false)}
+                  className="transition-all duration-150 hover:scale-105"
+                >
+                  {text.cancel}
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isPending}
+                  className="transition-all duration-150 hover:scale-105"
+                >
+                  {isPending ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                      {text.saving}
+                    </>
+                  ) : editingCampaign ? (
+                    text.save
+                  ) : (
+                    text.create
+                  )}
+                </Button>
+              </div>
             </DialogFooter>
           </form>
         </DialogContent>
