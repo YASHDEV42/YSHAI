@@ -132,8 +132,8 @@
       },
       "pro": {
         "title": "Pro",
-        "price": "$29",
-        "yearlyPrice": "$23",
+        "price": "$10",
+        "yearlyPrice": "$8",
         "period": "/month",
         "badge": "Most Popular",
         "features": [
@@ -148,8 +148,8 @@
       },
       "business": {
         "title": "Business",
-        "price": "$99",
-        "yearlyPrice": "$79",
+        "price": "$25",
+        "yearlyPrice": "$20",
         "period": "/month",
         "features": [
           "Unlimited accounts",
@@ -205,7 +205,7 @@
     "missionTitle": "Our Mission",
     "missionDescription": "To democratize social media management by providing powerful, AI-driven tools that make content creation and distribution accessible to everyone, regardless of team size or budget.",
     "storyTitle": "Our Story",
-    "storyDescription": "Founded in 2024, YSHAI emerged from a simple observation: social media management was becoming increasingly complex and time-consuming. What started as a tool to help small businesses manage their social presence has evolved into a comprehensive platform trusted by thousands of users worldwide.",
+    "storyDescription": "YSHAI emerged from a simple observation: social media management was becoming increasingly complex and time-consuming. What started as a tool to help small businesses manage their social presence has evolved into a comprehensive platform trusted by thousands of users worldwide.",
     "valuesTitle": "Our Values",
     "values": {
       "innovation": {

@@ -73,7 +73,7 @@ export function SupportContent({
 
   return (
     <div
-      className="min-h-screen bg-background"
+      className="min-h-screen bg-background mt-10"
       dir={locale === "ar" ? "rtl" : "ltr"}
     >
       {/* Header */}

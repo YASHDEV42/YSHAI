@@ -16,6 +16,7 @@ import Image from "next/image";
 import { extractFeatureDetailText } from "@/app/i18n/extractTexts";
 import LenisProvider from "@/components/LenisProvider";
 import { routing } from "@/app/i18n/routing";
+import ScrollToTopOnMount from "../../components/ScrollToTopOnMount";
 
 const featureDetails = {
   ai: {
@@ -70,7 +71,7 @@ export default async function FeatureDetailPage({
 
   return (
     <LenisProvider>
-      {" "}
+      <ScrollToTopOnMount />
       <div className="min-h-screen bg-background">
         {/* Hero Section */}
         <section className="container mx-auto px-4 py-16 md:py-24">
@@ -168,21 +169,22 @@ export default async function FeatureDetailPage({
           </div>
         </section>
 
-        {/* Additional Feature Image */}
-        <section className="container mx-auto px-4 py-16 bg-muted/30">
-          <div className="max-w-5xl mx-auto">
-            <Card className="overflow-hidden border-2">
-              <Image
-                src="/bitmap.svg"
-                alt={`${text.title} detailed view`}
-                width={1200}
-                height={500}
-                className="w-full"
-              />
-            </Card>
-          </div>
-        </section>
+        {/* Additional Feature Image  */}
 
+        {/* <section className="container mx-auto px-4 py-16 bg-muted/30"> */}
+        {/*   <div className="max-w-5xl mx-auto"> */}
+        {/*     <Card className="overflow-hidden border-2"> */}
+        {/*       <Image */}
+        {/*         src="/bitmap.svg" */}
+        {/*         alt={`${text.title} detailed view`} */}
+        {/*         width={1200} */}
+        {/*         height={500} */}
+        {/*         className="w-full" */}
+        {/*       /> */}
+        {/*     </Card> */}
+        {/*   </div> */}
+        {/* </section> */}
+        {/**/}
         {/* CTA Section */}
         <section className="container mx-auto px-4 py-20">
           <Card className="bg-gradient-to-br from-primary/10 to-accent/10 border-primary/20">

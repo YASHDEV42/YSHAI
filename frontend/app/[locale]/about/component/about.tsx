@@ -159,7 +159,7 @@ export default function AboutContent({
           </motion.div>
 
           <motion.h1
-            className="text-4xl md:text-6xl font-bold mb-6 text-balance bg-gradient-to-r from-foreground to-primary/70 bg-clip-text text-transparent"
+            className="text-4xl md:text-6xl font-bold mb-6 text-balance "
             variants={itemVariants}
           >
             {text.heading}
@@ -233,121 +233,6 @@ export default function AboutContent({
       </motion.section>
 
       <motion.section
-        ref={statsRef}
-        className="container mx-auto px-4 py-16 bg-muted/30 relative"
-        style={{ y: statsY }}
-        initial="hidden"
-        animate={statsInView ? "visible" : "hidden"}
-        variants={containerVariants}
-      >
-        <div className="max-w-6xl mx-auto">
-          <motion.h2
-            className="text-3xl md:text-4xl font-bold mb-12 text-center"
-            variants={itemVariants}
-          >
-            {text.statsTitle}
-          </motion.h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <motion.div
-              variants={cardVariants}
-              whileHover={{
-                y: -5,
-                boxShadow: "0 10px 30px -10px rgba(0, 0, 0, 0.2)",
-              }}
-              transition={{ type: "spring", stiffness: 300 }}
-            >
-              <Card className="p-8 text-center border-0 shadow-md bg-gradient-to-br from-background to-muted/20 h-full">
-                <div className="mb-4 flex justify-center">
-                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                    <Users className="w-6 h-6 text-primary" />
-                  </div>
-                </div>
-                <div className="text-4xl md:text-5xl font-bold text-primary mb-2">
-                  {counters.users.toLocaleString()}
-                  {text.stats.users.value.includes("+") && "+"}
-                </div>
-                <div className="text-muted-foreground">
-                  {text.stats.users.label}
-                </div>
-              </Card>
-            </motion.div>
-
-            <motion.div
-              variants={cardVariants}
-              whileHover={{
-                y: -5,
-                boxShadow: "0 10px 30px -10px rgba(0, 0, 0, 0.2)",
-              }}
-              transition={{ type: "spring", stiffness: 300 }}
-            >
-              <Card className="p-8 text-center border-0 shadow-md bg-gradient-to-br from-background to-muted/20 h-full">
-                <div className="mb-4 flex justify-center">
-                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                    <Zap className="w-6 h-6 text-primary" />
-                  </div>
-                </div>
-                <div className="text-4xl md:text-5xl font-bold text-primary mb-2">
-                  {counters.posts.toLocaleString()}
-                  {text.stats.posts.value.includes("+") && "+"}
-                </div>
-                <div className="text-muted-foreground">
-                  {text.stats.posts.label}
-                </div>
-              </Card>
-            </motion.div>
-
-            <motion.div
-              variants={cardVariants}
-              whileHover={{
-                y: -5,
-                boxShadow: "0 10px 30px -10px rgba(0, 0, 0, 0.2)",
-              }}
-              transition={{ type: "spring", stiffness: 300 }}
-            >
-              <Card className="p-8 text-center border-0 shadow-md bg-gradient-to-br from-background to-muted/20 h-full">
-                <div className="mb-4 flex justify-center">
-                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                    <Globe className="w-6 h-6 text-primary" />
-                  </div>
-                </div>
-                <div className="text-4xl md:text-5xl font-bold text-primary mb-2">
-                  {counters.countries.toLocaleString()}
-                  {text.stats.countries.value.includes("+") && "+"}
-                </div>
-                <div className="text-muted-foreground">
-                  {text.stats.countries.label}
-                </div>
-              </Card>
-            </motion.div>
-
-            <motion.div
-              variants={cardVariants}
-              whileHover={{
-                y: -5,
-                boxShadow: "0 10px 30px -10px rgba(0, 0, 0, 0.2)",
-              }}
-              transition={{ type: "spring", stiffness: 300 }}
-            >
-              <Card className="p-8 text-center border-0 shadow-md bg-gradient-to-br from-background to-muted/20 h-full">
-                <div className="mb-4 flex justify-center">
-                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                    <Award className="w-6 h-6 text-primary" />
-                  </div>
-                </div>
-                <div className="text-4xl md:text-5xl font-bold text-primary mb-2">
-                  {counters.satisfaction}%
-                  {text.stats.satisfaction.value.includes("+") && "+"}
-                </div>
-                <div className="text-muted-foreground">
-                  {text.stats.satisfaction.label}
-                </div>
-              </Card>
-            </motion.div>
-          </div>
-        </div>
-      </motion.section>
-
-      <motion.section
         ref={valuesRef}
         className="container mx-auto px-4 py-16"
         initial="hidden"
@@ -361,12 +246,6 @@ export default function AboutContent({
           >
             {text.valuesTitle}
           </motion.h2>
-          <motion.p
-            className="text-lg text-muted-foreground text-center mb-12"
-            variants={itemVariants}
-          >
-            {text.teamDescription}
-          </motion.p>
 
           <div className="grid md:grid-cols-2 gap-8">
             <motion.div
