@@ -143,3 +143,18 @@ export async function extractAboutPageText(locale: string) {
   const messages = await getMessages({ locale });
   return messages.AboutPage as Record<string, any>;
 }
+
+export async function extractSecurityPageText(locale: string) {
+  const messages = await getMessages({ locale });
+  return messages.SecurityPage as Record<string, any>;
+}
+
+export async function extractCareersPageText(locale: string) {
+  const messages = await getMessages({ locale });
+  return messages.CareersPage as Record<string, any>;
+}
+
+export async function extractBlogPageText(locale: string) {
+  const messages = await getMessages({ locale });
+  return messages.BlogPage as Record<string, any>;
+}

@@ -1,0 +1,143 @@
+"use client";
+
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
+import {
+  Shield,
+  Lock,
+  Key,
+  Server,
+  Eye,
+  AlertTriangle,
+  FileCheck,
+  Users,
+  Activity,
+} from "lucide-react";
+
+interface SecurityContentProps {
+  text: any;
+  locale: string;
+}
+
+export default function SecurityContent({
+  text,
+  locale,
+}: SecurityContentProps) {
+  const sections = [
+    {
+      icon: Shield,
+      title: text.sections.dataProtection.title,
+      content: text.sections.dataProtection.content,
+    },
+    {
+      icon: Lock,
+      title: text.sections.encryption.title,
+      content: text.sections.encryption.content,
+    },
+    {
+      icon: Key,
+      title: text.sections.authentication.title,
+      content: text.sections.authentication.content,
+    },
+    {
+      icon: Server,
+      title: text.sections.infrastructure.title,
+      content: text.sections.infrastructure.content,
+    },
+    {
+      icon: Eye,
+      title: text.sections.accessControl.title,
+      content: text.sections.accessControl.content,
+    },
+    {
+      icon: Activity,
+      title: text.sections.monitoring.title,
+      content: text.sections.monitoring.content,
+    },
+    {
+      icon: AlertTriangle,
+      title: text.sections.incidentResponse.title,
+      content: text.sections.incidentResponse.content,
+    },
+    {
+      icon: FileCheck,
+      title: text.sections.compliance.title,
+      content: text.sections.compliance.content,
+    },
+    {
+      icon: Users,
+      title: text.sections.thirdParty.title,
+      content: text.sections.thirdParty.content,
+    },
+  ];
+
+  return (
+    <div className="min-h-screen bg-background mt-10">
+      <div className="container mx-auto px-4 py-16 max-w-4xl">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <Badge variant="secondary" className="mb-4">
+            {text.badge}
+          </Badge>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">{text.title}</h1>
+          <p className="text-muted-foreground text-lg">
+            {text.lastUpdated}: {text.date}
+          </p>
+        </div>
+
+        {/* Intro */}
+        <Card className="p-8 mb-8 bg-muted/50">
+          <p className="text-lg leading-relaxed">{text.introduction}</p>
+        </Card>
+
+        {/* Sections */}
+        <div className="space-y-8">
+          {sections.map((section, index) => (
+            <Card key={index} className="p-8">
+              <div className="flex items-start gap-4 mb-4">
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <section.icon className="w-6 h-6 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <h2 className="text-2xl font-bold mb-4">{section.title}</h2>
+                  <div className="prose prose-neutral dark:prose-invert max-w-none">
+                    {Array.isArray(section.content) ? (
+                      <ul className="space-y-2">
+                        {section.content.map((item: string, i: number) => (
+                          <li key={i} className="text-muted-foreground">
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-muted-foreground leading-relaxed">
+                        {section.content}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+
+        {/* Contact */}
+        <Card className="p-8 mt-8 bg-primary/5 border-primary/20">
+          <h2 className="text-2xl font-bold mb-4">{text.contact.title}</h2>
+          <p className="text-muted-foreground mb-4">
+            {text.contact.description}
+          </p>
+          <p className="font-medium mb-2">
+            {text.contact.email}:{" "}
+            <a
+              href="mailto:security@yshai.cloud"
+              className="text-primary hover:underline"
+            >
+              security@yshai.cloud
+            </a>
+          </p>
+        </Card>
+      </div>
+    </div>
+  );
+}

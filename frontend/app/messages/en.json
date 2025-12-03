@@ -748,6 +748,176 @@
       "address": "YSHAI, [Insert Your Legal Entity Name and Registered Address Here]"
     }
   },
+  "SecurityPage": {
+    "badge": "Security",
+    "title": "Security & Data Protection",
+    "lastUpdated": "Last Updated",
+    "date": "January 2025",
+    "introduction": "At YSHAI, security is our top priority. We implement industry-leading security measures to protect your data and ensure the integrity of our platform. This page outlines our comprehensive security practices and commitments.",
+    "sections": {
+      "dataProtection": {
+        "title": "Data Protection",
+        "content": [
+          "All data is encrypted at rest using AES-256 encryption standards.",
+          "Regular security audits and vulnerability assessments are conducted by third-party security experts.",
+          "We maintain strict data access controls with role-based permissions.",
+          "Data backups are performed daily and stored in geographically distributed locations.",
+          "We comply with GDPR, CCPA, and other international data protection regulations."
+        ]
+      },
+      "encryption": {
+        "title": "Encryption Standards",
+        "content": [
+          "All data in transit is protected using TLS 1.3 encryption.",
+          "Database encryption uses industry-standard AES-256 encryption.",
+          "API keys and sensitive credentials are encrypted and securely stored.",
+          "End-to-end encryption for sensitive user communications.",
+          "Regular updates to encryption protocols to maintain highest security standards."
+        ]
+      },
+      "authentication": {
+        "title": "Authentication & Access",
+        "content": [
+          "Multi-factor authentication (MFA) available for all user accounts.",
+          "OAuth 2.0 integration for secure third-party service connections.",
+          "Password requirements enforce strong, secure credentials.",
+          "Session management with automatic timeout for inactive accounts.",
+          "IP whitelisting and access restrictions available for enterprise accounts."
+        ]
+      },
+      "infrastructure": {
+        "title": "Infrastructure Security",
+        "content": [
+          "Hosted on enterprise-grade cloud infrastructure with 99.9% uptime SLA.",
+          "DDoS protection and traffic filtering to prevent attacks.",
+          "Regular security patches and system updates applied automatically.",
+          "Network segmentation and firewall protection.",
+          "Isolated environments for production, staging, and development."
+        ]
+      },
+      "accessControl": {
+        "title": "Access Control",
+        "content": [
+          "Role-based access control (RBAC) for team members and administrators.",
+          "Principle of least privilege enforced across all system access.",
+          "Regular access reviews and permission audits.",
+          "Detailed activity logs for all user and system actions.",
+          "Secure API authentication with rate limiting and monitoring."
+        ]
+      },
+      "monitoring": {
+        "title": "Security Monitoring",
+        "content": [
+          "24/7 security monitoring and threat detection systems.",
+          "Real-time alerts for suspicious activities and potential threats.",
+          "Automated vulnerability scanning and penetration testing.",
+          "Security information and event management (SIEM) systems.",
+          "Regular security training for all team members."
+        ]
+      },
+      "incidentResponse": {
+        "title": "Incident Response",
+        "content": [
+          "Dedicated security incident response team available 24/7.",
+          "Clear incident response procedures and escalation protocols.",
+          "Transparent communication with affected users in case of security incidents.",
+          "Post-incident analysis and continuous security improvements.",
+          "Regular disaster recovery drills and business continuity planning."
+        ]
+      },
+      "compliance": {
+        "title": "Compliance & Certifications",
+        "content": [
+          "GDPR compliant with data protection impact assessments.",
+          "SOC 2 Type II certification (in progress).",
+          "Regular compliance audits by independent third parties.",
+          "Privacy by design principles integrated into product development.",
+          "Transparent data processing agreements with all third-party vendors."
+        ]
+      },
+      "thirdParty": {
+        "title": "Third-Party Security",
+        "content": [
+          "All third-party vendors undergo rigorous security assessments.",
+          "Data processing agreements with all service providers.",
+          "Regular vendor security reviews and compliance checks.",
+          "Minimal data sharing with third parties, only when necessary.",
+          "OAuth tokens stored securely and never shared with unauthorized parties."
+        ]
+      }
+    },
+    "contact": {
+      "title": "Report a Security Issue",
+      "description": "If you discover a security vulnerability or have security concerns, please contact our security team immediately:",
+      "email": "security@yshai.cloud"
+    }
+  },
+  "CareersPage": {
+    "badge": "Careers",
+    "title": "Join Our Team",
+    "description": "Help us build the future of social media management. We're looking for talented, passionate individuals to join our growing team.",
+    "culture": {
+      "title": "Our Culture",
+      "description": "At YSHAI, we believe in fostering a collaborative, innovative, and inclusive work environment. We're committed to helping our team members grow professionally while maintaining a healthy work-life balance. We celebrate diversity, encourage creativity, and value every team member's contribution to our shared success."
+    },
+    "benefitsTitle": "Why Work With Us",
+    "benefits": {
+      "health": {
+        "title": "Health & Wellness",
+        "description": "Comprehensive health insurance, mental health support, and wellness programs to keep you healthy and happy."
+      },
+      "remote": {
+        "title": "Remote-First",
+        "description": "Work from anywhere in the world. We're a fully remote team with flexible working hours to suit your lifestyle."
+      },
+      "learning": {
+        "title": "Learning & Development",
+        "description": "Annual learning budget, conference attendance, and continuous professional development opportunities."
+      },
+      "growth": {
+        "title": "Career Growth",
+        "description": "Clear career progression paths, mentorship programs, and opportunities to work on challenging projects."
+      }
+    },
+    "positionsTitle": "Open Positions",
+    "positions": [],
+    "applyButton": "Apply Now",
+    "noPositions": {
+      "title": "No Open Positions",
+      "description": "We don't have any open positions at the moment, but we're always looking for talented people. Submit your resume and we'll keep you in mind for future opportunities.",
+      "button": "Submit Your Resume"
+    },
+    "contact": {
+      "title": "Questions?",
+      "description": "If you have any questions about careers at YSHAI, feel free to reach out to our HR team:",
+      "emailLabel": "Email"
+    }
+  },
+  "BlogPage": {
+    "badge": "Blog",
+    "title": "Latest Updates & Insights",
+    "description": "Stay up to date with the latest news, tips, and insights from the YSHAI team and the world of social media marketing.",
+    "searchPlaceholder": "Search articles...",
+    "categories": [
+      "All",
+      "Product Updates",
+      "Social Media Tips",
+      "Case Studies",
+      "Company News"
+    ],
+    "posts": [],
+    "readMore": "Read More",
+    "noPosts": {
+      "title": "Coming Soon",
+      "description": "We're working on bringing you exciting content. Check back soon for our latest articles and insights."
+    },
+    "newsletter": {
+      "title": "Subscribe to Our Newsletter",
+      "description": "Get the latest articles and updates delivered directly to your inbox.",
+      "placeholder": "Enter your email",
+      "button": "Subscribe"
+    }
+  },
   "Support": {
     "metaTitle": "Support & FAQ - YSHAI",
     "metaDescription": "Find answers to frequently asked questions about YSHAI social media management platform",
@@ -1245,6 +1415,15 @@
       "draft": "Draft",
       "failed": "Failed"
     },
+    "allScheduledPosts": "All Scheduled Posts",
+    "weekDays": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+    "postActions": {
+      "edit": "Edit",
+      "duplicate": "Duplicate",
+      "delete": "Delete"
+    },
+    "allScheduledPosts": "All Scheduled Posts",
+    "weekDays": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
     "contentLibrary": "Content Library",
     "postsOf": "of",
     "view": "View",

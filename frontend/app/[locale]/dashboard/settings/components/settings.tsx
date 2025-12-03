@@ -1,10 +1,9 @@
 "use client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { User, Bell, CreditCard, CircleFadingPlus } from "lucide-react";
+import { User, Bell, CreditCard } from "lucide-react";
 import { BillingTab } from "./billing-tab";
 import { NotificationsTab } from "./notifications-tab";
-import { PlatformsTab } from "./platforms-tab";
 import { ProfileTab } from "./profile-tab";
 import { TConnectedAccount, TUser } from "@/types";
 import type { IPlan, IInvoice, SubscriptionWithPlan } from "@/interfaces";
