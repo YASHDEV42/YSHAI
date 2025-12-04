@@ -32,11 +32,6 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { getAIAdvisorContext } from "../action";
 import { DefaultChatTransport } from "ai";
 
-interface Message {
-  role: "user" | "assistant";
-  content: string;
-}
-
 interface AIAgentTabProps {
   text: any;
   locale?: string;
@@ -53,12 +48,10 @@ export function AIAgentTab({
   const [analyticsContext, setAnalyticsContext] = useState<any>(null);
   const [isLoadingContext, setIsLoadingContext] = useState(true);
   const [inputValue, setInputValue] = useState("");
-  const { messages, sendMessage, status, error, clearError } = useChat({
-    // Use DefaultChatTransport so useChat knows how to POST to /api/chat
-    transport: new DefaultChatTransport({
-      api: "/api/ai/advisor", // default, but explicit is nice
 
-      // IMPORTANT: use a function so it always sees latest analyticsContext
+  const { messages, sendMessage, status, error } = useChat({
+    transport: new DefaultChatTransport({
+      api: "/api/ai/advisor",
       body: () => ({
         accountData: {
           platform: account.provider,
@@ -68,11 +61,15 @@ export function AIAgentTab({
         analyticsData: analyticsContext?.analytics,
         platformData: analyticsContext?.platformData,
         topPosts: analyticsContext?.topPosts,
+        audienceInsights: analyticsContext?.audienceInsights,
+        healthScores: analyticsContext?.healthScores,
+        recommendations: analyticsContext?.recommendations,
+        postingOptimization: analyticsContext?.postingOptimization,
         locale,
       }),
     }),
 
-    messages: [
+    initialMessages: [
       {
         id: "welcome",
         role: "assistant",
@@ -91,16 +88,16 @@ export function AIAgentTab({
       if (isError) {
         console.error("[v0] Chat finished with error");
       }
-      // you can inspect `message` if you want to track AI usage
     },
 
-    onError: (error) => {
-      console.error("[v0] Chat error:", error);
+    onError: (err) => {
+      console.error("[v0] Chat error:", err);
       toast.error(
         text.aiAdvisor?.error || "Failed to get AI response. Please try again.",
       );
     },
   });
+
   const isLoading = status === "streaming" || status === "submitted";
 
   useEffect(() => {
@@ -109,8 +106,8 @@ export function AIAgentTab({
       try {
         const context = await getAIAdvisorContext(account.id);
         setAnalyticsContext(context);
-      } catch (error) {
-        console.error("[v0] Failed to load analytics context:", error);
+      } catch (err) {
+        console.error("[v0] Failed to load analytics context:", err);
       } finally {
         setIsLoadingContext(false);
       }
@@ -150,7 +147,6 @@ export function AIAgentTab({
       setInputValue("");
     }
   };
-
   const renderMessageContent = (message: any) => {
     if (!message.parts) return message.content || "";
     return message.parts
@@ -188,7 +184,7 @@ export function AIAgentTab({
               <CardDescription className="mt-1">
                 {text.aiAdvisor?.description ||
                   text.aiInsights?.description ||
-                  "Get personalized insights"}
+                  "Get personalized insights about your performance and strategy."}
               </CardDescription>
             </div>
             <Zap className="size-5 text-primary animate-pulse" />
@@ -209,7 +205,7 @@ export function AIAgentTab({
         <Alert variant="destructive">
           <AlertCircle className="size-4" />
           <AlertDescription>
-            {error.message.includes("401")
+            {error instanceof Error && error.message.includes("401")
               ? text.aiAdvisor?.authError ||
                 "AI Gateway authentication required. Please add your AI_GATEWAY_API_KEY in the environment variables."
               : text.aiAdvisor?.error ||
@@ -218,7 +214,7 @@ export function AIAgentTab({
           <Button
             variant="outline"
             size="sm"
-            onClick={clearError}
+            onClick={() => reload()}
             className="mt-2 bg-transparent"
           >
             {text.aiAdvisor?.retry || "Retry"}
@@ -242,7 +238,7 @@ export function AIAgentTab({
           </CardTitle>
           <CardDescription>
             {text.aiAdvisor?.conversationDescription ||
-              "Ask me anything about your content strategy"}
+              "Ask anything about your content strategy, posting times, or growth."}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -281,7 +277,7 @@ export function AIAgentTab({
                   {message.role === "user" && (
                     <Avatar className="size-8 shrink-0 shadow-sm">
                       <AvatarFallback className="bg-primary/10 text-primary font-semibold">
-                        {account.username?.[0]?.toUpperCase()}
+                        {(account.username?.[0] || "?").toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                   )}
@@ -324,7 +320,7 @@ export function AIAgentTab({
             </form>
 
             <div className="flex flex-wrap gap-2 pt-2">
-              <span className="text-xs text-muted-foreground flex items-center ">
+              <span className="text-xs text-muted-foreground flex items-center">
                 {text.aiAdvisor?.tryAsking || "Try asking:"}
               </span>
               {quickActions.map((action, index) => (
@@ -367,7 +363,7 @@ export function AIAgentTab({
                 </p>
                 <p className="text-xs text-muted-foreground">
                   {text.aiAdvisor?.performanceInsightsDesc ||
-                    "Get detailed analysis of your content performance"}
+                    "Get detailed analysis of your content performance."}
                 </p>
               </div>
             </div>
@@ -386,7 +382,7 @@ export function AIAgentTab({
                 </p>
                 <p className="text-xs text-muted-foreground">
                   {text.aiAdvisor?.contentSuggestionsDesc ||
-                    "Receive AI-powered content ideas tailored to your audience"}
+                    "Receive AI-powered content ideas tailored to your audience."}
                 </p>
               </div>
             </div>
@@ -405,7 +401,7 @@ export function AIAgentTab({
                 </p>
                 <p className="text-xs text-muted-foreground">
                   {text.aiAdvisor?.audienceAnalysisDesc ||
-                    "Understand your audience demographics and behavior"}
+                    "Understand your audience demographics and behavior."}
                 </p>
               </div>
             </div>
