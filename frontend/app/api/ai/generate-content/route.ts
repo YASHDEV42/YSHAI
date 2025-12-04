@@ -1,7 +1,5 @@
 import { streamText } from "ai";
 
-export const runtime = "edge";
-
 export async function POST(req: Request) {
   try {
     const { prompt, platform, language, tone } = await req.json();
