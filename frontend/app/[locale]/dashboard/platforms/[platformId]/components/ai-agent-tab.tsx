@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import type React from "react";
+
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -9,8 +11,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Sparkles,
@@ -21,12 +21,16 @@ import {
   Users,
   Target,
   Zap,
-  CheckCircle,
+  AlertCircle,
 } from "lucide-react";
 import type { TConnectedAccount } from "@/types";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
+import { useChat } from "@ai-sdk/react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { getAIAdvisorContext } from "../action";
+import { DefaultChatTransport } from "ai";
 
 interface Message {
   role: "user" | "assistant";
@@ -46,17 +50,73 @@ export function AIAgentTab({
   account,
   animateItems = false,
 }: AIAgentTabProps) {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      role: "assistant",
-      content:
-        text.aiAdvisor?.welcomeMessage ||
-        "Hello! How can I help you with your content strategy today?",
+  const [analyticsContext, setAnalyticsContext] = useState<any>(null);
+  const [isLoadingContext, setIsLoadingContext] = useState(true);
+  const [inputValue, setInputValue] = useState("");
+  const { messages, sendMessage, status, error, clearError } = useChat({
+    // Use DefaultChatTransport so useChat knows how to POST to /api/chat
+    transport: new DefaultChatTransport({
+      api: "/api/ai/advisor", // default, but explicit is nice
+
+      // IMPORTANT: use a function so it always sees latest analyticsContext
+      body: () => ({
+        accountData: {
+          platform: account.provider,
+          username: account.username,
+          followersCount: account.followersCount,
+        },
+        analyticsData: analyticsContext?.analytics,
+        platformData: analyticsContext?.platformData,
+        topPosts: analyticsContext?.topPosts,
+        locale,
+      }),
+    }),
+
+    messages: [
+      {
+        id: "welcome",
+        role: "assistant",
+        parts: [
+          {
+            type: "text",
+            text:
+              text.aiAdvisor?.welcomeMessage ||
+              "Hello! How can I help you with your content strategy today?",
+          },
+        ],
+      },
+    ],
+
+    onFinish: ({ message, isError }) => {
+      if (isError) {
+        console.error("[v0] Chat finished with error");
+      }
+      // you can inspect `message` if you want to track AI usage
     },
-  ]);
-  const [input, setInput] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [thinkingProgress, setThinkingProgress] = useState<number | null>(null);
+
+    onError: (error) => {
+      console.error("[v0] Chat error:", error);
+      toast.error(
+        text.aiAdvisor?.error || "Failed to get AI response. Please try again.",
+      );
+    },
+  });
+  const isLoading = status === "streaming" || status === "submitted";
+
+  useEffect(() => {
+    async function loadContext() {
+      setIsLoadingContext(true);
+      try {
+        const context = await getAIAdvisorContext(account.id);
+        setAnalyticsContext(context);
+      } catch (error) {
+        console.error("[v0] Failed to load analytics context:", error);
+      } finally {
+        setIsLoadingContext(false);
+      }
+    }
+    loadContext();
+  }, [account.id]);
 
   const quickActions = [
     {
@@ -76,6 +136,28 @@ export function AIAgentTab({
       label: text.aiAdvisor?.quickAction4 || "Audience insights",
     },
   ];
+
+  const handleQuickAction = async (action: string) => {
+    if (!isLoading && !isLoadingContext) {
+      await sendMessage({ text: action });
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (inputValue.trim() && !isLoading && !isLoadingContext) {
+      await sendMessage({ text: inputValue });
+      setInputValue("");
+    }
+  };
+
+  const renderMessageContent = (message: any) => {
+    if (!message.parts) return message.content || "";
+    return message.parts
+      .filter((part: any) => part.type === "text")
+      .map((part: any) => part.text)
+      .join("");
+  };
 
   return (
     <div className="space-y-6">
@@ -114,6 +196,36 @@ export function AIAgentTab({
         </CardHeader>
       </Card>
 
+      {isLoadingContext && (
+        <Alert>
+          <Loader2 className="size-4 animate-spin" />
+          <AlertDescription>
+            {text.aiAdvisor?.loadingContext || "Loading your analytics data..."}
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {status === "error" && error && (
+        <Alert variant="destructive">
+          <AlertCircle className="size-4" />
+          <AlertDescription>
+            {error.message.includes("401")
+              ? text.aiAdvisor?.authError ||
+                "AI Gateway authentication required. Please add your AI_GATEWAY_API_KEY in the environment variables."
+              : text.aiAdvisor?.error ||
+                "Failed to get AI response. Please try again."}
+          </AlertDescription>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={clearError}
+            className="mt-2 bg-transparent"
+          >
+            {text.aiAdvisor?.retry || "Retry"}
+          </Button>
+        </Alert>
+      )}
+
       {/* Chat Interface */}
       <Card
         className={cn(
@@ -139,7 +251,7 @@ export function AIAgentTab({
             <div className="space-y-4 max-h-[500px] overflow-y-auto p-4 rounded-lg bg-muted/30 border border-border/50">
               {messages.map((message, index) => (
                 <div
-                  key={index}
+                  key={message.id || index}
                   className={cn(
                     "flex gap-3",
                     message.role === "user" ? "justify-end" : "justify-start",
@@ -163,7 +275,7 @@ export function AIAgentTab({
                     )}
                   >
                     <p className="text-sm whitespace-pre-wrap leading-relaxed">
-                      {message.content}
+                      {renderMessageContent(message)}
                     </p>
                   </div>
                   {message.role === "user" && (
@@ -181,47 +293,27 @@ export function AIAgentTab({
                     <Sparkles className="size-4 text-primary-foreground" />
                   </div>
                   <div className="bg-background border border-border rounded-xl p-3 shadow-sm">
-                    {thinkingProgress !== null ? (
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between text-xs">
-                          <span>
-                            {text.aiAdvisor?.thinking || "AI is thinking..."}
-                          </span>
-                          <span>{thinkingProgress}%</span>
-                        </div>
-                        <Progress
-                          value={thinkingProgress}
-                          className="h-1 w-32"
-                          dir={locale === "ar" ? "rtl" : "ltr"}
-                        />
-                      </div>
-                    ) : (
-                      <Loader2 className="size-4 animate-spin text-muted-foreground" />
-                    )}
+                    <Loader2 className="size-4 animate-spin text-muted-foreground" />
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Input Area */}
-            <div className="flex gap-2 items-end">
+            <form onSubmit={handleSubmit} className="flex gap-2 items-end">
               <Input
                 placeholder={
                   text.aiAdvisor?.inputPlaceholder || "Ask me anything..."
                 }
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                  }
-                }}
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                disabled={isLoading || isLoadingContext}
                 className="resize-none min-h-8 shadow-sm transition-all duration-150 focus:ring-2 focus:ring-primary/20"
               />
               <Button
-                disabled={!input.trim() || isLoading}
+                type="submit"
+                disabled={!inputValue.trim() || isLoading || isLoadingContext}
                 size="icon"
-                className="shrink-0  shadow-sm transition-all duration-150 hover:scale-110"
+                className="shrink-0 shadow-sm transition-all duration-150 hover:scale-110"
               >
                 {isLoading ? (
                   <Loader2 className="size-4 animate-spin" />
@@ -229,26 +321,22 @@ export function AIAgentTab({
                   <Send className="size-4" />
                 )}
               </Button>
-            </div>
+            </form>
 
-            {/* Suggested Actions */}
             <div className="flex flex-wrap gap-2 pt-2">
               <span className="text-xs text-muted-foreground flex items-center ">
                 {text.aiAdvisor?.tryAsking || "Try asking:"}
               </span>
-              {[
-                text.aiAdvisor?.quickAction1 || "Best time to post?",
-                text.aiAdvisor?.quickAction2 || "Analyze performance",
-                text.aiAdvisor?.quickAction3 || "Content ideas",
-              ].map((suggestion, index) => (
+              {quickActions.map((action, index) => (
                 <Button
                   key={index}
                   variant="outline"
                   size="sm"
                   className="text-xs h-7 transition-all duration-150 hover:scale-105 bg-transparent"
-                  onClick={() => setInput(suggestion)}
+                  onClick={() => handleQuickAction(action.label)}
+                  disabled={isLoading || isLoadingContext}
                 >
-                  {suggestion}
+                  {action.label}
                 </Button>
               ))}
             </div>

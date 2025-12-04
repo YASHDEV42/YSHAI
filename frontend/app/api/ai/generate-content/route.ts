@@ -16,12 +16,11 @@ export async function POST(req: Request) {
       model: "openai/gpt-4o-mini",
       system: systemPrompt,
       prompt: `Generate social media content based on this request: ${prompt}`,
-      maxTokens: 500,
     });
 
     return result.toUIMessageStreamResponse();
   } catch (error) {
-    console.error("[v0] AI generation error:", error);
+    console.error("AI generation error:", error);
     return new Response("Failed to generate content", { status: 500 });
   }
 }

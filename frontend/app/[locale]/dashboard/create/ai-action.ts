@@ -29,12 +29,11 @@ export async function generateAIContent(
       model: "openai/gpt-4o-mini",
       system: systemPrompt,
       prompt: `Generate social media content based on this request: ${prompt}`,
-      maxTokens: 500,
     });
 
     // Parse the response
-    const contentMatch = text.match(/Content:\s*(.+?)(?=\nHashtags:|$)/s);
-    const hashtagsMatch = text.match(/Hashtags:\s*(.+?)$/s);
+    const contentMatch = text.match(/Content:\s*(.+?)(?=\nHashtags:|$)/);
+    const hashtagsMatch = text.match(/Hashtags:\s*(.+?)$/);
 
     const content = contentMatch ? contentMatch[1].trim() : text;
     const hashtags = hashtagsMatch ? hashtagsMatch[1].trim() : "";
