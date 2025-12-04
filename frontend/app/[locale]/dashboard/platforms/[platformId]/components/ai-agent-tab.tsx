@@ -22,6 +22,7 @@ import {
   Target,
   Zap,
   AlertCircle,
+  CirclePause,
 } from "lucide-react";
 import type { TConnectedAccount } from "@/types";
 import { toast } from "sonner";
@@ -31,6 +32,9 @@ import { useChat } from "@ai-sdk/react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { DefaultChatTransport } from "ai";
 import { getAIAdvisorContextForAccount } from "../action";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeHighlight from "rehype-highlight";
 
 interface AIAgentTabProps {
   text: any;
@@ -49,7 +53,7 @@ export function AIAgentTab({
   const [isLoadingContext, setIsLoadingContext] = useState(true);
   const [inputValue, setInputValue] = useState("");
 
-  const { messages, sendMessage, status, error } = useChat({
+  const { messages, sendMessage, status, error, stop, regenerate } = useChat({
     transport: new DefaultChatTransport({
       api: "/api/ai/advisor",
       body: () => ({
@@ -71,12 +75,12 @@ export function AIAgentTab({
 
     onFinish: ({ message, isError }) => {
       if (isError) {
-        console.error("[v0] Chat finished with error");
+        console.error("Chat finished with error");
       }
     },
 
     onError: (err) => {
-      console.error("[v0] Chat error:", err);
+      console.error("Chat error:", err);
       toast.error(
         text.aiAdvisor?.error || "Failed to get AI response. Please try again.",
       );
@@ -101,7 +105,7 @@ export function AIAgentTab({
       }
     }
     loadContext();
-  }, [account.id]);
+  }, [account.id, account.provider]);
 
   const quickActions = [
     {
@@ -124,17 +128,30 @@ export function AIAgentTab({
 
   const handleQuickAction = async (action: string) => {
     if (!isLoading && !isLoadingContext) {
-      await sendMessage({ text: action });
+      await sendMessage(
+        { text: action },
+        {
+          body: {
+            temperature: 0.7,
+            max_tokens: 100,
+          },
+        },
+      );
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (inputValue.trim() && !isLoading && !isLoadingContext) {
-      await sendMessage({ text: inputValue });
+      await sendMessage(
+        { text: inputValue },
+        { body: { temperature: 0.7, max_tokens: 100 } },
+      );
       setInputValue("");
     }
   };
+
+  // ✅ Helper to extract plain text from message parts
   const renderMessageContent = (message: any) => {
     if (!message.parts) return message.content || "";
     return message.parts
@@ -233,44 +250,64 @@ export function AIAgentTab({
           <div className="space-y-4">
             {/* Messages Container */}
             <div className="space-y-4 max-h-[500px] overflow-y-auto p-4 rounded-lg bg-muted/30 border border-border/50">
-              {messages.map((message, index) => (
-                <div
-                  key={message.id || index}
-                  className={cn(
-                    "flex gap-3",
-                    message.role === "user" ? "justify-end" : "justify-start",
-                    animateItems
-                      ? "opacity-100 translate-y-0"
-                      : "opacity-0 translate-y-4",
-                  )}
-                  style={{ animationDelay: `${600 + index * 100}ms` }}
-                >
-                  {message.role === "assistant" && (
-                    <div className="flex size-8 items-center justify-center rounded-full bg-primary shrink-0 shadow-sm">
-                      <Sparkles className="size-4 text-primary-foreground" />
-                    </div>
-                  )}
+              {messages.map((message, index) => {
+                const content = renderMessageContent(message);
+
+                return (
                   <div
+                    key={message.id || index}
                     className={cn(
-                      "max-w-[80%] rounded-xl p-3 shadow-sm transition-all duration-150",
-                      message.role === "user"
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-background border border-border",
+                      "flex gap-3",
+                      message.role === "user" ? "justify-end" : "justify-start",
+                      animateItems
+                        ? "opacity-100 translate-y-0"
+                        : "opacity-0 translate-y-4",
                     )}
+                    style={{ animationDelay: `${600 + index * 100}ms` }}
                   >
-                    <p className="text-sm whitespace-pre-wrap leading-relaxed">
-                      {renderMessageContent(message)}
-                    </p>
+                    {message.role === "assistant" && (
+                      <div className="flex size-8 items-center justify-center rounded-full bg-primary shrink-0 shadow-sm">
+                        <Sparkles className="size-4 text-primary-foreground" />
+                      </div>
+                    )}
+
+                    <div
+                      className={cn(
+                        "max-w-[80%] rounded-xl p-3 shadow-sm transition-all duration-150",
+                        message.role === "user"
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-background border border-border",
+                      )}
+                      dir={locale === "ar" ? "rtl" : "ltr"}
+                    >
+                      <div
+                        className={cn(
+                          "prose prose-sm max-w-none",
+                          message.role === "user"
+                            ? "prose-invert"
+                            : "dark:prose-invert",
+                        )}
+                      >
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          rehypePlugins={[rehypeHighlight]}
+                        >
+                          {content}
+                        </ReactMarkdown>
+                      </div>
+                    </div>
+
+                    {message.role === "user" && (
+                      <Avatar className="size-8 shrink-0 shadow-sm">
+                        <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+                          {(account.username?.[0] || "?").toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                    )}
                   </div>
-                  {message.role === "user" && (
-                    <Avatar className="size-8 shrink-0 shadow-sm">
-                      <AvatarFallback className="bg-primary/10 text-primary font-semibold">
-                        {(account.username?.[0] || "?").toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                  )}
-                </div>
-              ))}
+                );
+              })}
+
               {isLoading && (
                 <div className="flex gap-3 justify-start">
                   <div className="flex size-8 items-center justify-center rounded-full bg-primary shrink-0 shadow-sm">
@@ -293,18 +330,26 @@ export function AIAgentTab({
                 disabled={isLoading || isLoadingContext}
                 className="resize-none min-h-8 shadow-sm transition-all duration-150 focus:ring-2 focus:ring-primary/20"
               />
-              <Button
-                type="submit"
-                disabled={!inputValue.trim() || isLoading || isLoadingContext}
-                size="icon"
-                className="shrink-0 shadow-sm transition-all duration-150 hover:scale-110"
-              >
-                {isLoading ? (
-                  <Loader2 className="size-4 animate-spin" />
-                ) : (
+
+              {status === "streaming" || status === "submitted" ? (
+                <Button
+                  type="button"
+                  onClick={stop}
+                  size="icon"
+                  className="shrink-0 shadow-sm transition-all duration-150 hover:scale-110"
+                >
+                  <CirclePause className="size-4" />
+                </Button>
+              ) : (
+                <Button
+                  type="submit"
+                  disabled={!inputValue.trim() || isLoading || isLoadingContext}
+                  size="icon"
+                  className="shrink-0 shadow-sm transition-all duration-150 hover:scale-110"
+                >
                   <Send className="size-4" />
-                )}
-              </Button>
+                </Button>
+              )}
             </form>
 
             <div className="flex flex-wrap gap-2 pt-2">
