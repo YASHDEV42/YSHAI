@@ -1,3 +1,4 @@
+// app/.../ai-advisor-context.ts
 "use server";
 
 import {
@@ -10,7 +11,12 @@ import {
   getPostingOptimization,
 } from "@/lib/analytics-helper";
 
-export async function getAIAdvisorContext(platformId: number) {
+export async function getAIAdvisorContextForAccount(account: {
+  id: number;
+  provider: string; // "instagram", "tiktok", etc.
+}) {
+  const platform = account.provider;
+
   try {
     const [
       analyticsResult,
@@ -21,13 +27,19 @@ export async function getAIAdvisorContext(platformId: number) {
       recommendationsResult,
       optimizationResult,
     ] = await Promise.all([
-      getAnalytics({ timeRange: "30d" }),
-      getPlatformPerformance({ timeRange: "30d" }),
-      getTopPosts({ limit: 5, timeRange: "30d" }),
-      getAudienceInsights({ timeRange: "30d" }),
-      getPlatformHealthScores({ timeRange: "30d" }),
-      getContentRecommendations({ limit: 5 }),
-      getPostingOptimization(),
+      getAnalytics({ timeRange: "30d", platform }),
+      getPlatformPerformance({ timeRange: "30d" }), // if backend supports per-account, we can filter later
+      getTopPosts({
+        limit: 5,
+        timeRange: "30d" /* platform if API supports */,
+      }),
+      getAudienceInsights({ timeRange: "30d", platform }),
+      getPlatformHealthScores({
+        timeRange: "30d",
+        platforms: [platform],
+      }),
+      getContentRecommendations({ platform, limit: 5 }),
+      getPostingOptimization({ platform }),
     ]);
 
     return {

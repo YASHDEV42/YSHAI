@@ -181,7 +181,8 @@ export class AnalyticsService {
     const start = this.getRangeStart(timeRange);
 
     const qb = this.createAnalyticsQb().select([
-      'a.fetched_at as fetchedAt',
+      // FIX: use property name fetchedAt
+      'a.fetchedAt as fetchedAt',
       'a.likes',
       'a.comments',
       'a.shares',
@@ -211,7 +212,6 @@ export class AnalyticsService {
       clicks: r.clicks ?? 0,
     }));
   }
-
   async getPlatformPerformance(params?: { timeRange?: TimeRange }) {
     const { timeRange } = params ?? {};
     const start = this.getRangeStart(timeRange);
@@ -219,7 +219,8 @@ export class AnalyticsService {
     const qb = this.createAnalyticsQb()
       .select([
         'a.provider as platform',
-        'count(distinct a.post_id) as posts',
+        // FIX: use property "post" (ManyToOne) not raw post_id
+        'count(distinct a.post) as posts',
         'coalesce(sum(a.likes + a.comments + a.shares), 0) as engagement',
         'coalesce(sum(a.impressions), 0) as impressions',
       ])
@@ -244,7 +245,6 @@ export class AnalyticsService {
         platform: r.platform,
         posts: Number(r.posts ?? 0),
         engagement,
-        // no historical comparison yet
         growth: 0,
         reach: impressions,
         impressions,
@@ -253,21 +253,22 @@ export class AnalyticsService {
       };
     });
   }
-
   async getTopPosts(params?: { limit?: number; timeRange?: TimeRange }) {
     const { limit = 10, timeRange } = params ?? {};
     const start = this.getRangeStart(timeRange);
 
     const qb = this.createAnalyticsQb()
       .select([
-        'a.post_id as postId',
+        // FIX: use property "post" instead of post_id
+        'a.post as postId',
         'a.provider as platform',
         'a.likes',
         'a.comments',
         'a.shares',
         'a.impressions',
         'a.clicks',
-        'a.fetched_at as fetchedAt',
+        // FIX: use fetchedAt property
+        'a.fetchedAt as fetchedAt',
         'p.content_en as contentEn',
         'p.content_ar as contentAr',
         'p.published_at as publishedAt',
@@ -277,7 +278,8 @@ export class AnalyticsService {
       .limit(limit);
 
     if (start) {
-      qb.andWhere({ 'a.fetched_at': { $gte: start } });
+      // FIX: use property name instead of raw 'a.fetched_at'
+      qb.andWhere({ fetchedAt: { $gte: start } });
     }
 
     const rows = await qb.execute<
@@ -468,14 +470,16 @@ export class AnalyticsService {
 
     const qb = this.createAnalyticsQb()
       .select([
-        'a.post_id as postId',
+        // FIX: use property "post"
+        'a.post as postId',
         'a.provider as platform',
         'a.likes',
         'a.comments',
         'a.shares',
         'a.impressions',
         'a.clicks',
-        'a.fetched_at as fetchedAt',
+        // FIX: use fetchedAt property
+        'a.fetchedAt as fetchedAt',
         'p.content_en as contentEn',
         'p.content_ar as contentAr',
         'p.published_at as publishedAt',
@@ -484,21 +488,22 @@ export class AnalyticsService {
       .limit(limit);
 
     if (start) {
-      qb.andWhere({ 'a.fetched_at': { $gte: start } });
+      // FIX: property form
+      qb.andWhere({ fetchedAt: { $gte: start } });
     }
     if (platform) {
-      qb.andWhere({ 'a.provider': platform });
+      qb.andWhere({ provider: platform });
     }
 
     switch (sortBy) {
       case 'reach':
-        qb.orderBy({ 'a.impressions': 'DESC' });
+        qb.orderBy({ impressions: 'DESC' });
         break;
       case 'date':
-        qb.orderBy({ 'a.fetched_at': 'DESC' });
+        qb.orderBy({ fetchedAt: 'DESC' });
         break;
       case 'viralityScore':
-        qb.orderBy({ 'a.shares': 'DESC' });
+        qb.orderBy({ shares: 'DESC' });
         break;
       case 'engagement':
       default:
@@ -1141,13 +1146,14 @@ export class AnalyticsService {
 
     const rows = await this.createAnalyticsQb()
       .select([
-        'a.post_id as postId',
+        // FIX: property "post" and "fetchedAt"
+        'a.post as postId',
         'a.impressions',
         'a.clicks',
         'a.likes',
         'a.comments',
         'a.shares',
-        'a.fetched_at as fetchedAt',
+        'a.fetchedAt as fetchedAt',
       ])
       .execute<CsvRow[]>('all');
 

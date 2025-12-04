@@ -29,8 +29,8 @@ import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { useChat } from "@ai-sdk/react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { getAIAdvisorContext } from "../action";
 import { DefaultChatTransport } from "ai";
+import { getAIAdvisorContextForAccount } from "../action";
 
 interface AIAgentTabProps {
   text: any;
@@ -104,7 +104,10 @@ export function AIAgentTab({
     async function loadContext() {
       setIsLoadingContext(true);
       try {
-        const context = await getAIAdvisorContext(account.id);
+        const context = await getAIAdvisorContextForAccount({
+          id: account.id,
+          provider: account.provider,
+        });
         setAnalyticsContext(context);
       } catch (err) {
         console.error("[v0] Failed to load analytics context:", err);
