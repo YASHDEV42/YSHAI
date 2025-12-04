@@ -137,50 +137,6 @@ export interface IContentPerformance {
   };
 }
 
-// Competitor analysis
-export interface ICompetitorAnalysis {
-  competitorId: string;
-  name: string;
-  platform: string;
-  followers: number;
-  followersChange: number;
-  avgEngagement: number;
-  avgEngagementRate: number;
-  postingFrequency: number;
-  bestPostingTimes: {
-    hour: number;
-    dayOfWeek: number;
-  }[];
-  topContentTypes: {
-    type: string;
-    percentage: number;
-  }[];
-  comparisonToYou: {
-    followersDiff: number;
-    engagementDiff: number;
-    reachDiff: number;
-  };
-}
-
-// Trend analysis
-export interface ITrendAnalysis {
-  trendId: string;
-  keyword: string;
-  hashtag?: string;
-  volume: number;
-  volumeChange: number;
-  sentiment: "positive" | "negative" | "neutral";
-  sentimentScore: number;
-  peakTimes: {
-    timestamp: string;
-    volume: number;
-  }[];
-  relatedKeywords: string[];
-  topPosts: string[];
-  relevanceToYou: number;
-  opportunityScore: number;
-}
-
 // Platform health score
 export interface IPlatformHealthScore {
   platform: string;
@@ -311,8 +267,6 @@ export interface IAIAdvisorContext {
   healthScores: IPlatformHealthScore[];
   recommendations: IContentRecommendation[];
   postingOptimization: IPostingOptimization[];
-  trends: ITrendAnalysis[];
-  competitors?: ICompetitorAnalysis[];
   timeRange: string;
   lastUpdated: string;
   accountId: string;
@@ -483,37 +437,6 @@ export async function getPostingOptimization(params?: {
   });
 }
 
-export async function getTrendAnalysis(params?: {
-  platform?: string;
-  limit?: number;
-  minRelevance?: number;
-}): Promise<ApiResult<ITrendAnalysis[]>> {
-  return apiRequest<ITrendAnalysis[]>({
-    method: "GET",
-    path: "/analytics/trends",
-    query: params,
-    cache: {
-      tags: ["analytics-trends"],
-      revalidate: 1800,
-    },
-  });
-}
-
-export async function getCompetitorAnalysis(params?: {
-  platform?: string;
-  limit?: number;
-}): Promise<ApiResult<ICompetitorAnalysis[]>> {
-  return apiRequest<ICompetitorAnalysis[]>({
-    method: "GET",
-    path: "/analytics/competitors",
-    query: params,
-    cache: {
-      tags: ["analytics-competitors"],
-      revalidate: 3600,
-    },
-  });
-}
-
 export async function getAnalyticsSummary(params?: {
   timeRange?: TimeRange;
   includePredictions?: boolean;
@@ -532,7 +455,6 @@ export async function getAnalyticsSummary(params?: {
 export async function getAIAdvisorContext(params?: {
   timeRange?: TimeRange;
   platform?: string;
-  includeCompetitors?: boolean;
 }): Promise<ApiResult<IAIAdvisorContext>> {
   return apiRequest<IAIAdvisorContext>({
     method: "GET",
