@@ -69,21 +69,6 @@ export function AIAgentTab({
       }),
     }),
 
-    initialMessages: [
-      {
-        id: "welcome",
-        role: "assistant",
-        parts: [
-          {
-            type: "text",
-            text:
-              text.aiAdvisor?.welcomeMessage ||
-              "Hello! How can I help you with your content strategy today?",
-          },
-        ],
-      },
-    ],
-
     onFinish: ({ message, isError }) => {
       if (isError) {
         console.error("[v0] Chat finished with error");
@@ -217,7 +202,7 @@ export function AIAgentTab({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => reload()}
+            onClick={() => {}}
             className="mt-2 bg-transparent"
           >
             {text.aiAdvisor?.retry || "Retry"}
