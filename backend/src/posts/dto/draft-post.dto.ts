@@ -1,17 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsDateString,
-  IsNumber,
-  IsOptional,
-  IsString,
-  MinLength,
-} from 'class-validator';
+import { IsDateString, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class DraftPostDto {
   @ApiProperty({ description: 'Arabic content', type: String })
   @IsString()
-  @MinLength(1)
-  contentAr!: string;
+  @IsOptional()
+  contentAr?: string;
 
   @ApiProperty({
     description: 'English content',
@@ -28,7 +22,8 @@ export class DraftPostDto {
     format: 'date-time',
   })
   @IsDateString()
-  scheduleAt!: string; // FIXED: keep name scheduleAt to match Swagger DraftPostDto
+  @IsOptional()
+  scheduleAt?: string;
 
   @ApiProperty({ description: 'Author ID', type: Number })
   @IsNumber()

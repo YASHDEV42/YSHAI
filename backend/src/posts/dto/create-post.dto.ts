@@ -8,7 +8,6 @@ import {
   MinLength,
   IsString,
   IsArray,
-  ArrayMinSize,
   IsInt,
 } from 'class-validator';
 
@@ -29,7 +28,6 @@ export class CreatePostDto {
   })
   @IsString()
   @IsOptional()
-  @MinLength(1)
   contentAr?: string;
 
   @ApiProperty({

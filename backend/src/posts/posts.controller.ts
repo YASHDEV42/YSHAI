@@ -12,6 +12,7 @@ import {
   UseInterceptors,
   Query,
   NotFoundException,
+  Logger,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -40,6 +41,8 @@ import {
   PostStatusResponseDto,
 } from './dto/post-response.dto';
 import { ApiStandardErrors } from 'src/common/decorators/api-standard-errors.decorator';
+
+const logger = new Logger('posts');
 
 @ApiStandardErrors()
 @ApiTags('Posts')
@@ -233,6 +236,7 @@ export class PostsController {
     type: PostResponseDto,
   })
   async createDraft(@Body() dto: DraftPostDto) {
+    logger.log(`Creating draft post with contentAr: ${dto.contentAr}`);
     const p = await this.postsService.createDraft(dto);
     return this.toDto(p);
   }

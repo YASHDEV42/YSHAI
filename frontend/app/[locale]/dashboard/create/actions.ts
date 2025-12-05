@@ -364,12 +364,20 @@ export const createDraftPostAction = async (
   formData: FormData,
 ): Promise<PostActionState> => {
   try {
+    for (const [key, value] of formData.entries()) {
+      console.log("FORM ENTRY:", key, value);
+    }
     const contentAr = formData.get("contentAr")?.toString() || undefined;
     const contentEn = formData.get("contentEn")?.toString() || undefined;
 
+    const socialAccountIds = formData
+      .getAll("socialAccountIds")
+      .map((v) => Number(v))
+      .filter((n) => !Number.isNaN(n));
+
+    console.log("socialAccountIds:", socialAccountIds);
     const authorIdStr = formData.get("authorId")?.toString();
     const authorId = authorIdStr ? Number(authorIdStr) : NaN;
-
     const teamIdStr = formData.get("teamId")?.toString();
     const teamId =
       teamIdStr && teamIdStr.length > 0 ? Number(teamIdStr) : undefined;
@@ -387,6 +395,7 @@ export const createDraftPostAction = async (
       contentEn,
       authorId,
       teamId,
+      socialAccountIds: socialAccountIds.length ? socialAccountIds : undefined,
     };
 
     const result = await createDraft(dto);

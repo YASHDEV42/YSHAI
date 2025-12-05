@@ -231,11 +231,9 @@ export class PostsService {
   }
 
   async createDraft(dto: DraftPostDto): Promise<Post> {
-    const { scheduleAt, ...rest } = dto as unknown as {
-      scheduleAt: string;
-      [key: string]: any;
-    };
-    return await this.create({
+    const { scheduleAt, ...rest } = dto;
+
+    return this.create({
       ...(rest as Omit<CreatePostDto, 'scheduledAt'>),
       scheduledAt: scheduleAt,
     });

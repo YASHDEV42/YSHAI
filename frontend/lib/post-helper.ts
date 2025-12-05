@@ -51,10 +51,10 @@ interface DraftPostDto {
   contentEn?: string;
   authorId: number;
   teamId?: number;
-}
-
-interface ReschedulePostDto {
-  scheduledAt: string;
+  scheduleAt?: string;
+  socialAccountIds?: number[];
+  campaignId?: number;
+  templateId?: number;
 }
 
 export async function create(dto: CreatePostDto): Promise<ApiResult<IPost>> {
@@ -153,6 +153,7 @@ export async function createRecurring(
 export async function createDraft(
   dto: DraftPostDto,
 ): Promise<ApiResult<IPost>> {
+  console.log("fromtend lib post-helper dto:", dto);
   return apiRequest<IPost, DraftPostDto>({
     method: "POST",
     path: `/posts/draft`,

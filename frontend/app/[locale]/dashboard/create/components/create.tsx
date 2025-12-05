@@ -112,6 +112,7 @@ export default function CreatePage({
   accounts: ISocialAccount[];
   campaigns: ICampaign[];
 }) {
+  console.log("CreatePage accounts:", accounts);
   // STATE
   const [content, setContent] = useState("");
 
@@ -145,6 +146,7 @@ export default function CreatePage({
     id: acc.provider,
     name: text.platforms[acc.provider],
     socialAccountId: acc.id,
+    providerAccountId: acc.providerAccountId,
     username: acc.username,
   }));
 
@@ -561,17 +563,16 @@ export default function CreatePage({
             <input type="hidden" name="campaignId" value={selectedCampaign} />
           )}
 
-          {scheduleType !== "draft" &&
-            platforms.map((p) =>
-              selectedPlatforms.includes(p.id) ? (
-                <input
-                  key={p.id}
-                  type="hidden"
-                  name="socialAccountIds"
-                  value={p.socialAccountId}
-                />
-              ) : null,
-            )}
+          {platforms.map((p) =>
+            selectedPlatforms.includes(p.id) ? (
+              <input
+                key={p.id}
+                type="hidden"
+                name="socialAccountIds"
+                value={p.socialAccountId} // internal numeric ID
+              />
+            ) : null,
+          )}
 
           <div className="grid lg:grid-cols-2 gap-6">
             {/* LEFT SIDE */}
@@ -810,7 +811,7 @@ export default function CreatePage({
                   />
 
                   <Textarea
-                    name="contentEn"
+                    name="contentAr"
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
                     placeholder={text.contentEditor.placeholder}
@@ -1001,7 +1002,7 @@ export default function CreatePage({
                     </TabsContent>
                   </Tabs>
 
-                  <div className="mt-6 w-full flex  gap-3">
+                  <div className="mt-6 w-full flex flex-col  gap-3">
                     {error && (
                       <div className="flex-1 p-3 bg-destructive/10 text-destructive rounded-lg text-sm flex items-center gap-2">
                         <AlertCircle className="w-4 h-4 shrink-0" />
