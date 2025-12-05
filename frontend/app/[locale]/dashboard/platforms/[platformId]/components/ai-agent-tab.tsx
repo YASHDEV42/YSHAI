@@ -159,6 +159,8 @@ export function AIAgentTab({
       .map((part: any) => part.text)
       .join("");
   };
+  console.log("messages", messages);
+  console.log("isLoading", isLoading);
 
   return (
     <div className="space-y-6">
@@ -249,76 +251,82 @@ export function AIAgentTab({
         <CardContent>
           <div className="space-y-4">
             {/* Messages Container */}
-            <div className="space-y-4 max-h-[500px] overflow-y-auto p-4 rounded-lg bg-muted/30 border border-border/50">
-              {messages.map((message, index) => {
-                const content = renderMessageContent(message);
+            {messages.length === 0 && !isLoading ? (
+              <></>
+            ) : (
+              <div className="space-y-4 max-h-[500px] overflow-y-auto p-4 rounded-lg bg-muted/30 border border-border/50">
+                {messages.map((message, index) => {
+                  const content = renderMessageContent(message);
 
-                return (
-                  <div
-                    key={message.id || index}
-                    className={cn(
-                      "flex gap-3",
-                      message.role === "user" ? "justify-end" : "justify-start",
-                      animateItems
-                        ? "opacity-100 translate-y-0"
-                        : "opacity-0 translate-y-4",
-                    )}
-                    style={{ animationDelay: `${600 + index * 100}ms` }}
-                  >
-                    {message.role === "assistant" && (
-                      <div className="flex size-8 items-center justify-center rounded-full bg-primary shrink-0 shadow-sm">
-                        <Sparkles className="size-4 text-primary-foreground" />
-                      </div>
-                    )}
-
+                  return (
                     <div
+                      key={message.id || index}
                       className={cn(
-                        "max-w-[80%] rounded-xl p-3 shadow-sm transition-all duration-150",
+                        "flex gap-3",
                         message.role === "user"
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-background border border-border",
+                          ? "justify-end"
+                          : "justify-start",
+                        animateItems
+                          ? "opacity-100 translate-y-0"
+                          : "opacity-0 translate-y-4",
                       )}
-                      dir={locale === "ar" ? "rtl" : "ltr"}
+                      style={{ animationDelay: `${600 + index * 100}ms` }}
                     >
+                      {message.role === "assistant" && (
+                        <div className="flex size-8 items-center justify-center rounded-full bg-primary shrink-0 shadow-sm">
+                          <Sparkles className="size-4 text-primary-foreground" />
+                        </div>
+                      )}
+
                       <div
                         className={cn(
-                          "prose prose-sm max-w-none",
+                          "max-w-[80%] rounded-xl p-3 shadow-sm transition-all duration-150",
                           message.role === "user"
-                            ? "prose-invert"
-                            : "dark:prose-invert",
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-background border border-border",
                         )}
+                        dir={locale === "ar" ? "rtl" : "ltr"}
                       >
-                        <ReactMarkdown
-                          remarkPlugins={[remarkGfm]}
-                          rehypePlugins={[rehypeHighlight]}
+                        <div
+                          className={cn(
+                            "prose prose-sm max-w-none",
+                            message.role === "user"
+                              ? "prose-invert"
+                              : "dark:prose-invert",
+                          )}
                         >
-                          {content}
-                        </ReactMarkdown>
+                          <ReactMarkdown
+                            remarkPlugins={[remarkGfm]}
+                            rehypePlugins={[rehypeHighlight]}
+                          >
+                            {content}
+                          </ReactMarkdown>
+                        </div>
                       </div>
+
+                      {message.role === "user" && (
+                        <Avatar className="size-8 shrink-0 shadow-sm">
+                          <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+                            {(account.username?.[0] || "?").toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                      )}
                     </div>
+                  );
+                })}
 
-                    {message.role === "user" && (
-                      <Avatar className="size-8 shrink-0 shadow-sm">
-                        <AvatarFallback className="bg-primary/10 text-primary font-semibold">
-                          {(account.username?.[0] || "?").toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                    )}
+                {isLoading && (
+                  <div className="flex gap-3 justify-start">
+                    <div className="flex size-8 items-center justify-center rounded-full bg-primary shrink-0 shadow-sm">
+                      <Sparkles className="size-4 text-primary-foreground" />
+                    </div>
+                    <div className="bg-background border border-border rounded-xl p-3 shadow-sm">
+                      <Loader2 className="size-4 animate-spin text-muted-foreground" />
+                    </div>
                   </div>
-                );
-              })}
-
-              {isLoading && (
-                <div className="flex gap-3 justify-start">
-                  <div className="flex size-8 items-center justify-center rounded-full bg-primary shrink-0 shadow-sm">
-                    <Sparkles className="size-4 text-primary-foreground" />
-                  </div>
-                  <div className="bg-background border border-border rounded-xl p-3 shadow-sm">
-                    <Loader2 className="size-4 animate-spin text-muted-foreground" />
-                  </div>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            )}
 
             <form onSubmit={handleSubmit} className="flex gap-2 items-end">
               <Input
