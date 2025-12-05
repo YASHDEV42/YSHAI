@@ -42,7 +42,7 @@ export const loginAction = async (
 
   if (!result.success) {
     return {
-      arMessage: "فشل تسجيل الدخول",
+      arMessage: "كلمة المرور أو البريد الإلكتروني غير صحيح",
       enMessage: result.error || "Login failed",
       success: false,
     };
