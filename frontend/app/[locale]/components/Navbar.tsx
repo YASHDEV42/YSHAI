@@ -7,11 +7,13 @@ import { LogOut } from "lucide-react";
 import { Suspense } from "react";
 import { Logo } from "./Logo";
 import { Link } from "@/app/i18n/navigation";
+import { logoutAction } from "../actions";
 
 async function UserMenu({ text }: { text: any }) {
   let user: TUser | null = null;
   const response = await me();
   user = response.success ? response.data : null;
+
   return (
     <>
       {user ? (
@@ -19,7 +21,7 @@ async function UserMenu({ text }: { text: any }) {
           <Button asChild>
             <Link href="/dashboard">{text.dashboard}</Link>
           </Button>
-          <form>
+          <form action={logoutAction}>
             <Button variant="ghost" type="submit" className="cursor-pointer">
               {text.logout}
               <LogOut />
