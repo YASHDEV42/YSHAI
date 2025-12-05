@@ -11,7 +11,6 @@ import {
   Settings,
   Sparkles,
   Bell,
-  X,
   CheckCircle2,
   AlertCircle,
   Info,
@@ -20,6 +19,9 @@ import {
   Activity,
   Loader2,
   Trash2,
+  LogOut,
+  User,
+  ChevronUp,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -46,6 +48,13 @@ import {
   markAllNotificationsRead,
   deleteNotification,
 } from "@/lib/notifications-helper";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface DashboardSidebarClientProps {
   locale: string;
@@ -394,7 +403,6 @@ export function DashboardSidebarClient({
               {text.logo}
             </span>
           </Link>
-          <LanguageToggle />
         </SidebarHeader>
 
         <SidebarContent className="p-4">
@@ -438,133 +446,205 @@ export function DashboardSidebarClient({
         </SidebarContent>
 
         <SidebarFooter className="border-t border-border p-4">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3 flex-1 min-w-0">
-              <div className="flex flex-col min-w-0">
-                <span className="font-medium text-sm truncate transition-colors hover:text-foreground">
-                  {user?.name || "User"}
-                </span>
-                <span className="text-xs text-muted-foreground truncate">
-                  {user?.email || "user@example.com"}
-                </span>
-              </div>
-            </div>
-            <div className="flex items-center gap-1 shrink-0">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="size-8 relative transition-all duration-300 hover:scale-110 hover:bg-primary/10"
-                onClick={() => setShowNotifications(!showNotifications)}
+          <div className="flex items-center gap-2">
+            {/* User Menu Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="flex items-center gap-2 flex-1 min-w-0 justify-start h-auto px-3 py-2 hover:bg-muted/50 transition-all"
+                >
+                  <User className="size-4 shrink-0 text-muted-foreground" />
+                  <div className="flex flex-col min-w-0 text-left flex-1">
+                    <span className="font-medium text-sm truncate">
+                      {user?.name || "User"}
+                    </span>
+                    <span className="text-xs text-muted-foreground truncate">
+                      {user?.email || "user@example.com"}
+                    </span>
+                  </div>
+                  <ChevronUp className="size-4 shrink-0 text-muted-foreground" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align={isRTL ? "end" : "start"}
+                side="top"
+                className="w-56"
               >
-                <Bell className="size-4" />
-                {unreadCount > 0 && (
-                  <Badge
-                    variant="destructive"
-                    className="absolute -top-1 -right-1 size-5 p-0 flex items-center justify-center text-[10px] animate-pulse"
+                <div className="px-2 py-1.5">
+                  <p className="text-sm font-medium">{user?.name || "User"}</p>
+                  <p className="text-xs text-muted-foreground truncate">
+                    {user?.email || "user@example.com"}
+                  </p>
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <div className="flex items-center justify-between w-full">
+                    <span className="text-sm">
+                      {text.language || "Language"}
+                    </span>
+                    <LanguageToggle />
+                  </div>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <div className="flex items-center justify-between w-full">
+                    <span className="text-sm">{text.theme || "Theme"}</span>
+                    <ModeToggle />
+                  </div>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link
+                    href="/logout"
+                    className="flex items-center gap-2 text-destructive focus:text-destructive cursor-pointer"
                   >
-                    {unreadCount}
-                  </Badge>
-                )}
-              </Button>
-              <ModeToggle />
-            </div>
+                    <LogOut className="size-4" />
+                    <span>{text.logout || "Logout"}</span>
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Notifications Menu Dropdown */}
+            <DropdownMenu
+              open={showNotifications}
+              onOpenChange={setShowNotifications}
+            >
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="size-9 shrink-0 relative transition-all hover:bg-muted/50"
+                >
+                  <Bell className="size-4" />
+                  {unreadCount > 0 && (
+                    <Badge
+                      variant="destructive"
+                      className="absolute -top-1 -right-1 size-4 p-0 flex items-center justify-center text-[9px] font-medium"
+                    >
+                      {unreadCount > 9 ? "9+" : unreadCount}
+                    </Badge>
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align={isRTL ? "end" : "start"}
+                side="top"
+                className="w-80 max-h-[500px] p-0"
+                sideOffset={8}
+              >
+                {/* Header */}
+                <div className="flex items-center justify-between p-4 border-b">
+                  <div className="flex items-center gap-2">
+                    <Activity className="size-4 text-primary" />
+                    <h3 className="font-semibold text-sm">
+                      {text.notifications}
+                    </h3>
+                    {unreadCount > 0 && (
+                      <Badge variant="secondary" className="text-xs">
+                        {unreadCount}
+                      </Badge>
+                    )}
+                  </div>
+                  {notifications.length > 0 && unreadCount > 0 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 text-xs"
+                      onClick={markAllAsRead}
+                      disabled={isMarkingAllRead}
+                    >
+                      {isMarkingAllRead ? (
+                        <Loader2 className="size-3 animate-spin" />
+                      ) : (
+                        text.markAll || "Mark all read"
+                      )}
+                    </Button>
+                  )}
+                </div>
+
+                {/* Notifications List */}
+                <ScrollArea className="max-h-[400px]">
+                  <div className="p-2 space-y-1">
+                    {notifications.length === 0 ? (
+                      <div className="text-center py-8 px-4">
+                        <Bell className="size-8 mx-auto text-muted-foreground mb-2 opacity-50" />
+                        <p className="text-sm text-muted-foreground">
+                          {text.noNotificationsDescription}
+                        </p>
+                      </div>
+                    ) : (
+                      notifications.map((n) => {
+                        const title = getLocalizedText(n.title as any, locale);
+                        const message = getLocalizedText(
+                          n.message as any,
+                          locale,
+                        );
+                        const isMarkingRead = markingReadIds.includes(n.id);
+                        const isDeleting = deletingIds.includes(n.id);
+
+                        return (
+                          <div
+                            key={n.id}
+                            className={cn(
+                              "p-3 rounded-md cursor-pointer transition-colors hover:bg-muted/50 group relative",
+                              !n.read && "bg-muted/30",
+                            )}
+                            onClick={() => markAsRead(n.id)}
+                          >
+                            <div className="flex items-start gap-2">
+                              <div className="mt-0.5 shrink-0">
+                                {isMarkingRead ? (
+                                  <Loader2 className="size-4 animate-spin text-muted-foreground" />
+                                ) : (
+                                  getNotificationIcon(n.type)
+                                )}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-start justify-between gap-2 mb-0.5">
+                                  <h4 className="font-medium text-xs leading-tight">
+                                    {title}
+                                  </h4>
+                                  <div className="flex items-center gap-1 shrink-0">
+                                    {!n.read && (
+                                      <div className="size-1.5 rounded-full bg-primary" />
+                                    )}
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="size-5 opacity-0 group-hover:opacity-100 transition-opacity"
+                                      onClick={(e) =>
+                                        deleteNotificationHandler(n.id, e)
+                                      }
+                                      disabled={isDeleting}
+                                    >
+                                      {isDeleting ? (
+                                        <Loader2 className="size-3 animate-spin" />
+                                      ) : (
+                                        <Trash2 className="size-3 text-muted-foreground hover:text-destructive" />
+                                      )}
+                                    </Button>
+                                  </div>
+                                </div>
+                                <p className="text-xs text-muted-foreground line-clamp-2 mb-1">
+                                  {message}
+                                </p>
+                                <p className="text-[10px] text-muted-foreground">
+                                  {getTimeAgo(n.createdAt)}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                </ScrollArea>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </SidebarFooter>
       </Sidebar>
-
-      {/* --- Notifications Drawer --- */}
-      <div
-        className={cn(
-          "fixed inset-0 z-50 bg-background/80 backdrop-blur-sm transition-opacity duration-150",
-          showNotifications ? "opacity-100" : "opacity-0 pointer-events-none",
-        )}
-        onClick={() => setShowNotifications(false)}
-      >
-        <div
-          className={cn(
-            "fixed top-0 bottom-0 w-full max-w-md bg-background border-l border-border shadow-lg transition-transform duration-300 overflow-hidden",
-            isRTL ? "left-0" : "right-0",
-            showNotifications
-              ? "translate-x-0"
-              : isRTL
-                ? "translate-x-full"
-                : "-translate-x-full",
-          )}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="flex items-center justify-between p-4 border-b border-border">
-            <div className="flex items-center gap-2">
-              <Activity className="size-5 text-primary" />
-              <h2 className="font-semibold text-lg">{text.notifications}</h2>
-              {unreadCount > 0 && (
-                <Badge variant="secondary" className="ml-2">
-                  {unreadCount} {text.new}
-                </Badge>
-              )}
-            </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setShowNotifications(false)}
-              className="transition-all duration-300 hover:scale-110"
-            >
-              <X className="size-4" />
-            </Button>
-          </div>
-
-          {notifications.length > 0 && unreadCount > 0 && (
-            <div className="p-4 border-b border-border">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="w-full transition-all duration-300 hover:scale-105"
-                onClick={markAllAsRead}
-                disabled={isMarkingAllRead}
-              >
-                {isMarkingAllRead ? (
-                  <>
-                    <Loader2 className="mr-2 size-4 animate-spin" />
-                    {text.markingAll}
-                  </>
-                ) : (
-                  <>
-                    <CheckCircle2 className="mr-2 size-4" />
-                    {text.markAll}
-                  </>
-                )}
-              </Button>
-            </div>
-          )}
-
-          <ScrollArea className="h-[calc(100vh-120px)]">
-            <div className="p-4 space-y-2">
-              {notifications.length === 0 ? (
-                <div className="text-center py-12">
-                  <Bell className="size-12 mx-auto text-muted-foreground mb-4" />
-                  <p className="text-sm text-muted-foreground">
-                    {text.noNotificationsDescription}
-                  </p>
-                </div>
-              ) : (
-                notifications.map((n, index) => (
-                  <div key={n.id} style={{ animationDelay: `${index * 50}ms` }}>
-                    <NotificationItem
-                      notification={n}
-                      locale={locale}
-                      isMarkingRead={markingReadIds.includes(n.id)}
-                      isDeleting={deletingIds.includes(n.id)}
-                      onMarkRead={markAsRead}
-                      onDelete={deleteNotificationHandler}
-                      getTimeAgo={getTimeAgo}
-                      getNotificationIcon={getNotificationIcon}
-                    />
-                  </div>
-                ))
-              )}
-            </div>
-          </ScrollArea>
-        </div>
-      </div>
     </>
   );
 }

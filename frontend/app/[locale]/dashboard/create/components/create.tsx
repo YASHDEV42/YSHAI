@@ -47,6 +47,7 @@ import type { IUser, ISocialAccount } from "@/interfaces";
 import type { ICampaign } from "@/lib/campaign-helper";
 import { cn } from "@/lib/utils";
 import { generateAIContent } from "../ai-action";
+import AIContentGenerator from "./ai-content-generator";
 
 // Step indicator component
 const StepIndicator = ({
@@ -797,78 +798,16 @@ export default function CreatePage({
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {/* AI Content Generator Section */}
-                  <div className="p-4 border rounded-lg bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-950/20 dark:to-blue-950/20">
-                    <div className="flex items-center gap-2 mb-3">
-                      <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-                      <Label className="text-sm font-semibold">
-                        {text.aiGenerator?.title || "AI Content Generator"}
-                      </Label>
-                    </div>
-
-                    <div className="space-y-3">
-                      <Textarea
-                        value={aiPrompt}
-                        onChange={(e) => setAiPrompt(e.target.value)}
-                        placeholder={
-                          text.aiGenerator?.placeholder ||
-                          "Describe what you want to post..."
-                        }
-                        rows={3}
-                        className="bg-background"
-                        disabled={isGenerating}
-                      />
-
-                      <div className="flex items-center gap-2">
-                        <Select
-                          value={selectedTone}
-                          onValueChange={setSelectedTone}
-                        >
-                          <SelectTrigger className="w-[180px] bg-background">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="professional">
-                              {locale === "ar" ? "احترافي" : "Professional"}
-                            </SelectItem>
-                            <SelectItem value="casual">
-                              {locale === "ar" ? "عادي" : "Casual"}
-                            </SelectItem>
-                            <SelectItem value="friendly">
-                              {locale === "ar" ? "ودود" : "Friendly"}
-                            </SelectItem>
-                            <SelectItem value="excited">
-                              {locale === "ar" ? "متحمس" : "Excited"}
-                            </SelectItem>
-                            <SelectItem value="informative">
-                              {locale === "ar" ? "معلوماتي" : "Informative"}
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-
-                        <Button
-                          type="button"
-                          onClick={handleGenerateAI}
-                          disabled={isGenerating || !aiPrompt.trim()}
-                          className="flex-1"
-                          size="sm"
-                        >
-                          {isGenerating ? (
-                            <>
-                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                              {locale === "ar"
-                                ? "جاري التوليد..."
-                                : "Generating..."}
-                            </>
-                          ) : (
-                            <>
-                              <Sparkles className="w-4 h-4 mr-2" />
-                              {text.aiGenerator?.generate || "Generate Content"}
-                            </>
-                          )}
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
+                  <AIContentGenerator
+                    locale={locale}
+                    text={text}
+                    selectedTone={selectedTone}
+                    onToneChange={setSelectedTone}
+                    selectedPlatforms={selectedPlatforms}
+                    platforms={platforms}
+                    content={content}
+                    onContentChange={setContent}
+                  />
 
                   <Textarea
                     name="contentEn"
