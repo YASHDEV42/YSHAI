@@ -148,7 +148,7 @@ export default function AIContentGenerator({
   };
 
   return (
-    <div className="p-4 border rounded-lg bg-gradient-to-br bg-primary/5 space-y-3">
+    <div className="p-4 border rounded-lg  bg-primary/5 space-y-3">
       <div className="flex items-center gap-2 mb-3">
         <Sparkles className="w-4 h-4 text-primary" />
         <Label className="text-sm font-semibold">
