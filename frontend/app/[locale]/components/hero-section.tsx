@@ -207,7 +207,7 @@ const ActionButtons = ({
 
             {/* Animated background effect */}
             <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-primary/20 to-primary/10"
+              className="absolute inset-0  from-primary/20 to-primary/10"
               initial={{ x: "-100%" }}
               animate={{ x: primaryHovered ? "0%" : "-100%" }}
               transition={{ duration: 0.3 }}
@@ -222,22 +222,28 @@ const ActionButtons = ({
         onHoverStart={() => setSecondaryHovered(true)}
         onHoverEnd={() => setSecondaryHovered(false)}
       >
-        <Button
-          size="lg"
-          variant="outline"
-          className="text-base px-8 h-12 bg-transparent hover:bg-accent/50 relative overflow-hidden group transition-all"
-          aria-label={secondaryButton}
+        <a
+          href="https://www.youtube.com/watch?v=LKWbRl00IUA"
+          target="_blank"
+          rel="noopener noreferrer"
         >
-          <span className="relative z-10">{secondaryButton}</span>
+          <Button
+            size="lg"
+            variant="outline"
+            className="text-base px-8 h-12 bg-transparent hover:bg-accent/50 relative overflow-hidden group transition-all"
+            aria-label={secondaryButton}
+          >
+            <span className="relative z-10">{secondaryButton}</span>
 
-          {/* Animated border effect */}
-          <motion.div
-            className="absolute inset-0 border-2 border-primary rounded-md"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: secondaryHovered ? 1 : 0 }}
-            transition={{ duration: 0.3 }}
-          />
-        </Button>
+            {/* Animated border effect */}
+            <motion.div
+              className="absolute inset-0 border-2 border-primary rounded-md"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: secondaryHovered ? 1 : 0 }}
+              transition={{ duration: 0.3 }}
+            />
+          </Button>
+        </a>
       </motion.div>
     </motion.div>
   );
