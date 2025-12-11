@@ -77,7 +77,7 @@ export function SupportContent({
       dir={locale === "ar" ? "rtl" : "ltr"}
     >
       {/* Header */}
-      <div className="bg-gradient-to-b from-primary/10 to-background py-16">
+      <div className="bg-linear-to-b from-primary/10 to-background py-16">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl font-bold mb-4">{text.title}</h1>
@@ -141,7 +141,7 @@ export function SupportContent({
                   <AccordionItem key={index} value={`item-${index}`}>
                     <AccordionTrigger className="text-left">
                       <div className="flex items-start gap-3">
-                        <MessageCircle className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+                        <MessageCircle className="h-5 w-5 text-primary mt-1 shrink-0" />
                         <span className="font-medium">{faq.question}</span>
                       </div>
                     </AccordionTrigger>
@@ -172,9 +172,6 @@ export function SupportContent({
               <h3 className="text-xl font-semibold mb-2">
                 {text.stillNeedHelp}
               </h3>
-              <p className="text-muted-foreground mb-6">
-                Our support team is here to help you 24/7
-              </p>
               <Button size="lg">
                 <Mail className="mr-2 h-4 w-4" />
                 {text.contactSupport}

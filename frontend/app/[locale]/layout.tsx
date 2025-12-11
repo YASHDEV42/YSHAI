@@ -10,7 +10,6 @@ import { ThemeProvider } from "../components/theme-provider";
 import { Navbar } from "./components/Navbar";
 import { Toaster } from "../../components/ui/sonner";
 import { extractNavbarText } from "../i18n/extractTexts";
-import { NavbarWrapper } from "./components/NavbarWrapper";
 import { Suspense } from "react";
 import { NavbarSkeleton } from "@/components/skeletons/navbar-skeleton";
 
@@ -60,9 +59,7 @@ export default async function RootLayout({ children, params }: Props) {
         >
           <NextIntlClientProvider locale={locale} messages={messages}>
             <Suspense fallback={<NavbarSkeleton />}>
-              <NavbarWrapper>
-                <Navbar text={text} />
-              </NavbarWrapper>
+              <Navbar text={text} />
             </Suspense>
             {children}
             <Toaster position="bottom-right" />

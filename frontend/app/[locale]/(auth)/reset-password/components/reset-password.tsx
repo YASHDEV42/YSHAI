@@ -4,8 +4,8 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Field, FieldLabel } from "@/components/ui/field";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Loader } from "lucide-react";
-import { useActionState } from "react";
+import { ArrowLeft, ArrowRight, Loader, Eye, EyeOff } from "lucide-react";
+import { useActionState, useState } from "react";
 import { resetPasswordAction } from "../actions";
 
 interface ResetPasswordPageProps {
@@ -29,6 +29,8 @@ export default function ResetPasswordPage({
     resetPasswordAction.bind(null, token),
     initialState,
   );
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   if (!token) {
     return (
@@ -64,26 +66,56 @@ export default function ResetPasswordPage({
                 <FieldLabel htmlFor="newPassword">
                   {text.newPasswordLabel}
                 </FieldLabel>
-                <Input
-                  id="newPassword"
-                  name="newPassword"
-                  type="password"
-                  placeholder={text.newPasswordPlaceholder}
-                  disabled={state.success}
-                />
+                <div className="relative">
+                  <Input
+                    id="newPassword"
+                    name="newPassword"
+                    type={showNewPassword ? "text" : "password"}
+                    placeholder={text.newPasswordPlaceholder}
+                    disabled={state.success}
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    disabled={state.success}
+                  >
+                    {showNewPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
               </Field>
 
               <Field>
                 <FieldLabel htmlFor="confirmPassword">
                   {text.confirmPasswordLabel}
                 </FieldLabel>
-                <Input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  placeholder={text.confirmPasswordPlaceholder}
-                  disabled={state.success}
-                />
+                <div className="relative">
+                  <Input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder={text.confirmPasswordPlaceholder}
+                    disabled={state.success}
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    disabled={state.success}
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
               </Field>
 
               {state &&

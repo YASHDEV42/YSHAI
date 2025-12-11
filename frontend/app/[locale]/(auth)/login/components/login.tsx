@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
-import { Loader, Mail } from "lucide-react";
+import { Loader, Mail, Eye, EyeOff } from "lucide-react";
 import { useActionState, useState } from "react";
 import { loginAction, resendVerificationAction } from "../actions";
 
@@ -19,7 +19,6 @@ const initialState = {
   enMessage: "",
   success: false,
   userEmail: "",
-  needsVerification: false,
 };
 
 export default function LoginPage({ text, locale }: LoginPageProps) {
@@ -33,6 +32,7 @@ export default function LoginPage({ text, locale }: LoginPageProps) {
     en: string;
     success: boolean;
   } | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleResendVerification = async () => {
     if (!state.userEmail) return;
@@ -108,12 +108,26 @@ export default function LoginPage({ text, locale }: LoginPageProps) {
 
               <Field>
                 <FieldLabel htmlFor="password">{text.passwordLabel}</FieldLabel>
-                <Input
-                  id="password"
-                  name="password"
-                  type="password"
-                  placeholder={text.passwordPlaceholder}
-                />
+                <div className="relative">
+                  <Input
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder={text.passwordPlaceholder}
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
               </Field>
 
               <div className="flex items-center justify-end">
