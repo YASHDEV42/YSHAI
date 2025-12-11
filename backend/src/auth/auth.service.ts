@@ -65,8 +65,7 @@ export class AuthService {
 
   // send verification email Function
   async sendVerificationEmail(email: string, token: string): Promise<void> {
-    const url = `${process.env.FRONTEND_URL}/auth/verify?token=${token}`;
-    await this.mailer.sendEmailVerification(email, url);
+    await this.mailer.sendEmailVerification(email, token);
   }
 
   // register User Function
