@@ -4,8 +4,6 @@ import { setRequestLocale } from "next-intl/server";
 import { extractSidebarText } from "@/app/i18n/extractTexts";
 import { Suspense } from "react";
 import { SidebarSkeleton } from "@/components/skeletons/sidebar-skeleton";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 
 export default async function DashboardLayout({
   children,
