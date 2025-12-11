@@ -1041,7 +1041,11 @@
     "contactSupport": "Contact support",
     "verificationTitle": "Verify your email",
     "verificationMessage": "We've sent a verification link to your email. Please check your inbox before signing in.",
-    "verificationButton": "I've verified - Go to Sign In"
+    "verificationButton": "I've verified - Go to Sign In",
+    "resendVerification": "Resend Verification Email",
+    "resendingVerification": "Sending...",
+    "verificationSent": "Verification email sent! Please check your inbox.",
+    "verificationFailed": "Failed to send verification email. Please try again."
   },
   "LoginPage": {
     "title": "Welcome back",
@@ -1065,7 +1069,12 @@
     "termsOfService": "Terms of Service",
     "privacyPolicy": "Privacy Policy",
     "needHelp": "Need help?",
-    "contactSupport": "Contact support"
+    "contactSupport": "Contact support",
+    "emailNotVerified": "Please verify your email before signing in.",
+    "resendVerification": "Resend Verification Email",
+    "resendingVerification": "Sending...",
+    "verificationSent": "Verification email sent! Please check your inbox.",
+    "verificationFailed": "Failed to send verification email. Please try again."
   },
   "ForgotPasswordPage": {
     "title": "Reset your password",

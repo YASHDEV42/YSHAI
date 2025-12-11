@@ -123,7 +123,6 @@ export class AuthController {
 
     const payload = this.authService.verifyEmailVerificationToken(token);
     if (!payload) {
-      // 400 is fine here; it's a bad link, not an auth failure
       throw new BadRequestException('Invalid or expired verification link');
     }
 

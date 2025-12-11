@@ -22,9 +22,17 @@ import {
 } from "@/components/ui/alert-dialog";
 import Link from "next/link";
 import { useActionState, useEffect, useState } from "react";
-import { ArrowLeft, ArrowRight, Loader2, Eye, EyeOff } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Loader2,
+  Eye,
+  EyeOff,
+  Mail,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { registerAction } from "../action";
+import { resendVerification } from "@/lib/auth-helper";
 
 interface SignUpPageProps {
   text: any;
@@ -55,16 +63,56 @@ export default function SignUpPage({ text, locale }: SignUpPageProps) {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
   const [password, setPassword] = useState("");
+  const [registeredEmail, setRegisteredEmail] = useState("");
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendMessage, setResendMessage] = useState<{
+    ar: string;
+    en: string;
+    success: boolean;
+  } | null>(null);
 
   useEffect(() => {
     if (state.success) {
       setShowVerificationMessage(true);
+      const emailInput = document.querySelector(
+        'input[name="email"]',
+      ) as HTMLInputElement;
+      if (emailInput) {
+        setRegisteredEmail(emailInput.value);
+      }
     }
   }, [state.success]);
 
   const handleVerificationComplete = () => {
     setShowVerificationMessage(false);
     router.push("/login");
+  };
+
+  const handleResendVerification = async () => {
+    if (!registeredEmail) return;
+
+    setResendLoading(true);
+    setResendMessage(null);
+
+    const result = await resendVerification(registeredEmail);
+
+    setResendLoading(false);
+
+    if (result.success) {
+      setResendMessage({
+        ar: "تم إرسال بريد التحقق! يرجى التحقق من بريدك الوارد.",
+        en: "Verification email sent! Please check your inbox.",
+        success: true,
+      });
+    } else {
+      setResendMessage({
+        ar: "فشل إرسال بريد التحقق. يرجى المحاولة مرة أخرى.",
+        en:
+          result.error ||
+          "Failed to send verification email. Please try again.",
+        success: false,
+      });
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -83,7 +131,6 @@ export default function SignUpPage({ text, locale }: SignUpPageProps) {
     setPassword(newPassword);
     handleChange(e);
 
-    // Clear confirm password error if passwords now match
     if (confirmPassword && newPassword === confirmPassword) {
       setFieldErrors((prev) => {
         const newErrors = { ...prev };
@@ -100,7 +147,6 @@ export default function SignUpPage({ text, locale }: SignUpPageProps) {
     setConfirmPassword(newConfirmPassword);
     handleChange(e);
 
-    // Validate passwords match
     if (password && newConfirmPassword && password !== newConfirmPassword) {
       setFieldErrors((prev) => ({
         ...prev,
@@ -155,6 +201,34 @@ export default function SignUpPage({ text, locale }: SignUpPageProps) {
               {text.verificationMessage}
             </AlertDialogDescription>
           </AlertDialogHeader>
+          <div className="space-y-3 px-6">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full bg-transparent"
+              onClick={handleResendVerification}
+              disabled={resendLoading}
+            >
+              {resendLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  {text.resendingVerification}
+                </>
+              ) : (
+                <>
+                  <Mail className="w-4 h-4 mr-2" />
+                  {text.resendVerification}
+                </>
+              )}
+            </Button>
+            {resendMessage && (
+              <p
+                className={`text-center text-sm ${resendMessage.success ? "text-green-600" : "text-red-600"}`}
+              >
+                {locale === "ar" ? resendMessage.ar : resendMessage.en}
+              </p>
+            )}
+          </div>
           <AlertDialogFooter>
             <AlertDialogAction onClick={handleVerificationComplete}>
               {text.verificationButton}
@@ -336,7 +410,6 @@ export default function SignUpPage({ text, locale }: SignUpPageProps) {
                 </Link>
               </div>
 
-              {/* Server/global message */}
               {globalMessage && !state.success && (
                 <p className="text-base text-red-600 text-center font-bold">
                   {globalMessage}

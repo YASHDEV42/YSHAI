@@ -115,13 +115,17 @@ export class AuthService {
 
   // generate email verification token Function
   generateEmailVerificationToken(id: number, email: string): string {
-    //sign and return token
+    const secret = process.env.JWT_VERIFICATION_SECRET;
+    if (!secret) {
+      logger.error('JWT_VERIFICATION_SECRET is not set');
+      throw new Error('JWT_VERIFICATION_SECRET is required');
+    }
+
     return this.jwtService.sign(
       { id, email },
       {
         expiresIn: '1h',
-        secret:
-          process.env.JWT_VERIFICATION_SECRET || 'strong_secret_hahahah$%',
+        secret,
       },
     );
   }

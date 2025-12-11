@@ -5,9 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
-import { Loader } from "lucide-react";
-import { useActionState } from "react";
-import { loginAction } from "../actions";
+import { Loader, Mail } from "lucide-react";
+import { useActionState, useState } from "react";
+import { loginAction, resendVerificationAction } from "../actions";
 
 interface LoginPageProps {
   text: any;
@@ -18,6 +18,8 @@ const initialState = {
   arMessage: "",
   enMessage: "",
   success: false,
+  userEmail: "",
+  needsVerification: false,
 };
 
 export default function LoginPage({ text, locale }: LoginPageProps) {
@@ -25,6 +27,29 @@ export default function LoginPage({ text, locale }: LoginPageProps) {
     loginAction,
     initialState,
   );
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendMessage, setResendMessage] = useState<{
+    ar: string;
+    en: string;
+    success: boolean;
+  } | null>(null);
+
+  const handleResendVerification = async () => {
+    if (!state.userEmail) return;
+
+    setResendLoading(true);
+    setResendMessage(null);
+
+    const result = await resendVerificationAction(state.userEmail);
+
+    setResendLoading(false);
+    setResendMessage({
+      ar: result.arMessage,
+      en: result.enMessage,
+      success: result.success,
+    });
+  };
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <main className="flex-1 flex items-center justify-center px-4 pb-12 pt-20">
@@ -112,18 +137,82 @@ export default function LoginPage({ text, locale }: LoginPageProps) {
               {state &&
                 (locale === "ar"
                   ? state.arMessage && (
-                      <p
-                        className={`text-center text-base ${state.success ? "text-green-600" : "text-red-600"}`}
-                      >
-                        {state.arMessage}
-                      </p>
+                      <div className="space-y-3">
+                        <p
+                          className={`text-center text-base ${state.success ? "text-green-600" : "text-red-600"}`}
+                        >
+                          {state.arMessage}
+                        </p>
+                        {state.needsVerification && (
+                          <div className="space-y-2">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              className="w-full bg-transparent"
+                              onClick={handleResendVerification}
+                              disabled={resendLoading}
+                            >
+                              {resendLoading ? (
+                                <>
+                                  <Loader className="w-4 h-4 mr-2 animate-spin" />
+                                  {text.resendingVerification}
+                                </>
+                              ) : (
+                                <>
+                                  <Mail className="w-4 h-4 mr-2" />
+                                  {text.resendVerification}
+                                </>
+                              )}
+                            </Button>
+                            {resendMessage && (
+                              <p
+                                className={`text-center text-sm ${resendMessage.success ? "text-green-600" : "text-red-600"}`}
+                              >
+                                {resendMessage.ar}
+                              </p>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     )
                   : state.enMessage && (
-                      <p
-                        className={`text-center text-base ${state.success ? "text-green-600" : "text-red-600"}`}
-                      >
-                        {state.enMessage}
-                      </p>
+                      <div className="space-y-3">
+                        <p
+                          className={`text-center text-base ${state.success ? "text-green-600" : "text-red-600"}`}
+                        >
+                          {state.enMessage}
+                        </p>
+                        {state.needsVerification && (
+                          <div className="space-y-2">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              className="w-full bg-transparent"
+                              onClick={handleResendVerification}
+                              disabled={resendLoading}
+                            >
+                              {resendLoading ? (
+                                <>
+                                  <Loader className="w-4 h-4 mr-2 animate-spin" />
+                                  {text.resendingVerification}
+                                </>
+                              ) : (
+                                <>
+                                  <Mail className="w-4 h-4 mr-2" />
+                                  {text.resendVerification}
+                                </>
+                              )}
+                            </Button>
+                            {resendMessage && (
+                              <p
+                                className={`text-center text-sm ${resendMessage.success ? "text-green-600" : "text-red-600"}`}
+                              >
+                                {resendMessage.en}
+                              </p>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     ))}
               <Button
                 type="submit"

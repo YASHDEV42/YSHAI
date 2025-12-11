@@ -39,7 +39,7 @@ async function VerifyEmailServerPage({
 
 function VerifyEmailSkeleton() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-accent/5 to-background p-4">
+    <div className="min-h-screen flex items-center justify-center  from-primary/5 via-accent/5 to-background p-4">
       <Card className="w-full max-w-md p-8 shadow-xl backdrop-blur-sm bg-card/95 border-2">
         <div className="flex flex-col items-center space-y-6">
           <div className="w-20 h-20 rounded-full bg-muted animate-pulse" />

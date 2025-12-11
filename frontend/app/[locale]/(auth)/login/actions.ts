@@ -1,6 +1,6 @@
 "use server";
 
-import { login } from "@/lib/auth-helper";
+import { login, resendVerification } from "@/lib/auth-helper";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -9,7 +9,10 @@ type initialStateType = {
   arMessage: string;
   enMessage: string;
   success: boolean;
+  needsVerification?: boolean;
+  userEmail?: string;
 };
+
 export const loginAction = async (
   _: initialStateType,
   formData: FormData,
@@ -41,10 +44,19 @@ export const loginAction = async (
   const result = await login({ email, password });
 
   if (!result.success) {
+    const errorMessage = result.error || "Login failed";
+    const isVerificationError =
+      errorMessage.toLowerCase().includes("verify") ||
+      errorMessage.toLowerCase().includes("not verified");
+
     return {
-      arMessage: "كلمة المرور أو البريد الإلكتروني غير صحيح",
-      enMessage: result.error || "Login failed",
+      arMessage: isVerificationError
+        ? "يرجى التحقق من بريدك الإلكتروني قبل تسجيل الدخول"
+        : "كلمة المرور أو البريد الإلكتروني غير صحيح",
+      enMessage: errorMessage,
       success: false,
+      needsVerification: isVerificationError,
+      userEmail: isVerificationError ? email : undefined,
     };
   }
 
@@ -65,6 +77,34 @@ export const loginAction = async (
   return {
     arMessage: "تم تسجيل الدخول بنجاح",
     enMessage: "Login successful",
+    success: true,
+  };
+};
+
+export const resendVerificationAction = async (
+  email: string,
+): Promise<{ arMessage: string; enMessage: string; success: boolean }> => {
+  if (!email) {
+    return {
+      arMessage: "البريد الإلكتروني مطلوب",
+      enMessage: "Email is required",
+      success: false,
+    };
+  }
+
+  const result = await resendVerification(email);
+
+  if (!result.success) {
+    return {
+      arMessage: "فشل إرسال بريد التحقق. يرجى المحاولة مرة أخرى.",
+      enMessage: result.error || "Failed to send verification email",
+      success: false,
+    };
+  }
+
+  return {
+    arMessage: "تم إرسال بريد التحقق! يرجى التحقق من بريدك الوارد.",
+    enMessage: "Verification email sent! Please check your inbox.",
     success: true,
   };
 };

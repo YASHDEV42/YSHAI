@@ -961,7 +961,11 @@
     "contactSupport": "اتصل بالدعم",
     "verificationTitle": "التحقق من البريد الإلكتروني",
     "verificationMessage": "لقد أرسلنا رابط التحقق إلى بريدك الإلكتروني. يُرجى التحقق من بريدك الإلكتروني قبل تسجيل الدخول.",
-    "verificationButton": "لقد قمت بالتحقق - انتقل إلى تسجيل الدخول"
+    "verificationButton": "لقد قمت بالتحقق - انتقل إلى تسجيل الدخول",
+    "resendVerification": "إعادة إرسال بريد التحقق",
+    "resendingVerification": "جارٍ الإرسال...",
+    "verificationSent": "تم إرسال بريد التحقق! يرجى التحقق من بريدك الوارد.",
+    "verificationFailed": "فشل إرسال بريد التحقق. يرجى المحاولة مرة أخرى."
   },
   "LoginPage": {
     "title": "مرحباً بك مجدداً",
@@ -985,7 +989,12 @@
     "termsOfService": "شروط الخدمة",
     "privacyPolicy": "سياسة الخصوصية",
     "needHelp": "هل تحتاج مساعدة؟",
-    "contactSupport": "اتصل بالدعم"
+    "contactSupport": "اتصل بالدعم",
+    "emailNotVerified": "يرجى التحقق من بريدك الإلكتروني قبل تسجيل الدخول.",
+    "resendVerification": "إعادة إرسال بريد التحقق",
+    "resendingVerification": "جارٍ الإرسال...",
+    "verificationSent": "تم إرسال بريد التحقق! يرجى التحقق من بريدك الوارد.",
+    "verificationFailed": "فشل إرسال بريد التحقق. يرجى المحاولة مرة أخرى."
   },
   "ForgotPasswordPage": {
     "title": "نسيت كلمة المرور",
