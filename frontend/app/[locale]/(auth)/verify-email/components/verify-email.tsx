@@ -8,15 +8,10 @@ import { verifyEmail } from "@/lib/auth-helper";
 
 interface VerifyEmailPageProps {
   text: any;
-  locale: string;
-  token: string;
+  token: string | null;
 }
 
-export default function VerifyEmailPage({
-  text,
-  locale,
-  token,
-}: VerifyEmailPageProps) {
+export default function VerifyEmailPage({ text, token }: VerifyEmailPageProps) {
   const [status, setStatus] = useState<"loading" | "success" | "error">(
     "loading",
   );

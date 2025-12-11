@@ -1,4 +1,3 @@
-// src/mailer/mailer.service.ts
 import {
   Injectable,
   Logger,
@@ -63,7 +62,7 @@ export class MailerService {
   }
 
   async sendEmailVerification(to: string, token: string): Promise<void> {
-    const verifyLink = `${process.env.FRONTEND_URL}/auth/verify?token=${encodeURIComponent(token)}`;
+    const verifyLink = `${process.env.FRONTEND_URL}/verify-email?token=${encodeURIComponent(token)}`;
 
     const from = process.env.MAIL_FROM;
     if (!from) {
