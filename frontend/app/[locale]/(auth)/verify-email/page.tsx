@@ -1,25 +1,23 @@
+import { setRequestLocale } from "next-intl/server";
 import VerifyEmailPage from "./components/verify-email";
+import { extractVerifyEmailPageText } from "@/app/i18n/extractTexts";
+import { routing } from "@/app/i18n/routing";
 
 interface PageProps {
-  searchParams: { token?: string };
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ token?: string }>;
 }
 
-// If you already have i18n text loader, use that here.
-// For now I’ll assume `text` is coming from somewhere like `getVerifyEmailText(locale)`.
-const dummyText = {
-  verifying: "Verifying your email...",
-  success: "Email verified successfully!",
-  successMessage: "Your email has been verified. You can now log in.",
-  error: "Verification failed",
-  errorMessage: "The link is invalid or expired.",
-  goToLogin: "Go to Login",
-  resendVerification: "Resend verification email",
-};
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
 
-export default function Page({ searchParams }: PageProps) {
-  const token = searchParams.token ?? null;
+export default async function Page({ params, searchParams }: PageProps) {
+  const { locale } = await params;
+  const { token } = await searchParams;
 
-  const text = dummyText;
+  setRequestLocale(locale);
+  const text = await extractVerifyEmailPageText(locale);
 
-  return <VerifyEmailPage text={text} token={token} />;
+  return <VerifyEmailPage text={text} token={token ?? null} />;
 }

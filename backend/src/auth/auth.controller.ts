@@ -110,20 +110,25 @@ export class AuthController {
     required: true,
     description: 'Verification token from email',
   })
-  @ApiOkResponse({ description: 'Email verified successfully.', type: String })
+  @ApiOkResponse({
+    description: 'Email verified successfully.',
+    type: MessageResponseDto,
+  })
   async verifyEmail(
     @Query('token') token: string,
-  ): Promise<{ message: string }> {
+  ): Promise<MessageResponseDto> {
     if (!token) {
       throw new BadRequestException('Verification token is required');
     }
 
     const payload = this.authService.verifyEmailVerificationToken(token);
     if (!payload) {
-      throw new UnauthorizedException('Invalid or expired token');
+      // 400 is fine here; it's a bad link, not an auth failure
+      throw new BadRequestException('Invalid or expired verification link');
     }
 
     await this.authService.markEmailAsVerified(payload.id);
+
     return { message: 'Your email has been verified! You can now log in.' };
   }
 

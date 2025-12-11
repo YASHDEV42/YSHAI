@@ -126,15 +126,17 @@ export class AuthService {
     );
   }
 
-  // verify email verification token Function
   verifyEmailVerificationToken(
     token: string,
   ): { id: number; email: string } | null {
     try {
-      const payload: unknown = this.jwtService.verify(token, {
-        secret:
-          process.env.JWT_VERIFICATION_SECRET || 'strong_secret_hahahah$%',
-      });
+      const secret = process.env.JWT_VERIFICATION_SECRET;
+      if (!secret) {
+        logger.error('JWT_VERIFICATION_SECRET is not set');
+        throw new Error('JWT_VERIFICATION_SECRET is required');
+      }
+
+      const payload: unknown = this.jwtService.verify(token, { secret });
 
       const isValid = (p: unknown): p is { id: number; email: string } => {
         return (
