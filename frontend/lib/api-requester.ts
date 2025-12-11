@@ -53,7 +53,18 @@ export async function apiRequest<TResponse, TBody = any>(
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("accessToken")?.value;
 
-  if (!accessToken && path !== "/auth/login" && path !== "/auth/register") {
+  if (
+    !accessToken &&
+    path !== "/auth/login" &&
+    path !== "/auth/register" &&
+    path !== "/auth/refresh" &&
+    path !== "/auth/logout" &&
+    path !== "/auth/request-password-reset" &&
+    path !== "/auth/reset-password" &&
+    path !== "/auth/verify" &&
+    path !== "/auth/resend-verification" &&
+    path !== "/auth/forgot-password"
+  ) {
     return {
       success: false,
       status: 401,
