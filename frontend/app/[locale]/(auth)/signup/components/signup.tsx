@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import Link from "next/link";
 import { useActionState, useEffect, useState } from "react";
-import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Loader2, Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { registerAction } from "../action";
 
@@ -51,6 +51,10 @@ export default function SignUpPage({ text, locale }: SignUpPageProps) {
 
   const [showVerificationMessage, setShowVerificationMessage] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [password, setPassword] = useState("");
 
   useEffect(() => {
     if (state.success) {
@@ -73,6 +77,66 @@ export default function SignUpPage({ text, locale }: SignUpPageProps) {
       });
     }
   };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newPassword = e.target.value;
+    setPassword(newPassword);
+    handleChange(e);
+
+    // Clear confirm password error if passwords now match
+    if (confirmPassword && newPassword === confirmPassword) {
+      setFieldErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors.confirmPassword;
+        return newErrors;
+      });
+    }
+  };
+
+  const handleConfirmPasswordChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const newConfirmPassword = e.target.value;
+    setConfirmPassword(newConfirmPassword);
+    handleChange(e);
+
+    // Validate passwords match
+    if (password && newConfirmPassword && password !== newConfirmPassword) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        confirmPassword: text.passwordMismatch,
+      }));
+    } else if (password === newConfirmPassword) {
+      setFieldErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors.confirmPassword;
+        return newErrors;
+      });
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const newErrors: Record<string, string> = {};
+
+    if (!password) {
+      newErrors.password = text.passwordRequired;
+    } else if (password.length < 8) {
+      newErrors.passwordTooShort = text.passwordTooShort;
+    }
+
+    if (!confirmPassword) {
+      newErrors.confirmPassword = text.confirmPasswordRequired;
+    } else if (password !== confirmPassword) {
+      newErrors.confirmPassword = text.passwordMismatch;
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      e.preventDefault();
+      setFieldErrors(newErrors);
+      return;
+    }
+  };
+
   const globalMessage =
     locale === "ar" ? state.arMessage || "" : state.enMessage || "";
   return (
@@ -142,7 +206,11 @@ export default function SignUpPage({ text, locale }: SignUpPageProps) {
               </span>
             </div>
 
-            <form className="space-y-4" action={formAction}>
+            <form
+              className="space-y-4"
+              action={formAction}
+              onSubmit={handleSubmit}
+            >
               <Field data-invalid={!!fieldErrors.name}>
                 <FieldLabel htmlFor="name">{text.nameLabel}</FieldLabel>
                 <Input
@@ -177,30 +245,85 @@ export default function SignUpPage({ text, locale }: SignUpPageProps) {
 
               <Field data-invalid={!!fieldErrors.password}>
                 <FieldLabel htmlFor="password">{text.passwordLabel}</FieldLabel>
-                <Input
-                  id="password"
-                  name="password"
-                  type="password"
-                  placeholder={text.passwordPlaceholder}
-                  onChange={handleChange}
-                  aria-invalid={!!fieldErrors.password}
-                  disabled={isPending}
-                />
+                <div className="relative">
+                  <Input
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder={text.passwordPlaceholder}
+                    value={password}
+                    onChange={handlePasswordChange}
+                    aria-invalid={!!fieldErrors.password}
+                    disabled={isPending}
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    aria-label={
+                      showPassword ? text.hidePassword : text.showPassword
+                    }
+                    disabled={isPending}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
                 <FieldDescription>{text.passwordHint}</FieldDescription>
                 {fieldErrors.password && (
                   <FieldError>{fieldErrors.password}</FieldError>
                 )}
               </Field>
+
+              <Field data-invalid={!!fieldErrors.confirmPassword}>
+                <FieldLabel htmlFor="confirmPassword">
+                  {text.confirmPasswordLabel}
+                </FieldLabel>
+                <div className="relative">
+                  <Input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder={text.confirmPasswordPlaceholder}
+                    value={confirmPassword}
+                    onChange={handleConfirmPasswordChange}
+                    aria-invalid={!!fieldErrors.confirmPassword}
+                    disabled={isPending}
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    aria-label={
+                      showConfirmPassword
+                        ? text.hidePassword
+                        : text.showPassword
+                    }
+                    disabled={isPending}
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
+                {fieldErrors.confirmPassword && (
+                  <FieldError>{fieldErrors.confirmPassword}</FieldError>
+                )}
+              </Field>
+
               <input
                 type="hidden"
                 name="timezone"
                 value={Intl.DateTimeFormat().resolvedOptions().timeZone}
               />
-              <input
-                type="hidden"
-                name="timeFormat"
-                value="24h" // or from user preference / toggle
-              />
+              <input type="hidden" name="timeFormat" value="24h" />
               <div className="flex items-center justify-center gap-2 text-sm pt-2">
                 <span className="text-muted-foreground">
                   {text.haveAccount}

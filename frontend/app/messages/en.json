@@ -1024,6 +1024,12 @@
     "passwordRequired": "Password is required",
     "passwordTooShort": "Password must be at least 8 characters",
     "passwordHint": "Must be at least 8 characters",
+    "confirmPasswordLabel": "Confirm Password",
+    "confirmPasswordPlaceholder": "••••••••",
+    "confirmPasswordRequired": "Please confirm your password",
+    "passwordMismatch": "Passwords do not match",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
     "haveAccount": "Already have an account?",
     "signInLink": "Sign In",
     "createAccountButton": "Create account",
@@ -1032,7 +1038,10 @@
     "termsOfService": "Terms of Service",
     "privacyPolicy": "Privacy Policy",
     "needHelp": "Need help?",
-    "contactSupport": "Contact support"
+    "contactSupport": "Contact support",
+    "verificationTitle": "Verify your email",
+    "verificationMessage": "We've sent a verification link to your email. Please check your inbox before signing in.",
+    "verificationButton": "I've verified - Go to Sign In"
   },
   "LoginPage": {
     "title": "Welcome back",
