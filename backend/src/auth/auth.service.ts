@@ -272,7 +272,6 @@ export class AuthService {
     const user = await this.em.findOne(User, { email });
     if (!user) {
       logger.warn(`Password reset requested for non-existent email: ${email}`);
-      // Do not reveal whether the email exists
       return;
     }
 

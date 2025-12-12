@@ -44,16 +44,7 @@ export const resetPasswordAction = async (
   const result = await resetPassword(token, newPassword);
 
   if (result.success) {
-    // Wait a moment before redirecting
-    setTimeout(() => {
-      redirect("/login");
-    }, 2000);
-
-    return {
-      arMessage: "تم إعادة تعيين كلمة المرور بنجاح! جارٍ التوجيه...",
-      enMessage: "Password reset successfully! Redirecting...",
-      success: true,
-    };
+    redirect("/login");
   }
 
   return {
