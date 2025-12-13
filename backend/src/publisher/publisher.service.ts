@@ -7,7 +7,6 @@ import { SocialAccount } from 'src/entities/social-account.entity';
 import { AccountToken } from 'src/entities/account-token.entity';
 import { Media } from 'src/entities/media.entity';
 import { ProviderFactory } from './providers/provider.factory';
-import { EventBusService } from 'src/event-bus/event-bus.service';
 
 @Injectable()
 export class PublisherService implements OnModuleInit {
@@ -17,7 +16,6 @@ export class PublisherService implements OnModuleInit {
 
   constructor(
     private readonly em: EntityManager,
-    private readonly events: EventBusService,
     private readonly providers: ProviderFactory,
   ) {}
 
@@ -197,16 +195,6 @@ export class PublisherService implements OnModuleInit {
 
       await em.flush();
 
-      // Emit domain event (listeners will create notifications, webhooks, etc.)
-      await this.events.emit('post.published', {
-        postId: post.id,
-        authorId: post.author.id,
-        provider: account.provider,
-        externalPostId: target.externalPostId ?? null,
-        externalUrl: target.externalUrl ?? null,
-        publishedAt: target.publishedAt.toISOString(),
-      });
-
       await this.aggregatePostStatus(em, post);
 
       this.log.log(`✅ Job ${job.id} succeeded`);
@@ -287,13 +275,6 @@ export class PublisherService implements OnModuleInit {
     const post = job.post as Post | undefined;
     if (post) {
       await this.aggregatePostStatus(em, post);
-
-      await this.events.emit('post.failed', {
-        postId: post.id,
-        authorId: post.author.id,
-        error,
-        attempt: job.attempt,
-      });
     }
 
     this.log.error(
