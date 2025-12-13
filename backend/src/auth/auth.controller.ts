@@ -8,7 +8,6 @@ import {
   Query,
   BadRequestException,
   UnauthorizedException,
-  Logger,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
@@ -30,7 +29,6 @@ import {
   ResendVerificationDto,
 } from './dto/reset-password.dto';
 import { ApiStandardErrors } from 'src/common/decorators/api-standard-errors.decorator';
-import { Throttle } from '@nestjs/throttler';
 
 @ApiStandardErrors()
 @ApiTags('Auth')
@@ -104,7 +102,6 @@ export class AuthController {
   }
 
   @Get('verify')
-  @Throttle(30, 60)
   @ApiOperation({ summary: 'Verify user email via token' })
   @ApiQuery({
     name: 'token',

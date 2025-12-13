@@ -6,7 +6,6 @@ import {
   OneToMany,
   Collection,
   Index,
-  ManyToMany,
 } from '@mikro-orm/core';
 
 import { User } from './user.entity';
@@ -14,7 +13,6 @@ import { Team } from './team.entity';
 import { Media } from './media.entity';
 import { Job } from './job.entity';
 import { Generation } from './generation.entity';
-import { PostAnalytics } from './post-analytics.entity';
 import { Campaign } from './campaign.entity';
 import { PostTarget } from './post-target.entity';
 import type { WrapperType } from 'src/types/relation-wrapper';
@@ -69,9 +67,6 @@ export class Post {
 
   @OneToMany(() => Generation, (gen) => gen.post)
   generations = new Collection<Generation>(this);
-
-  @OneToMany(() => PostAnalytics, (analytics) => analytics.post)
-  analytics = new Collection<PostAnalytics>(this);
 
   @ManyToOne(() => Campaign, { fieldName: 'campaignId', nullable: true })
   campaign?: Campaign;

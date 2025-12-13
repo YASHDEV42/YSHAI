@@ -5,12 +5,15 @@ import {
   ManyToOne,
   OneToMany,
   Collection,
+  Index,
 } from '@mikro-orm/core';
 import { User } from './user.entity';
 import { AccountToken } from './account-token.entity';
 import { PostTarget } from './post-target.entity';
 import type { WrapperType } from 'src/types/relation-wrapper';
 
+type SyncStatus = 'ok' | 'rate_limited' | 'needs_reauth' | 'error';
+@Index({ properties: ['user', 'provider'] })
 @Entity()
 export class SocialAccount {
   @PrimaryKey()
@@ -31,9 +34,6 @@ export class SocialAccount {
   @Property()
   active = true;
 
-  @Property({ nullable: true })
-  followersCount?: number;
-
   @Property()
   connectedAt = new Date();
 
@@ -45,6 +45,15 @@ export class SocialAccount {
 
   @Property({ nullable: true })
   pageName?: string;
+
+  @Property({ nullable: true })
+  lastSyncedAt?: Date;
+
+  @Property({ nullable: true })
+  syncStatus?: SyncStatus;
+
+  @Property({ type: 'text', nullable: true })
+  syncError?: string;
 
   @Property({ nullable: true })
   disconnectedAt?: Date;

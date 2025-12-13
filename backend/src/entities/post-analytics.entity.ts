@@ -4,36 +4,40 @@ import {
   Property,
   ManyToOne,
   Index,
+  Unique,
 } from '@mikro-orm/core';
-import { Post } from './post.entity';
-import { SocialAccount } from './social-account.entity';
+import { PostTarget } from './post-target.entity';
 import type { WrapperType } from 'src/types/relation-wrapper';
 
+export type AnalyticsGranularity = 'day' | 'hour';
+
 @Entity()
+@Index({ properties: ['postTarget', 'periodStart'] })
+@Index({ properties: ['fetchedAt'] })
+@Unique({
+  properties: ['postTarget', 'granularity', 'periodStart'],
+})
 export class PostAnalytics {
   @PrimaryKey()
   id!: number;
 
-  @Index({ name: 'post_analytics_post_idx' })
-  @ManyToOne(() => Post, { fieldName: 'postId' })
-  post!: WrapperType<Post>;
+  @ManyToOne(() => PostTarget, { fieldName: 'postTargetId' })
+  postTarget!: WrapperType<PostTarget>;
 
-  // Which social account was this fetched from?
-  @ManyToOne(() => SocialAccount, {
-    fieldName: 'socialAccountId',
-    nullable: true,
-  })
-  socialAccount?: WrapperType<SocialAccount>;
-
-  // Platform provider is needed because metrics differ per provider
   @Property()
-  provider!: 'x' | 'instagram' | 'linkedin' | 'tiktok';
+  granularity: AnalyticsGranularity = 'day';
+
+  @Property()
+  periodStart!: Date;
+
+  @Property({ nullable: true })
+  periodEnd?: Date;
 
   @Property({ default: 0 })
   impressions = 0;
 
   @Property({ default: 0 })
-  clicks = 0;
+  reach = 0;
 
   @Property({ default: 0 })
   likes = 0;
@@ -44,8 +48,11 @@ export class PostAnalytics {
   @Property({ default: 0 })
   shares = 0;
 
+  @Property({ default: 0 })
+  clicks = 0;
+
   @Index()
-  @Property({ onCreate: () => new Date() })
+  @Property()
   fetchedAt: Date = new Date();
 
   @Property({ onCreate: () => new Date() })

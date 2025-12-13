@@ -21,15 +21,8 @@ import { PublisherModule } from './publisher/publisher.module';
 import { CampaignsModule } from './campaigns/campaigns.module';
 import { PostTargetsModule } from './post-targets/post-targets.module';
 import { ScheduleModule } from '@nestjs/schedule';
-import { ThrottlerModule } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
-import { ThrottlerGuard } from '@nestjs/throttler';
 @Module({
   imports: [
-    ThrottlerModule.forRoot({
-      ttl: 60,
-      limit: 20,
-    }),
     ScheduleModule.forRoot(),
     ConfigModule.forRoot({ isGlobal: true }),
     ...(process.env.SKIP_DB === 'true'
@@ -53,12 +46,6 @@ import { ThrottlerGuard } from '@nestjs/throttler';
     BillingModule,
     AdminModule,
     PublisherModule,
-  ],
-  providers: [
-    {
-      provide: APP_GUARD,
-      useClass: ThrottlerGuard,
-    },
   ],
 })
 export class AppModule {}
